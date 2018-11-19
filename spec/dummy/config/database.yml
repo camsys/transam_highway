@@ -1,0 +1,8 @@
+test:
+  username: app
+  password: camsysapp
+  adapter: mysql2
+  pool: 5
+  timeout: 5000
+  host: localhost
+  database: transam_highway_testing

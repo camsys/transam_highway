@@ -1,0 +1,15 @@
+language: ruby
+rvm:
+- 2.2.2
+branches:
+  only:
+  - master
+  - /quarter\d*/
+before_script:
+- bundle update transam_highway
+- cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
+script:
+- bundle exec rake app:transam_highway:prepare_rspec
+- bundle exec rspec
+before_install:
+- mysql -e "create database IF NOT EXISTS transam_highway_testing;" -uroot
