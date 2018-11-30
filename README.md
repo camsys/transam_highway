@@ -1,8 +1,8 @@
 # TransamHighway
-Short description and motivation.
+The Highway engine extends TransAM Core functionality into the realm of highway assets such as structures.
 
 ## Usage
-How to use my plugin.
+TransamCore must be included with TransamHighway within a TransAM application framework.
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -20,9 +20,6 @@ Or install it yourself as:
 ```bash
 $ gem install transam_highway
 ```
-
-## Contributing
-Contribution directions go here.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
