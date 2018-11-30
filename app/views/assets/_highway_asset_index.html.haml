@@ -1,0 +1,75 @@
+:css
+  .flag-column {
+    :width: 30px;
+  }
+
+#subheader-label
+  %h2 Highway Assets
+  %legend.asset-subheader
+
+#table_actions.btn-toolbar
+  .btn-group
+    = link_to current_url(format: :xlsx), class: 'btn btn-default', target: '_blank', title: 'Export all rows and columns to XLSX' do
+      %i.fa.fa-file
+      = " Export All"
+  - table_dom_id = SecureRandom.hex
+
+  .table-responsive
+    %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+      :url => inventory_index_path(:format => :json),
+      :card_view => "false",
+      :pagination => 'true',
+
+      :side_pagination => 'server',
+      :show_pagination_switch => 'true',
+      :page_number => '1',
+      :page_list => "[5, 10, 20, 50, 100]",
+      :page_size => current_user.num_table_rows,
+
+      :sesort_order => 'asc',
+      :sortable => 'true',
+      :click_to_select => 'false',
+      :search => 'false',
+      :query_params => "query_params",
+
+      :sticky_header => 'true',
+      :sticky_header_offset_y => '65px',
+      :export_types => "['csv', 'txt', 'excel']",
+      :show_export => 'true',
+      :show_columns => 'true',
+      :state_save => 'true',
+      :state_save_id_table => "highway_assets_id",
+      :state_save_expire => "1y",
+      :show_multi_sort => 'true',
+      :single_select => 'false'}}
+
+      %thead
+        %tr
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Asset ID'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization_id'}}= 'Organization'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'asset_subtype_id'}}= 'Asset Subtype'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'external_id'}}= 'External ID'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'description'}}= 'Description'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'test_notes'}}= 'Test Notes'
+
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'currency_formatter', :field => 'purchase_cost'}}= 'Cost (Purchase)'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'in_service_date'}}= 'In Service Date'
+
+= render 'shared/table_formatters'
+
+:javascript
+
+  var asset_type = #{@asset_type.to_i};
+
+  function query_params(params) {
+    if (asset_type > 0) {
+      params.asset_type = asset_type;
+    }
+    return params;
+  }
+
+  // cant use built in one in shared/table_formatters cause uses view call. might need to see if better way to standardize
+  function asset_link_formatter(value, data) {
+    return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
