@@ -4,10 +4,6 @@ class HighwayAsset < TransamAssetRecord
 
   actable as: :highway_assetible
 
-  def self.asset_seed_class_name
-    'AssetType'
-  end
-
   FORM_PARAMS = [
       :test_notes
   ]
