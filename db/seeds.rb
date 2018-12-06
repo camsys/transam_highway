@@ -13,6 +13,9 @@ organization_types = [
         :description => 'Manage highway structures, bridges.'
     }
 ]
+system_config_extensions = [
+    {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true}
+]
 
 route_signing_prefixes = [
   {active: true, code: '1',	name: 'Interstate'},
