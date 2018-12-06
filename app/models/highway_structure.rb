@@ -1,8 +1,9 @@
-class HighwayAsset < TransamAssetRecord
-
+class HighwayStructure < TransamAssetRecord
   acts_as :transam_asset, as: :transam_assetible
 
-  actable as: :highway_assetible
+  actable as: :highway_structurible
+
+  belongs_to :route_signing_prefix
 
   def self.asset_seed_class_name
     'AssetType'
@@ -19,10 +20,6 @@ class HighwayAsset < TransamAssetRecord
   SEARCHABLE_FIELDS = [
 
   ]
-
-  def self.asset_seed_class_name
-    'AssetType'
-  end
 
   # this method gets copied from the transam asset level because sometimes start at this base
   def self.very_specific
@@ -51,7 +48,5 @@ class HighwayAsset < TransamAssetRecord
       new_asset.transam_asset = self.transam_asset.dup
     end
   end
-
-
 
 end

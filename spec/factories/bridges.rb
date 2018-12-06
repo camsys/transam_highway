@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :highway_asset do
+  factory :bridge do
     
   end
 end
