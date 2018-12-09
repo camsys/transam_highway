@@ -10,4 +10,18 @@ class Bridge < TransamAssetRecord
   belongs_to :superstructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :substructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :channel_condition_type
+
+  # List of hash parameters allowed by the controller
+  FORM_PARAMS = [
+  ]
+
+  #-----------------------------------------------------------------------------
+  #
+  # Class Methods
+  #
+  #-----------------------------------------------------------------------------
+
+  def self.allowable_params
+    FORM_PARAMS
+  end
 end

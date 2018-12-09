@@ -10,7 +10,7 @@ class HighwayStructure < TransamAssetRecord
   end
 
   FORM_PARAMS = [
-      :test_notes
+    :test_notes
   ]
 
   CLEANSABLE_FIELDS = [
@@ -20,6 +20,16 @@ class HighwayStructure < TransamAssetRecord
   SEARCHABLE_FIELDS = [
 
   ]
+
+  #-----------------------------------------------------------------------------
+  #
+  # Class Methods
+  #
+  #-----------------------------------------------------------------------------
+
+  def self.allowable_params
+    FORM_PARAMS
+  end
 
   # this method gets copied from the transam asset level because sometimes start at this base
   def self.very_specific
