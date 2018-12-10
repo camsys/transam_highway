@@ -44,6 +44,16 @@ class HighwayStructure < TransamAssetRecord
 
   ]
 
+  #-----------------------------------------------------------------------------
+  #
+  # Class Methods
+  #
+  #-----------------------------------------------------------------------------
+
+  def self.allowable_params
+    FORM_PARAMS
+  end
+
   # this method gets copied from the transam asset level because sometimes start at this base
   def self.very_specific
     klass = self.all

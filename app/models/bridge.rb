@@ -10,7 +10,7 @@ class Bridge < TransamAssetRecord
   belongs_to :superstructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :substructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :channel_condition_type
-
+  
   belongs_to :structural_appraisal_rating_type
   belongs_to :deck_geometry_appraisal_rating_type
   belongs_to :underclearance_appraisal_rating_type
@@ -65,6 +65,5 @@ class Bridge < TransamAssetRecord
       new_asset.highway_structure = self.highway_structure.dup
     end
   end
-
-
+  
 end
