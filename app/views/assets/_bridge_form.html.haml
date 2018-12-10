@@ -1,12 +1,12 @@
 %ul.nav.nav-tabs
-  %li.active
+  %li
     %a{:href => '#bridge', :data =>{:toggle => 'tab'}}
       Bridge
   %li
     %a{:href => '#structure', :data =>{:toggle => 'tab'}}
       Highway Structure
 
-  %li
+  %li.active
     %a{:href => '#required', :data =>{:toggle => 'tab'}}
       Required Fields
   - if @asset.new_record?
@@ -28,7 +28,7 @@
   = hidden_field_tag :asset_seed_class_name, 'AssetType'
 
   .tab-content.form-section
-    .tab-pane.fade.in.active#bridge
+    .tab-pane.fade.in#bridge
       .col-sm-6
         = f.input :facility_carried
         = f.association :operational_status_type, collection: OperationalStatusType.active
@@ -45,10 +45,8 @@
         = f.association :substructure_condition_rating_type, collection: BridgeConditionRatingType.active
         = f.association :channel_condition_type, collection: ChannelConditionType.active
 
-  .tab-content.form-section
-    .tab-pane.fade.in.active#structure
+    .tab-pane.fade.in#structure
 
-  .tab-content.form-section
     .tab-pane.fade.in.active#required
       .col-sm-6
         
@@ -71,7 +69,7 @@
         = f.input :asset_tag, label: 'Asset ID'
 
         
-        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:name), label: 'Subtype'
+        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
 
       .col-sm-6
         %h2.form-section-header
