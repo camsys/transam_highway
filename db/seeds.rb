@@ -13,6 +13,17 @@ organization_types = [
         :description => 'Manage highway structures, bridges.'
     }
 ]
+asset_types = [
+    {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true}
+]
+asset_subtypes = [
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Arch', description: 'Arched Bridge', active: true},
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Beam', description: 'Beam Bridge', active: true},
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Slab', description: 'Slab Bridge', active: true},
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Suspension', description: 'Suspension Bridge', active: true},
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Truss', description: 'Truss Bridge', active: true},
+  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true}
+]
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true}
 ]
@@ -101,8 +112,86 @@ channel_condition_types = [
 {active: true, code: '0', name:	'Closed Pending Replacement', description: 'Bridge closed because of channel failure. Replacement necessary.'}
 ]
 
+bridge_appraisal_rating_types = [
+  {active: true, code: 'N', name:	'Not Applicable'},
+  {active: true, code: '9', name:	'Superior', description:	'Superior to present desirable criteria'},
+  {active: true, code: '8', name:	'Meets Desires', description:	'Equal to present desirable criteria'},
+  {active: true, code: '7', name:	'Exceeds Requirements', description:	'Better than present minimum criteria'},
+  {active: true, code: '6', name:	'Meets Requirements', description:	'Equal to present minimum criteria'},
+  {active: true, code: '5', name:	'Tolerable', description:	'Somewhat better than minimum adequacy to tolerate being left in place as is'},
+  {active: true, code: '4', name:	'Barely Tolerable', description:	'Meets minimum tolerable limits to be left in place as is'},
+  {active: true, code: '3', name:	'Intolerable Must Repair', description:	'Basically intolerable requiring high priority of corrective action'},
+  {active: true, code: '2', name:	'Intolerable Must Replace', description:	'Basically intolerable requiring high priority of replacement'},
+  {active: true, code: '0', name:	'Closed', description:	'Bridge closed'}
+]
+strahnet_designation_types = [
+    {active: true, code: '1', name:	'Not STRAHNET', description:	'The inventory route is not a STRAHNET route.'},
+    {active: true, code: '2', name:	'Interstate STRAHNET', description:	'The inventory route is on a Interstate STRAHNET route.'},
+    {active: true, code: '3', name:	'Non-Interstate STRAHNET', description:	'The inventory route is on a Non-Interstate STRAHNET route.'},
+    {active: true, code: '4', name:	'Connector STRAHNET', description:	'The inventory route is on a STRAHNET connector route.'}
+]
+deck_structure_types = [
+  {active: true, code: '1', name:	'Concrete Cast-in-Place'},
+  {active: true, code: '2', name:	'Concrete Precast Panels'},
+  {active: true, code: '3', name:	'Open Grating'},
+  {active: true, code: '4', name:	'Closed Grating'},
+  {active: true, code: '5', name:	'Steel plate (includes orthotropic)'},
+  {active: true, code: '6', name:	'Corrugated Steel'},
+  {active: true, code: '7', name:	'Aluminum'},
+  {active: true, code: '8', name:	'Wood or Timber'},
+  {active: true, code: '9', name:	'Other'},
+  {active: true, code: 'N', name:	'Not applicable'}
+]
+wearing_surface_types = [
+  {active: true, code: '1', name:	'Monolithic Concrete', description:	'(concurrently placed with structural deck)'},
+  {active: true, code: '2', name:	'Integral Concrete', description: '(separate non-modified layer of concrete added to structural deck)'},
+  {active: true, code: '3', name:	'Latex Concrete', description: '(or similar additive)'},
+  {active: true, code: '4', name:	'Low slump Concrete'},
+  {active: true, code: '5', name:	'Epoxy Overlay'},
+  {active: true, code: '6', name:	'Bituminous'},
+  {active: true, code: '7', name:	'Wood or Timber'},
+  {active: true, code: '8', name:	'Gravel'},
+  {active: true, code: '9', name:	'Other'},
+  {active: true, code: '0', name:	'None', description:	'(no additional concrete thickness or wearing surface is included in the bridge deck)'},
+  {active: true, code: 'N', name:	'Not applicable', description:	'(applies only to structures with no deck)'}
+]
+membrane_types = [
+  {active: true, code: '1', name:	'Built-up'},
+  {active: true, code: '2', name:	'Preformed Fabric'},
+  {active: true, code: '3', name:	'Epoxy'},
+  {active: true, code: '8', name:	'Unknown'},
+  {active: true, code: '9', name:	'Other'},
+  {active: true, code: '0', name:	'None'},
+  {active: true, code: 'N', name:	'Not applicable'}
+]
+deck_protection_types = [
+  {active: true, code: '1', name:	'Epoxy Coated Reinforcing'},
+  {active: true, code: '2', name:	'Galvanized Reinforcing'},
+  {active: true, code: '3', name:	'Other Coated Reinforcing'},
+  {active: true, code: '4', name:	'Cathodic Protected'},
+  {active: true, code: '6', name:	'Polymer Impregnated'},
+  {active: true, code: '7', name:	'Internally Sealed'},
+  {active: true, code: '8', name:	'Unknown'},
+  {active: true, code: '9', name:	'Other'},
+  {active: true, code: '0', name:	'None'},
+  {active: true, code: 'N', name:	'Not applicable'}
+]
+scour_critical_bridge_types = [
+  {active: true, code: 'N', name:	'Not over waterway', description:	'Bridge not over waterway.'},
+  {active: true, code: 'U', name:	'Unknown', description:	'Bridge with "unknown" foundation that has not been evaluated for scour. Until risk can be determined, a plan of action should be developed and implemented to reduce the risk to users from abridge failure during and immediately after a flood event.'},
+  {active: true, code: '9', name:	'Dry', description:	'Bridge foundations (including piles) on dry land well above flood water elevations.'},
+  {active: true, code: '8', name:	'Stable, above footing', description:	'Bridge foundations determined to be stable for the assessed or calculated scour condition. Scour is determined to be above top of footing by assessment, by calculation, or by installation of properly designed countermeasures.'},
+  {active: true, code: '7', name:	'Has Counter measures', description:	'Countermeasures have been installed to mitigate an existing problem with scour and to reduce the risk of bridge failure during a flood event. Instructions contained in a plan of action have been implemented to reduce the risk to users from a bridge failure during or immediately after a flood event.'},
+  {active: true, code: '6', name:	'Not evaluated', description:	'Scour calculation/evaluation has not been made. (Use only to describe case where bridge has not yet been evaluated for scour potential.)'},
+  {active: true, code: '5', name:	'Stable, within limits', description:	'Bridge foundations determined to be stable for assessed or calculated scour condition. Scour is determined to be within the limits of footing or piles by assessment, by calculations or by installation of properly designed countermeasures.'},
+  {active: true, code: '4', name:	'Stable, action required', description:	'Bridge foundations determined to be stable for assessed or calculated scour conditions;field review indicates action is required to protect exposed foundations.'},
+  {active: true, code: '3', name:	'Critical, unstable', description:	'Bridge is scour critical; bridge foundations determined to be unstable for assessed or calculated scour conditions:Scour within limits of footing or piles.Scour below spread-footing base or pile tips.'},
+  {active: true, code: '2', name:	'Critical, immediate action required', description:	'Bridge is scour critical; field review indicates that extensive scour has occurred at bridge foundations. Immediate action is required to provide scour countermeasures.'},
+  {active: true, code: '1', name:	'Failure imminent', description:	'Bridge is scour critical; field review indicates that failure of piers/abutments is imminent. Bridge is closed to traffic.'},
+  {active: true, code: '0', name:	'Failed, closed', description:	'Bridge is scour critical. Bridge has failed and is closed to traffic.'}
+]
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types
   }
 
 replace_tables.each do |table_name|
@@ -122,14 +211,17 @@ replace_tables.each do |table_name|
   end
 end
 
-merge_tables = %w{ organization_types }
+merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
 
 merge_tables.each do |table_name|
   puts "  Merging #{table_name}"
   data = eval(table_name)
   klass = table_name.classify.constantize
   data.each do |row|
-    x = klass.new(row.except(:belongs_to, :type))
+    x = klass.new(row.except(:belongs_to, :asset_type))
+    if x.respond_to? :asset_type
+      x.asset_type = AssetType.find_by(name: row[:asset_type])
+    end
     x.save!
   end
 end

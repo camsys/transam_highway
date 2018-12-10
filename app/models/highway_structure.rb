@@ -10,7 +10,30 @@ class HighwayStructure < TransamAssetRecord
   end
 
   FORM_PARAMS = [
-    :test_notes
+      :address1,
+      :address2,
+      :city,
+      :county,
+      :state,
+      :zip,
+      :route_signing_prefix_id,
+      :route_number,
+      :features_intersected,
+      :structure_number,
+      :location_description,
+      :length,
+      :inspection_date,
+      :inspection_frequency,
+      :fracture_critical_inspection_required,
+      :fracture_critical_inspection_frequency,
+      :underwater_inspection_required,
+      :underwater_inspection_frequency,
+      :other_special_inspection_required,
+      :other_special_inspection_frequency,
+      :fracture_critical_inspection_date,
+      :underwater_inspection_date,
+      :other_special_inspection_date,
+      :is_temporary
   ]
 
   CLEANSABLE_FIELDS = [
