@@ -5,7 +5,7 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :route_signing_prefix
 
-  def self.asset_seed_class_name
+  callable_by_submodel def self.asset_seed_class_name
     'AssetType'
   end
 
