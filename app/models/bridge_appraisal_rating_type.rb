@@ -1,4 +1,4 @@
-class BridgeAppraisalType < ApplicationRecord
+class BridgeAppraisalRatingType < ApplicationRecord
 
   # All types that are available
   scope :active, -> { where(:active => true) }

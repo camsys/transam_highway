@@ -11,11 +11,11 @@ class Bridge < TransamAssetRecord
   belongs_to :substructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :channel_condition_type
   
-  belongs_to :structural_appraisal_rating_type
-  belongs_to :deck_geometry_appraisal_rating_type
-  belongs_to :underclearance_appraisal_rating_type
-  belongs_to :waterway_appraisal_rating_type
-  belongs_to :approach_alignment_appraisal_rating_type
+  belongs_to :structural_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+  belongs_to :deck_geometry_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+  belongs_to :underclearance_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+  belongs_to :waterway_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+  belongs_to :approach_alignment_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
   belongs_to :strahnet_designation_type
   belongs_to :deck_structure_type
   belongs_to :wearing_surface_type
