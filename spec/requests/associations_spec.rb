@@ -39,6 +39,19 @@ RSpec.describe Api::V1::AssociationsController, type: :request do
         expect(json['data']['class']).to match(/not found/)
       end
     end
+
+    context 'when the association class is not allowed' do
+      let(:test_association_class) { 'Asset' }
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns a not found message' do
+        expect(json['status']).to eq('fail')
+        expect(json['data']['class']).to match(/not allowed/)
+      end
+    end
   end
 end
 

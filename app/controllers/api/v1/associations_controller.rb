@@ -10,21 +10,39 @@ class Api::V1::AssociationsController < Api::ApiController
 
   def get_associations
     unless params[:class].blank?
-      association_class = params[:class].safe_constantize
-      if association_class
-        if association_class.respond_to?(:active)
-          @associations = association_class.active
+      if association_class_allowed?
+        association_class = params[:class].safe_constantize
+        if association_class
+          if association_class.respond_to?(:active)
+            @associations = association_class.active
+          else
+            @associations = association_class.all
+          end
         else
-          @associations = association_class.all
+          not_found = true
         end
+      else
+        not_allowed = true
       end
+    else
+      not_found = true
     end
 
-    unless association_class
+    if not_found
       @status = :fail
       @data = {class: "Class #{params[:class]} not found."}
       render status: :not_found, json: json_response(:fail, data: @data)
+    elsif not_allowed
+      @status = :fail
+      @data = {class: "Class #{params[:class]} not allowed."}
+      render status: :not_found, json: json_response(:fail, data: @data)
     end
+  end
+
+  def association_class_allowed?
+    rails_admin_highway_lookup_tables = Rails.application.config.rails_admin_highway_lookup_tables || []
+
+    rails_admin_highway_lookup_tables.include?(params[:class])
   end
 
 end
