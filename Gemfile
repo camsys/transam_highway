@@ -8,6 +8,10 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'transam_core', git: "https://github.com/camsys/transam_core", branch: :quarter1
 gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
 gem 'mysql2', "~> 0.5.1" # lock gem for dummy app
+gem 'rack-test'
+gem 'rails-controller-testing' # assigns has been extracted to this gem
+gem 'responders' # get jbuilder working on Travis. It wasn't automatically rendering the json views.
+gem 'byebug'
 
 gemspec
 
