@@ -17,12 +17,12 @@ asset_types = [
     {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true}
 ]
 asset_subtypes = [
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Arch', description: 'Arched Bridge', active: true},
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Beam', description: 'Beam Bridge', active: true},
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Slab', description: 'Slab Bridge', active: true},
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Suspension', description: 'Suspension Bridge', active: true},
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Truss', description: 'Truss Bridge', active: true},
-  {belongs_to: 'asset_type', asset_type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true}
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Arch', description: 'Arched Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Beam', description: 'Beam Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Slab', description: 'Slab Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Suspension', description: 'Suspension Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Truss', description: 'Truss Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true}
 ]
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true}
@@ -40,7 +40,7 @@ route_signing_prefixes = [
 ]
 operational_status_types = [
     {active: true, code: 'A',	name: 'Open', description:	'Open, no restriction'},
-    {active: true, code: 'B',	name: 'Posting Recommended	Open', description: 'posting recommended but not legally implemented (all signs not in place or not correctly implemented)'},
+    {active: true, code: 'B',	name: 'Posting Recommended', description: 'Open, posting recommended but not legally implemented (all signs not in place or not correctly implemented)'},
     {active: true, code: 'D', name:	'Temporary Shoring', description:	'Open, would be posted or closed except for temporary shoring, etc. to allow for unrestricted traffic'},
     {active: true, code: 'E',	name: 'Temporary Structure', description:	'Open, temporary structure in place to carry legal loads while original structure is closed and awaiting replacement or rehabilitation'},
     {active: true, code: 'G', name:	'New Structure', description:	'New structure not yet open to traffic'},
@@ -62,28 +62,29 @@ structure_material_types = [
     {active: true, code: '0', name:	'Other'}
 ]
 design_construction_types = [
-  {active: true, code: '01', name:	'Slab'},
-  {active: true, code: '02', name:	'Stringer/Multi-beam or Girder'},
-  {active: true, code: '03', name:	'Girder and Floorbeam System'},
-  {active: true, code: '04', name:	'Tee Beam'},
-  {active: true, code: '05', name:	'Box Beam or Girders - Multiple'},
-  {active: true, code: '06', name:	'Box Beam or Girders - Single or Spread'},
-  {active: true, code: '07', name:	'Frame (except frame culverts)'},
-  {active: true, code: '08', name:	'Orthotropic'},
-  {active: true, code: '09', name:	'Truss - Deck'},
-  {active: true, code: '10', name:	'Truss - Thru'},
-  {active: true, code: '11', name:	'Arch - Deck'},
-  {active: true, code: '12', name:	'Arch - Thru'},
-  {active: true, code: '13', name:	'Suspension'},
-  {active: true, code: '14', name:	'Stayed Girder'},
-  {active: true, code: '15', name:	'Movable - Lift'},
-  {active: true, code: '16', name:	'Movable - Bascule'},
-  {active: true, code: '17', name:	'Movable - Swing'},
-  {active: true, code: '18', name:	'Tunnel'},
-  {active: true, code: '19', name:	'Culvert (includes frame culverts)'},
-  {active: true, code: '20', name:	'Mixed types'},
-  {active: true, code: '22', name:	'Channel Beam'},
-  {active: true, code: '00', name:	'Other'}
+  {active: true, code: '01', name:	'Slab', belongs_to: 'asset_subtype', type: 'Slab'},
+  {active: true, code: '02', name:	'Stringer/Multi-beam or Girder', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '03', name:	'Girder and Floorbeam System', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '04', name:	'Tee Beam', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '05', name:	'Box Beam or Girders - Multiple', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '06', name:	'Box Beam or Girders - Single or Spread', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '07', name:	'Frame (except frame culverts)', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '08', name:	'Orthotropic', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '09', name:	'Truss - Deck', belongs_to: 'asset_subtype', type: 'Truss'},
+  {active: true, code: '10', name:	'Truss - Thru', belongs_to: 'asset_subtype', type: 'Truss'},
+  {active: true, code: '11', name:	'Arch - Deck', belongs_to: 'asset_subtype', type: 'Arch'},
+  {active: true, code: '12', name:	'Arch - Thru', belongs_to: 'asset_subtype', type: 'Arch'},
+  {active: true, code: '13', name:	'Suspension', belongs_to: 'asset_subtype', type: 'Suspension'},
+  {active: true, code: '14', name:	'Stayed Girder', belongs_to: 'asset_subtype', type: 'Suspension'},
+  {active: true, code: '15', name:	'Movable - Lift', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '16', name:	'Movable - Bascule', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '17', name:	'Movable - Swing', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '18', name:	'Tunnel', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '19', name:	'Culvert (includes frame culverts)', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '20', name:	'Mixed types', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '21', name: 'Segmental Box Girder', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '22', name:	'Channel Beam', belongs_to: 'asset_subtype', type: 'Beam'},
+  {active: true, code: '00', name:	'Other', belongs_to: 'asset_subtype', type: 'Other'}
 ]
 bridge_condition_rating_types = [
   {active: true, code: 'N', name:	'Not Applicable'},
@@ -206,7 +207,10 @@ replace_tables.each do |table_name|
   data = eval(table_name)
   klass = table_name.classify.constantize
   data.each do |row|
-    x = klass.new(row)
+    x = klass.new(row.except(:belongs_to, :type))
+    if row[:belongs_to] && (x.respond_to? row[:belongs_to])
+      x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
+    end
     x.save!
   end
 end
@@ -218,9 +222,9 @@ merge_tables.each do |table_name|
   data = eval(table_name)
   klass = table_name.classify.constantize
   data.each do |row|
-    x = klass.new(row.except(:belongs_to, :asset_type))
-    if x.respond_to? :asset_type
-      x.asset_type = AssetType.find_by(name: row[:asset_type])
+    x = klass.new(row.except(:belongs_to, :type))
+    if row[:belongs_to] && (x.respond_to? row[:belongs_to])
+      x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
     end
     x.save!
   end
