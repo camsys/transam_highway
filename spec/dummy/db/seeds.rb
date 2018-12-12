@@ -1,4 +1,5 @@
 TransamCore::Engine.load_seed
+TransamSpatial::Engine.load_seed
 
 puts "  Processing system_config"
 SystemConfig.find_or_create_by(:customer_id => 1,
@@ -29,3 +30,5 @@ User.find_or_create_by(
   :email => "admin@email.com",
   :num_table_rows => 10,
   )
+
+SystemConfigExtension.find_or_create_by(class_name: 'HighwayStructure', extension_name: "TransamCoordinateLocatable", active: true)

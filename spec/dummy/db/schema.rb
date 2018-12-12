@@ -640,6 +640,13 @@ ActiveRecord::Schema.define(version: 2018_12_10_134908) do
     t.boolean "active", null: false
   end
 
+  create_table "location_reference_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", limit: 64, null: false
+    t.string "format", limit: 64, null: false
+    t.string "description", limit: 254, null: false
+    t.boolean "active", null: false
+  end
+
   create_table "maintenance_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
@@ -662,6 +669,30 @@ ActiveRecord::Schema.define(version: 2018_12_10_134908) do
     t.string "code", limit: 3, null: false
     t.boolean "active", null: false
     t.index ["filter"], name: "manufacturers_idx1"
+  end
+
+  create_table "map_overlay_service_types", id: :bigint, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["id"], name: "id", unique: true
+  end
+
+  create_table "map_overlay_services", id: :bigint, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key", null: false
+    t.integer "organization_id"
+    t.integer "created_by_user_id"
+    t.integer "map_overlay_service_type_id"
+    t.string "name"
+    t.string "url"
+    t.boolean "active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["created_by_user_id"], name: "index_map_overlay_services_on_created_by_user_id"
+    t.index ["id"], name: "id", unique: true
+    t.index ["map_overlay_service_type_id"], name: "index_map_overlay_services_on_map_overlay_service_type_id"
+    t.index ["organization_id"], name: "index_map_overlay_services_on_organization_id"
   end
 
   create_table "membrane_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1094,6 +1125,7 @@ ActiveRecord::Schema.define(version: 2018_12_10_134908) do
     t.integer "scheduled_replacement_cost"
     t.text "early_replacement_reason"
     t.boolean "in_backlog"
+    t.geometry "geometry"
     t.integer "scheduled_rehabilitation_year"
     t.integer "scheduled_disposition_year"
     t.datetime "created_at", null: false

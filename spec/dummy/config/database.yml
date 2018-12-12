@@ -1,7 +1,7 @@
 test:
   username: app
   password: camsysapp
-  adapter: mysql2
+  adapter: mysql2rgeo
   pool: 5
   timeout: 5000
   host: localhost
