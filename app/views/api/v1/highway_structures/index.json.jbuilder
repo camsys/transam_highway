@@ -1,3 +1,3 @@
 if @highway_structures
-  json.highway_structures @highway_structures, :object_key, :transam_assetible_type, :organization_id, :asset_subtype_id, :asset_tag
+  json.partial! 'api/v1/highway_structures/highway_structure_listing', collection: @highway_structures, as: :highway_structure
 end
