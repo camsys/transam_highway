@@ -11,5 +11,5 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'StrahnetDesignationType',
   'StructureMaterialType',
   'WearingSurfaceType',
-  'route_signing_prefix'
+  'RouteSigningPrefix'
 ]
