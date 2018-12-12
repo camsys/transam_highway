@@ -60,6 +60,22 @@ class Bridge < TransamAssetRecord
 
   ]
 
+  #-----------------------------------------------------------------------------
+  #
+  # Class Methods
+  #
+  #-----------------------------------------------------------------------------
+
+  def self.allowable_params
+    FORM_PARAMS
+  end
+
+
+  #-----------------------------------------------------------------------------
+  #
+  # Instance Methods
+  #
+  #-----------------------------------------------------------------------------  
   def dup
     super.tap do |new_asset|
       new_asset.highway_structure = self.highway_structure.dup
