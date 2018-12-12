@@ -82,4 +82,11 @@ class HighwayStructure < TransamAssetRecord
     end
   end
 
+  def as_json(options={})
+    super(options).tap do |json|
+      json.merge! acting_as.as_json(options)
+      json.merge! "organization" => self.organization.to_s
+      json
+    end
+  end
 end

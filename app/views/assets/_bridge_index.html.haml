@@ -45,16 +45,12 @@
 
       %thead
         %tr
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Asset ID'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization_id'}}= 'Organization'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'asset_subtype_id'}}= 'Asset Subtype'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'external_id'}}= 'External ID'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization'}}= 'Organization'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'bridge_type'}}= 'Bridge Type'
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'description'}}= 'Description'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'manufacture_year'}}= 'Contruction Year'
 
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'currency_formatter', :field => 'purchase_cost'}}= 'Cost (Purchase)'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'in_service_date'}}= 'In Service Date'
-
-= render 'shared/table_formatters'
 
 :javascript
 
@@ -67,7 +63,7 @@
     return params;
   }
 
-  // cant use built in one in shared/table_formatters cause uses view call. might need to see if better way to standardize
+  // table formatters
   function asset_link_formatter(value, data) {
     return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
   };
