@@ -1126,6 +1126,8 @@ ActiveRecord::Schema.define(version: 2018_12_10_134908) do
     t.text "early_replacement_reason"
     t.boolean "in_backlog"
     t.geometry "geometry"
+    t.integer "location_reference_type_id"
+    t.string "location_reference"
     t.integer "scheduled_rehabilitation_year"
     t.integer "scheduled_disposition_year"
     t.datetime "created_at", null: false

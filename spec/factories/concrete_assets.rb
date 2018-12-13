@@ -7,10 +7,10 @@ FactoryBot.define do
   trait :basic_asset_attributes do
     association :organization, :factory => :organization_basic
     asset_tag
-    purchased_new true
+    purchased_new { true }
     purchase_date { 1.year.ago }
-    purchase_cost 250000
-    manufacture_year "2000"
+    purchase_cost { 250000 }
+    manufacture_year { "2000" }
     in_service_date { Date.new(2001,1,1) }
   end
 
