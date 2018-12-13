@@ -5,7 +5,7 @@
 #   database: db/<%= Rails.env %>.sqlite3
 
 mysql: &mysql
-  adapter: mysql2
+  adapter: mysql2rgeo
   username: root
   password:
   database: transam_highway_testing
