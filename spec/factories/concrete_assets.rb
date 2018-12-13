@@ -16,11 +16,16 @@ FactoryBot.define do
 
   trait :highway_structure_attributes do
     basic_asset_attributes
+    association :asset_subtype, :factory => :highway_structure_subtype
   end
 
   trait :bridge_attributes do
     highway_structure_attributes
     association :asset_subtype, :factory => :bridge_subtype
+  end
+
+  factory :highway_structure, :class => :highway_structure do
+    highway_structure_attributes
   end
 
   factory :bridge, :class => :bridge do

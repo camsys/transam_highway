@@ -7,6 +7,13 @@ FactoryBot.define do
     active { true }
   end
 
+  factory :highway_structure_subtype, :class => :asset_subtype do
+    association :asset_type, :factory => :highway_structure_type
+    name { "Test Highway Structure Subtype" }
+    description { "Test Highway Structure Subtype" }
+    active { true }
+  end
+
   factory :bridge_subtype, :class => :asset_subtype do
     association :asset_type, :factory => :bridge_type
     name { "Test Bridge Subtype" }
