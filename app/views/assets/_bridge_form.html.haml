@@ -1,11 +1,4 @@
 %ul.nav.nav-tabs
-  %li
-    %a{:href => '#bridge', :data =>{:toggle => 'tab'}}
-      Bridge
-  %li
-    %a{:href => '#structure', :data =>{:toggle => 'tab'}}
-      Highway Structure
-
   %li.active
     %a{:href => '#required', :data =>{:toggle => 'tab'}}
       Required Fields
@@ -13,6 +6,19 @@
     %li
       %a{:href => '#recommended', :data =>{:toggle => 'tab'}}
         Recommended Fields
+  %li
+    %a{:href => '#bridge_description', :data =>{:toggle => 'tab'}}
+      Bridge Description
+  %li
+    %a{:href => '#bridge_condition', :data =>{:toggle => 'tab'}}
+      Bridge Condition and Appraisal
+  %li
+    %a{:href => '#structure', :data =>{:toggle => 'tab'}}
+      Highway Structure
+
+  %li
+    %a{:href => '#structure_inspection', :data =>{:toggle => 'tab'}}
+      Highway Structure Inspection
 
 = simple_form_for(@asset,
   :as => :asset,
@@ -28,7 +34,40 @@
   = hidden_field_tag :asset_seed_class_name, 'AssetType'
 
   .tab-content.form-section
-    .tab-pane.fade.in#bridge
+    .tab-pane.fade.in.active#required
+      .col-sm-6
+        
+        %h2.form-section-header
+          Organization
+
+        = f.association :organization, collection: Organization.all
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :asset_tag, label: 'Structure Number'
+        
+        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
+
+        = f.hidden_field :purchase_cost, value: 0
+        = f.hidden_field :in_service_date, value: Date.today
+        = f.hidden_field :purchased_new, value: true
+        = f.hidden_field :purchase_date, value: Date.today
+
+    .tab-pane.fade.in#recommended
+      .col-sm-6
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :description
+
+        %h2.form-section-header
+          Characteristics
+
+        = f.input :manufacture_year, label: 'Construction Year', collection: get_years_to_date_collection.reverse.map{|y| [y, y]}, include_blank: true, input_html: { class: 'form-control' }
+
+    .tab-pane.fade.in#bridge_description
       .col-sm-6
         = f.input :facility_carried
         = f.association :operational_status_type, collection: OperationalStatusType.active
@@ -40,101 +79,78 @@
         = f.input :num_spans_approach
 
       .col-sm-6
+        = f.input :border_bridge_state, collection: ['KS', 'NE', 'NM', 'OK', 'UT', 'WY']
+        = f.input :border_bridge_pcnt_responsibility
+        = f.input :border_bridge_structure_number
+        = f.association :strahnet_designation_type, collection: StrahnetDesignationType.active
+
+        = f.association :deck_structure_type, collection: DeckStructureType.active
+        = f.association :wearing_surface_type, collection: WearingSurfaceType.active	 
+        = f.association :membrane_type, collection: MembraneType.active
+        = f.association :deck_protection_type, collection: DeckProtectionType.active
+        = f.association :scour_critical_bridge_type, collection: ScourCriticalBridgeType.active
+        
+    .tab-pane.fade.in#bridge_condition
+      .col-sm-6
         = f.association :deck_condition_rating_type, collection: BridgeConditionRatingType.active
         = f.association :superstructure_condition_rating_type, collection: BridgeConditionRatingType.active
         = f.association :substructure_condition_rating_type, collection: BridgeConditionRatingType.active
         = f.association :channel_condition_type, collection: ChannelConditionType.active
 
+      .col-sm-6
+        = f.association :structural_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :deck_geometry_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :underclearance_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :waterway_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :approach_alignment_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+
+        
     .tab-pane.fade.in#structure
-
-    .tab-pane.fade.in.active#required
       .col-sm-6
-        
-        %h2.form-section-header
-          Organization
+        = f.association :route_signing_prefix, collection: RouteSigningPrefix.active
+        = f.input :route_number
+        = f.input :features_intersected
+        = f.input :location
+        = f.input :length
+        = f.input :is_temporary, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
 
-        = f.association :organization, collection: Organization.all
-
-        - if @asset.new_record?
-          %h2.form-section-header
-            Service Status
-
-          = f.simple_fields_for :service_status_updates, @asset.service_status_updates.build do |update_event|
-            = update_event.input :service_status_type_id, collection: ServiceStatusType.active, label: 'Service Status'
-
-        
-        %h2.form-section-header
-          Identification & Classification
-
-        = f.input :asset_tag, label: 'Asset ID'
-
-        
-        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
-
+    .tab-pane.fade.in#structure_inspection
       .col-sm-6
-        %h2.form-section-header
-          Funding
-
-        = f.input :purchase_cost, :wrapper => :vertical_append, :label => "Cost (Purchase)" do
-          %span.input-group-addon
-            %i.fa.fa-usd
-          = f.number_field :purchase_cost, :class => "form-control", required: true, :label => false, :min => 0
-
-        %h2.form-section-header
-          Operations
-
-        = f.input :in_service_date, :wrapper => :vertical_append, :label => "In Service Date" do
-          = f.input_field :in_service_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.in_service_date)
+        = f.input :inspection_date, :wrapper => :vertical_append, :label => "Last Inspection Date" do
+          = f.input_field :inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.inspection_date)
           %span.input-group-addon
             %i.fa.fa-calendar
+        = f.input :inspection_frequency, collection: [12, 24, 48, 72]
 
-        %h2.form-section-header
-          Procurement & Purchase
+        .row
+          .col-sm-6
+            = f.input :fracture_critical_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :fracture_critical_inspection_frequency, collection: [12, 24, 48, 72]
+        .row
+          .col-sm-6
+            = f.input :underwater_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :underwater_inspection_frequency, collection: [12, 24, 48, 72]
+        .row
+          .col-sm-6
+            = f.input :other_special_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :other_special_inspection_frequency, collection: [12, 24, 48, 72]
 
-        = f.input :purchased_new, as: :radio_buttons, required: true, :wrapper_class => 'form-group radio-buttons-inline'
-
-        = f.input :purchase_date, :wrapper => :vertical_append, :label => "Purchase Date" do
-          = f.input_field :purchase_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.purchase_date)
+        = f.input :fracture_critical_inspection_date, :wrapper => :vertical_append, :label => "Last Fracture Critical Inspection Date" do
+          = f.input_field :fracture_critical_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.fracture_critical_inspection_date)
           %span.input-group-addon
             %i.fa.fa-calendar
-
-    .tab-pane.fade.in#recommended
-      .col-sm-6
-
-        %h2.form-section-header
-          Identification & Classification
-
-        = f.input :description
-
-        = f.input :external_id
-
-        .col-sm-6
-          = f.input :quantity, as: :integer, input_html: { min: 0 }
-        .col-sm-6
-          = f.input :quantity_unit, collection: Uom.units
-
-        - if @asset.new_record?
-          %h2.form-section-header
-            Condition
-
-          = f.simple_fields_for :condition_updates, @asset.condition_updates.build do |update_event|
-            = update_event.input :assessed_rating, required: false, input_html: {value: nil}, label: 'Condition'
-
-
-      .col-sm-6
-        %h2.form-section-header
-          Characteristics
-
-        = f.association :manufacturer
-        = f.input :other_manufacturer
-
-        = f.association :manufacturer_model
-        = f.input :other_manufacturer_model
-
-        = f.input :manufacture_year, label: 'Year of Manufacture', collection: get_years_to_date_collection.reverse.map{|y| [y, y]}, include_blank: true, input_html: { class: 'form-control' }
-
-
-
-
+        = f.input :underwater_inspection_date, :wrapper => :vertical_append, :label => "Last Underwater Inspection Date" do
+          = f.input_field :underwater_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.underwater_inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+        = f.input :other_special_inspection_date, :wrapper => :vertical_append, :label => "Last Other Special Inspection Date" do
+          = f.input_field :other_special_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.other_special_inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+      
   .form-actions.form-section
-    = f.button :submit, '+ Add Asset & Go to New Record', :class => 'btn btn-primary'
+    = f.button :submit, '+ Add Structure & Go to New Record', :class => 'btn btn-primary'
+    
