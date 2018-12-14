@@ -12,7 +12,7 @@ json.address address.join(', ')
 json.(bridge, :city, :county, :state, :zip)
 
 # NBI
-json.(bridge, :route_number, :features_intersected, :facility_carried, :structure_number, :location_description, :num_spans_main, :num_spans_approach, :length, :inspection_frequency, :fracture_critical_inspection_required, :fracture_critical_inspection_frequency, :underwater_inspection_required, :underwater_inspection_frequency, :other_special_inspection_required, :other_special_inspection_frequency, :border_bridge_state, :border_bridge_pcnt_responsibility, :border_bridge_structure_number, :is_temporary)
+json.(bridge, :route_number, :features_intersected, :facility_carried, :location_description, :num_spans_main, :num_spans_approach, :length, :inspection_frequency, :fracture_critical_inspection_required, :fracture_critical_inspection_frequency, :underwater_inspection_required, :underwater_inspection_frequency, :other_special_inspection_required, :other_special_inspection_frequency, :border_bridge_state, :border_bridge_pcnt_responsibility, :border_bridge_structure_number, :is_temporary)
 
 # NBI Dates
 json.inspection_date bridge.inspection_date.try(:strftime, "%m/%d/%Y")
