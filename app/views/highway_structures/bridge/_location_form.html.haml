@@ -1,0 +1,30 @@
+.col-sm-6
+  = editable_asset_field_tag(@asset, :address1, '* Address 1')
+  = editable_asset_field_tag(@asset, :address2, 'Address 2', required: false)
+  .row
+    .col-sm-6
+      = editable_asset_field_tag(@asset, :city, '* City')
+    .col-sm-1
+      = editable_asset_association_tag(@asset, :state, '* State', ISO3166::Country['US'].states.keys.map{|k| [k, k]}, suffix: '')
+
+    .col-sm-5
+      .form-group
+        %label.control-label
+          * Zip Code
+        .display-value
+          %a.editable-field.required{href:'#', id: 'zip', data: {name: 'asset[zip]', type: 'text', url: "#{asset_path(@asset)}", tpl: "<input type='text' pattern='[0-9]{5}' title='5 digit zip' placeholder='5 digit zip'>", value: "#{@asset.zip}"}}
+
+  = editable_asset_field_tag(@asset, :county)
+
+  .col-sm-6
+    .form-group
+      %label.control-label
+        Latitude
+      .display-value
+        = @asset.geometry.try(:y)
+  .col-sm-6
+    .form-group
+      %label.control-label
+        Longitude
+      .display-value
+        = @asset.geometry.try(:x)

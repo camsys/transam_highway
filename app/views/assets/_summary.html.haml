@@ -1,0 +1,11 @@
+.row
+  .col-sm-4
+    Condition: Good
+  .col-sm-4
+    = image_tag "thumbnails.png"
+  .col-sm-4
+    .row
+      = link_to image_tag("map.png", size: '180x135'), "https://www.google.com/maps/place/40%C2%B029'58.8%22N+107%C2%B033'10.2%22W/@40.4996791,-107.5550227,17z/data=!3m1!4b1!4m5!3m4!1s0x0:0x0!8m2!3d40.499675!4d-107.552834", target: "_blank"
+    .row
+      #{@asset.geometry.try(:y)}, #{@asset.geometry.try(:x)}
+        

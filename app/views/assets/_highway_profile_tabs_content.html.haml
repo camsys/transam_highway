@@ -1,0 +1,26 @@
+- prefix = "highway_structures/#{@asset.class.name.underscore}"
+
+.tab-pane.fade#id
+  .tab-content
+    %legend Identification
+    = render "#{prefix}/identification_form"
+.tab-pane.fade#location
+  .tab-content
+    %legend Location
+    = render "#{prefix}/location_form"
+.tab-pane.fade#usage
+  .tab-content
+    %legend Usage
+    = render "#{prefix}/usage_form"
+.tab-pane.fade#candm
+  .tab-content
+    %legend Construction & Material
+    = render "#{prefix}/construction_material_form"
+.tab-pane.fade#gandl
+  .tab-content
+    %legend Geometry & Layout
+    = render "#{prefix}/geometry_layout_form"
+.tab-pane.fade#inspection
+  .tab-content
+    %legend Inspection Scheduling
+    = render "#{prefix}/inspection_scheduling_form"
