@@ -14,7 +14,6 @@ class Api::V1::HighwayStructuresController < Api::ApiController
   # POST /highway_structures.json
   def create
     @highway_structure = HighwayStructure.new(form_params)
-    @highway_structure.creator = current_user
     unless @highway_structure.save
       @status = :fail
       @message  = "Unable to upload highway structure due the following error: #{@highway_structure.errors.messages}" 

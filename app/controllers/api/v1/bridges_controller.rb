@@ -14,7 +14,6 @@ class Api::V1::BridgesController < Api::ApiController
   # POST /bridges.json
   def create
     @bridge = Bridge.new(form_params)
-    @bridge.creator = current_user
     unless @bridge.save
       @status = :fail
       @message  = "Unable to upload bridge due the following error: #{@bridge.errors.messages}" 
