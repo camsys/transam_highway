@@ -13,7 +13,7 @@ class Api::V1::BridgesController < Api::ApiController
 
   # POST /bridges.json
   def create
-    @bridge = Bridge.new(form_params)
+    @bridge = Bridge.new(new_form_params)
     unless @bridge.save
       @status = :fail
       @message  = "Unable to upload bridge due the following error: #{@bridge.errors.messages}" 
@@ -59,7 +59,11 @@ class Api::V1::BridgesController < Api::ApiController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:bridge).permit(Bridge.allowable_params)
+    params.require(:bridge).permit(HighwayStructure.allowable_params + Bridge.allowable_params)
+  end
+
+  def new_form_params
+    params.require(:bridge).permit(Asset.allowable_params)
   end
 
 end

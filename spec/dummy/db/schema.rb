@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_10_134908) do
+ActiveRecord::Schema.define(version: 2018_12_12_180535) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -559,7 +559,6 @@ ActiveRecord::Schema.define(version: 2018_12_10_134908) do
     t.bigint "route_signing_prefix_id"
     t.string "route_number"
     t.string "features_intersected"
-    t.string "structure_number"
     t.string "location_description"
     t.decimal "length", precision: 10
     t.date "inspection_date"

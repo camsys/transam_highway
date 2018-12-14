@@ -33,6 +33,27 @@ RSpec.describe Api::V1::BridgesController, type: :request do
 
   end
 
+  describe 'POST /api/v1/bridges' do
+
+    it "succeed" do 
+      test_bridge_subtype = create(:bridge_subtype)
+      params = { bridge: {
+        organization_id: test_user.organization_id,
+        asset_subtype_id: test_bridge_subtype.id,
+        asset_tag: "RANDOM_BRIDGE_ASSET_TAG",
+        purchase_cost: 1000,
+        purchased_new: true,
+        purchase_date: Date.yesterday,
+        in_service_date: Date.today
+        } }
+      post "/api/v1/bridges.json", headers: valid_headers, params: params
+      
+      expect(response).to have_http_status(:success)
+      expect(json["data"]["bridge"]["asset_tag"]).to eq("RANDOM_BRIDGE_ASSET_TAG")
+    end
+
+  end
+
   describe 'PATCH /api/v1/bridges/{bridge_id}' do
 
     it "succeed" do 
