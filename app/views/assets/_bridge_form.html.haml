@@ -60,6 +60,9 @@
             = f.input :zip
         = f.input :county
         
+        = f.input :latitude, label: 'Latitude', wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, label: 'Longitude', wrapper_class: 'form-group col-xs-6 row-col right-col'
+
         = f.hidden_field :purchase_cost, value: 0
         = f.hidden_field :in_service_date, value: Date.today
         = f.hidden_field :purchased_new, value: true
