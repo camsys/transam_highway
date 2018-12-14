@@ -33,6 +33,27 @@ RSpec.describe Api::V1::HighwayStructuresController, type: :request do
 
   end
 
+  describe 'POST /api/v1/highway_structures' do
+
+    it "succeed" do 
+      test_structure_subtype = create(:highway_structure_subtype)
+      params = { highway_structure: {
+        organization_id: test_user.organization_id,
+        asset_subtype_id: test_structure_subtype.id,
+        asset_tag: "RANDOM_HIGHWAY_STRUCTURE_ASSET_TAG",
+        purchase_cost: 1000,
+        purchased_new: true,
+        purchase_date: Date.yesterday,
+        in_service_date: Date.today
+        } }
+      post "/api/v1/highway_structures.json", headers: valid_headers, params: params
+      
+      expect(response).to have_http_status(:success)
+      expect(json["data"]["highway_structure"]["asset_tag"]).to eq("RANDOM_HIGHWAY_STRUCTURE_ASSET_TAG")
+    end
+
+  end
+
   describe 'PATCH /api/v1/highway_structures/{highway_structure_id}' do
 
     it "succeed" do 
