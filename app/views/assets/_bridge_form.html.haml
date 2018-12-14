@@ -49,6 +49,17 @@
         
         = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
 
+        = f.input :address1, :label => "Address 1"
+        = f.input :address2, :label => "Address 2"
+        .row
+          .col-sm-4
+            = f.input :city
+          .col-sm-4
+            = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys
+          .col-sm-4
+            = f.input :zip
+        = f.input :county
+        
         = f.hidden_field :purchase_cost, value: 0
         = f.hidden_field :in_service_date, value: Date.today
         = f.hidden_field :purchased_new, value: true
