@@ -46,11 +46,15 @@
       %thead
         %tr
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'status'}}= 'Status'
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization'}}= 'Organization'
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'bridge_type'}}= 'Bridge Type'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= 'Feature Intersected'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= 'Facility Carried'
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'description'}}= 'Description'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'manufacture_year'}}= 'Contruction Year'
-
+          %th.center{:data => {}}= 'Region'
+          %th.center{:data => {}}= 'Maintenance Section'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= 'Length'
 
 :javascript
 
@@ -66,5 +70,9 @@
   // table formatters
   function asset_link_formatter(value, data) {
     return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
+  function length_formatter(value, data) {
+    return value + " ft"
   };
 
