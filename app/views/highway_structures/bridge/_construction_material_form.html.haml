@@ -1,0 +1,11 @@
+= editable_asset_association_tag(@asset, :main_span_material_type, 'Main Span Material', StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :main_span_design_construction_type, 'Main Span Design', DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :approach_spans_material_type, 'Approach Spans Material', StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :approach_spans_design_construction_type, 'Approach Spans Design', DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+
+= editable_asset_association_tag(@asset, :deck_structure_type)
+= editable_asset_association_tag(@asset, :wearing_surface_type)
+= editable_asset_association_tag(@asset, :membrane_type)
+= editable_asset_association_tag(@asset, :deck_protection_type)
+= editable_asset_association_tag(@asset, :scour_critical_bridge_type)
+        
