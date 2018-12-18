@@ -60,8 +60,8 @@
             = f.input :zip
         = f.input :county
         
-        = f.input :latitude, label: 'Latitude', wrapper_class: 'form-group col-xs-6 row-col left-col'
-        = f.input :longitude, label: 'Longitude', wrapper_class: 'form-group col-xs-6 row-col right-col'
+        = f.input :latitude, label: 'Latitude', required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, label: 'Longitude', required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
 
         = f.hidden_field :purchase_cost, value: 0
         = f.hidden_field :in_service_date, value: Date.today
@@ -124,7 +124,7 @@
         = f.association :route_signing_prefix, collection: RouteSigningPrefix.active
         = f.input :route_number
         = f.input :features_intersected
-        = f.input :location
+        = f.input :location_description
         = f.input :length
         = f.input :is_temporary, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
 

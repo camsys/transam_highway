@@ -16,6 +16,8 @@ class HighwayStructure < TransamAssetRecord
       :county,
       :state,
       :zip,
+      :latitude,
+      :longitude,
       :route_signing_prefix_id,
       :route_number,
       :features_intersected,
