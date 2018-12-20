@@ -13,3 +13,5 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'WearingSurfaceType',
   'RouteSigningPrefix'
 ]
+
+Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge']
