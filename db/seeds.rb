@@ -222,7 +222,7 @@ merge_tables.each do |table_name|
   data = eval(table_name)
   klass = table_name.classify.constantize
   data.each do |row|
-    x = klass.first_or_initialize(row.except(:belongs_to, :type))
+    x = klass.find_or_initialize_by(row.except(:belongs_to, :type))
     if row[:belongs_to] && (x.respond_to? row[:belongs_to])
       x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
     end
