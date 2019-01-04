@@ -19,8 +19,8 @@ RSpec.describe Api::V1::AssociationsController, type: :request do
         expect(json).not_to be_empty
         expect(json['status']).to eq('success')
         # test output
-        expect(json['data']['associations'].size).to eq(1)
-        expect(json['data']['associations'][0]["id"]).to eq(test_condition_type.id)
+        expect(json['data']['ChannelConditionType'].size).to eq(1)
+        expect(json['data']['ChannelConditionType'][0]["id"]).to eq(test_condition_type.id)
       end
 
       it 'returns status code 200' do
@@ -31,13 +31,12 @@ RSpec.describe Api::V1::AssociationsController, type: :request do
     context 'when the association class does not exist' do
       let(:test_association_class) { '' }
 
-      it 'returns status code 404' do
-        expect(response).to have_http_status(404)
+      it 'returns all association data' do
+        expect(json['data']['associations'].keys).to match(Rails.application.config.rails_admin_highway_lookup_tables)
       end
 
-      it 'returns a not found message' do
-        expect(json['status']).to eq('fail')
-        expect(json['data']['class']).to match(/not found/)
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
     end
 
