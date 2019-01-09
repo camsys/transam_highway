@@ -1,0 +1,8 @@
+#usageFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
+  .panel.panel-default
+    .panel-heading{role:"tab"}
+      %h5.panel-title
+        Usage
+    .panel-collapse.collapse{role:"tabpanel", id:"usage_filters"}
+      .panel-body
+        = f.collection_check_boxes :status, StructureStatusType.active.order(:name).pluck(:code, :name), :first, :last
