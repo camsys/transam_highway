@@ -5,7 +5,7 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :route_signing_prefix
 
-  belongs_to :status, :class_name => 'StructureStatusType', :foreign_key => :status_id
+  belongs_to :structure_status_type
 
   belongs_to :maintenance_section
 
@@ -42,7 +42,7 @@ class HighwayStructure < TransamAssetRecord
       :underwater_inspection_date,
       :other_special_inspection_date,
       :is_temporary,
-      :status_id,
+      :structure_status_type_id,
       :region,
       :maintenance_section_id,
       :milepoint
