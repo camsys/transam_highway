@@ -9,6 +9,8 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :maintenance_section
 
+  belongs_to :region
+
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
   end
