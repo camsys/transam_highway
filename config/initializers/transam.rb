@@ -11,7 +11,10 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'StrahnetDesignationType',
   'StructureMaterialType',
   'WearingSurfaceType',
-  'RouteSigningPrefix'
+  'RouteSigningPrefix',
+  'StructureStatusType',
+  'Region',
+  'MaintenanceSection'
 ]
 
 Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge']
