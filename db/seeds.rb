@@ -192,7 +192,16 @@ scour_critical_bridge_types = [
   {active: true, code: '0', name:	'Failed, closed', description:	'Bridge is scour critical. Bridge has failed and is closed to traffic.'}
 ]
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types
+structure_status_types = [
+  {active: true, code: '0', name: 'Unknown'},
+  {active: true, code: '1', name: 'Inactive'},
+  {active: true, code: '2', name: 'Closed'},
+  {active: true, code: '3', name: 'Active'},
+  {active: true, code: '4', name: 'Proposed'},
+  {active: true, code: '5', name: 'Obsolete'}
+]
+
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types
   }
 
 replace_tables.each do |table_name|
