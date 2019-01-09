@@ -5,6 +5,10 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :route_signing_prefix
 
+  belongs_to :status, :class_name => 'StructureStatusType', :foreign_key => :status_id
+
+  belongs_to :maintenance_section
+
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
   end
@@ -35,7 +39,11 @@ class HighwayStructure < TransamAssetRecord
       :fracture_critical_inspection_date,
       :underwater_inspection_date,
       :other_special_inspection_date,
-      :is_temporary
+      :is_temporary,
+      :status_id,
+      :region,
+      :maintenance_section_id,
+      :milepoint
   ]
 
   CLEANSABLE_FIELDS = [
