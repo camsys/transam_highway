@@ -97,7 +97,9 @@ class HighwayStructure < TransamAssetRecord
   def as_json(options={})
     super(options).tap do |json|
       json.merge! acting_as.as_json(options)
-      json.merge! "organization" => self.organization.to_s
+      ["organization", "structure_status_type", "region", "maintenance_section"].each do |field|
+        json.merge! field => self.send(field).to_s
+      end
       json
     end
   end
