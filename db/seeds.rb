@@ -25,7 +25,8 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true}
 ]
 system_config_extensions = [
-    {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true}
+    {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true},
+    {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', active: true}
 ]
 
 route_signing_prefixes = [
