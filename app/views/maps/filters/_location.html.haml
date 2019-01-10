@@ -3,6 +3,6 @@
     .panel-heading{role:"tab"}
       %h5.panel-title
         Location
-    .panel-collapse.collapse{role:"tabpanel", id:"location_filters"}
+    .panel-collapse{role:"tabpanel", id:"location_filters"}
       .panel-body
-        = f.collection_check_boxes :regions, Region.active.order(:name).pluck(:code, :name), :first, :last
+        = @search_form.input :region_code, as: :check_boxes, collection: Region.active.order(:name).pluck(:name, :code), label: 'Region'

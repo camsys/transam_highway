@@ -3,6 +3,6 @@
     .panel-heading{role:"tab"}
       %h5.panel-title
         Usage
-    .panel-collapse.collapse{role:"tabpanel", id:"usage_filters"}
+    .panel-collapse{role:"tabpanel", id:"usage_filters"}
       .panel-body
-        = f.collection_check_boxes :status, StructureStatusType.active.order(:name).pluck(:code, :name), :first, :last
+        = @search_form.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: 'Status'
