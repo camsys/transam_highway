@@ -1,8 +1,8 @@
-#locationFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
+#highwayLocationFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
         Location
-    .panel-collapse{role:"tabpanel", id:"location_filters"}
+    .panel-collapse{role:"tabpanel"}
       .panel-body
         = @search_form.input :region_code, as: :check_boxes, collection: Region.active.order(:name).pluck(:name, :code), label: 'Region'
