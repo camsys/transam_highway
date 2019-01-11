@@ -4,5 +4,10 @@
   .col-sm-1
     = editable_asset_field_tag(@asset, :route_number, '&nbsp')
 
-.col-sm-6
-  = editable_asset_association_tag(@asset, :strahnet_designation_type)
+.row
+  .col-sm-6
+    = editable_asset_association_tag(@asset, :strahnet_designation_type)
+
+.row
+  .col-sm-6
+    = editable_asset_association_tag(@asset, :structure_status_type, 'Status')
