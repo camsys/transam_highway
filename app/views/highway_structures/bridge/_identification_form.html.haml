@@ -1,6 +1,7 @@
 = editable_asset_field_tag(@asset, :asset_tag, 'Structure Number')
 = editable_asset_association_tag(@asset, :asset_subtype, 'Subtype', AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
 = editable_asset_field_tag(@asset, :facility_carried, 'Facility Carried')
+= editable_asset_field_tag(@asset, :features_intersected, 'Feature Intersected')
 = editable_asset_field_tag(@asset, :milepoint)
 /%legend
 /  %h5 Border Bridge

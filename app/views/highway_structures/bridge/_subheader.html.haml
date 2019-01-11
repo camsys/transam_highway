@@ -1,1 +1,9 @@
-#{@asset.structure_status_type} : #{@asset.route_number} at #{@asset.milepoint} : #{@asset.facility_carried} over #{@asset.features_intersected}
+%span.subheader_structure_status_type= "#{@asset.structure_status_type}"
+= " : "
+%span.subheader_route_number= "#{@asset.route_number}"
+=" at "
+%span.subheader_milepoint="#{@asset.milepoint}"
+= " : "
+%span.subheader_facility_carried="#{@asset.facility_carried}" 
+= " over "
+%span.subheader_features_intersected= "#{@asset.features_intersected}"
