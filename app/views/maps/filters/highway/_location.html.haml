@@ -1,3 +1,11 @@
+:css
+  .region-filter-label {
+    display: block;
+  }
+  .region-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
 #highwayLocationFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}
@@ -5,4 +13,4 @@
         Location
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        = @search_form.input :region_code, as: :check_boxes, collection: Region.active.order(:name).pluck(:name, :code), label: 'Region'
+        = @search_form.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: 'Region', item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
