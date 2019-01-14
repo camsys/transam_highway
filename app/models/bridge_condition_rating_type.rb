@@ -7,4 +7,10 @@ class BridgeConditionRatingType < ApplicationRecord
     name
   end
 
+  # Return code as integer or nil
+  def value
+    i = code.to_i
+    i if i.to_s == code
+  end
+
 end

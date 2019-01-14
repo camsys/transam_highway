@@ -76,6 +76,18 @@ class Bridge < TransamAssetRecord
   # Instance Methods
   #
   #-----------------------------------------------------------------------------  
+  def calculated_condition
+    case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
+          substructure_condition_rating_type&.value].compact.min 
+    when 0..4 
+      'poor' 
+    when 5..6 
+      'fair' 
+    when 7..9 
+      'good' 
+    end 
+  end
+  
   def dup
     super.tap do |new_asset|
       new_asset.highway_structure = self.highway_structure.dup
