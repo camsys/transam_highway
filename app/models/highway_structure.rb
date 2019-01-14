@@ -88,6 +88,16 @@ class HighwayStructure < TransamAssetRecord
     return klass
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  # Instance Methods
+  #
+  #-----------------------------------------------------------------------------
+
+  def calculated_condition
+    'unknown'
+  end
+
   def dup
     super.tap do |new_asset|
       new_asset.transam_asset = self.transam_asset.dup
