@@ -8,4 +8,11 @@ Rails.application.routes.draw do
       resources :highway_structures
     end
   end
+
+  resources :highway_maps, :only => [] do
+    collection do
+      get 'map'
+      get 'table'
+    end
+  end
 end
