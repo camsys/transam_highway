@@ -1,7 +1,7 @@
 # Basic
 json.(bridge, :object_key, :organization_id )
 json.organization bridge.organization.try(:to_s) 
-json.(bridge, :asset_tag, :external_id, :description, :manufacture_year)
+json.(bridge, :asset_tag, :external_id, :description, :manufacture_year, :milepoint)
 
 # Location
 json.(bridge, :latitude, :longitude )
@@ -10,6 +10,14 @@ address << bridge.address1 unless bridge.address1.blank?
 address << bridge.address2 unless bridge.address2.blank?
 json.address address.join(', ')
 json.(bridge, :city, :county, :state, :zip)
+json.region bridge.region.try(:to_s) 
+json.maintenance_section bridge.maintenance_section.try(:to_s) 
+
+# Usage
+json.status bridge.structure_status_type.try(:to_s) 
+
+# Condition
+json.condition bridge.calculated_condition
 
 # NBI
 json.(bridge, :route_number, :features_intersected, :facility_carried, :location_description, :num_spans_main, :num_spans_approach, :length, :inspection_frequency, :fracture_critical_inspection_required, :fracture_critical_inspection_frequency, :underwater_inspection_required, :underwater_inspection_frequency, :other_special_inspection_required, :other_special_inspection_frequency, :border_bridge_state, :border_bridge_pcnt_responsibility, :border_bridge_structure_number, :is_temporary)
