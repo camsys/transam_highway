@@ -5,19 +5,18 @@
     display: inline-block; 
     border: 1px solid;
   }
-.row
-  .col-sm-4
-    = "Condition: #{@asset.calculated_condition}"
-  .col-sm-4
-    .image-placeholder
-      Image goes here
-    .image-placeholder
-      Image goes here
-    .image-placeholder
-      Image goes here
-  .col-sm-4
-    .row
-      = render 'map_thumbnail'
-    .row
-      #{@asset.geometry.try(:y)}, #{@asset.geometry.try(:x)}
+.col-sm-4
+  = "Condition: #{@asset.calculated_condition}"
+.col-sm-4
+  .image-placeholder
+    Image goes here
+  .image-placeholder
+    Image goes here
+  .image-placeholder
+    Image goes here
+.col-sm-4
+  .row
+    = render 'map_thumbnail'
+  .row
+    #{@asset.geometry.try(:y)}, #{@asset.geometry.try(:x)}
         

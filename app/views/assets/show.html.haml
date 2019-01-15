@@ -8,8 +8,17 @@
   %h2 #{@asset.asset_type.name.singularize} #{@asset.asset_tag} Profile
 
 = render 'subheader'
-= render 'summary'
-%hr
+.row
+  .col-sm-12#summary
+    .panel.panel-default
+      .panel-heading
+        .row
+          .col-sm-10
+            %h3.panel-title
+              %a{data: {toggle: 'collapse'}, href: '#collapse-summary'}Summary
+      #collapse-summary.panel-collapse.collapse.in
+        .panel-body
+          = render 'summary'
 .row
   .col-sm-12#profile
     .panel.panel-default
