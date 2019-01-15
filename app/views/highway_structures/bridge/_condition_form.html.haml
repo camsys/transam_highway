@@ -5,6 +5,11 @@
     = format_as_date(@asset.inspection_date)
 .form-group
   %label.control-label
+    Overall Bridge Condition
+  .display-value
+    = @asset.calculated_condition&.titleize
+.form-group
+  %label.control-label
     Deck Condition
   .display-value
     = @asset.deck_condition_rating_type
