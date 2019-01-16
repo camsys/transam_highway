@@ -1,0 +1,31 @@
+.col-sm-6
+  = editable_asset_field_tag(@asset, :location_description, 'Location')
+  .row
+    .col-sm-6
+      = editable_asset_field_tag(@asset, :city, '* City')
+    .col-sm-4
+      = editable_asset_field_tag(@asset, :county)
+    .col-sm-2
+      = editable_asset_association_tag(@asset, :state, '* State', ISO3166::Country['US'].states.keys.map{|k| [k, k]}, suffix: '')
+
+  .row
+    .col-sm-6
+      .form-group
+        %label.control-label
+          Latitude
+        .display-value
+          = @asset.geometry.try(:y)
+    .col-sm-6
+      .form-group
+        %label.control-label
+          Longitude
+        .display-value
+          = @asset.geometry.try(:x)
+
+  .row      
+    .col-sm-6
+      = editable_asset_association_tag(@asset, :region)
+
+  .row
+    .col-sm-6
+      = editable_asset_association_tag(@asset, :maintenance_section)

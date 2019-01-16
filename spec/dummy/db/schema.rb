@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_12_191549) do
+ActiveRecord::Schema.define(version: 2018_12_12_180535) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -70,7 +70,9 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
   create_table "asset_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "asset_id"
+    t.string "transam_asset_type"
     t.integer "transam_asset_id"
+    t.bigint "base_transam_asset_id"
     t.integer "asset_event_type_id", null: false
     t.integer "upload_id"
     t.date "event_date", null: false
@@ -112,6 +114,7 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.integer "total_cost"
     t.index ["asset_event_type_id"], name: "asset_events_idx3"
     t.index ["asset_id"], name: "asset_events_idx2"
+    t.index ["base_transam_asset_id"], name: "index_asset_events_on_base_transam_asset_id"
     t.index ["created_by_id"], name: "asset_events_creator_idx"
     t.index ["event_date"], name: "asset_events_idx4"
     t.index ["object_key"], name: "asset_events_idx1"
@@ -292,6 +295,76 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.index ["superseded_by_id"], name: "assets_idx13"
   end
 
+  create_table "bridge_appraisal_rating_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
+  create_table "bridge_condition_rating_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
+  create_table "bridges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "facility_carried"
+    t.bigint "operational_status_type_id"
+    t.bigint "main_span_material_type_id"
+    t.bigint "main_span_design_construction_type_id"
+    t.bigint "approach_spans_material_type_id"
+    t.bigint "approach_spans_design_construction_type_id"
+    t.integer "num_spans_main"
+    t.integer "num_spans_approach"
+    t.bigint "deck_condition_rating_type_id"
+    t.bigint "superstructure_condition_rating_type_id"
+    t.bigint "substructure_condition_rating_type_id"
+    t.bigint "channel_condition_type_id"
+    t.bigint "structural_appraisal_rating_type_id"
+    t.bigint "deck_geometry_appraisal_rating_type_id"
+    t.bigint "underclearance_appraisal_rating_type_id"
+    t.bigint "waterway_appraisal_rating_type_id"
+    t.bigint "approach_alignment_appraisal_rating_type_id"
+    t.string "border_bridge_state"
+    t.integer "border_bridge_pcnt_responsibility"
+    t.string "border_bridge_structure_number"
+    t.bigint "strahnet_designation_type_id"
+    t.bigint "deck_structure_type_id"
+    t.bigint "wearing_surface_type_id"
+    t.bigint "membrane_type_id"
+    t.bigint "deck_protection_type_id"
+    t.bigint "scour_critical_bridge_type_id"
+    t.index ["approach_alignment_appraisal_rating_type_id"], name: "index_bridges_on_approach_alignment_appraisal_rating_type_id"
+    t.index ["approach_spans_design_construction_type_id"], name: "index_bridges_on_approach_spans_design_construction_type_id"
+    t.index ["approach_spans_material_type_id"], name: "index_bridges_on_approach_spans_material_type_id"
+    t.index ["channel_condition_type_id"], name: "index_bridges_on_channel_condition_type_id"
+    t.index ["deck_condition_rating_type_id"], name: "index_bridges_on_deck_condition_rating_type_id"
+    t.index ["deck_geometry_appraisal_rating_type_id"], name: "index_bridges_on_deck_geometry_appraisal_rating_type_id"
+    t.index ["deck_protection_type_id"], name: "index_bridges_on_deck_protection_type_id"
+    t.index ["deck_structure_type_id"], name: "index_bridges_on_deck_structure_type_id"
+    t.index ["main_span_design_construction_type_id"], name: "index_bridges_on_main_span_design_construction_type_id"
+    t.index ["main_span_material_type_id"], name: "index_bridges_on_main_span_material_type_id"
+    t.index ["membrane_type_id"], name: "index_bridges_on_membrane_type_id"
+    t.index ["operational_status_type_id"], name: "index_bridges_on_operational_status_type_id"
+    t.index ["scour_critical_bridge_type_id"], name: "index_bridges_on_scour_critical_bridge_type_id"
+    t.index ["strahnet_designation_type_id"], name: "index_bridges_on_strahnet_designation_type_id"
+    t.index ["structural_appraisal_rating_type_id"], name: "index_bridges_on_structural_appraisal_rating_type_id"
+    t.index ["substructure_condition_rating_type_id"], name: "index_bridges_on_substructure_condition_rating_type_id"
+    t.index ["superstructure_condition_rating_type_id"], name: "index_bridges_on_superstructure_condition_rating_type_id"
+    t.index ["underclearance_appraisal_rating_type_id"], name: "index_bridges_on_underclearance_appraisal_rating_type_id"
+    t.index ["waterway_appraisal_rating_type_id"], name: "index_bridges_on_waterway_appraisal_rating_type_id"
+    t.index ["wearing_surface_type_id"], name: "index_bridges_on_wearing_surface_type_id"
+  end
+
+  create_table "channel_condition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "commentable_id", null: false
@@ -351,6 +424,20 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "deck_protection_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "deck_structure_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+  end
+
   create_table "delayed_job_priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "class_name", null: false
     t.integer "priority", null: false
@@ -371,6 +458,14 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "design_construction_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "asset_subtype_id"
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.index ["asset_subtype_id"], name: "index_design_construction_types_on_asset_subtype_id"
   end
 
   create_table "disposition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -447,6 +542,41 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.boolean "active", null: false
   end
 
+  create_table "highway_components", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "highway_structures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "highway_structurible_type"
+    t.bigint "highway_structurible_id"
+    t.string "address1"
+    t.string "address2"
+    t.string "city"
+    t.string "county"
+    t.string "state"
+    t.string "zip"
+    t.bigint "route_signing_prefix_id"
+    t.string "route_number"
+    t.string "features_intersected"
+    t.string "location_description"
+    t.decimal "length", precision: 10
+    t.date "inspection_date"
+    t.integer "inspection_frequency"
+    t.boolean "fracture_critical_inspection_required"
+    t.integer "fracture_critical_inspection_frequency"
+    t.boolean "underwater_inspection_required"
+    t.integer "underwater_inspection_frequency"
+    t.boolean "other_special_inspection_required"
+    t.integer "other_special_inspection_frequency"
+    t.date "fracture_critical_inspection_date"
+    t.date "underwater_inspection_date"
+    t.date "other_special_inspection_date"
+    t.boolean "is_temporary"
+    t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
+    t.index ["route_signing_prefix_id"], name: "index_highway_structures_on_route_signing_prefix_id"
+  end
+
   create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "imagable_id", null: false
@@ -509,6 +639,13 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.boolean "active", null: false
   end
 
+  create_table "location_reference_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", limit: 64, null: false
+    t.string "format", limit: 64, null: false
+    t.string "description", limit: 254, null: false
+    t.boolean "active", null: false
+  end
+
   create_table "maintenance_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
@@ -531,6 +668,38 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.string "code", limit: 3, null: false
     t.boolean "active", null: false
     t.index ["filter"], name: "manufacturers_idx1"
+  end
+
+  create_table "map_overlay_service_types", id: :bigint, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["id"], name: "id", unique: true
+  end
+
+  create_table "map_overlay_services", id: :bigint, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key", null: false
+    t.integer "organization_id"
+    t.integer "created_by_user_id"
+    t.integer "map_overlay_service_type_id"
+    t.string "name"
+    t.string "url"
+    t.boolean "active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["created_by_user_id"], name: "index_map_overlay_services_on_created_by_user_id"
+    t.index ["id"], name: "id", unique: true
+    t.index ["map_overlay_service_type_id"], name: "index_map_overlay_services_on_map_overlay_service_type_id"
+    t.index ["organization_id"], name: "index_map_overlay_services_on_organization_id"
+  end
+
+  create_table "membrane_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "message_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -591,6 +760,13 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["notifiable_id", "notifiable_type"], name: "index_notifications_on_notifiable_id_and_notifiable_type"
+  end
+
+  create_table "operational_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
   end
 
   create_table "organization_role_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -784,6 +960,12 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.index ["resource_id"], name: "roles_idx2"
   end
 
+  create_table "route_signing_prefixes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+  end
+
   create_table "rule_sets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key"
     t.string "name"
@@ -803,6 +985,15 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.integer "ordinal"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "scour_critical_bridge_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "search_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -831,6 +1022,19 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.string "code", limit: 1, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
+  end
+
+  create_table "strahnet_designation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
+  create_table "structure_material_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
   end
 
   create_table "system_config_extensions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -913,13 +1117,6 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.date "in_service_date"
     t.bigint "vendor_id"
     t.string "other_vendor"
-    t.bigint "operator_id"
-    t.string "other_operator"
-    t.string "title_number"
-    t.bigint "title_ownership_organization_id"
-    t.string "other_title_ownership_organization"
-    t.bigint "lienholder_id"
-    t.string "other_lienholder"
     t.integer "parent_id"
     t.integer "location_id"
     t.integer "policy_replacement_year"
@@ -927,17 +1124,17 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.integer "scheduled_replacement_cost"
     t.text "early_replacement_reason"
     t.boolean "in_backlog"
+    t.geometry "geometry"
+    t.integer "location_reference_type_id"
+    t.string "location_reference"
     t.integer "scheduled_rehabilitation_year"
     t.integer "scheduled_disposition_year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["asset_subtype_id"], name: "index_transam_assets_on_asset_subtype_id"
-    t.index ["lienholder_id"], name: "index_transam_assets_on_lienholder_id"
     t.index ["manufacturer_id"], name: "index_transam_assets_on_manufacturer_id"
     t.index ["manufacturer_model_id"], name: "index_transam_assets_on_manufacturer_model_id"
-    t.index ["operator_id"], name: "index_transam_assets_on_operator_id"
     t.index ["organization_id"], name: "index_transam_assets_on_organization_id"
-    t.index ["title_ownership_organization_id"], name: "index_transam_assets_on_title_ownership_organization_id"
     t.index ["transam_assetible_type", "transam_assetible_id"], name: "transam_assetible_idx"
     t.index ["upload_id"], name: "index_transam_assets_on_upload_id"
     t.index ["vendor_id"], name: "index_transam_assets_on_vendor_id"
@@ -1036,6 +1233,8 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.boolean "active", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "authentication_token", limit: 30
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "users_idx3"
     t.index ["object_key"], name: "users_idx1"
     t.index ["organization_id"], name: "users_idx2"
@@ -1104,6 +1303,15 @@ ActiveRecord::Schema.define(version: 2018_09_12_191549) do
     t.text "object"
     t.datetime "created_at"
     t.text "object_changes"
+  end
+
+  create_table "wearing_surface_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "weather_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

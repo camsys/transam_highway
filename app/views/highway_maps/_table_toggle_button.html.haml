@@ -1,0 +1,38 @@
+= link_to table_highway_maps_path(params: {searcher: @search_params || {}}), class: 'btn btn-default table-toggle-from-map', title: 'Show table' do
+  %i.fa.fa-table
+  = " Table"
+
+:javascript
+  function open_table_view() {
+    var asset_types = [];
+    var asset_subtypes = [];
+    $('.asset_type_layer:checked').each(function() {
+      asset_types.push($(this).data('type'));
+
+      $(this).parents('.asset_type_panel').find('.asset_subtype_layer').each(function() {
+        if($(this).is(':checked')) {
+          asset_subtypes.push($(this).data('type'));
+        }
+      });
+    });
+ 
+    var form_data = $('#new_searcher').serialize();
+    form_data += "&" + encodeURIComponent("searcher[asset_type_id][]") + "=";
+    asset_types.forEach(function(type_id) {
+      form_data += "&" + encodeURIComponent("searcher[asset_type_id][]") + "=" + type_id;
+    });
+
+    form_data += "&" + encodeURIComponent("searcher[asset_subtype_id][]") + "=";
+    asset_subtypes.forEach(function(subtype_id) {
+      form_data += "&" + encodeURIComponent("searcher[asset_subtype_id][]") + "=" + subtype_id;
+    });
+
+    window.open("#{table_highway_maps_path}?" + form_data, '_self');    
+  }
+
+  $('.table-toggle-from-map').on('click', function(e){
+    e.preventDefault();
+    open_table_view();
+
+    return false;
+  });

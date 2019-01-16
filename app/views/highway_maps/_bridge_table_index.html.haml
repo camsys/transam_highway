@@ -1,0 +1,71 @@
+:css
+  .flag-column {
+    :width: 30px;
+  }
+
+  .table-button-group {
+    margin-top: 10px;
+  }
+
+#subheader-label
+  %h2 Bridges
+  %legend.asset-subheader
+
+#table_actions.btn-toolbar
+  .btn-group.table-button-group.pull-right
+    = render 'highway_maps/map_toggle_button'
+  - table_dom_id = SecureRandom.hex
+
+  .table-responsive
+    %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+      :url => table_highway_maps_path(:format => :json, params: {searcher: @search_params || {}}),
+      :card_view => "false",
+      :pagination => 'true',
+
+      :side_pagination => 'server',
+      :show_pagination_switch => 'false',
+      :page_number => '1',
+      :page_list => "[5, 10, 20, 50, 100]",
+      :page_size => current_user.num_table_rows,
+
+      :sesort_order => 'asc',
+      :sortable => 'false',
+      :click_to_select => 'false',
+      :search => 'false',
+      :sticky_header => 'true',
+      :sticky_header_offset_y => '65px',
+      :export_types => "['csv', 'txt', 'excel']",
+      :show_export => 'true',
+      :show_columns => 'true',
+      :state_save => 'true',
+      :state_save_id_table => "highway_assets_id",
+      :state_save_expire => "1y",
+      :show_multi_sort => 'false',
+      :single_select => 'false'}}
+
+      %thead
+        %tr
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'structure_status_type'}}= 'Status'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization'}}= 'Organization'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'bridge_type'}}= 'Bridge Type'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= 'Facility Carried'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= 'Feature Intersected'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'description'}}= 'Description'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'region'}}= 'Region'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'maintenance_section'}}= 'Maintenance Section'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= 'Length'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= 'Last Inspection Date'
+
+= render 'shared/table_formatters'
+
+:javascript
+  // table formatters
+  function asset_link_formatter(value, data) {
+    return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
+  function length_formatter(value, data) {
+    return parseFloat(value).toFixed(2) + " ft"
+  };
+

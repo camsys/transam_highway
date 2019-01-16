@@ -1,0 +1,8 @@
+#highwayUsageFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
+  .panel.panel-default
+    .panel-heading{role:"tab"}
+      %h5.panel-title
+        Usage
+    .panel-collapse{role:"tabpanel"}
+      .panel-body
+        = @search_form.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: 'Status'

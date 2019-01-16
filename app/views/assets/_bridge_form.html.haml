@@ -1,0 +1,170 @@
+%ul.nav.nav-tabs
+  %li.active
+    %a{:href => '#required', :data =>{:toggle => 'tab'}}
+      Required Fields
+  - if @asset.new_record?
+    %li
+      %a{:href => '#recommended', :data =>{:toggle => 'tab'}}
+        Recommended Fields
+  %li
+    %a{:href => '#bridge_description', :data =>{:toggle => 'tab'}}
+      Bridge Description
+  %li
+    %a{:href => '#bridge_condition', :data =>{:toggle => 'tab'}}
+      Bridge Condition and Appraisal
+  %li
+    %a{:href => '#structure', :data =>{:toggle => 'tab'}}
+      Highway Structure
+
+  %li
+    %a{:href => '#structure_inspection', :data =>{:toggle => 'tab'}}
+      Highway Structure Inspection
+
+= simple_form_for(@asset,
+  :as => :asset,
+  :url => @asset.new_record? ? inventory_index_path : inventory_path,
+  :method => @asset.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+
+  = hidden_field_tag :asset_seed_class_name, 'AssetType'
+
+  .tab-content.form-section
+    .tab-pane.fade.in.active#required
+      .col-sm-6
+        
+        %h2.form-section-header
+          Organization
+
+        = f.association :organization, collection: Organization.all
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :asset_tag, label: 'Structure Number'
+        
+        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
+
+        = f.input :address1, :label => "Address 1"
+        = f.input :address2, :label => "Address 2"
+        .row
+          .col-sm-4
+            = f.input :city
+          .col-sm-4
+            = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys
+          .col-sm-4
+            = f.input :zip
+        = f.input :county
+        
+        = f.input :latitude, label: 'Latitude', required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, label: 'Longitude', required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
+
+        = f.hidden_field :purchase_cost, value: 0
+        = f.hidden_field :in_service_date, value: Date.today
+        = f.hidden_field :purchased_new, value: true
+        = f.hidden_field :purchase_date, value: Date.today
+
+    .tab-pane.fade.in#recommended
+      .col-sm-6
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :description
+
+        %h2.form-section-header
+          Characteristics
+
+        = f.input :manufacture_year, label: 'Construction Year', collection: get_years_to_date_collection.reverse.map{|y| [y, y]}, include_blank: true, input_html: { class: 'form-control' }
+
+    .tab-pane.fade.in#bridge_description
+      .col-sm-6
+        = f.input :facility_carried
+        = f.association :operational_status_type, collection: OperationalStatusType.active
+        = f.association :main_span_material_type, collection: StructureMaterialType.active
+        = f.association :main_span_design_construction_type, collection: DesignConstructionType.active
+        = f.association :approach_spans_material_type, collection: StructureMaterialType.active
+        = f.association :approach_spans_design_construction_type, collection: DesignConstructionType.active
+        = f.input :num_spans_main
+        = f.input :num_spans_approach
+
+      .col-sm-6
+        = f.input :border_bridge_state, collection: ['KS', 'NE', 'NM', 'OK', 'UT', 'WY']
+        = f.input :border_bridge_pcnt_responsibility
+        = f.input :border_bridge_structure_number
+        = f.association :strahnet_designation_type, collection: StrahnetDesignationType.active
+
+        = f.association :deck_structure_type, collection: DeckStructureType.active
+        = f.association :wearing_surface_type, collection: WearingSurfaceType.active	 
+        = f.association :membrane_type, collection: MembraneType.active
+        = f.association :deck_protection_type, collection: DeckProtectionType.active
+        = f.association :scour_critical_bridge_type, collection: ScourCriticalBridgeType.active
+        
+    .tab-pane.fade.in#bridge_condition
+      .col-sm-6
+        = f.association :deck_condition_rating_type, collection: BridgeConditionRatingType.active
+        = f.association :superstructure_condition_rating_type, collection: BridgeConditionRatingType.active
+        = f.association :substructure_condition_rating_type, collection: BridgeConditionRatingType.active
+        = f.association :channel_condition_type, collection: ChannelConditionType.active
+
+      .col-sm-6
+        = f.association :structural_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :deck_geometry_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :underclearance_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :waterway_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+        = f.association :approach_alignment_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
+
+        
+    .tab-pane.fade.in#structure
+      .col-sm-6
+        = f.association :route_signing_prefix, collection: RouteSigningPrefix.active
+        = f.input :route_number
+        = f.input :features_intersected
+        = f.input :location_description
+        = f.input :length
+        = f.input :is_temporary, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+
+    .tab-pane.fade.in#structure_inspection
+      .col-sm-6
+        = f.input :inspection_date, :wrapper => :vertical_append, :label => "Last Inspection Date" do
+          = f.input_field :inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+        = f.input :inspection_frequency, collection: [12, 24, 48, 72]
+
+        .row
+          .col-sm-6
+            = f.input :fracture_critical_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :fracture_critical_inspection_frequency, collection: [12, 24, 48, 72]
+        .row
+          .col-sm-6
+            = f.input :underwater_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :underwater_inspection_frequency, collection: [12, 24, 48, 72]
+        .row
+          .col-sm-6
+            = f.input :other_special_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
+          .col-sm-6
+            = f.input :other_special_inspection_frequency, collection: [12, 24, 48, 72]
+
+        = f.input :fracture_critical_inspection_date, :wrapper => :vertical_append, :label => "Last Fracture Critical Inspection Date" do
+          = f.input_field :fracture_critical_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.fracture_critical_inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+        = f.input :underwater_inspection_date, :wrapper => :vertical_append, :label => "Last Underwater Inspection Date" do
+          = f.input_field :underwater_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.underwater_inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+        = f.input :other_special_inspection_date, :wrapper => :vertical_append, :label => "Last Other Special Inspection Date" do
+          = f.input_field :other_special_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.other_special_inspection_date)
+          %span.input-group-addon
+            %i.fa.fa-calendar
+      
+  .form-actions.form-section
+    = f.button :submit, '+ Add Structure & Go to New Record', :class => 'btn btn-primary'
+    
