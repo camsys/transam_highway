@@ -202,6 +202,21 @@ structure_status_types = [
   {active: true, code: '5', name: 'Obsolete'}
 ]
 
+merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
+
+merge_tables.each do |table_name|
+  puts "  Merging #{table_name}"
+  data = eval(table_name)
+  klass = table_name.classify.constantize
+  data.each do |row|
+    x = klass.find_or_initialize_by(row.except(:belongs_to, :type))
+    if row[:belongs_to] && (x.respond_to? row[:belongs_to])
+      x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
+    end
+    x.save!
+  end
+end
+
 replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types
   }
 
@@ -218,21 +233,6 @@ replace_tables.each do |table_name|
   klass = table_name.classify.constantize
   data.each do |row|
     x = klass.new(row.except(:belongs_to, :type))
-    if row[:belongs_to] && (x.respond_to? row[:belongs_to])
-      x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
-    end
-    x.save!
-  end
-end
-
-merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
-
-merge_tables.each do |table_name|
-  puts "  Merging #{table_name}"
-  data = eval(table_name)
-  klass = table_name.classify.constantize
-  data.each do |row|
-    x = klass.find_or_initialize_by(row.except(:belongs_to, :type))
     if row[:belongs_to] && (x.respond_to? row[:belongs_to])
       x.send("#{row[:belongs_to]}=", row[:belongs_to].classify.constantize.find_by(name: row[:type]))
     end
