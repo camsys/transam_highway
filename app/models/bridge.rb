@@ -70,6 +70,10 @@ class Bridge < TransamAssetRecord
     FORM_PARAMS
   end
 
+  def self.default_map_renderer_attr
+    :calculated_condition
+  end
+
 
   #-----------------------------------------------------------------------------
   #
