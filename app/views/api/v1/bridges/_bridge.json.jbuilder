@@ -4,17 +4,13 @@ json.organization bridge.organization.try(:to_s)
 json.(bridge, :asset_tag, :external_id, :description, :manufacture_year, :milepoint)
 
 # Location
-json.(bridge, :latitude, :longitude )
+json.latitude bridge.try(:geometry).try(:y)
+json.longitude bridge.try(:geometry).try(:x)
 address = []
 address << bridge.address1 unless bridge.address1.blank?
 address << bridge.address2 unless bridge.address2.blank?
 json.address address.join(', ')
 json.(bridge, :city, :county, :state, :zip)
-json.region bridge.region.try(:to_s) 
-json.maintenance_section bridge.maintenance_section.try(:to_s) 
-
-# Usage
-json.status bridge.structure_status_type.try(:to_s) 
 
 # Condition
 json.condition bridge.calculated_condition
@@ -29,7 +25,7 @@ json.underwater_inspection_date bridge.underwater_inspection_date.try(:strftime,
 json.other_special_inspection_date bridge.other_special_inspection_date.try(:strftime, "%m/%d/%Y")
 
 # NBI Associations
-associations = [:route_signing_prefix, :operational_status_type, :main_span_material_type, :main_span_design_construction_type, :approach_spans_material_type, :approach_spans_design_construction_type, :deck_condition_rating_type, :superstructure_condition_rating_type, :substructure_condition_rating_type, :channel_condition_type, :structural_appraisal_rating_type, :deck_geometry_appraisal_rating_type, :underclearance_appraisal_rating_type, :waterway_appraisal_rating_type, :approach_alignment_appraisal_rating_type, :strahnet_designation_type, :deck_structure_type, :wearing_surface_type, :membrane_type, :deck_protection_type, :scour_critical_bridge_type]
+associations = [:route_signing_prefix, :operational_status_type, :main_span_material_type, :main_span_design_construction_type, :approach_spans_material_type, :approach_spans_design_construction_type, :deck_condition_rating_type, :superstructure_condition_rating_type, :substructure_condition_rating_type, :channel_condition_type, :structural_appraisal_rating_type, :deck_geometry_appraisal_rating_type, :underclearance_appraisal_rating_type, :waterway_appraisal_rating_type, :approach_alignment_appraisal_rating_type, :strahnet_designation_type, :deck_structure_type, :wearing_surface_type, :membrane_type, :deck_protection_type, :scour_critical_bridge_type, :region, :maintenance_section, :structure_status_type]
 associations.each do |asso|
   json.(bridge, "#{asso}_id")
   json.set! asso, bridge.try(asso).try(:name)
