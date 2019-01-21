@@ -4,8 +4,8 @@ class HighwayMapsController < MapsController
 
   def table
     add_breadcrumb "Table"
-    
-    @assets = @assets.very_specific
+
+    process_sort
 
     respond_to do |format|
       format.html
@@ -35,25 +35,6 @@ class HighwayMapsController < MapsController
 
   private
 
-  def index_rows_as_json
-    multi_sort = params[:multiSort]
-
-    unless (multi_sort.nil?)
-      sorting_string = ""
-
-      multi_sort.each { |x|
-        sorting_string = sorting_string + "#{x[0]}: :#{x[1]}"
-      }
-
-    else
-      sorting_string = "#{params[:sort]} #{params[:order]}"
-    end
-
-
-    @assets.limit(params[:limit]).offset(params[:offset]).as_json(user: current_user, include_early_disposition: @early_disposition)
-
-  end
-
   def get_highway_class_view
     if params[:searcher] && !params[:searcher][:asset_type_id].blank?
       asset_types = AssetType.where(id: params[:searcher][:asset_type_id])
@@ -65,6 +46,8 @@ class HighwayMapsController < MapsController
     else
       @asset_class_name = "HighwayStructure"
     end
+
+    @asset_class_name = "HighwayStructure"
     
     @klass = Object.const_get @asset_class_name
     @view = "#{@asset_class_name.underscore}_table_index"
@@ -84,10 +67,34 @@ class HighwayMapsController < MapsController
       @searcher = AssetMapSearcher.new(params[:searcher])
     end
 
+    @searcher.asset_seed_class_name = @asset_class_name
+    @searcher.set_seed_class
+
     if @searcher.respond_to? :organization_id
       @searcher.organization_id = @organization_list
     end
     @searcher.user = current_user
     @assets = @searcher.data
+  end
+
+  def process_sort
+    # check that an order param was provided otherwise use asset_tag as the default
+    params[:sort] ||= 'transam_assets.asset_tag'
+
+    # fix sorting on organizations to be alphabetical not by index
+    params[:sort] = 'organizations.short_name' if params[:sort] == 'organization_id'
+
+    if @asset_class_name == 'TransamAsset'
+      @assets = @assets.includes({asset_subtype: :asset_type},:organization, :manufacturer)
+    else
+      join_relations = @klass.actable_hierarchy
+      if join_relations == :transam_asset
+          join_relations = {transam_asset: [{asset_subtype: :asset_type},:organization, :manufacturer]}
+      else
+        join_relations[join_relations.key(:transam_asset)] = {transam_asset: [{asset_subtype: :asset_type},:organization, :manufacturer]}
+      end
+      
+      @assets = @assets.includes(join_relations)
+    end
   end
 end
