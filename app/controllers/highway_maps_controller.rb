@@ -46,8 +46,6 @@ class HighwayMapsController < MapsController
     else
       @asset_class_name = "HighwayStructure"
     end
-
-    @asset_class_name = "HighwayStructure"
     
     @klass = Object.const_get @asset_class_name
     @view = "#{@asset_class_name.underscore}_table_index"
@@ -93,7 +91,7 @@ class HighwayMapsController < MapsController
       else
         join_relations[join_relations.key(:transam_asset)] = {transam_asset: [{asset_subtype: :asset_type},:organization, :manufacturer]}
       end
-      
+
       @assets = @assets.includes(join_relations)
     end
   end
