@@ -1,8 +1,13 @@
 = link_to table_highway_maps_path(params: {searcher: @search_params || {}}), class: 'btn btn-default table-toggle-from-map', title: 'Show table' do
   %i.fa.fa-table
   = " Table"
+  %span.table-asset-count.badge
 
 :javascript
+  function display_asset_count(count) {
+    $('.table-asset-count').text(count);
+  }
+
   function open_table_view() {
     var asset_types = [];
     var asset_subtypes = [];
