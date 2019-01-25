@@ -66,6 +66,10 @@ class HighwayStructure < TransamAssetRecord
     FORM_PARAMS
   end
 
+  def self.default_map_renderer_attr
+    :calculated_condition
+  end
+
   # this method gets copied from the transam asset level because sometimes start at this base
   def self.very_specific
     klass = self.all
