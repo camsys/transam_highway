@@ -10,4 +10,4 @@
         = format_field("Type", asset.asset_type.name )
         = format_field("Description", asset.description )
         = format_field("Organization", asset.organization )
-        = format_field("Condition", asset.calculated_condition) 
+        = format_field("Condition", asset.calculated_condition&.titleize) 

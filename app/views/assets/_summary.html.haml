@@ -6,7 +6,7 @@
     border: 1px solid;
   }
 .col-sm-4
-  = "Condition: #{@asset.calculated_condition}"
+  = "Condition: #{@asset.calculated_condition&.titleize}"
 .col-sm-4
   .image-placeholder
     Image goes here
