@@ -40,9 +40,9 @@ module HighwayAssetMapSearchable
 
       @highway_klass ||= @klass.joins(join_sql)
     elsif asset_type_class_name == 'Bridge'
-      @highway_klass = @klass.joins(highway_structure: [:region, :structure_status_type])
+      @highway_klass = @klass.left_outer_joins(highway_structure: [:region, :structure_status_type])
     elsif asset_type_class_name == 'HighwayStructure'
-      @highway_klass = @klass.joins(:region, :structure_status_type)
+      @highway_klass = @klass.left_outer_joins(:region, :structure_status_type)
     end
   end
 
