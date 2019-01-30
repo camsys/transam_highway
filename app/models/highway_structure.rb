@@ -11,6 +11,8 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :region
 
+  has_many :inspections, primary_key: :transam_asset_id
+
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
   end
