@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_12_180535) do
+ActiveRecord::Schema.define(version: 2019_01_30_192538) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -428,8 +428,6 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.string "name"
     t.string "code"
     t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "deck_structure_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -573,8 +571,15 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.date "underwater_inspection_date"
     t.date "other_special_inspection_date"
     t.boolean "is_temporary"
+    t.bigint "structure_status_type_id"
+    t.bigint "maintenance_section_id"
+    t.float "milepoint"
+    t.bigint "region_id"
     t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
+    t.index ["maintenance_section_id"], name: "index_highway_structures_on_maintenance_section_id"
+    t.index ["region_id"], name: "index_highway_structures_on_region_id"
     t.index ["route_signing_prefix_id"], name: "index_highway_structures_on_route_signing_prefix_id"
+    t.index ["structure_status_type_id"], name: "index_highway_structures_on_structure_status_type_id"
   end
 
   create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -646,6 +651,12 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.boolean "active", null: false
   end
 
+  create_table "maintenance_sections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+  end
+
   create_table "maintenance_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
@@ -698,8 +709,6 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.string "name"
     t.string "code"
     t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "message_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -900,11 +909,27 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.boolean "active", null: false
   end
 
+  create_table "processable_uploads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "class_name", null: false
+    t.bigint "file_status_type_id"
+    t.bigint "delayed_job_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["delayed_job_id"], name: "index_processable_uploads_on_delayed_job_id"
+    t.index ["file_status_type_id"], name: "index_processable_uploads_on_file_status_type_id"
+  end
+
   create_table "query_params", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.text "query_string"
     t.string "class_name"
+    t.boolean "active"
+  end
+
+  create_table "regions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
     t.boolean "active"
   end
 
@@ -992,8 +1017,6 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.string "code"
     t.string "description"
     t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "search_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1032,6 +1055,12 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
   end
 
   create_table "structure_material_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+  end
+
+  create_table "structure_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "code"
     t.boolean "active"
@@ -1310,8 +1339,6 @@ ActiveRecord::Schema.define(version: 2018_12_12_180535) do
     t.string "code"
     t.string "description"
     t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "weather_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
