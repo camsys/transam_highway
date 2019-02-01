@@ -2,7 +2,7 @@ class ProcessableUploadsController < ApplicationController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Uploads", :processable_uploads_path
 
-  before_action :set_processable_upload, only: [:destroy]
+  before_action :set_processable_upload, only: [:destroy, :process_file]
 
   # GET /processable_uploads
   def index
@@ -27,11 +27,40 @@ class ProcessableUploadsController < ApplicationController
   # DELETE /processable_uploads/1
   def destroy
     @processable_upload.destroy
-    redirect_to processable_uploads_url, notice: 'Processable upload was successfully destroyed.'
+    redirect_to processable_uploads_url, notice: 'Uploaded file was successfully deleted.'
   end
 
   # GET /processable_uploads/1/process
   def process_file
+    # checks: file open, class has method
+    url = @processable_upload.document.document.file.url
+    ext = File.extname(url)
+    klass = @processable_upload.class_name.constantize
+    successful = true
+
+    begin
+      file = open(url)
+    rescue OpenURI::HTTPError => e
+      successful = false
+      msg = e.message
+    end
+    
+    if successful
+      @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'In Progress'))
+      if klass.respond_to? :process_upload
+        successful, msg = klass.process_upload(file, ext)
+      else
+        successful = false
+        msg = "Class: #{klass} does not support upload processing"
+      end
+    end
+    if successful
+      @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'Complete'))
+      redirect_to processable_uploads_path, notice: 'File was successfully processed. ' + msg
+    else
+      @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'Errored'))
+      redirect_to processable_uploads_path, alert: 'Processing failed. ' + msg
+    end      
   end
   
   private

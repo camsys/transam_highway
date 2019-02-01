@@ -1,10 +1,5 @@
-- if @processable_upload&.errors&.any?
-  #error_explanation
-  %ul
-    - @processable_upload.errors.full_messages.each do |message|
-      %li= message
 #processing-document
-  = render :partial => 'shared/running_process', :locals => {:message => "Uploading document. This process might take a while."}
+  = render :partial => 'shared/running_process', :locals => {:message => "Processing file. This might take a while."}
 %table.table{:data => {:toggle => 'table',
   :pagination => 'true',
   :page_list => "[5, 10, 20, 50, 100]",
@@ -29,25 +24,26 @@
         %td= u.document.creator.name
         %td= format_as_date_time(u.updated_at)
         %td
-          = link_to 'Process', u
+          = link_to 'Process', process_file_processable_upload_path(u), class: 'process_link'
           = link_to 'Delete', u, method: :delete, data: { confirm: 'Are you sure?' }
 %br/
-.row
-  .col-md-12
-    %fieldset
-      %legend Add Upload
-      - @pu = ProcessableUpload.new
-      - @pu.build_document
-      = simple_form_for(@pu,
-          :html => {:multipart => true, :class => 'form-vertical document_form' },
-          :url => processable_uploads_path,
-          :wrapper => :vertical_form,
-          :wrapper_mappings => {:file => :vertical_file_input}) do |f|
-        = f.hidden_field :class_name, value: 'Bridge'
-        = f.simple_fields_for :document do |d|
-          = d.input :document, label: 'File', as: 'file', :required => true, :input_html => { :extension => "xml,zip" }
-          = d.input :description, label: 'Notes', :as => :text, :placeholder => 'Enter a brief description of the upload file...', :required => true, :input_html => { :minlength => 1, :maxlength => 254 }
-        = f.submit "Add Upload", :class => 'btn btn-primary', :id => "upload_submit"
+#documents
+  .row
+    .col-md-12
+      %fieldset
+        %legend Add Upload
+        - @pu = ProcessableUpload.new
+        - @pu.build_document
+        = simple_form_for(@pu,
+            :html => {:multipart => true, :class => 'form-vertical document_form' },
+            :url => processable_uploads_path,
+            :wrapper => :vertical_form,
+            :wrapper_mappings => {:file => :vertical_file_input}) do |f|
+          = f.hidden_field :class_name, value: 'Bridge'
+          = f.simple_fields_for :document do |d|
+            = d.input :document, label: 'File', as: 'file', :required => true, :input_html => { :extension => "xml,zip" }
+            = d.input :description, label: 'Notes', :as => :text, :placeholder => 'Enter a brief description of the upload file...', :required => true, :input_html => { :minlength => 1, :maxlength => 254 }
+          = f.submit "Add Upload", :class => 'btn btn-primary', :id => "upload_submit"
 
 :javascript
 
@@ -69,3 +65,9 @@
     }
   });
 
+  $(function () {
+    $('.process_link').click(function () {
+      $('#processing-document').show();
+      $('#documents').hide();
+    });
+  });
