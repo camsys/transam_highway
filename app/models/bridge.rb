@@ -183,6 +183,12 @@ class Bridge < TransamAssetRecord
     district = bridge_hash['DISTRICT']
     optional[:region] = Region.find_by(code: district[0])
     optional[:maintenance_section] = MaintenanceSection.find_by(code: district[1])
+
+    # process county & city/placecode
+    optional[:county] = District.find_by(code: bridge_hash['COUNTY'],
+                                         district_type: DistrictType.find_by(name: 'County')).name
+    optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
+                                       district_type: DistrictType.find_by(name: 'Place')).name
     # process inspection date
     inspection_date = Date.new
     hash['inspevnt'].each do |i|

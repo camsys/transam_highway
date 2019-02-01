@@ -7,6 +7,7 @@
   :search => 'false'}}
   %thead
     %tr
+      %th Asset Type
       %th File
       %th Size
       %th Status
@@ -17,6 +18,7 @@
   %tbody
     - @processable_uploads.each do |u|
       %tr
+        %td= u.class_name
         %td= u.document.original_filename
         %td= number_to_human_size(u.document.file_size)
         %td= u.file_status_type
@@ -34,16 +36,20 @@
         %legend Add Upload
         - @pu = ProcessableUpload.new
         - @pu.build_document
-        = simple_form_for(@pu,
-            :html => {:multipart => true, :class => 'form-vertical document_form' },
-            :url => processable_uploads_path,
-            :wrapper => :vertical_form,
-            :wrapper_mappings => {:file => :vertical_file_input}) do |f|
-          = f.hidden_field :class_name, value: 'Bridge'
-          = f.simple_fields_for :document do |d|
-            = d.input :document, label: 'File', as: 'file', :required => true, :input_html => { :extension => "xml,zip" }
-            = d.input :description, label: 'Notes', :as => :text, :placeholder => 'Enter a brief description of the upload file...', :required => true, :input_html => { :minlength => 1, :maxlength => 254 }
-          = f.submit "Add Upload", :class => 'btn btn-primary', :id => "upload_submit"
+        .col-md-6
+          = simple_form_for(@pu,
+              :html => {:multipart => true, :class => 'form-vertical document_form' },
+              :url => processable_uploads_path,
+              :wrapper => :vertical_form,
+              :wrapper_mappings => {:file => :vertical_file_input}) do |f|
+            .col-md-3
+              = f.input :class_name, include_blank: false, collection: ['Bridge']
+            .row
+              .col-md-12
+                = f.simple_fields_for :document do |d|
+                  = d.input :document, label: 'File', as: 'file', :required => true, :input_html => { :extension => "xml,zip" }
+                  = d.input :description, label: 'Notes', :as => :text, :placeholder => 'Enter a brief description of the upload file...', :required => true, :input_html => { :minlength => 1, :maxlength => 254 }
+            = f.submit "Add Upload", :class => 'btn btn-primary', :id => "upload_submit"
 
 :javascript
 
