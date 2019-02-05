@@ -202,6 +202,24 @@ structure_status_types = [
   {active: true, code: '5', name: 'Obsolete'}
 ]
 
+element_materials = [
+    {code: '_', name:	'Missing', active: true},
+    {code: '0',	name: 'Unspecified', active: true},
+    {code: '1',	name: 'Unpainted Steel', active: true},
+    {code: '2',	name: 'Painted Steel', active: true},
+    {code: '3',	name: 'Prestressed Concrete', active: true},
+    {code: '4',	name: 'Reinforced Concrete', active: true},
+    {code: '5',	name: 'Timber', active: true},
+    {code: '6',	name: 'Other', active: true},
+    {code: '7',	name: 'Decks', active: true},
+    {code: '8',	name: 'Slabs', active: true},
+    {code: '9',	name: 'Smart Flags', active: true}
+]
+
+element_classifications = [
+    {name: 'NBE', active: true}, {name: 'MBE', active: true}, {name: 'ADE', active: true}, {name: 'None', active: true}
+]
+
 merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
 
 merge_tables.each do |table_name|
@@ -217,7 +235,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types element_materials element_classifications
   }
 
 replace_tables.each do |table_name|
