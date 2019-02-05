@@ -6,4 +6,5 @@ class Inspection < ApplicationRecord
 
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
+  has_many :elements
 end
