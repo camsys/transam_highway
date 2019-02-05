@@ -1,4 +1,4 @@
-class ProcessableUploadsController < ApplicationController
+class ProcessableUploadsController < TransamController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Uploads", :processable_uploads_path
 
