@@ -18,6 +18,7 @@ gem 'rack-test'
 gem 'rails-controller-testing' # assigns has been extracted to this gem
 gem 'responders' # get jbuilder working on Travis. It wasn't automatically rendering the json views.
 gem 'byebug'
+gem 'haml-rails', '~> 1.0' # generate haml views instead of erb views
 
 gemspec
 
