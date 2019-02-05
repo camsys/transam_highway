@@ -46,7 +46,7 @@ class CreateElementInspectionTables < ActiveRecord::Migration[5.2]
     end
 
     create_table :elements do |t|
-      t.string :object_key
+      t.string :object_key, null: false, limit: 12
       t.references :element_definition
       t.references :parent
       t.references :inspection
@@ -57,7 +57,7 @@ class CreateElementInspectionTables < ActiveRecord::Migration[5.2]
     end
 
     create_table :defects do |t|
-      t.string :object_key
+      t.string :object_key, null: false, limit: 12
       t.references :element
       t.references :defect_definition
       t.references :inspection
@@ -72,7 +72,7 @@ class CreateElementInspectionTables < ActiveRecord::Migration[5.2]
     end
 
     create_table :inspections do |t|
-      t.string :object_key
+      t.string :object_key, null: false, limit: 12
       t.references :transam_asset
       t.string :name
       t.datetime :event_datetime
