@@ -4,9 +4,12 @@ class CreateElementInspectionTables < ActiveRecord::Migration[5.2]
       t.integer :number
       t.string :long_name
       t.string :short_name
+      t.string :description
+      t.references :assembly_type
       t.references :element_material
-      t.text :notes
+      t.references :element_classification
       t.string :quantity_unit
+      t.string :quantity_calculation
 
       t.timestamps
     end
@@ -17,11 +20,23 @@ class CreateElementInspectionTables < ActiveRecord::Migration[5.2]
       t.boolean :active
     end
 
+    create_table :assembly_types do |t|
+      t.string :name
+      t.string :code
+      t.boolean :active
+    end
+
+    create_table :element_classifications do |t|
+      t.string :name
+      t.string :code
+      t.boolean :active
+    end
+
     create_table :defect_definitions do |t|
       t.integer :number
-      t.string :short_name
       t.string :long_name
-      t.text :notes
+      t.string :short_name
+      t.string :description
       t.string :condition_state_1_def
       t.string :condition_state_2_def
       t.string :condition_state_3_def
