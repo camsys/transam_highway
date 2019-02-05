@@ -104,7 +104,8 @@ class Bridge < TransamAssetRecord
 
     bridge = Bridge.find_or_initialize_by(asset_tag: asset_tag)
     required = {}
-    if bridge.new_record?
+    is_new = bridge.new_record?
+    if is_new
       msg = "Created bridge #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype
@@ -135,7 +136,17 @@ class Bridge < TransamAssetRecord
       is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
       # Bridge
-      facility_carried: bridge_hash['FACILITY']
+      facility_carried: bridge_hash['FACILITY'],
+      main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
+      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN']),
+      approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
+      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR']),
+      num_spans_main: bridge_hash['MAINSPANS'].to_i,
+      num_spans_approach: bridge_hash['APPSPANS'].to_i,
+      deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
+      wearing_surface_type: WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE']),
+      membrane_type: MembraneType.find_by(code: bridge_hash['DKMEMBTYPE']),
+      deck_protection_type: DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
     }
 
     # Process roadway fields
@@ -149,7 +160,10 @@ class Bridge < TransamAssetRecord
         end
       end
     end
+    # NBI 5A
+    # NBI 5B
     optional[:route_signing_prefix] = RouteSigningPrefix.find_by(code: roadway_hash['KIND_HWY'])
+    # NBI 5D
     optional[:route_number] = roadway_hash['ROUTENUM']
     
     # Process lat/lon
@@ -158,23 +172,6 @@ class Bridge < TransamAssetRecord
     optional[:latitude] = lat unless lat == -1
     optional[:longitude] = lon * -1 unless lon == -1
     
-    # process inspection data
-    inspection_date = Date.new
-    hash['inspevnt'].each do |i|
-      date = Date.parse(i['INSPDATE'])
-      if date > inspection_date
-        inspection_date = date 
-        optional[:inspection_frequency] = i['BRINSPFREQ']
-        optional[:deck_condition_rating_type] =
-          BridgeConditionRatingType.find_by(code: i['DKRATING'])
-        optional[:superstructure_condition_rating_type] =
-          BridgeConditionRatingType.find_by(code: i['SUPRATING'])
-        optional[:substructure_condition_rating_type] =
-          BridgeConditionRatingType.find_by(code: i['SUBRATING'])
-      end
-    end
-    optional[:inspection_date] = inspection_date
-
     # process milepost
     optional[:milepoint] = roadway_hash['KMPOST'].to_f * 0.621371
     
@@ -189,17 +186,36 @@ class Bridge < TransamAssetRecord
                                          district_type: DistrictType.find_by(name: 'County')).name
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
-    # process inspection date
-    inspection_date = Date.new
-    hash['inspevnt'].each do |i|
-      date = Date.parse(i['INSPDATE'])
-      inspection_date = date if date > inspection_date
-    end
-    optional[:inspection_date] = inspection_date
-    
     bridge.attributes = optional
     # Save
     bridge.save!
+
+    # process inspection data
+    last_inspection_date = Date.new
+    unless is_new
+      # delete all existing inspection data and refresh
+    end
+    inspections = {}
+    hash['inspevnt'].each do |i|
+      date = Date.parse(i['INSPDATE'])
+      if date > last_inspection_date
+        last_inspection_date = date 
+        optional[:inspection_frequency] = i['BRINSPFREQ']
+      end
+      inspection = bridge.inspections.build
+
+      inspections[i['INSPKEY']] = inspection
+      
+      optional[:deck_condition_rating_type] =
+        BridgeConditionRatingType.find_by(code: i['DKRATING'])
+      optional[:superstructure_condition_rating_type] =
+        BridgeConditionRatingType.find_by(code: i['SUPRATING'])
+      optional[:substructure_condition_rating_type] =
+        BridgeConditionRatingType.find_by(code: i['SUBRATING'])
+      end
+    end
+    optional[:inspection_date] = last_inspection_date
+
 
     msg
   end
