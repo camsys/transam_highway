@@ -49,6 +49,10 @@ RSpec.describe ProcessableUploadsController, type: :controller do
     }
   }
 
+  before(:each) do
+    sign_in test_user
+  end
+  
   before { allow(controller).to receive(:current_user) { test_user } }
 
   # This should return the minimal set of values that should be in the session
