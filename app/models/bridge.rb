@@ -82,6 +82,7 @@ class Bridge < TransamAssetRecord
     msg = ''
     
     if ext == '.zip'
+      #
     else
       begin
         msg = create_or_update_from_xml(io, &block)
@@ -212,7 +213,6 @@ class Bridge < TransamAssetRecord
         BridgeConditionRatingType.find_by(code: i['SUPRATING'])
       optional[:substructure_condition_rating_type] =
         BridgeConditionRatingType.find_by(code: i['SUBRATING'])
-      end
     end
     optional[:inspection_date] = last_inspection_date
 
