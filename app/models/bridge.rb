@@ -18,22 +18,12 @@ class Bridge < TransamAssetRecord
 
   FORM_PARAMS = [
     :facility_carried,
-    :operational_status_type_id,
     :main_span_material_type_id,
     :main_span_design_construction_type_id,
     :approach_spans_material_type_id,
     :approach_spans_design_construction_type_id,
     :num_spans_main,
     :num_spans_approach,
-    :deck_condition_rating_type_id,
-    :superstructure_condition_rating_type_id,
-    :substructure_condition_rating_type_id,
-    :channel_condition_type_id,
-    :structural_appraisal_rating_type_id,
-    :deck_geometry_appraisal_rating_type_id,
-    :underclearance_appraisal_rating_type_id,
-    :waterway_appraisal_rating_type_id,
-    :approach_alignment_appraisal_rating_type_id,
     :border_bridge_state,
     :border_bridge_pcnt_responsibility,
     :border_bridge_structure_number,
@@ -41,8 +31,7 @@ class Bridge < TransamAssetRecord
     :deck_structure_type_id,
     :wearing_surface_type_id,
     :membrane_type_id,
-    :deck_protection_type_id,
-    :scour_critical_bridge_type_id
+    :deck_protection_type_id
   ]
 
   CLEANSABLE_FIELDS = [
@@ -188,7 +177,7 @@ class Bridge < TransamAssetRecord
     last_inspection_date = Date.new
     unless is_new
       # delete all existing inspection data and refresh
-      bridge.inspections.destroy
+      bridge.bridge_conditions.each(&:destroy)
     end
     
     inspections = {}
@@ -201,30 +190,38 @@ class Bridge < TransamAssetRecord
       # inspection type
       type = InspectionType.find_by(code: i_hash['INSPTYPE'])
       
-      inspection = bridge.inspections.build(date: date, name: bridge.asset_tag,
-                                            inspection_type: type, notes: i_hash['NOTES'])
+      inspection = BridgeCondition.new(event_datetime: date, name: bridge.asset_tag,
+                                       inspection_type: type, notes: i_hash['NOTES'])
 
+      bridge.inspections << inspection
       inspections[i_hash['INSPKEY']] = inspection
 
-      # BridgeCondition attributes
-      condition = inspection.build_bridge_condition
-      
       # safety ratings
-      {railings_safety_type: 'RAILRATING'}.each do |attribute, key|
-        condition[attribute] = FeatureSafetyType.find_by(code: i_hash[key])
+      {railings_safety_type_id: 'RAILRATING',
+       transitions_safety_type_id: 'TRANSRATIN',
+       approach_rail_safety_type_id: 'ARAILRATIN',
+       approach_rail_end_safety_type_id: 'AENDRATING'}.each do |attribute, key|
+        inspection[attribute] = FeatureSafetyType.where(code: i_hash[key]).pluck(:id).first
       end
 
-      condition[:operational_status_type] = OperationalStatusType.find_by(code: i_hash['OPPOSTCL'])
+      inspection.operational_status_type = OperationalStatusType.find_by(code: i_hash['OPPOSTCL'])
+      inspection.channel_condition_type = ChannelConditionType.find_by(code: i_hash['CHANRATING'])
+      inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: i_hash['SCOURCRIT'])
+      
       # condition ratings
-      {deck_condition_rating_type: 'DKRATING',
-       superstructure_condition_rating_type: 'SUPRATING',
-       substructure_condition_rating_type: 'SUBRATING'}.each do |attribute, key|
-        condition[attribute] = BridgeConditionRatingType.find_by(code: i_hash[key])
+      {deck_condition_rating_type_id: 'DKRATING',
+       superstructure_condition_rating_type_id: 'SUPRATING',
+       substructure_condition_rating_type_id: 'SUBRATING'}.each do |attribute, key|
+        inspection[attribute] = BridgeConditionRatingType.where(code: i_hash[key]).pluck(:id).first
       end
 
       # appraisal ratings
-      {structural_appraisal_rating_type: 'STRRATING'}.each do |attribute, key|
-        condition[attribute] = BridgeAppraisalRatingType.find_by(code: i_hash[key])
+      {structural_appraisal_rating_type_id: 'STRRATING',
+       deck_geometry_appraisal_rating_type_id: 'DECKGEOM',
+       underclearance_appraisal_rating_type_id: 'UNDERCLR',
+       waterway_appraisal_rating_type_id: 'WATERADEQ',
+       approach_alignment_appraisal_rating_type_id: 'APPRALIGN'}.each do |attribute, key|
+        inspection[attribute] = BridgeAppraisalRatingType.where(code: i_hash[key]).pluck(:id).first
       end
       
       inspection.save!
@@ -234,7 +231,8 @@ class Bridge < TransamAssetRecord
     elements = {}
     
     # process element inspection data
-    hash['pon_elem_insp'].each do |e_hash|
+    # hash['pon_elem_insp'].each do |e_hash|
+    if false
       inspection = inspections[e_hash['INSPKEY']]
       elem_parent_def = ElementDefinition.find_by(number: e_hash['ELEM_PARENT_KEY'].to_i)
 
@@ -266,14 +264,17 @@ class Bridge < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------  
   def calculated_condition
-    case [inspections.last.deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
-          substructure_condition_rating_type&.value].compact.min
-    when 0..4
-      'poor'
-    when 5..6
-      'fair'
-    when 7..9
-      'good'
+    bc = bridge_conditions.ordered.last
+    if bc
+      case [bc.deck_condition_rating_type&.value, bc.superstructure_condition_rating_type&.value,
+            bc.substructure_condition_rating_type&.value].compact.min
+      when 0..4
+        'poor'
+      when 5..6
+        'fair'
+      when 7..9
+        'good'
+      end
     end
   end
   

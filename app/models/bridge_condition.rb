@@ -1,6 +1,6 @@
 class BridgeCondition < ApplicationRecord
 
-  acts_as :inspection, as: :inspectionible
+  acts_as :inspection, as: :inspectionible, dependent: :destroy
 
   belongs_to :deck_condition_rating_type, class_name: 'BridgeConditionRatingType'
   belongs_to :superstructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
