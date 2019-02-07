@@ -7,13 +7,13 @@ class Bridge < TransamAssetRecord
   belongs_to :approach_spans_material_type, class_name: 'StructureMaterialType'
   belongs_to :approach_spans_design_construction_type, class_name: 'DesignConstructionType'
 
-
-
   belongs_to :strahnet_designation_type
   belongs_to :deck_structure_type
   belongs_to :wearing_surface_type
   belongs_to :membrane_type
   belongs_to :deck_protection_type
+
+  has_many :bridge_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeCondition'
 
 
   FORM_PARAMS = [
@@ -266,15 +266,15 @@ class Bridge < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------  
   def calculated_condition
-    case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
-          substructure_condition_rating_type&.value].compact.min 
-    when 0..4 
-      'poor' 
-    when 5..6 
-      'fair' 
-    when 7..9 
-      'good' 
-    end 
+    case [inspections.last.deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
+          substructure_condition_rating_type&.value].compact.min
+    when 0..4
+      'poor'
+    when 5..6
+      'fair'
+    when 7..9
+      'good'
+    end
   end
   
   def dup
