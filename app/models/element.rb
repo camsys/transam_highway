@@ -6,5 +6,5 @@ class Element < ApplicationRecord
   belongs_to :element_definition
   belongs_to :inspection
   has_one :highway_structure, through: :inspection
-  has_many :defects
+  has_many :defects, dependent: :destroy
 end

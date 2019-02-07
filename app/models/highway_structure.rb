@@ -11,7 +11,7 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :region
 
-  has_many :inspections, foreign_key: :transam_asset_id
+  has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections
   has_many :defects, through: :elements

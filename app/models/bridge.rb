@@ -195,27 +195,74 @@ class Bridge < TransamAssetRecord
     last_inspection_date = Date.new
     unless is_new
       # delete all existing inspection data and refresh
+      bridge.inspections.destroy
     end
+    
     inspections = {}
-    hash['inspevnt'].each do |i|
-      date = Date.parse(i['INSPDATE'])
+    hash['inspevnt'].each do |i_hash|
+      date = Date.parse(i_hash['INSPDATE'])
       if date > last_inspection_date
         last_inspection_date = date 
-        optional[:inspection_frequency] = i['BRINSPFREQ']
+        optional[:inspection_frequency] = i_hash['BRINSPFREQ']
       end
-      inspection = bridge.inspections.build
-
-      inspections[i['INSPKEY']] = inspection
+      # inspection type
+      type = InspectionType.find_by(code: i_hash['INSPTYPE'])
       
-      optional[:deck_condition_rating_type] =
-        BridgeConditionRatingType.find_by(code: i['DKRATING'])
-      optional[:superstructure_condition_rating_type] =
-        BridgeConditionRatingType.find_by(code: i['SUPRATING'])
-      optional[:substructure_condition_rating_type] =
-        BridgeConditionRatingType.find_by(code: i['SUBRATING'])
+      inspection = bridge.inspections.build(date: date, name: bridge.asset_tag,
+                                            inspection_type: type, notes: i_hash['NOTES'])
+
+      inspections[i_hash['INSPKEY']] = inspection
+
+      # BridgeCondition attributes
+      condition = inspection.build_bridge_condition
+      
+      # safety ratings
+      {railings_safety_type: 'RAILRATING'}.each do |attribute, key|
+        condition[attribute] = FeatureSafetyType.find_by(code: i_hash[key])
+      end
+
+      condition[:operational_status_type] = OperationalStatusType.find_by(code: i_hash['OPPOSTCL'])
+      # condition ratings
+      {deck_condition_rating_type: 'DKRATING',
+       superstructure_condition_rating_type: 'SUPRATING',
+       substructure_condition_rating_type: 'SUBRATING'}.each do |attribute, key|
+        condition[attribute] = BridgeConditionRatingType.find_by(code: i_hash[key])
+      end
+
+      # appraisal ratings
+      {structural_appraisal_rating_type: 'STRRATING'}.each do |attribute, key|
+        condition[attribute] = BridgeAppraisalRatingType.find_by(code: i_hash[key])
+      end
+      
+      inspection.save!
     end
     optional[:inspection_date] = last_inspection_date
 
+    elements = {}
+    
+    # process element inspection data
+    hash['pon_elem_insp'].each do |e_hash|
+      inspection = inspections[e_hash['INSPKEY']]
+      elem_parent_def = ElementDefinition.find_by(number: e_hash['ELEM_PARENT_KEY'].to_i)
+
+      if elem_parent_def
+      # Find parent element
+        parent_elem = elements[elem_parent_def.number]
+        
+        # Assume defect (or MBE)
+      # set quantities
+
+      else
+        elem_def = ElementDefinition.find_by(number: e_hash['ELEM_KEY'].to_i)
+        # Process element
+        element = inspection.elements.build(element_definition: elem_def,
+                                            quantity: e_hash['ELEM_QUANTITY'],
+                                            notes: e_hash['ELEM_NOTES'])
+        elements[elem_def.number] = element
+        
+      end
+      inspection.save!
+    end
 
     msg
   end
