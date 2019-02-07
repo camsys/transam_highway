@@ -48,11 +48,11 @@ class InspectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_inspection
-      @inspection = Inspection.find(params[:id])
+      @inspection = Inspection.find_by(object_key: params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def inspection_params
-      params.fetch(:inspection, {})
+      params.require(:inspection).permit(Inspection.allowable_params)
     end
 end

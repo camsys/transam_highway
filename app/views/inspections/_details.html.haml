@@ -1,0 +1,7 @@
+%ul.nav.nav-tabs
+  = nav_tab_count_tag("#elements", "Elements", @inspection.elements.count)
+
+.tab-content
+  .tab-pane.fade#elements
+    .tab-content
+      = render 'elements'

@@ -28,24 +28,25 @@
           :single_select => 'false'}}
     %thead
       %tr
-        %th.center{:data => {:sortable => 'true'}} Group
-        %th.center{:data => {:sortable => 'true'}} Inspection Type
-        %th.center{:data => {:sortable => 'true'}} Scheduled Date
-        %th.center{:data => {:sortable => 'true'}} Inspectors
-        %th.center{:data => {:sortable => 'true'}} Reviewer
-        %th.center{:data => {:sortable => 'true'}} Status
-        %th.center{:data => {:sortable => 'false'}} Actions
+        %th.center{:data => {:sortable => 'true'}} Elm/Env
+        %th.center{:data => {:sortable => 'true'}} Description
+        %th.center{:data => {:sortable => 'true'}} EPN
+        %th.center{:data => {:sortable => 'true'}} Unit
+        %th.center{:data => {:sortable => 'true'}} Total Quantity
+        %th.center{:data => {:sortable => 'true'}} CS 1
+        %th.center{:data => {:sortable => 'true'}} CS 2
+        %th.center{:data => {:sortable => 'true'}} CS 3
+        %th.center{:data => {:sortable => 'true'}} CS 4
 
     %tbody
-      - @asset.inspections.each do |inspection|
+      - @asset.elements.each do |element|
         %tr
-          %td.left TODO
-          %td.left= inspection.inspection_type
-          %td.left= format_as_date_time(inspection.event_datetime)
-          %td.left= format_as_list(inspection.inspectors)
+          %td.left= element.element_definition
           %td.left TODO
           %td.left TODO
-          %td.left
-            = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do
-              %i.fa.fa-play
-              View
+          %td.left TODO
+          %td.left= element.quantity
+          %td.left= element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity')
+          %td.left= element.defects.sum(:condition_state_2_quantity)
+          %td.left= element.defects.sum(:condition_state_3_quantity)
+          %td.left= element.defects.sum(:condition_state_4_quantity)
