@@ -1,27 +1,20 @@
 class Bridge < TransamAssetRecord
   acts_as :highway_structure, as: :highway_structurible
 
-  belongs_to :operational_status_type
+
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
   belongs_to :approach_spans_material_type, class_name: 'StructureMaterialType'
   belongs_to :approach_spans_design_construction_type, class_name: 'DesignConstructionType'
-  belongs_to :deck_condition_rating_type, class_name: 'BridgeConditionRatingType'
-  belongs_to :superstructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
-  belongs_to :substructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
-  belongs_to :channel_condition_type
-  
-  belongs_to :structural_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
-  belongs_to :deck_geometry_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
-  belongs_to :underclearance_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
-  belongs_to :waterway_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
-  belongs_to :approach_alignment_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+
+
+
   belongs_to :strahnet_designation_type
   belongs_to :deck_structure_type
   belongs_to :wearing_surface_type
   belongs_to :membrane_type
   belongs_to :deck_protection_type
-  belongs_to :scour_critical_bridge_type
+
 
   FORM_PARAMS = [
     :facility_carried,

@@ -1,5 +1,7 @@
 class Inspection < ApplicationRecord
 
+  actable as: :inspectionible
+
   include TransamObjectKey
 
   belongs_to :highway_structure, foreign_key: :transam_asset_id
