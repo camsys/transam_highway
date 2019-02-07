@@ -25,7 +25,7 @@ json.underwater_inspection_date bridge.underwater_inspection_date.try(:strftime,
 json.other_special_inspection_date bridge.other_special_inspection_date.try(:strftime, "%m/%d/%Y")
 
 # NBI Associations
-associations = [:route_signing_prefix, :operational_status_type, :main_span_material_type, :main_span_design_construction_type, :approach_spans_material_type, :approach_spans_design_construction_type, :deck_condition_rating_type, :superstructure_condition_rating_type, :substructure_condition_rating_type, :channel_condition_type, :structural_appraisal_rating_type, :deck_geometry_appraisal_rating_type, :underclearance_appraisal_rating_type, :waterway_appraisal_rating_type, :approach_alignment_appraisal_rating_type, :strahnet_designation_type, :deck_structure_type, :wearing_surface_type, :membrane_type, :deck_protection_type, :scour_critical_bridge_type, :region, :maintenance_section, :structure_status_type]
+associations = [:route_signing_prefix, :main_span_material_type, :main_span_design_construction_type, :approach_spans_material_type, :approach_spans_design_construction_type, :strahnet_designation_type, :deck_structure_type, :wearing_surface_type, :membrane_type, :deck_protection_type, :region, :maintenance_section, :structure_status_type]
 associations.each do |asso|
   json.(bridge, "#{asso}_id")
   json.set! asso, bridge.try(asso).try(:name)
