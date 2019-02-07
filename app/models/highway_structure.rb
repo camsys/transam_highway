@@ -11,6 +11,9 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :region
 
+  belongs_to :maintenance_responsiblity, class_name: 'StructureAgentType'
+  belongs_to :owner, class_name: 'StructureAgentType'
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections
@@ -50,7 +53,10 @@ class HighwayStructure < TransamAssetRecord
       :structure_status_type_id,
       :region,
       :maintenance_section_id,
-      :milepoint
+      :milepoint,
+      :maintenance_responsibility_id,
+      :owner_id,
+      :approach_roadway_width
   ]
 
   CLEANSABLE_FIELDS = [
