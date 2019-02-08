@@ -1,0 +1,9 @@
+%tr
+  %td.left= element.element_definition
+  %td.left= element.element_definition.short_name
+  %td.right= format_as_decimal(element.quantity)
+  %td.left= element.element_definition.quantity_unit
+  %td.right= format_as_decimal(element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity'))
+  %td.right= format_as_decimal(element.defects.sum(:condition_state_2_quantity))
+  %td.right= format_as_decimal(element.defects.sum(:condition_state_3_quantity))
+  %td.right= format_as_decimal(element.defects.sum(:condition_state_4_quantity))

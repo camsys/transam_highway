@@ -1,0 +1,9 @@
+%tr
+  %td.left= defect.defect_definition
+  %td.left= defect.defect_definition.short_name
+  %td.right= format_as_decimal(defect.total_quantity)
+  %td.left
+  %td.right= format_as_decimal(defect.condition_state_1_quantity)
+  %td.right= format_as_decimal(defect.condition_state_2_quantity)
+  %td.right= format_as_decimal(defect.condition_state_3_quantity)
+  %td.right= format_as_decimal(defect.condition_state_4_quantity)

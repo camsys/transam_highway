@@ -229,6 +229,8 @@ class Bridge < TransamAssetRecord
     optional[:inspection_date] = last_inspection_date
 
     elements = {}
+
+    bme_class = ElementClassification.find_by(name: 'BME')
     
     # process element inspection data
     hash['pon_elem_insp'].each do |e_hash|
@@ -236,19 +238,41 @@ class Bridge < TransamAssetRecord
       elem_number = e_hash['ELEM_KEY'].to_i
       
       elem_parent_def = ElementDefinition.find_by(number: e_hash['ELEM_PARENT_KEY'].to_i)
-
+      Rails.logger.debug "epd: #{elem_parent_def}"
       if elem_parent_def
         # Find parent element
         parent_elem = elements[elem_parent_def.number]
+        Rails.logger.debug "pe: #{parent_elem}"
         
-      # Assume defect or BME
-        # defect_def = DefectDefinition.find_by(number: elem_number)
-        
-      # set quantities
+        # Assume defect or BME
+        defect_def = DefectDefinition.find_by(number: elem_number)
 
+        if defect_def
+          Rails.logger.debug "dd: #{defect_def}"
+          # set quantities
+          parent_elem.defects.build(defect_definition: defect_def,
+                                    total_quantity: e_hash['ELEM_QUANTITY'],
+                                    notes: e_hash['ELEM_NOTES'],
+                                    condition_state_1_quantity: e_hash['ELEM_QTYSTATE1'],
+                                    condition_state_2_quantity: e_hash['ELEM_QTYSTATE2'],
+                                    condition_state_3_quantity: e_hash['ELEM_QTYSTATE3'],
+                                    condition_state_4_quantity: e_hash['ELEM_QTYSTATE4'])
+
+
+        else # Assume BME
+          bme_def = ElementDefinition.find_by(number: elem_number,
+                                              element_classification: bme_class)
+          if bme_def
+            Rails.logger.debug "bd: #{bme_def}"
+            parent_elem.children.build(element_definition: bme_def,
+                                       quantity: e_hash['ELEM_QUANTITY'],
+                                       notes: e_hash['ELEM_NOTES'])
+          end
+        end
+        parent_elem.save!
       else
         elem_def = ElementDefinition.find_by(number: elem_number)
-        Rails.logger.debug "ED: #{elem_def}"
+
         # If not found, then probably ADE
         if elem_def
           # Process element
@@ -256,7 +280,6 @@ class Bridge < TransamAssetRecord
                                               quantity: e_hash['ELEM_QUANTITY'],
                                               notes: e_hash['ELEM_NOTES'])
           elements[elem_def.number] = element
-          Rails.logger.debug "E: #{element}"
         end        
       end
       inspection.save!

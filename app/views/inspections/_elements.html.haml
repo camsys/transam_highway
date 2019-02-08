@@ -5,16 +5,11 @@
   %table.table.table-hover{:id => table_dom_id,
           :data => {:toggle => 'table',
           :card_view => "false",
-          :pagination => 'true',
+          :pagination => 'false',
           :sort_order => 'asc',
-          :sortable => 'true',
-          :side_pagination => 'server',
-          :show_pagination_switch => 'true',
-          :page_number => '1',
-          :page_list => "[5, 10, 20, 50, 100, 200]",
-          :page_size => current_user.num_table_rows,
+          :sortable => 'false',
           :search => 'false',
-          :show_columns => 'true',
+          :show_columns => 'false',
           :toolbar => "#table_actions",
           :row_style => 'row_style',
           :click_to_select => 'true',
@@ -28,25 +23,22 @@
           :single_select => 'false'}}
     %thead
       %tr
-        %th.center{:data => {:sortable => 'true'}} Elm/Env
-        %th.center{:data => {:sortable => 'true'}} Description
-        %th.center{:data => {:sortable => 'true'}} EPN
-        %th.center{:data => {:sortable => 'true'}} Unit
-        %th.center{:data => {:sortable => 'true'}} Total Quantity
-        %th.center{:data => {:sortable => 'true'}} CS 1
-        %th.center{:data => {:sortable => 'true'}} CS 2
-        %th.center{:data => {:sortable => 'true'}} CS 3
-        %th.center{:data => {:sortable => 'true'}} CS 4
+        %th.centern Elem
+        %th.center Description
+        %th.center Total Quantity
+        %th.center Unit
+        %th.center CS 1
+        %th.center CS 2
+        %th.center CS 3
+        %th.center CS 4
 
     %tbody
       - @inspection.elements.each do |element|
-        %tr
-          %td.left= element.element_definition
-          %td.left= element.element_definition.short_name
-          %td.left TODO
-          %td.left= element.element_definition.quantity_unit
-          %td.left= element.quantity
-          %td.left= element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity')
-          %td.left= element.defects.sum(:condition_state_2_quantity)
-          %td.left= element.defects.sum(:condition_state_3_quantity)
-          %td.left= element.defects.sum(:condition_state_4_quantity)
+        = render partial: "element_row", locals: {element: element}
+        - element.children.each do |bme|
+          = render partial: "element_row", locals: {element: bme}
+          - bme.defects.each do |defect|
+            = render partial: "defect_row", locals: {defect: defect}
+        - element.defects.each do |defect|
+          = render partial: "defect_row", locals: {defect: defect}
+          
