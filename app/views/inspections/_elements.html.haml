@@ -42,9 +42,9 @@
       - @inspection.elements.each do |element|
         %tr
           %td.left= element.element_definition
+          %td.left= element.element_definition.short_name
           %td.left TODO
-          %td.left TODO
-          %td.left TODO
+          %td.left= element.element_definition.quantity_unit
           %td.left= element.quantity
           %td.left= element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity')
           %td.left= element.defects.sum(:condition_state_2_quantity)

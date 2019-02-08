@@ -231,26 +231,33 @@ class Bridge < TransamAssetRecord
     elements = {}
     
     # process element inspection data
-    # hash['pon_elem_insp'].each do |e_hash|
-    if false
-      inspection = inspections[e_hash['INSPKEY']]
+    hash['pon_elem_insp'].each do |e_hash|
+      inspection = inspections[e_hash['INSPKEY']].inspection
+      elem_number = e_hash['ELEM_KEY'].to_i
+      
       elem_parent_def = ElementDefinition.find_by(number: e_hash['ELEM_PARENT_KEY'].to_i)
 
       if elem_parent_def
-      # Find parent element
+        # Find parent element
         parent_elem = elements[elem_parent_def.number]
         
-        # Assume defect (or MBE)
+      # Assume defect or BME
+        # defect_def = DefectDefinition.find_by(number: elem_number)
+        
       # set quantities
 
       else
-        elem_def = ElementDefinition.find_by(number: e_hash['ELEM_KEY'].to_i)
-        # Process element
-        element = inspection.elements.build(element_definition: elem_def,
-                                            quantity: e_hash['ELEM_QUANTITY'],
-                                            notes: e_hash['ELEM_NOTES'])
-        elements[elem_def.number] = element
-        
+        elem_def = ElementDefinition.find_by(number: elem_number)
+        Rails.logger.debug "ED: #{elem_def}"
+        # If not found, then probably ADE
+        if elem_def
+          # Process element
+          element = inspection.elements.build(element_definition: elem_def,
+                                              quantity: e_hash['ELEM_QUANTITY'],
+                                              notes: e_hash['ELEM_NOTES'])
+          elements[elem_def.number] = element
+          Rails.logger.debug "E: #{element}"
+        end        
       end
       inspection.save!
     end
@@ -264,7 +271,7 @@ class Bridge < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------  
   def calculated_condition
-    bridge_conditions.ordered.first.calculated_condition
+    bridge_conditions.ordered.first&.calculated_condition
   end
   
   def dup
