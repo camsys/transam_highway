@@ -6,7 +6,7 @@
     border: 1px solid;
   }
 .col-sm-4
-  = "Condition: #{@asset.calculated_condition&.titleize}"
+  = "Condition: #{link_to @asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)}".html_safe
 .col-sm-4
   .image-placeholder
     Image goes here

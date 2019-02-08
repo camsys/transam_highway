@@ -264,18 +264,7 @@ class Bridge < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------  
   def calculated_condition
-    bc = bridge_conditions.ordered.last
-    if bc
-      case [bc.deck_condition_rating_type&.value, bc.superstructure_condition_rating_type&.value,
-            bc.substructure_condition_rating_type&.value].compact.min
-      when 0..4
-        'poor'
-      when 5..6
-        'fair'
-      when 7..9
-        'good'
-      end
-    end
+    bridge_conditions.ordered.first.calculated_condition
   end
   
   def dup

@@ -12,5 +12,5 @@ class Inspection < ApplicationRecord
 
   has_many :elements, dependent: :destroy
 
-  scope :ordered, -> { order(:event_datetime) }
+  scope :ordered, -> { order(event_datetime: :desc) }
 end

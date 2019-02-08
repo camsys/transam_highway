@@ -21,4 +21,16 @@ class BridgeCondition < ApplicationRecord
   belongs_to :approach_rail_safety_type, class_name: 'FeatureSafetyType'
   belongs_to :approach_rail_end_safety_type, class_name: 'FeatureSafetyType'
 
+  def calculated_condition
+    case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
+          substructure_condition_rating_type&.value].compact.min
+    when 0..4
+      'poor'
+    when 5..6
+      'fair'
+    when 7..9
+      'good'
+    end
+  end
+
 end

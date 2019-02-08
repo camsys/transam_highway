@@ -31,17 +31,19 @@
         %th.center{:data => {:sortable => 'true'}} Group
         %th.center{:data => {:sortable => 'true'}} Inspection Type
         %th.center{:data => {:sortable => 'true'}} Scheduled Date
+        %th.center{:data => {:sortable => 'true'}} Overall Condition
         %th.center{:data => {:sortable => 'true'}} Inspectors
         %th.center{:data => {:sortable => 'true'}} Reviewer
         %th.center{:data => {:sortable => 'true'}} Status
         %th.center{:data => {:sortable => 'false'}} Actions
 
     %tbody
-      - @asset.inspections.each do |inspection|
+      - @asset.inspections.ordered.each do |inspection|
         %tr
           %td.left TODO
           %td.left= inspection.inspection_type
-          %td.left= format_as_date_time(inspection.event_datetime)
+          %td.left= format_as_date(inspection.event_datetime)
+          %td.left= inspection.specific.calculated_condition
           %td.left= format_as_list(inspection.inspectors)
           %td.left TODO
           %td.left TODO

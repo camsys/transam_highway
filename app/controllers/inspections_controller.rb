@@ -1,4 +1,6 @@
 class InspectionsController < ApplicationController
+  add_breadcrumb "Home", :root_path
+
   before_action :set_inspection, only: [:show, :edit, :update, :destroy]
 
   # GET /inspections
@@ -8,6 +10,10 @@ class InspectionsController < ApplicationController
 
   # GET /inspections/1
   def show
+    add_breadcrumb "#{@asset.asset_type.name}".pluralize,
+                   inventory_index_path(:asset_type => @asset.asset_type, :asset_subtype => 0)
+    add_breadcrumb @asset, inventory_path(@asset)
+    add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
   end
 
   # GET /inspections/new
@@ -48,7 +54,8 @@ class InspectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_inspection
-      @inspection = Inspection.find_by(object_key: params[:id])
+      @inspection = Inspection.find_by(object_key: params[:id]).specific
+      @asset = @inspection.highway_structure
     end
 
     # Only allow a trusted parameter "white list" through.
