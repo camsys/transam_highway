@@ -7,6 +7,6 @@ class ElementDefinition < ApplicationRecord
   belongs_to :element_classification
 
   def to_s
-    number
+    number.to_s
   end
 end
