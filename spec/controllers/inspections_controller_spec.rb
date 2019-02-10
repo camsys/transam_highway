@@ -59,6 +59,7 @@ RSpec.describe InspectionsController, type: :controller do
 
   describe "GET #new" do
     it "returns a success response" do
+      sign_in create(:normal_user)
       get :new, params: {}, session: valid_session
       expect(response).to be_successful
     end
