@@ -1,4 +1,4 @@
-class InspectionsController < ApplicationController
+class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
   before_action :set_inspection, only: [:show, :edit, :update, :destroy]
