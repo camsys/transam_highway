@@ -68,10 +68,14 @@ class Bridge < TransamAssetRecord
     else
       begin
         msg = create_or_update_from_xml(io, &block)
-      rescue TypeError => e
-        Rails.logger.warn e.message
-        Rails.logger.warn e.backtrace
-        return false, e.message
+      rescue TypeError, NoMethodError => e
+        if Rails.env.sandbox?
+          Rails.logger.warn e.message
+          Rails.logger.warn e.backtrace.join("/n")
+          return false, e.message
+        else
+          raise
+        end
       end
     end
     return successful, msg
@@ -183,7 +187,8 @@ class Bridge < TransamAssetRecord
     end
     
     inspections = {}
-    hash['inspevnt'].each do |i_hash|
+    i_hashes = hash['inspevnt'].is_a?(Array) ? hash['inspevnt'] : [hash['inspevnt']]
+    i_hashes.each do |i_hash|
       date = Date.parse(i_hash['INSPDATE'])
       if date > last_inspection_date
         last_inspection_date = date 
@@ -228,14 +233,14 @@ class Bridge < TransamAssetRecord
       
       inspection.save!
     end
-    optional[:inspection_date] = last_inspection_date
+    bridge.update_attributes(inspection_date: last_inspection_date)
 
     elements = {}
 
     bme_class = ElementClassification.find_by(name: 'BME')
     
     # process element inspection data
-    hash['pon_elem_insp'].each do |e_hash|
+    hash['pon_elem_insp']&.each do |e_hash|
       inspection = inspections[e_hash['INSPKEY']].inspection
       elem_number = e_hash['ELEM_KEY'].to_i
       

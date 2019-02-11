@@ -20,9 +20,11 @@
 .row
   .col-md-12
     .table-responsive
-      %table.table.table-hover{:id => table_dom_id,
+      -# Remove .table-hover with data-classes
+      %table{:id => table_dom_id,
               :data => {:toggle => 'table',
               :card_view => "false",
+              :classes => 'table',
               :pagination => 'false',
               :sort_order => 'asc',
               :sortable => 'false',
@@ -30,7 +32,7 @@
               :show_columns => 'false',
               :toolbar => "#table_actions",
               :row_style => 'row_style',
-              :click_to_select => 'true',
+              :click_to_select => 'false',
               :show_export => 'true',
               :id_field => 'object_key',
               :export_types => "['csv', 'txt', 'excel']",
