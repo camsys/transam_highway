@@ -92,7 +92,9 @@ class Bridge < TransamAssetRecord
       msg = "Created bridge #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype
-      asset_subtype = DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN']).asset_subtype
+      # standardize format
+      design_code = bridge_hash['DESIGNMAIN'].rjust(2, '0')
+      asset_subtype = DesignConstructionType.find_by(code: design_code).asset_subtype
       required = {
         asset_subtype: asset_subtype,
         organization: Organization.find_by(short_name: 'CDOT'),
