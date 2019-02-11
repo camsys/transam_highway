@@ -1,21 +1,81 @@
-.form-group
-  %label.control-label
-    Deck Condition (58)
-  .display-value
-    = @inspection.deck_condition_rating_type
-.form-group
-  %label.control-label
-    Superstructure Condition (59)
-  .display-value
-    = @inspection.superstructure_condition_rating_type
-.form-group
-  %label.control-label
-    Substructure Condition (60)
-  .display-value
-    = @inspection.substructure_condition_rating_type
-.form-group
-  %label.control-label
-    Channel/Protection Rating (61)
-  .display-value
-    = @inspection.channel_condition_type
+.row
+  .col-md-6
+    .form-group
+      %label.control-label
+        Deck Condition (58)
+      .display-value
+        = @inspection.deck_condition_rating_type
+    .form-group
+      %label.control-label
+        Superstructure Condition (59)
+      .display-value
+        = @inspection.superstructure_condition_rating_type
+    .form-group
+      %label.control-label
+        Substructure Condition (60)
+      .display-value
+        = @inspection.substructure_condition_rating_type
+    %hr
+    .form-group
+      %label.control-label
+        Structural Appraisal Rating
+      .display-value
+        = @inspection.structural_appraisal_rating_type
+    .form-group
+      %label.control-label
+        Deck Geometry Appraisal Rating
+      .display-value
+        = @inspection.deck_geometry_appraisal_rating_type
+    .form-group
+      %label.control-label
+        Underclearance Appraisal Rating
+      .display-value
+        = @inspection.underclearance_appraisal_rating_type
+    .form-group
+      %label.control-label
+        Waterway Appraisal Rating
+      .display-value
+        = @inspection.waterway_appraisal_rating_type
+    .form-group
+      %label.control-label
+        Approach Alignment Appraisal Rating
+      .display-value
+        = @inspection.approach_alignment_appraisal_rating_type
+  .col-md-6
+    .form-group
+      %label.control-label
+        Operational Status
+      .display-value
+        = @inspection.operational_status_type
+    .form-group
+      %label.control-label
+        Channel/Protection Rating (61)
+      .display-value
+        = @inspection.channel_condition_type
+    .form-group
+      %label.control-label
+        Scour Critical Bridge
+      .display-value
+        = @inspection.scour_critical_bridge_type
+    %hr
+    .form-group
+      %label.control-label
+        Railings Safety
+      .display-value
+        = @inspection.railings_safety_type
+    .form-group
+      %label.control-label
+        Transitions Safety
+      .display-value
+        = @inspection.transitions_safety_type
+    .form-group
+      %label.control-label
+        Approach Rail Safety
+      .display-value
+        = @inspection.approach_rail_safety_type
+    .form-group
+      %label.control-label
+        Approach Rail End Safety
+      .display-value
+        = @inspection.approach_rail_end_safety_type
 

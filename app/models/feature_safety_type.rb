@@ -4,7 +4,7 @@ class FeatureSafetyType < ApplicationRecord
   scope :active, -> { where(:active => true) }
 
   def to_s
-    name
+    "#{code} - #{name}"
   end
 
 end
