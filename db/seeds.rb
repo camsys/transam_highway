@@ -246,7 +246,7 @@ element_materials = [
     {code: '6',	name: 'Other', active: true},
     {code: '7',	name: 'Decks', active: true},
     {code: '8',	name: 'Slabs', active: true},
-    {code: '9',	name: 'Smart Flags', active: true}
+    {code: '9',	name: 'Smart Flags', active: false}
 ]
 
 element_classifications = [
@@ -474,7 +474,7 @@ data = eval(table_name)
 klass = table_name.classify.constantize
 data.each do |row|
   x = klass.new(row.except(:is_nbe, :is_protective, :cat_key, :type_key, :mat_key))
-  x.structure_material_type = StructureMaterialType.find_by(code: row[:mat_key])
+  x.element_material = ElementMaterial.find_by(code: row[:mat_key])
   x.element_classification = 
     ElementClassification.find_by(name: row[:is_nbe] == 'Y' ? 'NBE' : 'BME')
   x.save!
