@@ -1,0 +1,7 @@
+= format_field("Structure", link_to(@inspection.highway_structure, inventory_path(@inspection.highway_structure)) )
+= format_field("Name", @inspection.name)
+= format_field("Scheduled Date", format_as_date(@inspection.event_datetime))
+= format_field("Temperature", @inspection.temperature)
+= format_field("Weather", @inspection.weather)
+%hr
+= format_as_text(@inspection.notes)

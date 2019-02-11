@@ -26,18 +26,24 @@ module HighwayAssetMapSearchable
   private
 
   def highway_klass
-    # table alias being used to avoid the case when this table is being joined in another place
-    join_sql = <<-SQL 
-      LEFT JOIN highway_structures 
-        AS base_highway_structures
-        ON base_highway_structures.id = transam_assets.transam_assetible_id AND transam_assets.transam_assetible_type = 'HighwayStructure'
-      LEFT JOIN regions 
-        ON base_highway_structures.region_id = regions.id
-      LEFT JOIN structure_status_types 
-        ON base_highway_structures.structure_status_type_id = structure_status_types.id
-    SQL
+    if asset_type_class_name == 'TransamAsset'
+      # table alias being used to avoid the case when this table is being joined in another place
+      join_sql = <<-SQL 
+        LEFT JOIN highway_structures 
+          AS base_highway_structures
+          ON base_highway_structures.id = transam_assets.transam_assetible_id AND transam_assets.transam_assetible_type = 'HighwayStructure'
+        LEFT JOIN regions 
+          ON base_highway_structures.region_id = regions.id
+        LEFT JOIN structure_status_types 
+          ON base_highway_structures.structure_status_type_id = structure_status_types.id
+      SQL
 
-    @highway_klass ||= @klass.joins(join_sql)
+      @highway_klass ||= @klass.joins(join_sql)
+    elsif asset_type_class_name == 'Bridge'
+      @highway_klass = @klass.left_outer_joins(highway_structure: [:region, :structure_status_type])
+    elsif asset_type_class_name == 'HighwayStructure'
+      @highway_klass = @klass.left_outer_joins(:region, :structure_status_type)
+    end
   end
 
   def region_code_conditions

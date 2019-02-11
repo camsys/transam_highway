@@ -1,0 +1,79 @@
+#processing-document
+  = render :partial => 'shared/running_process', :locals => {:message => "Processing file. This might take a while."}
+%table.table{:data => {:toggle => 'table',
+  :pagination => 'true',
+  :page_list => "[5, 10, 20, 50, 100]",
+  :page_size => current_user.num_table_rows,
+  :search => 'false'}}
+  %thead
+    %tr
+      %th Asset Type
+      %th File
+      %th Size
+      %th Status
+      %th Notes
+      %th Uploaded by
+      %th Updated at
+      %th Actions
+  %tbody
+    - @processable_uploads.each do |u|
+      %tr
+        %td= u.class_name
+        %td= u.document.original_filename
+        %td= number_to_human_size(u.document.file_size)
+        %td= u.file_status_type
+        %td= u.document.description
+        %td= u.document.creator.name
+        %td= format_as_date_time(u.updated_at)
+        %td
+          = link_to 'Process', process_file_processable_upload_path(u), class: 'process_link'
+          = link_to 'Delete', u, method: :delete, data: { confirm: 'Are you sure?' }
+%br/
+#documents
+  .row
+    .col-md-12
+      %fieldset
+        %legend Add Upload
+        - @pu = ProcessableUpload.new
+        - @pu.build_document
+        .col-md-6
+          = simple_form_for(@pu,
+              :html => {:multipart => true, :class => 'form-vertical document_form' },
+              :url => processable_uploads_path,
+              :wrapper => :vertical_form,
+              :wrapper_mappings => {:file => :vertical_file_input}) do |f|
+            .col-md-3
+              = f.input :class_name, include_blank: false, collection: ['Bridge']
+            .row
+              .col-md-12
+                = f.simple_fields_for :document do |d|
+                  = d.input :document, label: 'File', as: 'file', :required => true, :input_html => { :extension => "xml,zip" }
+                  = d.input :description, label: 'Notes', :as => :text, :placeholder => 'Enter a brief description of the upload file...', :required => true, :input_html => { :minlength => 1, :maxlength => 254 }
+            = f.submit "Add Upload", :class => 'btn btn-primary', :id => "upload_submit"
+
+:javascript
+
+  // Hide the processing div and show the form
+  $('#processing-document').hide();
+  $('#documents').show();
+
+  $.extend(jQuery.validator.messages, {
+    extension: "Please attach a file with a valid extension {0}."
+  });
+
+  // jquery validations
+  $('.document_form').validate({
+    ignore: [], //validate hidden fields
+    submitHandler: function(form) {
+      $('#processing-document').show();
+      $('#documents').hide();
+      form.submit();
+    }
+  });
+
+  $(function () {
+    $('.process_link').click(function () {
+      $('#processing-document').show();
+      $('#documents').hide();
+    });
+  });

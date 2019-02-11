@@ -29,7 +29,7 @@
       :page_size => current_user.num_table_rows,
 
       :sesort_order => 'asc',
-      :sortable => 'false',
+      :sortable => 'true',
       :click_to_select => 'false',
       :search => 'false',
       :sticky_header => 'true',
@@ -46,14 +46,14 @@
       %thead
         %tr
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'structure_status_type'}}= 'Status'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'organization'}}= 'Organization'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'bridge_type'}}= 'Bridge Type'
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= 'Status'
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'organization'}}= 'Organization'
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_type'}}= 'Bridge Type'
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= 'Facility Carried'
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= 'Feature Intersected'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'description'}}= 'Description'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'region'}}= 'Region'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'maintenance_section'}}= 'Maintenance Section'
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'description'}}= 'Description'
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= 'Region'
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= 'Maintenance Section'
           %th.right{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= 'Length'
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= 'Last Inspection Date'
 

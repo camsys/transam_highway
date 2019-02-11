@@ -24,6 +24,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'rails-data-migrations'
 
+  s.add_dependency 'bootstrap-sass', '~> 3.2.0' # Lock to 3.2 for now as glyphicons fail in 3.3
+
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "factory_bot_rails"
   s.add_development_dependency "database_cleaner"

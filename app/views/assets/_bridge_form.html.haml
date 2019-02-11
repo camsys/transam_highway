@@ -10,9 +10,6 @@
     %a{:href => '#bridge_description', :data =>{:toggle => 'tab'}}
       Bridge Description
   %li
-    %a{:href => '#bridge_condition', :data =>{:toggle => 'tab'}}
-      Bridge Condition and Appraisal
-  %li
     %a{:href => '#structure', :data =>{:toggle => 'tab'}}
       Highway Structure
 
@@ -84,7 +81,6 @@
     .tab-pane.fade.in#bridge_description
       .col-sm-6
         = f.input :facility_carried
-        = f.association :operational_status_type, collection: OperationalStatusType.active
         = f.association :main_span_material_type, collection: StructureMaterialType.active
         = f.association :main_span_design_construction_type, collection: DesignConstructionType.active
         = f.association :approach_spans_material_type, collection: StructureMaterialType.active
@@ -102,23 +98,7 @@
         = f.association :wearing_surface_type, collection: WearingSurfaceType.active	 
         = f.association :membrane_type, collection: MembraneType.active
         = f.association :deck_protection_type, collection: DeckProtectionType.active
-        = f.association :scour_critical_bridge_type, collection: ScourCriticalBridgeType.active
-        
-    .tab-pane.fade.in#bridge_condition
-      .col-sm-6
-        = f.association :deck_condition_rating_type, collection: BridgeConditionRatingType.active
-        = f.association :superstructure_condition_rating_type, collection: BridgeConditionRatingType.active
-        = f.association :substructure_condition_rating_type, collection: BridgeConditionRatingType.active
-        = f.association :channel_condition_type, collection: ChannelConditionType.active
 
-      .col-sm-6
-        = f.association :structural_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
-        = f.association :deck_geometry_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
-        = f.association :underclearance_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
-        = f.association :waterway_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
-        = f.association :approach_alignment_appraisal_rating_type, collection: BridgeAppraisalRatingType.active
-
-        
     .tab-pane.fade.in#structure
       .col-sm-6
         = f.association :route_signing_prefix, collection: RouteSigningPrefix.active

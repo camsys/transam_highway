@@ -4,7 +4,7 @@ class BridgeConditionRatingType < ApplicationRecord
   scope :active, -> { where(:active => true) }
 
   def to_s
-    name
+    "#{code} - #{name}"
   end
 
   # Return code as integer or nil
