@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :field_reference_table do
+  factory :field_reference do
     name { "MyString" }
     label { "MyString" }
     number { "MyString" }
