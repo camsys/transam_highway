@@ -2,25 +2,37 @@
 
 .tab-pane.fade#id
   .tab-content
-    %legend Identification
+    %legend
+      Identification
+      = render 'assets/edit_actions'
     = render "#{prefix}/identification_form"
 .tab-pane.fade#location
   .tab-content
-    %legend Location
+    %legend
+      Location
+      = render 'assets/edit_actions'
     = render "#{prefix}/location_form"
 .tab-pane.fade#usage
   .tab-content
-    %legend Usage
+    %legend
+      Usage
+      = render 'assets/edit_actions'
     = render "#{prefix}/usage_form"
 .tab-pane.fade#candm
   .tab-content
-    %legend Construction & Material
+    %legend
+      Construction & Material
+      = render 'assets/edit_actions'
     = render "#{prefix}/construction_material_form"
 .tab-pane.fade#gandl
   .tab-content
-    %legend Geometry & Layout
+    %legend
+      Geometry & Layout
+      = render 'assets/edit_actions'
     = render "#{prefix}/geometry_layout_form"
 .tab-pane.fade#inspection
   .tab-content
-    %legend Inspection Scheduling
+    %legend
+      Inspection Scheduling
+      = render 'assets/edit_actions'
     = render "#{prefix}/inspection_scheduling_form"
