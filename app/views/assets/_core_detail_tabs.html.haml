@@ -1,3 +1,3 @@
-= nav_tab_count_tag("#imag", "Photos", @asset.images.count)
+= nav_tab_count_tag("#imag", "Photos", Image.where(base_imagable: @asset.transam_asset).count)
 = nav_tab_count_tag("#docs", "Documents", @asset.documents.count)
 = nav_tab_count_tag("#hist", "Events", @asset.asset_events.count)

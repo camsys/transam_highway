@@ -1,20 +1,36 @@
 :css
-  .image-placeholder {
-    width: 145px; 
-    height: 100px; 
-    display: inline-block; 
-    border: 1px solid;
+  .carousel .item {
+    height: 300px;
+  }
+
+  .carousel .item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 300px;
   }
 .col-sm-4
   - condition_link = @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
   = "Condition: #{condition_link}".html_safe
 .col-sm-4
-  .image-placeholder
-    Image goes here
-  .image-placeholder
-    Image goes here
-  .image-placeholder
-    Image goes here
+  #recentImagesCarousel.carousel.slide{data: {ride: "carousel"}}
+    %ol.carousel-indicators
+      %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
+      %li{data: {target: "#recentImagesCarousel", slide_to: "1"}}
+      %li{data: {target: "#recentImagesCarousel", slide_to: "2"}}
+    .carousel-inner
+      - Image.where(base_imagable: @asset.transam_asset).limit(3).each_with_index do |img, idx|
+        - if idx == 0
+          .item.active
+            = image_tag(img.image.url)
+        - else
+          .item
+            = image_tag(img.image.url)
+    %a.left.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"prev"}}
+      %span.glyphicon.glyphicon-chevron-left
+    %a.right.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"next"}}
+      %span.glyphicon.glyphicon-chevron-right
 .col-sm-4
   .row
     = render 'map_thumbnail'
