@@ -45,15 +45,15 @@
 
       %thead
         %tr
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= 'Status'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'organization'}}= 'Organization'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= 'Feature Intersected'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'description'}}= 'Description'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= 'Region'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= 'Maintenance Section'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= 'Length'
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= 'Last Inspection Date'
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'organization'}}= reference_label('highway_structures', 'transam_assets.organization_id', 'Organization')
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= reference_label('highway_structures', 'features_intersected', 'Feature Intersected')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'description'}}= reference_label('highway_structures', 'transam_assets.description', 'Description')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label('bridges', 'length', 'Length')
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')
 
 = render 'shared/table_formatters'
 

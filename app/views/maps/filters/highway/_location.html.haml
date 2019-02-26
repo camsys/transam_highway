@@ -13,4 +13,4 @@
         Location
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        = @search_form.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: 'Region', item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
+        = @search_form.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: reference_label('highway_structures', 'region_id', 'Region'), item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
