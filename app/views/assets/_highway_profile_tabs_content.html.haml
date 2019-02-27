@@ -4,35 +4,29 @@
   .tab-content
     %legend
       Identification
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/identification_form"
 .tab-pane.fade#location
   .tab-content
     %legend
       Location
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/location_form"
 .tab-pane.fade#usage
   .tab-content
     %legend
       Usage
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/usage_form"
 .tab-pane.fade#candm
   .tab-content
     %legend
       Construction & Material
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/construction_material_form"
 .tab-pane.fade#gandl
   .tab-content
     %legend
       Geometry & Layout
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/geometry_layout_form"
 .tab-pane.fade#inspection
   .tab-content
     %legend
       Inspection Scheduling
-      = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
     = render "#{prefix}/inspection_scheduling_form"

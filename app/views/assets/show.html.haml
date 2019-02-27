@@ -23,12 +23,9 @@
   .col-sm-12#profile
     .panel.panel-default
       .panel-heading
-        .row
-          .col-sm-10
-            %h3.panel-title
-              %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}Profile Attributes
-          .col-sm-2
-            = # render 'actions'
+        %h3.panel-title
+          %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}Profile Attributes
+          = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
       #collapse-profile.panel-collapse.collapse.in
         .panel-body
           = render 'profile'        
