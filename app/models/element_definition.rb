@@ -6,6 +6,8 @@ class ElementDefinition < ApplicationRecord
   belongs_to :assembly_type
   belongs_to :element_classification
 
+  has_many :elements
+  
   validates :number, :uniqueness => true
 
   def to_s
