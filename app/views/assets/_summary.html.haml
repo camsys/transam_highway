@@ -1,6 +1,6 @@
 :css
   .carousel .item {
-    height: 300px;
+    height: 225px;
   }
 
   .carousel .item img {
@@ -8,32 +8,52 @@
     top: 0;
     left: 0;
     min-width: 100%;
-    height: 300px;
+    height: 225px;
   }
 .col-sm-4
   - condition_link = @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
   = "Condition: #{condition_link}".html_safe
 .col-sm-4
-  #recentImagesCarousel.carousel.slide{data: {ride: "carousel"}}
-    %ol.carousel-indicators
-      %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
-      %li{data: {target: "#recentImagesCarousel", slide_to: "1"}}
-      %li{data: {target: "#recentImagesCarousel", slide_to: "2"}}
-    .carousel-inner
-      - Image.where(base_imagable: @asset.transam_asset).limit(3).each_with_index do |img, idx|
-        - if idx == 0
-          .item.active
-            = image_tag(img.image.url)
-        - else
-          .item
-            = image_tag(img.image.url)
-    %a.left.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"prev"}}
-      %span.glyphicon.glyphicon-chevron-left
-    %a.right.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"next"}}
-      %span.glyphicon.glyphicon-chevron-right
+  - if Image.where(base_imagable: @asset.transam_asset, classification: ['Roadway', 'Elevation', 'Superstructure']).count > 0
+    #recentImagesCarousel.carousel.slide
+      %ol.carousel-indicators
+        %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
+        %li{data: {target: "#recentImagesCarousel", slide_to: "1"}}
+        %li{data: {target: "#recentImagesCarousel", slide_to: "2"}}
+      .carousel-inner
+        - count = 0
+        - active_set = false
+
+        - roadway_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Roadway')
+        - if roadway_img.present?
+          .item{class: active_set ? '' : 'active'}
+            = image_tag(roadway_img.image.url)
+            .carousel-caption
+              .h5 Roadway
+          - active_set = true
+
+        - elevation_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Elevation')
+        - if elevation_img.present?
+          .item{class: active_set ? '' : 'active'}
+            = image_tag(elevation_img.image.url)
+            .carousel-caption
+              .h5 Elevation
+          - active_set = true
+
+        - superstructure_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Superstructure')
+        - if superstructure_img.present?
+          .item{class: active_set ? '' : 'active'}
+            = image_tag(superstructure_img.image.url)
+            .carousel-caption
+              .h5 Superstructure
+
+      %a.left.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"prev"}}
+        %span.glyphicon.glyphicon-chevron-left
+      %a.right.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"next"}}
+        %span.glyphicon.glyphicon-chevron-right
 .col-sm-4
   .row
     = render 'map_thumbnail'
-  .row
+  .row.text-center
     #{@asset.geometry.try(:y)}, #{@asset.geometry.try(:x)}
         
