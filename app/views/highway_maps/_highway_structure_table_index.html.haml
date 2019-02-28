@@ -47,9 +47,9 @@
         %tr
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'organization'}}= reference_label('highway_structures', 'transam_assets.organization_id', 'Organization')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= reference_label('highway_structures', 'features_intersected', 'Feature Intersected')
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'description'}}= reference_label('highway_structures', 'transam_assets.description', 'Description')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'location_description'}}= reference_label('highway_structures', 'location_description', 'Location Description')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label('bridges', 'length', 'Length')

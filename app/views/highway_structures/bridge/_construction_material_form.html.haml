@@ -1,5 +1,5 @@
-= editable_asset_association_tag(@asset, :main_span_material_type, reference_label('bridges', 'main_span_material_type_id', 'Main Span Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-= editable_asset_association_tag(@asset, :main_span_design_construction_type, reference_label('bridges', 'main_span_design_construction_type_id', 'Main Span Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :main_span_material_type, reference_label('highway_structures', 'main_span_material_type_id', 'Main Span Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :main_span_design_construction_type, reference_label('highway_structures', 'main_span_design_construction_type_id', 'Main Span Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
 = editable_asset_association_tag(@asset, :approach_spans_material_type, reference_label('bridges', 'approach_spans_material_type_id', 'Approach Spans Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
 = editable_asset_association_tag(@asset, :approach_spans_design_construction_type, reference_label('bridges', 'approach_spans_design_construction_type_id', 'Approach Spans Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
 
