@@ -3,6 +3,9 @@
 = editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried'))
 = editable_asset_field_tag(@asset, :features_intersected, reference_label('highway_structures', 'features_intersected', 'Feature Intersected'))
 = editable_asset_field_tag(@asset, :milepoint, reference_label('highway_structures', 'milepoint', 'Milepoint'))
+= editable_asset_field_tag(@asset, :manufacture_year, reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built'), required: true, type: 'number', min: get_system_asset_starting_year, max: Date.today.year)
+= editable_asset_association_tag(@asset, :maintenance_responsibility, reference_label('highway_structures', 'maintenance_responsibility_id', 'Maintenance Responsibility'))
+= editable_asset_association_tag(@asset, :owner, reference_label('highway_structures', 'owner_id', 'Owner'))
 %legend
   %h5 Border Bridge
 .row

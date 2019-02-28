@@ -11,3 +11,7 @@
 .row
   .col-sm-6
     = editable_asset_association_tag(@asset, :structure_status_type, reference_label('highway_structures', 'structure_status_type_id', 'Status'))
+
+.row
+  .col-sm-6
+    = editable_asset_field_tag(@asset, :is_temporary, reference_label('highway_structures', 'is_temporary', 'Temporary Structure Designation'), type: 'boolean')
