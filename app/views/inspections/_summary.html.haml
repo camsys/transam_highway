@@ -4,4 +4,13 @@
 = format_field("Temperature", @inspection.temperature)
 = format_field("Weather", @inspection.weather)
 %hr
-= format_as_text(@inspection.notes)
+.control-group
+  %label.display-label
+    Bridge Notes
+  .display-value
+    = format_as_text(@inspection.highway_structure.remarks)
+.control-group
+  %label.display-label
+    Inspection Notes
+  .display-value
+    = format_as_text(@inspection.notes)
