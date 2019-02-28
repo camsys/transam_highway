@@ -3,6 +3,9 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
+  belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
+
   belongs_to :route_signing_prefix
 
   belongs_to :structure_status_type
