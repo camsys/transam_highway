@@ -120,6 +120,7 @@ class Bridge < TransamAssetRecord
       state: 'CO',
       manufacture_year: bridge_hash['YEARBUILT'],
       # HighwayStructure
+      structure_number: bridge_hash['STRUCT_NUM'],
       facility_carried: bridge_hash['FACILITY'],
       features_intersected: bridge_hash['FEATINT'],
       location_description: bridge_hash['LOCATION'],
