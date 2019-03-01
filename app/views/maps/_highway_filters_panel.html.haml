@@ -12,6 +12,7 @@
     filters['asset_tag'] = $('#searcher_asset_tag').val();
     filters['region_code'] = $('.searcher_region_code input:checked').map(function(){return $(this).val();}).get();
     filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
+    filters['owner_id'] = $('.searcher_owner_id option:selected').val();
 
     return filters;
   }
@@ -27,5 +28,8 @@
       filters['structure_status_type_code'].forEach(function(type_code) {
         $('.searcher_structure_status_type_code input[value=' + type_code +']').prop('checked', true);
       });
+    }
+    if(filters['owner_id']) {
+      $('.searcher_owner_id option[value=' + filters['owner_id'] +']').prop('selected', true);
     }
   }
