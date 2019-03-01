@@ -132,9 +132,9 @@ class Bridge < TransamAssetRecord
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
       # Bridge
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
-      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN']),
+      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
       approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
-      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR']),
+      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR'].rjust(2, '0')),
       num_spans_main: bridge_hash['MAINSPANS'].to_i,
       num_spans_approach: bridge_hash['APPSPANS'].to_i,
       deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
