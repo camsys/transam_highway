@@ -22,13 +22,13 @@
     .display-value= @asset.inspection_frequency
   .form-group
     %label.control-label= reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
-    .display-value= @asset.inspections.ordered.first.try(:deck_condition_rating_type)
+    .display-value= @asset.bridge_conditions.ordered.first.try(:deck_condition_rating_type)
   .form-group
     %label.control-label= reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
-    .display-value= @asset.inspections.ordered.first.try(:superstructure_condition_rating_type)
+    .display-value= @asset.bridge_conditions.ordered.first.try(:superstructure_condition_rating_type)
   .form-group
     %label.control-label= reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
-    .display-value= @asset.inspections.ordered.first.try(:substructure_condition_rating_type)
+    .display-value= @asset.bridge_conditions.ordered.first.try(:substructure_condition_rating_type)
   .form-group
     %label.control-label= reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
     .display-value= @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
