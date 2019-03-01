@@ -12,11 +12,11 @@
   %legend.asset-subheader
 
 #table_actions.btn-toolbar
-  .btn-group.table-button-group.pull-right
-    = render 'highway_maps/map_toggle_button'
   - table_dom_id = SecureRandom.hex
 
   .table-responsive
+    .btn-group.table-button-group.pull-right
+      = render 'highway_maps/map_toggle_button'
     %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
       :url => table_highway_maps_path(:format => :json, params: {searcher: @search_params || {}}),
       :card_view => "false",
