@@ -11,8 +11,28 @@
     height: 225px;
   }
 .col-sm-4
-  - condition_link = @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
-  = "Condition: #{condition_link}".html_safe
+  .form-group
+    %label.control-label= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
+    .display-value= @asset.asset_subtype
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'owner_id', 'Organization')
+    .display-value= @asset.owner
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'inspection_frequency', 'Routine Inspection Frequency')
+    .display-value= @asset.inspection_frequency
+  .form-group
+    %label.control-label= reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
+    .display-value= @asset.inspections.ordered.first.try(:deck_condition_rating_type)
+  .form-group
+    %label.control-label= reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
+    .display-value= @asset.inspections.ordered.first.try(:superstructure_condition_rating_type)
+  .form-group
+    %label.control-label= reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
+    .display-value= @asset.inspections.ordered.first.try(:substructure_condition_rating_type)
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+    .display-value= @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
+
 .col-sm-4
   - if Image.where(base_imagable: @asset.transam_asset, classification: ['Roadway', 'Elevation', 'Superstructure']).count > 0
     #recentImagesCarousel.carousel.slide
