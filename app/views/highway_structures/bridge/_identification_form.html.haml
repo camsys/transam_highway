@@ -16,7 +16,7 @@
   .col-sm-2
     = editable_asset_association_tag(@asset, :border_bridge_state, reference_label('bridges', 'border_bridge_state', 'State (border)'), [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
   .col-sm-2
-    = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'))
+    = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
   .col-sm-2
-    = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'))
+    = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
     
