@@ -7,4 +7,7 @@ class MembraneType < ApplicationRecord
     name
   end
 
+  def name 
+    "#{code} - #{self[:name]}"
+  end
 end

@@ -1,0 +1,26 @@
+.col-sm-6.col-md-3
+  .row
+    = editable_asset_field_tag(@asset, :inspection_date, reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date'), type: 'date')
+  .row
+    = editable_asset_association_tag(@asset, :inspection_frequency, reference_label('highway_structures', 'inspection_frequency', 'Routine Inspection Frequency'), [[12, 12], [24, 24], [48, 48], [72, 72]], suffix: '')
+.col-sm-6.col-md-3
+  .row
+    = editable_asset_field_tag(@asset, :fracture_critical_inspection_required, reference_label('highway_structures', 'fracture_critical_inspection_required', 'Fracture Critical Inspection Required'), type: 'boolean')
+  .row
+    = editable_asset_association_tag(@asset, :fracture_critical_inspection_frequency, reference_label('highway_structures', 'fracture_critical_inspection_frequency', 'Fracture Critical Inspection Frequency'), [[12, 12], [24, 24], [48, 48], [72, 72]], suffix: '')
+  .row
+    = editable_asset_field_tag(@asset, :fracture_critical_inspection_date, reference_label('highway_structures', 'fracture_critical_inspection_date', 'Fracture Critical Details (critical feature)'), type: 'date')
+.col-sm-6.col-md-3
+  .row
+    = editable_asset_field_tag(@asset, :underwater_inspection_required, reference_label('highway_structures', 'underwater_inspection_required', 'Underwater Inspection Required'), type: 'boolean')
+  .row
+    = editable_asset_association_tag(@asset, :underwater_inspection_frequency, reference_label('highway_structures', 'underwater_inspection_frequency', 'Underwater Inspection Frequency'), [[12, 12], [24, 24], [48, 48], [72, 72]], suffix: '')
+  .row
+    = editable_asset_field_tag(@asset, :underwater_inspection_date, reference_label('highway_structures', 'underwater_inspection_date', 'Underwater Inspection (critical feature)'), type: 'date')
+.col-sm-6.col-md-3
+  .row
+    = editable_asset_field_tag(@asset, :other_special_inspection_required, reference_label('highway_structures', 'other_special_inspection_required', 'Other Special Inspection Required'), type: 'boolean')
+  .row
+    = editable_asset_association_tag(@asset, :other_special_inspection_frequency, reference_label('highway_structures', 'other_special_inspection_frequency', 'Other Special Inspection Frequency'), [[12, 12], [24, 24], [48, 48], [72, 72]], suffix: '')
+  .row
+    = editable_asset_field_tag(@asset, :other_special_inspection_date, reference_label('highway_structures', 'other_special_inspection_date', 'Other Special Inspection (critical feature)'), type: 'date')

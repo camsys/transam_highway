@@ -4,3 +4,32 @@
 = render 'maps/filters/highway/ownership'
 = render 'maps/filters/highway/usage'
 = render 'maps/filters/highway/other'
+
+:javascript
+  function cache_highway_filters() {
+    var filters = {};
+
+    filters['asset_tag'] = $('#searcher_asset_tag').val();
+    filters['region_code'] = $('.searcher_region_code input:checked').map(function(){return $(this).val();}).get();
+    filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
+    filters['owner_id'] = $('.searcher_owner_id option:selected').val();
+
+    return filters;
+  }
+
+  function load_cached_highway_filters(filters) {
+    $('#searcher_asset_tag').val(filters['asset_tag']);
+    if(filters['region_code']) {
+      filters['region_code'].forEach(function(region_code) {
+        $('.searcher_region_code input[value=' + region_code +']').prop('checked', true);
+      });
+    }
+    if(filters['structure_status_type_code']) {
+      filters['structure_status_type_code'].forEach(function(type_code) {
+        $('.searcher_structure_status_type_code input[value=' + type_code +']').prop('checked', true);
+      });
+    }
+    if(filters['owner_id']) {
+      $('.searcher_owner_id option[value=' + filters['owner_id'] +']').prop('selected', true);
+    }
+  }

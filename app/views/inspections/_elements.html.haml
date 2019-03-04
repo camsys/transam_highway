@@ -36,9 +36,9 @@
               :show_export => 'true',
               :id_field => 'object_key',
               :export_types => "['csv', 'txt', 'excel']",
-              :state_save => 'true',
-              :state_save_id_table => "inspections_id",
-              :state_save_expire => "1y",
+              :cookie => 'true',
+              :cookie_id_table => "inspections_id",
+              :cookie_expire => "1y",
               :maintain_selected => 'true',
               :single_select => 'false'}}
         %thead
@@ -53,12 +53,12 @@
             %th.center CS 4
 
         %tbody
-          - @inspection.elements.each do |element|
+          - @inspection.elements.ordered.each do |element|
             = render partial: "element_row", locals: {element: element, indent: 0, html_class: 'element'}
-            - element.children.each do |bme|
+            - element.children.ordered.each do |bme|
               = render partial: "element_row", locals: {element: bme, indent: 1, html_class: 'bme'}
-              - bme.defects.each do |defect|
+              - bme.defects.ordered.each do |defect|
                 = render partial: "defect_row", locals: {defect: defect, indent: 2}
-            - element.defects.each do |defect|
+            - element.defects.ordered.each do |defect|
               = render partial: "defect_row", locals: {defect: defect, indent: 1}
           

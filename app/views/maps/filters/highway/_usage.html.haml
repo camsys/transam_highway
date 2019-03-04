@@ -5,4 +5,4 @@
         Usage
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        = @search_form.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: 'Status'
+        = @search_form.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: reference_label('highway_structures', 'structure_status_type_id', 'Status')

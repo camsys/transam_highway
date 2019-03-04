@@ -1,4 +1,4 @@
-%div{style: "min-width:200px;"}
+%div{style: "min-width:350px;"}
   .row{style: "border-top:1px solid #CCCCCC;"}
     .col-md-3
       %i.fa.fa-2x.fa-tag
@@ -7,7 +7,7 @@
   .row{style: "border-top:1px solid #CCCCCC;border-bottom:1px solid #CCCCCC;"}
     .col-md-12
       .popup-content
-        = format_field("Type", asset.asset_type.name )
-        = format_field("Description", asset.description )
-        = format_field("Organization", asset.organization )
-        = format_field("Condition", asset.calculated_condition&.titleize) 
+        = format_field(reference_label('highway_structures', 'highway_structurible_type', 'Asset Class'), asset.asset_type.name )
+        = format_field(reference_label('highway_structures', 'location_description', "Location Description"), asset.location_description )
+        = format_field(reference_label('highway_structures', 'owner_id', 'Owner'), asset.owner )
+        = format_field(reference_label('highway_structures', 'calculated_condition', 'Overall Condition'), asset.calculated_condition&.titleize) 

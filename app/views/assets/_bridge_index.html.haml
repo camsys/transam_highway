@@ -33,25 +33,25 @@
       :export_types => "['csv', 'txt', 'excel']",
       :show_export => 'true',
       :show_columns => 'true',
-      :state_save => 'true',
-      :state_save_id_table => "highway_assets_id",
-      :state_save_expire => "1y",
+      :cookie => 'true',
+      :cookie_id_table => "highway_assets_id",
+      :cookie_expire => "1y",
       :show_multi_sort => 'false',
       :single_select => 'false'}}
 
       %thead
         %tr
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= 'Structure Number'
-          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= 'Status'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'organization'}}= 'Organization'
-          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_type'}}= 'Bridge Type'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= 'Facility Carried'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= 'Feature Intersected'
-          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'description'}}= 'Description'
-          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= 'Region'
-          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= 'Maintenance Section'
-          %th.right{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= 'Length'
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= 'Last Inspection Date'
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_type'}}= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= reference_label('highway_structures', 'features_intersected', 'Feature Intersected')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'location_description'}}= reference_label('highway_structures', 'location_description', 'Location Description')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
+          %th.right{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label('bridges', 'length', 'Length')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')
 
 = render 'shared/table_formatters'
 

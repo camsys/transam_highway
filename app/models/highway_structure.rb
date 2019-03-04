@@ -3,6 +3,9 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
+  belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
+
   belongs_to :route_signing_prefix
 
   belongs_to :structure_status_type
@@ -11,7 +14,7 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :region
 
-  belongs_to :maintenance_responsiblity, class_name: 'StructureAgentType'
+  belongs_to :maintenance_responsibility, class_name: 'StructureAgentType'
   belongs_to :owner, class_name: 'StructureAgentType'
 
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
@@ -122,7 +125,7 @@ class HighwayStructure < TransamAssetRecord
   def as_json(options={})
     super(options).tap do |json|
       json.merge! acting_as.as_json(options)
-      ["organization", "structure_status_type", "region", "maintenance_section"].each do |field|
+      ["organization", "owner", "structure_status_type", "region", "maintenance_section"].each do |field|
         json.merge! field => self.send(field).to_s
       end
       json

@@ -2,80 +2,80 @@
   .col-md-6
     .form-group
       %label.control-label
-        Deck Condition (58)
+        = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
       .display-value
         = @inspection.deck_condition_rating_type
     .form-group
       %label.control-label
-        Superstructure Condition (59)
+        = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
       .display-value
         = @inspection.superstructure_condition_rating_type
     .form-group
       %label.control-label
-        Substructure Condition (60)
+        = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
       .display-value
         = @inspection.substructure_condition_rating_type
     %hr
     .form-group
       %label.control-label
-        Structural Appraisal Rating
+        = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Appraisal Rating')
       .display-value
         = @inspection.structural_appraisal_rating_type
     .form-group
       %label.control-label
-        Deck Geometry Appraisal Rating
+        = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry Appraisal Rating')
       .display-value
         = @inspection.deck_geometry_appraisal_rating_type
     .form-group
       %label.control-label
-        Underclearance Appraisal Rating
+        = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating')
       .display-value
         = @inspection.underclearance_appraisal_rating_type
     .form-group
       %label.control-label
-        Waterway Appraisal Rating
+        = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Appraisal Rating')
       .display-value
         = @inspection.waterway_appraisal_rating_type
     .form-group
       %label.control-label
-        Approach Alignment Appraisal Rating
+        = reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Alignment Appraisal Rating')
       .display-value
         = @inspection.approach_alignment_appraisal_rating_type
   .col-md-6
     .form-group
       %label.control-label
-        Operational Status
+        = reference_label('bridge_conditions', 'operational_status_type_id', 'Operational Status')
       .display-value
         = @inspection.operational_status_type
     .form-group
       %label.control-label
-        Channel/Protection Rating (61)
+        = reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel/Protection Rating')
       .display-value
         = @inspection.channel_condition_type
     .form-group
       %label.control-label
-        Scour Critical Bridge
+        = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
       .display-value
         = @inspection.scour_critical_bridge_type
     %hr
     .form-group
       %label.control-label
-        Railings Safety
+        = reference_label('bridge_conditions', 'railings_safety_type_id', 'Railings Safety')
       .display-value
         = @inspection.railings_safety_type
     .form-group
       %label.control-label
-        Transitions Safety
+        = reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions Safety')
       .display-value
         = @inspection.transitions_safety_type
     .form-group
       %label.control-label
-        Approach Rail Safety
+        = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Rail Safety')
       .display-value
         = @inspection.approach_rail_safety_type
     .form-group
       %label.control-label
-        Approach Rail End Safety
+        = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'Approach Rail End Safety')
       .display-value
         = @inspection.approach_rail_end_safety_type
 

@@ -17,4 +17,4 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'MaintenanceSection'
 ]
 
-Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge']
+Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge', 'FieldReference']

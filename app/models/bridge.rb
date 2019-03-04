@@ -42,6 +42,8 @@ class Bridge < TransamAssetRecord
 
   ]
 
+  NDIGITS = 3
+  
   #-----------------------------------------------------------------------------
   #
   # Class Methods
@@ -118,32 +120,35 @@ class Bridge < TransamAssetRecord
       state: 'CO',
       manufacture_year: bridge_hash['YEARBUILT'],
       # HighwayStructure
+      structure_number: bridge_hash['STRUCT_NUM'],
+      facility_carried: bridge_hash['FACILITY'],
       features_intersected: bridge_hash['FEATINT'],
       location_description: bridge_hash['LOCATION'],
       description: bridge_hash['LOCATION'],
-      length: bridge_hash['LENGTH'],
+      maintenance_responsibility: StructureAgentType.find_by(code: bridge_hash['CUSTODIAN']),
+      owner: StructureAgentType.find_by(code: bridge_hash['OWNER']),
+      length: bridge_hash['TOT_LENGTH'].to_f.round(NDIGITS),
       is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
       # Bridge
-      facility_carried: bridge_hash['FACILITY'],
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
-      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN']),
+      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
       approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
-      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR']),
+      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR'].rjust(2, '0')),
       num_spans_main: bridge_hash['MAINSPANS'].to_i,
       num_spans_approach: bridge_hash['APPSPANS'].to_i,
       deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
       wearing_surface_type: WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE']),
       membrane_type: MembraneType.find_by(code: bridge_hash['DKMEMBTYPE']),
-      deck_protection_type: DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
+      deck_protection_type: DeckProtectionType.find_by(code: bridge_hash['DKPROTECT']),
+      remarks: bridge_hash['NOTES']
     }
 
     # Process roadway fields
     if roadway_hash.is_a?(Array)
-      # There are multiple roadway sections in the XML, find the first "valid" section
+      # There are multiple roadway sections in the XML, for now find the ON section
       roadway_hash.each do |h|
-        # KIND_HWY = ! seems to be a reliable indicator of invalid section
-        unless h['KIND_HWY'] == '!'
+        if h['ON_UNDER'] == '1'
           roadway_hash = h
           break
         end
@@ -154,6 +159,8 @@ class Bridge < TransamAssetRecord
     optional[:route_signing_prefix] = RouteSigningPrefix.find_by(code: roadway_hash['KIND_HWY'])
     # NBI 5D
     optional[:route_number] = roadway_hash['ROUTENUM']
+    # NBI 32
+    optional[:approach_roadway_width] = Uom.convert(roadway_hash['AROADWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS)
     
     # Process lat/lon
     lat = bridge_hash['PRECISE_LAT'].to_f
@@ -162,7 +169,7 @@ class Bridge < TransamAssetRecord
     optional[:longitude] = lon * -1 unless lon == -1
     
     # process milepost
-    optional[:milepoint] = roadway_hash['KMPOST'].to_f * 0.621371
+    optional[:milepoint] = Uom.convert(roadway_hash['KMPOST'].to_f, Uom::KILOMETER, Uom::MILE).round(NDIGITS)
     
     # process district
     # split into region and maintenance section
@@ -181,6 +188,7 @@ class Bridge < TransamAssetRecord
 
     # process inspection data
     last_inspection_date = Date.new
+    inspection_frequency = nil
     unless is_new
       # delete all existing inspection data and refresh
       bridge.bridge_conditions.each(&:destroy)
@@ -192,7 +200,7 @@ class Bridge < TransamAssetRecord
       date = Date.parse(i_hash['INSPDATE'])
       if date > last_inspection_date
         last_inspection_date = date 
-        optional[:inspection_frequency] = i_hash['BRINSPFREQ']
+        inspection_frequency = i_hash['BRINSPFREQ']
       end
       # inspection type
       type = InspectionType.find_by(code: i_hash['INSPTYPE'])
@@ -233,7 +241,8 @@ class Bridge < TransamAssetRecord
       
       inspection.save!
     end
-    bridge.update_attributes(inspection_date: last_inspection_date)
+    bridge.update_attributes(inspection_date: last_inspection_date,
+                             inspection_frequency: inspection_frequency)
 
     elements = {}
 
@@ -245,25 +254,23 @@ class Bridge < TransamAssetRecord
       elem_number = e_hash['ELEM_KEY'].to_i
       
       elem_parent_def = ElementDefinition.find_by(number: e_hash['ELEM_PARENT_KEY'].to_i)
-      Rails.logger.debug "epd: #{elem_parent_def}"
       if elem_parent_def
         # Find parent element
         parent_elem = elements[elem_parent_def.number]
-        Rails.logger.debug "pe: #{parent_elem}"
+        units = elem_parent_def.quantity_unit
         
         # Assume defect or BME
         defect_def = DefectDefinition.find_by(number: elem_number)
 
         if defect_def
-          Rails.logger.debug "dd: #{defect_def}"
           # set quantities
           parent_elem.defects.build(defect_definition: defect_def,
-                                    total_quantity: e_hash['ELEM_QUANTITY'],
+                                    total_quantity: process_quantities(e_hash['ELEM_QUANTITY'], units),
                                     notes: e_hash['ELEM_NOTES'],
-                                    condition_state_1_quantity: e_hash['ELEM_QTYSTATE1'],
-                                    condition_state_2_quantity: e_hash['ELEM_QTYSTATE2'],
-                                    condition_state_3_quantity: e_hash['ELEM_QTYSTATE3'],
-                                    condition_state_4_quantity: e_hash['ELEM_QTYSTATE4'])
+                                    condition_state_1_quantity: process_quantities(e_hash['ELEM_QTYSTATE1'], units),
+                                    condition_state_2_quantity: process_quantities(e_hash['ELEM_QTYSTATE2'], units),
+                                    condition_state_3_quantity: process_quantities(e_hash['ELEM_QTYSTATE3'], units),
+                                    condition_state_4_quantity: process_quantities(e_hash['ELEM_QTYSTATE4'], units))
 
 
         else # Assume BME
@@ -272,7 +279,7 @@ class Bridge < TransamAssetRecord
           if bme_def
             Rails.logger.debug "bd: #{bme_def}"
             parent_elem.children.build(element_definition: bme_def,
-                                       quantity: e_hash['ELEM_QUANTITY'],
+                                       quantity: process_quantities(e_hash['ELEM_QUANTITY'], bme_def.quantity_unit),
                                        notes: e_hash['ELEM_NOTES'])
           end
         end
@@ -284,7 +291,7 @@ class Bridge < TransamAssetRecord
         if elem_def
           # Process element
           element = inspection.elements.build(element_definition: elem_def,
-                                              quantity: e_hash['ELEM_QUANTITY'],
+                                              quantity: process_quantities(e_hash['ELEM_QUANTITY'], elem_def.quantity_unit),
                                               notes: e_hash['ELEM_NOTES'])
           elements[elem_def.number] = element
         end        
@@ -293,6 +300,18 @@ class Bridge < TransamAssetRecord
     end
 
     msg
+  end
+
+  # Convert units if needed and round values
+  def self.process_quantities(value, target_units)
+    case target_units
+    when 'sq feet'
+      Uom.convert(value.to_f, Uom::SQUARE_METER, Uom::SQUARE_FOOT).round(NDIGITS)
+    when 'feet'
+      Uom.convert(value.to_f, Uom::METER, Uom::FEET).round(NDIGITS)
+    else
+      value.to_f.round(NDIGITS)
+    end
   end
   
   #-----------------------------------------------------------------------------

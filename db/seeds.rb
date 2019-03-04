@@ -253,6 +253,12 @@ element_classifications = [
     {name: 'NBE', active: true}, {name: 'BME', active: true}, {name: 'ADE', active: true}, {name: 'None', active: true}
 ]
 
+assembly_types = [
+    {name: 'Deck', active: true}, {name: 'Superstructure', active: true}, 
+    {name: 'Substructure', active: true}, {name: 'Joints', active: true}, 
+    {name: 'Rails', active: true}, {name: 'Other', active: true}
+]
+
 defect_definitions = [
 {number: 1000, short_name: 'Corrosion', long_name: 'Corrosion', description: 'This defect is used to report corrosion of metal and other material elements.'},
 {number: 1010, short_name: 'Cracking', long_name: 'Cracking', description: 'This defect is used to report fatigue cracking in metal and other material elements.'},
@@ -438,7 +444,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types
 }
 
 replace_tables.each do |table_name|

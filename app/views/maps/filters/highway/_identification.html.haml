@@ -5,4 +5,4 @@
         Identification
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        = @search_form.input :asset_tag, label: 'Structure Number'
+        = @search_form.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number'), :input_html => { :data => {:convert => 'uppercase'} }

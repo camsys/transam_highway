@@ -1,16 +1,22 @@
-= editable_asset_field_tag(@asset, :asset_tag, 'Structure Number')
-= editable_asset_association_tag(@asset, :asset_subtype, 'Subtype', AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
-= editable_asset_field_tag(@asset, :facility_carried, 'Facility Carried')
-= editable_asset_field_tag(@asset, :features_intersected, 'Feature Intersected')
-= editable_asset_field_tag(@asset, :milepoint)
+= editable_asset_field_tag(@asset, :asset_tag, reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number'))
+= editable_asset_association_tag(@asset, :asset_subtype, reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type'), AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
+= editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried'))
+= editable_asset_field_tag(@asset, :features_intersected, reference_label('highway_structures', 'features_intersected', 'Feature Intersected'))
+= editable_asset_field_tag(@asset, :milepoint, reference_label('highway_structures', 'milepoint', 'Milepoint'))
+= editable_asset_field_tag(@asset, :manufacture_year, reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built'), required: true, type: 'number', min: get_system_asset_starting_year, max: Date.today.year)
+= editable_asset_association_tag(@asset, :maintenance_responsibility, reference_label('highway_structures', 'maintenance_responsibility_id', 'Maintenance Responsibility'))
+= editable_asset_association_tag(@asset, :owner, reference_label('highway_structures', 'owner_id', 'Owner'))
+.row
+  .col-sm-6
+    = editable_asset_field_tag(@asset, :remarks, type: 'textarea')
+    
 %legend
   %h5 Border Bridge
 .row
   .col-sm-2
-    = editable_asset_association_tag(@asset, :border_bridge_state, 'State (border)', [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
+    = editable_asset_association_tag(@asset, :border_bridge_state, reference_label('bridges', 'border_bridge_state', 'State (border)'), [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
   .col-sm-2
-    = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, '% Resp. (border)')
+    = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
   .col-sm-2
-    = editable_asset_field_tag(@asset, :border_bridge_structure_number, 'Structure Number (border)')
-    
+    = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
     

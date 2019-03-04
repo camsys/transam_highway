@@ -4,7 +4,8 @@ json.organization highway_structure.organization.try(:to_s)
 json.(highway_structure, :asset_tag, :external_id, :description, :manufacture_year)
 
 # Location
-json.(highway_structure, :latitude, :longitude )
+json.latitude highway_structure.try(:geometry).try(:y)
+json.longitude highway_structure.try(:geometry).try(:x)
 address = []
 address << highway_structure.address1 unless highway_structure.address1.blank?
 address << highway_structure.address2 unless highway_structure.address2.blank?

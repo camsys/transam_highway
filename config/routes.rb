@@ -11,7 +11,10 @@ Rails.application.routes.draw do
   # JSON API #
   namespace :api do
     namespace :v1 do
+      get 'reference_data' => 'references#index'
       get 'associations' => 'associations#index'
+      get 'defect_definitions' => 'defect_definitions#index'
+      get 'element_definitions' => 'element_definitions#index'
 
       resources :bridges
       resources :highway_structures
