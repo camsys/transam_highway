@@ -17,6 +17,8 @@ class HighwayStructure < TransamAssetRecord
   belongs_to :maintenance_responsibility, class_name: 'StructureAgentType'
   belongs_to :owner, class_name: 'StructureAgentType'
 
+  belongs_to :highway_significance_type
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections

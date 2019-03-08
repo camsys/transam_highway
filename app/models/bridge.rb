@@ -12,6 +12,15 @@ class Bridge < TransamAssetRecord
   belongs_to :wearing_surface_type
   belongs_to :membrane_type
   belongs_to :deck_protection_type
+  belongs_to :service_on_type
+  belongs_to :service_under_type
+  belongs_to :bridge_toll_type
+  belongs_to :design_load_type
+  belongs_to :operating_rating_method_type, class_name: 'LoadRatingMethodType'
+  belongs_to :inventory_rating_method_type, class_name: 'LoadRatingMethodType'
+  belongs_to :bridge_posting_type
+  belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
+  belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
 
   has_many :bridge_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeCondition'
 
