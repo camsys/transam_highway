@@ -6,7 +6,7 @@ module HighwayAssetMapSearchable
 
   included do
 
-    attr_accessor :region_code, :structure_status_type_code, :owner_id
+    attr_accessor :region_code, :structure_status_type_code, :owner_id, :calculated_condition
 
   end
 
@@ -59,4 +59,8 @@ module HighwayAssetMapSearchable
     highway_klass.where("highway_structures.owner_id": owner_id) unless owner_id.blank?
   end
 
+  def calculated_condition_conditions
+    clean_condition_codes = remove_blanks(calculated_condition)
+    highway_klass.where("highway_structures.calculated_condition": clean_condition_codes) unless clean_condition_codes.empty?
+  end
 end

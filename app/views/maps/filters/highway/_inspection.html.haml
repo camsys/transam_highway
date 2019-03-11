@@ -1,3 +1,6 @@
+:ruby
+  conditions = ['good', 'fair', 'poor', 'unknown'].map{|r| [r.titleize, r]}
+
 #highwayInspectionFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}
@@ -5,3 +8,4 @@
         Inspection
     .panel-collapse{role:"tabpanel"}
       .panel-body
+        = @search_form.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')

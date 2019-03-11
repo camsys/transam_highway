@@ -21,6 +21,8 @@ class BridgeCondition < ApplicationRecord
   belongs_to :approach_rail_safety_type, class_name: 'FeatureSafetyType'
   belongs_to :approach_rail_end_safety_type, class_name: 'FeatureSafetyType'
 
+  after_save :update_calculated_condition
+
   def calculated_condition
     case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
           substructure_condition_rating_type&.value].compact.min
@@ -30,6 +32,20 @@ class BridgeCondition < ApplicationRecord
       'fair'
     when 7..9
       'good'
+    else
+      'unknown'
+    end
+  end
+
+  private
+
+  def update_calculated_condition
+    if self.deck_condition_rating_type_id_changed? || 
+      self.superstructure_condition_rating_type_id_changed? ||
+      self.substructure_condition_rating_type_id_changed?
+      # get bridge
+      br = self.highway_structure.try(:very_specific)
+      br.try(:set_calculated_condition!) if br
     end
   end
 

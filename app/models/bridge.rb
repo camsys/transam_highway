@@ -308,6 +308,9 @@ class Bridge < TransamAssetRecord
       inspection.save!
     end
 
+    # set calculated condition based on existing completed inspections
+    bridge.set_calculated_condition!
+
     msg
   end
 
@@ -328,8 +331,9 @@ class Bridge < TransamAssetRecord
   # Instance Methods
   #
   #-----------------------------------------------------------------------------  
-  def calculated_condition
-    bridge_conditions.ordered.first&.calculated_condition
+  def set_calculated_condition!
+    self.calculated_condition = bridge_conditions.ordered.first&.calculated_condition
+    self.save
   end
   
   def dup

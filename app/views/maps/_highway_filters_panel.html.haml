@@ -13,6 +13,7 @@
     filters['region_code'] = $('.searcher_region_code input:checked').map(function(){return $(this).val();}).get();
     filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
     filters['owner_id'] = $('.searcher_owner_id option:selected').val();
+    filters['calculated_condition'] = $('.searcher_calculated_condition input:checked').map(function(){return $(this).val()}).get();
 
     return filters;
   }
@@ -31,5 +32,10 @@
     }
     if(filters['owner_id']) {
       $('.searcher_owner_id option[value=' + filters['owner_id'] +']').prop('selected', true);
+    }
+    if(filters['calculated_condition']) {
+      filters['calculated_condition'].forEach(function(condition) {
+        $('.searcher_calculated_condition input[value=' + condition +']').prop('checked', true);
+      });
     }
   }
