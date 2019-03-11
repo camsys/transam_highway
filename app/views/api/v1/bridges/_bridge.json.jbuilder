@@ -1,5 +1,5 @@
 # Basic
-json.(bridge, :object_key, :organization_id )
+json.(bridge, :object_key, :guid, :organization_id )
 json.organization bridge.organization.try(:to_s) 
 json.(bridge, :asset_tag, :external_id, :description, :manufacture_year, :milepoint)
 

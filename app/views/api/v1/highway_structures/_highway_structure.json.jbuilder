@@ -1,5 +1,5 @@
 # Basic
-json.(highway_structure, :object_key, :organization_id )
+json.(highway_structure, :object_key, :guid, :organization_id )
 json.organization highway_structure.organization.try(:to_s) 
 json.(highway_structure, :asset_tag, :external_id, :description, :manufacture_year)
 
