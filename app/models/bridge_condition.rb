@@ -37,6 +37,10 @@ class BridgeCondition < ApplicationRecord
     end
   end
 
+  def bridge
+    highway_structure.very_specific
+  end
+
   private
 
   def update_calculated_condition
