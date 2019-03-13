@@ -2,7 +2,11 @@ class CreateRoadways < ActiveRecord::Migration[5.2]
   def change
     create_table :roadways do |t|
       t.string :object_key, null: false, limit: 12
-      t.uuid :guid
+      if ActiveRecord::Base.configurations[Rails.env]['adapter'].include?('mysql2')
+        t.string :guid, limit: 36
+      else
+        t.uuid :guid
+      end
       t.references :transam_asset
       t.string :on_under_indicator
       t.references :route_signing_prefix
