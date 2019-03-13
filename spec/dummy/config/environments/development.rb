@@ -58,4 +58,8 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # Works around issue with writing development_secret
+  # See https://groups.google.com/forum/#!topic/rubyonrails-security/IsQKvDqZdKw
+  config.secret_key_base = SecureRandom.hex(64)
 end
