@@ -1,0 +1,9 @@
+#highwayRoadwayFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
+  .panel.panel-default
+    .panel-heading{role:"tab"}
+      %h5.panel-title
+        Roadway
+    .panel-collapse{role:"tabpanel"}
+      .panel-body
+        /= @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: reference_label('highway_structures', 'service_on_type_id', 'On')
+        /= @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: reference_label('highway_structures', 'service_on_type_id', 'Under')
