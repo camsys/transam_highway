@@ -1,6 +1,9 @@
 class CreateRoadways < ActiveRecord::Migration[5.2]
   def change
     create_table :roadways do |t|
+      t.string :object_key, null: false, limit: 12
+      t.uuid :guid
+      t.references :transam_asset
       t.string :on_under_indicator
       t.references :route_signing_prefix
       t.references :service_level_type
