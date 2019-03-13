@@ -36,4 +36,8 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Works around issue with writing development_secret
+  # See https://groups.google.com/forum/#!topic/rubyonrails-security/IsQKvDqZdKw
+  config.secret_key_base = SecureRandom.hex(64)
 end
