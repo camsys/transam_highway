@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'reference_data' => 'references#index'
       get 'associations' => 'associations#index'
-      get 'inspections' => 'elements#inspections'
+      get 'inspections' => 'inspections#index'
       get 'bridge_conditions' => 'bridge_conditions#index'
       get 'elements' => 'elements#index'
       get 'defects' => 'defects#index'

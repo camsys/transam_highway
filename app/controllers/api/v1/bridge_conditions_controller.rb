@@ -17,10 +17,10 @@ class Api::V1::BridgeConditionsController < Api::ApiController
     end
 
     @bridge_conditions = BridgeCondition.where(transam_asset_id: structure.transam_asset.id)
-    if params[:start_date].blank?
+    unless params[:start_date].blank?
       @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
     end
-    if params[:end_date].blank?
+    unless params[:end_date].blank?
       @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))
     end
   end
