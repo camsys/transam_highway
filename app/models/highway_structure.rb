@@ -24,6 +24,8 @@ class HighwayStructure < TransamAssetRecord
   has_many :elements, through: :inspections
   has_many :defects, through: :elements
 
+  has_many :roadways, foreign_key: :transam_asset_id, dependent: :destroy
+
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
   end
