@@ -59,8 +59,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_roadways
-    #TODO
-    @roadways = []
+    @roadways = Roadway.where(transam_asset_id: @transam_asset_ids)
   end
 
   def query_images

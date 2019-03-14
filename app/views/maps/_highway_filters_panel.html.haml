@@ -21,6 +21,7 @@
     } else {
       filters['service_under_type_id'] = $('.searcher_service_under_type_id input:checked').map(function(){return $(this).val()}).get();
     }
+    filters['on_national_higway_system'] = $('.searcher_on_national_higway_system option:selected').val();;
     return filters;
   }
 
@@ -58,5 +59,9 @@
           $('.searcher_service_under_type_id input[value=' + service_under_type_id +']').prop('checked', true);
         });
       }
+    }
+
+    if(filters['on_national_higway_system']) {
+      $('.searcher_on_national_higway_system option[value=' + filters['on_national_higway_system'] +']').prop('selected', true);
     }
   }

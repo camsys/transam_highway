@@ -22,6 +22,8 @@
           = @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: false
         .service_under_type_filter{style: @searcher.service_type_flag != 'under' ? "display: none;" : ""}
           = @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: false
+        
+        = @search_form.input :on_national_higway_system, collection: [['yes', 'On'],['no', 'Not On'],[nil, "Don't Care"]], label: reference_label('roadways', 'on_national_higway_system', 'NHS')
 
 :javascript
   $(function() {
