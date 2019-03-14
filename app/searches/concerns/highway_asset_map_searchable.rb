@@ -8,7 +8,7 @@ module HighwayAssetMapSearchable
 
     attr_accessor :region_code, :structure_status_type_code, :owner_id, :calculated_condition,
                   :service_type_flag, :service_on_type_id, :service_under_type_id,
-                  :on_national_higway_system
+                  :on_national_highway_system
 
   end
 
@@ -90,7 +90,7 @@ module HighwayAssetMapSearchable
     end
   end
 
-  def on_national_higway_system_conditions
-    highway_klass.where("roadways.on_national_higway_system": on_national_higway_system == 'yes') if on_national_higway_system
+  def on_national_highway_system_conditions
+    highway_klass.where("roadways.on_national_highway_system": on_national_highway_system == 'yes') unless on_national_highway_system.blank?
   end
 end

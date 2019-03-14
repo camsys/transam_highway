@@ -23,18 +23,18 @@
         .service_under_type_filter{style: @searcher.service_type_flag != 'under' ? "display: none;" : ""}
           = @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: false
         
-        = @search_form.input :on_national_higway_system, collection: [['yes', 'On'],['no', 'Not On'],[nil, "Don't Care"]], label: reference_label('roadways', 'on_national_higway_system', 'NHS')
+        = @search_form.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS')
 
 :javascript
   $(function() {
     $("input[name='searcher[service_type_flag]']").on("click", function() {
       if ($(this).val() == 'on') {
         $('.service_under_type_filter').hide();
-        $('.service_under_type_filter').attr('checked', false);
+        $('.service_under_type_filter input:checked').attr('checked', false);
         $('.service_on_type_filter').show();
       } else {
         $('.service_on_type_filter').hide();
-        $('.service_on_type_filter').attr('checked', false);
+        $('.service_on_type_filter input:checked').attr('checked', false);
         $('.service_under_type_filter').show();
       }
     });

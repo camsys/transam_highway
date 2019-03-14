@@ -21,7 +21,7 @@
     } else {
       filters['service_under_type_id'] = $('.searcher_service_under_type_id input:checked').map(function(){return $(this).val()}).get();
     }
-    filters['on_national_higway_system'] = $('.searcher_on_national_higway_system option:selected').val();;
+    filters['on_national_highway_system'] = $('.searcher_on_national_highway_system option:selected').val();;
     return filters;
   }
 
@@ -45,8 +45,11 @@
         $('.searcher_calculated_condition input[value=' + condition +']').prop('checked', true);
       });
     }
-    if(filters['service_type_flag'] == 'on') {
+
+    if(!filters['service_type_flag'] || filters['service_type_flag'] == 'on') {
       $("input[name='searcher[service_type_flag]'][value=on]").prop('checked', true);
+      $('.service_under_type_filter').hide();
+      $('.service_on_type_filter').show();
       if(filters['service_on_type_id']) {
         filters['service_on_type_id'].forEach(function(service_on_type_id) {
           $('.searcher_service_on_type_id input[value=' + service_on_type_id +']').prop('checked', true);
@@ -54,6 +57,8 @@
       }
     } else {
       $("input[name='searcher[service_type_flag]'][value=under]").prop('checked', true);
+      $('.service_on_type_filter').hide();
+      $('.service_under_type_filter').show();
       if(filters['service_under_type_id']) {
         filters['service_under_type_id'].forEach(function(service_under_type_id) {
           $('.searcher_service_under_type_id input[value=' + service_under_type_id +']').prop('checked', true);
@@ -61,7 +66,7 @@
       }
     }
 
-    if(filters['on_national_higway_system']) {
-      $('.searcher_on_national_higway_system option[value=' + filters['on_national_higway_system'] +']').prop('selected', true);
+    if(filters['on_national_highway_system']) {
+      $('.searcher_on_national_highway_system option[value=' + filters['on_national_highway_system'] +']').prop('selected', true);
     }
   }
