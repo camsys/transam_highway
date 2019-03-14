@@ -15,7 +15,12 @@
     filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
     filters['owner_id'] = $('.searcher_owner_id option:selected').val();
     filters['calculated_condition'] = $('.searcher_calculated_condition input:checked').map(function(){return $(this).val()}).get();
-
+    filters['service_type_flag'] = $("input[name='searcher[service_type_flag]']:checked").val();
+    if(filters['service_type_flag'] == 'on') {
+      filters['service_on_type_id'] = $('.searcher_service_on_type_id input:checked').map(function(){return $(this).val()}).get();
+    } else {
+      filters['service_under_type_id'] = $('.searcher_service_under_type_id input:checked').map(function(){return $(this).val()}).get();
+    }
     return filters;
   }
 
@@ -38,5 +43,20 @@
       filters['calculated_condition'].forEach(function(condition) {
         $('.searcher_calculated_condition input[value=' + condition +']').prop('checked', true);
       });
+    }
+    if(filters['service_type_flag'] == 'on') {
+      $("input[name='searcher[service_type_flag]'][value=on]").prop('checked', true);
+      if(filters['service_on_type_id']) {
+        filters['service_on_type_id'].forEach(function(service_on_type_id) {
+          $('.searcher_service_on_type_id input[value=' + service_on_type_id +']').prop('checked', true);
+        });
+      }
+    } else {
+      $("input[name='searcher[service_type_flag]'][value=under]").prop('checked', true);
+      if(filters['service_under_type_id']) {
+        filters['service_under_type_id'].forEach(function(service_under_type_id) {
+          $('.searcher_service_under_type_id input[value=' + service_under_type_id +']').prop('checked', true);
+        });
+      }
     }
   }

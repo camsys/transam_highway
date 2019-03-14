@@ -68,14 +68,14 @@ module HighwayAssetMapSearchable
   end
 
   def service_on_type_id_conditions
-    if service_type_flag == '1'
+    if service_type_flag == 'on'
       clean_service_on_type_ids = remove_blanks(service_on_type_id)
       highway_klass.where("bridges.service_on_type_id": clean_service_on_type_ids) unless clean_service_on_type_ids.empty?
     end
   end
 
   def service_under_type_id_conditions
-    if service_type_flag != '1'
+    if service_type_flag == 'under'
       clean_service_under_type_ids = remove_blanks(service_under_type_id)
       highway_klass.where("bridges.service_under_type_id": clean_service_under_type_ids) unless clean_service_under_type_ids.empty?
     end

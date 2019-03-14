@@ -1,3 +1,4 @@
+- @searcher.service_type_flag = 'on' unless @searcher.service_type_flag
 #highwayRoadwayFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}
@@ -5,5 +6,34 @@
         Roadway
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        /= @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: reference_label('highway_structures', 'service_on_type_id', 'On')
-        /= @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: reference_label('highway_structures', 'service_on_type_id', 'Under')
+        .form-group.required.radio-buttons-inline
+          %label.required.control-label
+            = reference_label('highway_structures', 'service_type', 'Service Type')
+          .pull-right
+            %span
+              %label
+                = radio_button_tag "searcher[service_type_flag]", 'on', @searcher.service_type_flag == 'on'
+                = reference_label('highway_structures', 'service_on_type_id', 'On')
+            %span
+              %label
+                = radio_button_tag "searcher[service_type_flag]", 'under', @searcher.service_type_flag == 'under'
+                = reference_label('highway_structures', 'service_on_type_id', 'Under')
+        .service_on_type_filter{style: @searcher.service_type_flag != 'on' ? "display: none;" : ""}
+          = @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: false
+        .service_under_type_filter{style: @searcher.service_type_flag != 'under' ? "display: none;" : ""}
+          = @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: false
+
+:javascript
+  $(function() {
+    $("input[name='searcher[service_type_flag]']").on("click", function() {
+      if ($(this).val() == 'on') {
+        $('.service_under_type_filter').hide();
+        $('.service_under_type_filter').attr('checked', false);
+        $('.service_on_type_filter').show();
+      } else {
+        $('.service_on_type_filter').hide();
+        $('.service_on_type_filter').attr('checked', false);
+        $('.service_under_type_filter').show();
+      }
+    });
+  });
