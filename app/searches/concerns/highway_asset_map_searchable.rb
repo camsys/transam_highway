@@ -7,7 +7,7 @@ module HighwayAssetMapSearchable
   included do
 
     attr_accessor :region_code, :structure_status_type_code, :owner_id, :calculated_condition,
-                  :service_type_flag, :service_on_type_id, :service_under_type_id,
+                  :on_under_indicator, :service_on_type_id, :service_under_type_id,
                   :on_national_highway_system
 
   end
@@ -77,17 +77,13 @@ module HighwayAssetMapSearchable
   end
 
   def service_on_type_id_conditions
-    if service_type_flag == 'on'
-      clean_service_on_type_ids = remove_blanks(service_on_type_id)
-      highway_klass.where("bridges.service_on_type_id": clean_service_on_type_ids) unless clean_service_on_type_ids.empty?
-    end
+    clean_service_on_type_ids = remove_blanks(service_on_type_id)
+    highway_klass.where("bridges.service_on_type_id": clean_service_on_type_ids) unless clean_service_on_type_ids.empty?
   end
 
   def service_under_type_id_conditions
-    if service_type_flag == 'under'
-      clean_service_under_type_ids = remove_blanks(service_under_type_id)
-      highway_klass.where("bridges.service_under_type_id": clean_service_under_type_ids) unless clean_service_under_type_ids.empty?
-    end
+    clean_service_under_type_ids = remove_blanks(service_under_type_id)
+    highway_klass.where("bridges.service_under_type_id": clean_service_under_type_ids) unless clean_service_under_type_ids.empty?
   end
 
   def on_national_highway_system_conditions
