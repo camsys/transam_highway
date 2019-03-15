@@ -9,7 +9,7 @@ FactoryBot.define do
     map_icon_name { "redIcon" }
   end
 
-  factory :highway_structure_asset_type, :class => :asset_type do
+  factory :highway_structure_type, :class => :asset_type do
     name { "Highway Structure" }
     class_name { "HighwayStructure" } # For core, no concrete classes exist
     description { "Highway Structure" }
