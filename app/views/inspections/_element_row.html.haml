@@ -2,12 +2,12 @@
 %tr{class: "#{html_class}"}
   %td.left!= "#{indent_str}#{html_rjust(element.element_definition, 4)}"
   %td.left!= "#{indent_str}#{element.element_definition.short_name}"
-  %td.right= format_as_decimal(element.quantity)
+  %td.right= format_as_integer(element.quantity)
   %td.left= element.element_definition.quantity_unit
-  %td.right= format_as_decimal(element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity'))
-  %td.right= format_as_decimal(element.defects.sum(:condition_state_2_quantity))
-  %td.right= format_as_decimal(element.defects.sum(:condition_state_3_quantity))
-  %td.right= format_as_decimal(element.defects.sum(:condition_state_4_quantity))
+  %td.right= format_as_integer(element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity'))
+  %td.right= format_as_integer(element.defects.sum(:condition_state_2_quantity))
+  %td.right= format_as_integer(element.defects.sum(:condition_state_3_quantity))
+  %td.right= format_as_integer(element.defects.sum(:condition_state_4_quantity))
 - if element.notes.present?
   %tr.notes
     %td
