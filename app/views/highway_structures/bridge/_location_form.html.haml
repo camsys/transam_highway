@@ -1,9 +1,9 @@
 .col-sm-6
   = editable_asset_field_tag(@asset, :location_description, reference_label('highway_structures', 'location_description', 'Location'))
   .row
-    .col-sm-6
+    .col-sm-6.profile-city
       = editable_asset_field_tag(@asset, :city, reference_label('highway_structures', 'city', '* City'))
-    .col-sm-4
+    .col-sm-4.profile-county
       = editable_asset_field_tag(@asset, :county, reference_label('highway_structures', 'county', 'County'))
     .col-sm-2
       = editable_asset_association_tag(@asset, :state, reference_label('highway_structures', 'state', '* State'), ISO3166::Country['US'].states.keys.map{|k| [k, k]}, suffix: '')
@@ -29,4 +29,23 @@
   .row
     .col-sm-6
       = editable_asset_association_tag(@asset, :maintenance_section, reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section'))
+
+
+:javascript
+  $(function() {
+    $('.profile-city .editable-field').on('shown', function(e, editable) {
+      $('#city_group input').typeahead({
+        items: 10,
+        source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
+      });
+    });
+
+    $('.profile-county .editable-field').on('shown', function(e, editable) {
+      $('#county_group input').typeahead({
+        items: 10,
+        source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
+      });
+    });
+
+  });
 
