@@ -192,6 +192,8 @@ class Bridge < TransamAssetRecord
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
     bridge.attributes = optional
+    # See if guid needs to be initialized
+    bridge.guid = SecureRandom.uuid unless bridge.guid
     # Save
     bridge.save!
 
@@ -287,9 +289,10 @@ class Bridge < TransamAssetRecord
                                               element_classification: bme_class)
           if bme_def
             Rails.logger.debug "bd: #{bme_def}"
-            parent_elem.children.build(element_definition: bme_def,
+            bme = parent_elem.children.build(element_definition: bme_def,
                                        quantity: process_quantities(e_hash['ELEM_QUANTITY'], bme_def.quantity_unit),
                                        notes: e_hash['ELEM_NOTES'])
+            elements[bme_def.number] = bme
           end
         end
         parent_elem.save!
