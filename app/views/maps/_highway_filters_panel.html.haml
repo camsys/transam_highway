@@ -13,7 +13,7 @@
     filters['asset_tag'] = $('#searcher_asset_tag').val();
     filters['region_code'] = $('.searcher_region_code input:checked').map(function(){return $(this).val();}).get();
     filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
-    filters['owner_id'] = $('.searcher_owner_id option:selected').val();
+    filters['owner_id'] = $('.searcher_owner_id input:checked').map(function(){return $(this).val()}).get();
     filters['calculated_condition'] = $('.searcher_calculated_condition input:checked').map(function(){return $(this).val()}).get();
     filters['on_under_indicator'] = $('#service_on_type_header').hasClass('active') ? 'on' : 'under';
     filters['service_on_type_id'] = $('.searcher_service_on_type_id input:checked').map(function(){return $(this).val()}).get();
@@ -37,7 +37,9 @@
     }
 
     if(filters['owner_id']) {
-      $('.searcher_owner_id option[value=' + filters['owner_id'] +']').prop('selected', true);
+      filters['owner_id'].forEach(function(owner_id) {
+        $('.searcher_owner_id input[value=' + owner_id +']').prop('checked', true);
+      });
     }
 
     if(filters['calculated_condition']) {

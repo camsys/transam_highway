@@ -5,4 +5,4 @@
         Ownership
     .panel-collapse{role:"tabpanel"}
       .panel-body
-        = @search_form.input :owner_id, collection: StructureAgentType.active.order(:code).collect{|t| [t.name, t.id]}, label: reference_label('highway_structures', 'owner_id', 'Onwer')
+        = @search_form.input :owner_id, as: :check_boxes, collection: StructureAgentType.active.order(:code).collect{|t| [t.name, t.id]}, label: reference_label('highway_structures', 'owner_id', 'Onwer')

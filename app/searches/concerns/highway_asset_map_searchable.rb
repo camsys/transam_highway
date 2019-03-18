@@ -68,7 +68,8 @@ module HighwayAssetMapSearchable
   end
 
   def owner_id_conditions
-    highway_klass.where("highway_structures.owner_id": owner_id) unless owner_id.blank?
+    clean_owner_ids = remove_blanks(owner_id)
+    highway_klass.where("highway_structures.owner_id": clean_owner_ids) unless clean_owner_ids.empty?
   end
 
   def calculated_condition_conditions
