@@ -98,15 +98,17 @@ class Bridge < TransamAssetRecord
     bridge_hash = hash['bridge']
     roadway_hash = hash['roadway']
 
+    # Structure Key, NBI 8A
     asset_tag = bridge_hash['BRKEY']
 
+    # Structure Class, NBI 24 is 'Bridge'
     bridge = Bridge.find_or_initialize_by(asset_tag: asset_tag)
     required = {}
     is_new = bridge.new_record?
     if is_new
       msg = "Created bridge #{asset_tag}"
       # Set asset required fields
-      # determine correct asset_subtype
+      # determine correct asset_subtype, NBI 43D
       # standardize format
       design_code = bridge_hash['DESIGNMAIN'].rjust(2, '0')
       asset_subtype = DesignConstructionType.find_by(code: design_code).asset_subtype
@@ -125,72 +127,79 @@ class Bridge < TransamAssetRecord
     
     # Extract relevant fields
     optional = {
-      # TransamAsset
+      # TransamAsset, NBI 1, 8, 27
       state: 'CO',
-      manufacture_year: bridge_hash['YEARBUILT'],
-      # HighwayStructure
       structure_number: bridge_hash['STRUCT_NUM'],
-      facility_carried: bridge_hash['FACILITY'],
+      manufacture_year: bridge_hash['YEARBUILT'],
+      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 43A, 43B, 103
       features_intersected: bridge_hash['FEATINT'],
+      facility_carried: bridge_hash['FACILITY'],
       location_description: bridge_hash['LOCATION'],
       description: bridge_hash['LOCATION'],
       maintenance_responsibility: StructureAgentType.find_by(code: bridge_hash['CUSTODIAN']),
       owner: StructureAgentType.find_by(code: bridge_hash['OWNER']),
-      length: bridge_hash['TOT_LENGTH'].to_f.round(NDIGITS),
-      is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
-      # Bridge
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
       main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
+      is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
+      # Bridge, NBI 44A, 44B, 45, 46, 49, 107, 108A, 108B, 108C
       approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
       approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR'].rjust(2, '0')),
       num_spans_main: bridge_hash['MAINSPANS'].to_i,
       num_spans_approach: bridge_hash['APPSPANS'].to_i,
+      length: bridge_hash['TOT_LENGTH'].to_f.round(NDIGITS),
       deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
       wearing_surface_type: WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE']),
       membrane_type: MembraneType.find_by(code: bridge_hash['DKMEMBTYPE']),
       deck_protection_type: DeckProtectionType.find_by(code: bridge_hash['DKPROTECT']),
       remarks: bridge_hash['NOTES']
     }
-
-    # Process roadway fields
-    if roadway_hash.is_a?(Array)
-      # There are multiple roadway sections in the XML, for now find the ON section
-      roadway_hash.each do |h|
-        if h['ON_UNDER'] == '1'
-          roadway_hash = h
-          break
-        end
-      end
-    end
-    # NBI 5A
-    # NBI 5B
-    optional[:route_signing_prefix] = RouteSigningPrefix.find_by(code: roadway_hash['KIND_HWY'])
-    # NBI 5D
-    optional[:route_number] = roadway_hash['ROUTENUM']
-    # NBI 32
-    optional[:approach_roadway_width] = Uom.convert(roadway_hash['AROADWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS)
     
-    # Process lat/lon
-    lat = bridge_hash['PRECISE_LAT'].to_f
-    lon = bridge_hash['PRECISE_LON'].to_f
-    optional[:latitude] = lat unless lat == -1
-    optional[:longitude] = lon * -1 unless lon == -1
-    
-    # process milepost
-    optional[:milepoint] = Uom.convert(roadway_hash['KMPOST'].to_f, Uom::KILOMETER, Uom::MILE).round(NDIGITS)
-    
-    # process district
+    # process district, NBI 2E, 2M
     # split into region and maintenance section
     district = bridge_hash['DISTRICT']
     optional[:region] = Region.find_by(code: district[0])
     optional[:maintenance_section] = MaintenanceSection.find_by(code: district[1])
 
-    # process county & city/placecode
+    # process county & city/placecode, NBI 3, 4
     optional[:county] = District.find_by(code: bridge_hash['COUNTY'],
                                          district_type: DistrictType.find_by(name: 'County')).name
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
+    # Process roadway fields
+    on_hash = {}
+    if roadway_hash.is_a?(Array)
+      # There are multiple roadway sections in the XML, for now find the ON section
+      roadway_hash.each do |h|
+        if h['ON_UNDER'] == '1'
+          on_hash = h
+        end
+        process_roadway(h, bridge)
+      end
+    else
+      process_roadway(roadway_hash, bridge)
+    end
+
+    # process milepost, NBI 11A
+    optional[:milepoint] = Uom.convert(on_hash['KMPOST'].to_f, Uom::KILOMETER, Uom::MILE).round(NDIGITS)
+    
+    # Process lat/lon, NBI 16, 17
+    lat = bridge_hash['PRECISE_LAT'].to_f
+    lon = bridge_hash['PRECISE_LON'].to_f
+    optional[:latitude] = lat unless lat == -1
+    optional[:longitude] = lon * -1 unless lon == -1
+
+    # NBI 5A
+    # NBI 5B
+    optional[:route_signing_prefix] = RouteSigningPrefix.find_by(code: on_hash['KIND_HWY'])
+    # NBI 5D
+    optional[:route_number] = on_hash['ROUTENUM']
+
+    # NBI 32
+    optional[:approach_roadway_width] = Uom.convert(on_hash['AROADWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS)
+    
+    # Process Structure Type
+
     bridge.attributes = optional
     # See if guid needs to be initialized
     bridge.guid = SecureRandom.uuid unless bridge.guid
@@ -198,6 +207,7 @@ class Bridge < TransamAssetRecord
     bridge.save!
 
     # process inspection data
+    # NBI 90, 91
     last_inspection_date = Date.new
     inspection_frequency = nil
     unless is_new
@@ -317,6 +327,45 @@ class Bridge < TransamAssetRecord
     msg
   end
 
+  def self.process_roadway(hash, bridge)
+    roadway = Roadway.new(
+      highway_structure: bridge,
+      on_under_indicator: hash['ON_UNDER'],
+      route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
+      service_level_type: ServiceLevelType.find_by(code: hash['LVL_SRVC']),
+      route_number: hash['ROUTENUM'],
+      min_vertical_clearance: Uom.convert(hash['VCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      on_base_network: hash['ONBASENET'] == '1',
+      lrs_route: hash['LRSINVRT'],
+      lrs_subroute: hash['SUBRTNUM'],
+      functional_class: FunctionalClass.find_by(code: hash['FUNCCLASS']),
+      lanes: hash['LANES'].to_i,
+      average_daily_traffic: hash['ADTTOTAL'].to_i,
+      average_daily_traffic_year: hash['ADTYEAR'].to_i,
+      total_horizontal_clearance: Uom.convert(hash['HCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      traffic_direction_type: TrafficDirectionType.find_by(code: hash['TRAFFICDIR']),
+      on_national_highway_system: hash['NHS_IND'] == '1',
+      average_daily_truck_traffic_percent: hash['TRUCKPCT'].to_i,
+      on_truck_network: hash['TRUCKNET'] = '1',
+      future_average_daily_traffic: hash['ADTFUTURE'].to_i,
+      future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i
+    )
+    # Convert STRAHNET
+    strahnet_code =
+      case hash['DEFHWY']
+      when 1
+        2
+      when 2
+        3
+      when 3
+        4
+      else
+        1
+      end
+    roadway.strahnet_designation_type = StrahnetDesignationType.find_by(code: strahnet_code)
+    roadway.save!
+  end
+  
   # Convert units if needed and round values
   def self.process_quantities(value, target_units)
     case target_units
