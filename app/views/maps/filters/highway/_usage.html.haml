@@ -1,3 +1,4 @@
+- @searcher.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @searcher.structure_status_type_code
 #highwayUsageFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}

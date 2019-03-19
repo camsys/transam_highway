@@ -70,3 +70,8 @@
       $('.searcher_on_national_highway_system option[value=' + filters['on_national_highway_system'] +']').prop('selected', true);
     }
   }
+
+  function reset_highway_filters() {
+    var active_type_code = "#{StructureStatusType.find_by_name('Active').try(:code)}";
+    $('.searcher_structure_status_type_code input[value=' + active_type_code +']').prop('checked', true);
+  }
