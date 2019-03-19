@@ -14,3 +14,16 @@
     .panel-collapse{role:"tabpanel"}
       .panel-body
         = @search_form.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: reference_label('highway_structures', 'region_id', 'Region'), item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
+        = @search_form.input :structure_county, label: reference_label('highway_structures', 'county', 'County'), :input_html => {:autocomplete => 'off'}
+        = @search_form.input :structure_city, label: reference_label('highway_structures', 'city', 'City'), :input_html => {:autocomplete => 'off'}
+
+:javascript
+  $('#searcher_structure_county').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
+  });
+
+  $('#searcher_structure_city').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
+  });

@@ -18,12 +18,17 @@
     filters['on_under_indicator'] = $('#service_on_type_header').hasClass('active') ? 'on' : 'under';
     filters['service_on_type_id'] = $('.searcher_service_on_type_id input:checked').map(function(){return $(this).val()}).get();
     filters['service_under_type_id'] = $('.searcher_service_under_type_id input:checked').map(function(){return $(this).val()}).get();
-    filters['on_national_highway_system'] = $('.searcher_on_national_highway_system option:selected').val();;
+    filters['on_national_highway_system'] = $('.searcher_on_national_highway_system option:selected').val();
+    filters['structure_county'] = $('#searcher_structure_county').val();
+    filters['structure_city'] = $('#searcher_structure_city').val();
     return filters;
   }
 
   function load_cached_highway_filters(filters) {
     $('#searcher_asset_tag').val(filters['asset_tag']);
+    $('#searcher_structure_county').val(filters['structure_county']);
+    $('#searcher_structure_city').val(filters['structure_city']);
+    
     if(filters['region_code']) {
       filters['region_code'].forEach(function(region_code) {
         $('.searcher_region_code input[value=' + region_code +']').prop('checked', true);
