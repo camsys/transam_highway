@@ -25,7 +25,8 @@ class HighwayStructure < TransamAssetRecord
   has_many :elements, through: :inspections
   has_many :defects, through: :elements
 
-  has_many :roadways, foreign_key: :transam_asset_id, dependent: :destroy
+  has_many :roadways, foreign_key: :transam_asset_id, dependent: :destroy,
+           after_add: :reset_lanes, after_remove: :reset_lanes
 
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
@@ -118,6 +119,12 @@ class HighwayStructure < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
+  def reset_lanes(roadway)
+    self.lanes_on = roadways.on.sum(:lanes)
+    self.lanes_under = roadways.under.sum(:lanes)
+    save!
+  end
+  
   def dup
     super.tap do |new_asset|
       new_asset.transam_asset = self.transam_asset.dup

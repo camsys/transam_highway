@@ -189,6 +189,9 @@ class Bridge < TransamAssetRecord
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
     # Process roadway fields
+    # Clear out any old roadways
+    bridge.roadways.destroy_all unless is_new
+
     on_hash = {}
     if roadway_hash.is_a?(Array)
       # There are multiple roadway sections in the XML, for now find the ON section
@@ -350,7 +353,19 @@ class Bridge < TransamAssetRecord
   end
 
   def self.process_roadway(hash, bridge)
-    roadway = Roadway.new(
+    # Convert STRAHNET
+    strahnet_code =
+      case hash['DEFHWY']
+      when 1
+        2
+      when 2
+        3
+      when 3
+        4
+      else
+        1
+      end
+    bridge.roadways.create!(
       highway_structure: bridge,
       on_under_indicator: hash['ON_UNDER'],
       route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
@@ -370,22 +385,9 @@ class Bridge < TransamAssetRecord
       average_daily_truck_traffic_percent: hash['TRUCKPCT'].to_i,
       on_truck_network: hash['TRUCKNET'] = '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
-      future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i
+      future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
+      strahnet_designation_type: StrahnetDesignationType.find_by(code: strahnet_code)
     )
-    # Convert STRAHNET
-    strahnet_code =
-      case hash['DEFHWY']
-      when 1
-        2
-      when 2
-        3
-      when 3
-        4
-      else
-        1
-      end
-    roadway.strahnet_designation_type = StrahnetDesignationType.find_by(code: strahnet_code)
-    roadway.save!
   end
   
   # Convert units if needed and round values
