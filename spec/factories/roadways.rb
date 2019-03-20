@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :roadway do
+    association :highway_structure
     on_under_indicator { "MyString" }
     route_signing_prefix { nil }
     service_level_type { nil }
@@ -15,7 +16,7 @@ FactoryBot.define do
     total_horizontal_clearance { "9.99" }
     strahnet_designation_type { nil }
     traffic_direction_type { nil }
-    on_national_higway_system { false }
+    on_national_highway_system { false }
     on_federal_lands_highway { false }
     average_daily_truck_traffic_percent { 1 }
     on_truck_network { false }

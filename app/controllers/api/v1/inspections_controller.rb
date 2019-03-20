@@ -27,7 +27,7 @@ class Api::V1::InspectionsController < Api::ApiController
     end
 
     @highway_structure_ids = @highway_structures.pluck(:id)
-    @transam_asset_ids = @highway_structures.pluck("transam_assets.id")
+    @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
   end
 
   def query_bridges
