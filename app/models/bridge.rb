@@ -26,7 +26,6 @@ class Bridge < TransamAssetRecord
 
 
   FORM_PARAMS = [
-    :facility_carried,
     :main_span_material_type_id,
     :main_span_design_construction_type_id,
     :approach_spans_material_type_id,
@@ -131,7 +130,7 @@ class Bridge < TransamAssetRecord
       state: 'CO',
       structure_number: bridge_hash['STRUCT_NUM'],
       manufacture_year: bridge_hash['YEARBUILT'],
-      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 43A, 43B, 103
+      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 37, 43A, 43B, 103
       features_intersected: bridge_hash['FEATINT'],
       facility_carried: bridge_hash['FACILITY'],
       location_description: bridge_hash['LOCATION'],
@@ -139,15 +138,38 @@ class Bridge < TransamAssetRecord
       maintenance_responsibility: StructureAgentType.find_by(code: bridge_hash['CUSTODIAN']),
       owner: StructureAgentType.find_by(code: bridge_hash['OWNER']),
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
+      historical_significance_type: HistoricalSignificanceType.find_by(code: bridge_hash['HISTSIGN']),
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
       main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
       is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
-      # Bridge, NBI 44A, 44B, 45, 46, 49, 107, 108A, 108B, 108C
+      # Bridge, NBI 20, 31, 42A, 42B, 44A, 44B, 45, 46, 48, 49, 50A, 50B, 51, 52, 53, 54A, 54B,
+      # 55A, 55B, 56, 63, 64, 65, 66, 70, 107, 108A, 108B, 108C
+      bridge_toll_type: BridgeTollType.find_by(code: bridge_hash['TOLLFAC']),
+      design_load_type: DesignLoadType.find_by(code: bridge_hash['DESIGNLOAD']),
+      service_on_type: ServiceOnType.find_by(code: bridge_hash['SERVTYPON']),
+      service_under_type: ServiceUnderType.find_by(code: bridge_hash['SERVTYPUND']),
       approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
       approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR'].rjust(2, '0')),
       num_spans_main: bridge_hash['MAINSPANS'].to_i,
       num_spans_approach: bridge_hash['APPSPANS'].to_i,
-      length: bridge_hash['TOT_LENGTH'].to_f.round(NDIGITS),
+      max_span_length: Uom.convert(bridge_hash['MAXSPAN'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      length: Uom.convert(bridge_hash['LENGTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      left_curb_sidewalk_width: Uom.convert(bridge_hash['LFTCURBSW'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      right_curb_sidewalk_width: Uom.convert(bridge_hash['RTCURBSW'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      roadway_width: Uom.convert(bridge_hash['ROADWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      deck_width: Uom.convert(bridge_hash['DECKWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      min_vertical_clearance_above: Uom.convert(bridge_hash['VCLROVER'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      vertical_reference_feature_below: ReferenceFeatureType.find_by(code: bridge_hash['REFVUC']),
+      min_vertical_clearance_below: Uom.convert(bridge_hash['VCLRUNDER'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+
+      lateral_reference_feature_below: ReferenceFeatureType.find_by(code: bridge_hash['REFHUC']),
+      min_lateral_clearance_below_right: Uom.convert(bridge_hash['HCLRURT'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      min_lateral_clearance_below_left: Uom.convert(bridge_hash['HCLRULT'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      operating_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['ORTYPE']),
+      operating_rating: Uom.convert(bridge_hash['ORLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
+      inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE']),
+      inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
+      bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING']),
       deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
       wearing_surface_type: WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE']),
       membrane_type: MembraneType.find_by(code: bridge_hash['DKMEMBTYPE']),
