@@ -77,7 +77,7 @@ class Bridge < TransamAssetRecord
       #
     else
       begin
-        msg = create_or_update_from_xml(io, &block)
+        successful, msg = create_or_update_from_xml(io, &block)
       rescue TypeError, NoMethodError => e
         if Rails.env.sandbox?
           Rails.logger.warn e.message
@@ -100,7 +100,27 @@ class Bridge < TransamAssetRecord
     # Structure Key, NBI 8A
     asset_tag = bridge_hash['BRKEY']
 
-    # Structure Class, NBI 24 is 'Bridge'
+    # Process Structure Class and Structure Type
+    struct_class_code = bridge_hash['USERKEY3']
+    struct_type_code = hash['userbrdg']['structtype']
+
+    case struct_type_code
+    when 'TLS'
+      struct_type_code = 'TLA'
+    when 'TS'
+      struct_class_code = 'BRIDGE'
+    when 'CA'
+      struct_type_code = 'CAC' if struct_class_code == 'CULVERT'
+    when 'CAC', 'CBC', 'PCBC', 'SAC'
+      struct_class_code == 'CULVERT'
+    end
+    
+    unless struct_class_code == 'BRIDGE'
+      msg = "Skipping processing of Structure Class: #{struct_class_code}"
+      return false, msg
+    end
+
+    # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
     bridge = Bridge.find_or_initialize_by(asset_tag: asset_tag)
     required = {}
     is_new = bridge.new_record?
@@ -130,7 +150,7 @@ class Bridge < TransamAssetRecord
       state: 'CO',
       structure_number: bridge_hash['STRUCT_NUM'],
       manufacture_year: bridge_hash['YEARBUILT'],
-      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 37, 43A, 43B, 103
+      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 37, 43A, 43B, 43C, 103
       features_intersected: bridge_hash['FEATINT'],
       facility_carried: bridge_hash['FACILITY'],
       location_description: bridge_hash['LOCATION'],
@@ -141,6 +161,7 @@ class Bridge < TransamAssetRecord
       historical_significance_type: HistoricalSignificanceType.find_by(code: bridge_hash['HISTSIGN']),
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
       main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
+      highway_structure_type: HighwayStructureType.find_by(code: struct_type_code),
       is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
       # Bridge, NBI 20, 31, 42A, 42B, 44A, 44B, 45, 46, 48, 49, 50A, 50B, 51, 52, 53, 54A, 54B,
       # 55A, 55B, 56, 63, 64, 65, 66, 70, 107, 108A, 108B, 108C
@@ -188,6 +209,7 @@ class Bridge < TransamAssetRecord
                                          district_type: DistrictType.find_by(name: 'County')).name
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
+
     # Process roadway fields
     # Clear out any old roadways
     bridge.roadways.destroy_all unless is_new
@@ -349,7 +371,7 @@ class Bridge < TransamAssetRecord
     # set calculated condition based on existing completed inspections
     bridge.set_calculated_condition!
 
-    msg
+    return true, msg
   end
 
   def self.process_roadway(hash, bridge)
