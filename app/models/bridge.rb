@@ -210,6 +210,9 @@ class Bridge < TransamAssetRecord
     optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
                                        district_type: DistrictType.find_by(name: 'Place')).name
 
+    # See if guid needs to be initialized
+    bridge.update_attributes(guid: SecureRandom.uuid) unless bridge.guid
+    
     # Process roadway fields
     # Clear out any old roadways
     bridge.roadways.destroy_all unless is_new
@@ -248,8 +251,6 @@ class Bridge < TransamAssetRecord
     # Process Structure Type
 
     bridge.attributes = optional
-    # See if guid needs to be initialized
-    bridge.guid = SecureRandom.uuid unless bridge.guid
     # Save
     bridge.save!
 
