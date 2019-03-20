@@ -25,7 +25,8 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'ReferenceFeatureType',
   'ServiceLevelType',
   'FunctionalClass',
-  'TrafficDirectionType'
+  'TrafficDirectionType',
+  'StructureAgentType'
 ]
 
 Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge', 'FieldReference', 'District']
