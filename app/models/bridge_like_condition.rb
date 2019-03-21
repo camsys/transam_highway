@@ -1,4 +1,4 @@
-class BridgeCondition < ApplicationRecord
+class BridgeLikeCondition < ApplicationRecord
 
   acts_as :inspection, as: :inspectionible, dependent: :destroy
 

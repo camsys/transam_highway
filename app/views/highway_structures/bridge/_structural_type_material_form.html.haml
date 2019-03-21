@@ -1,5 +1,6 @@
 = editable_asset_association_tag(@asset, :main_span_material_type, reference_label('highway_structures', 'main_span_material_type_id', 'Main Span Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
 = editable_asset_association_tag(@asset, :main_span_design_construction_type, reference_label('highway_structures', 'main_span_design_construction_type_id', 'Main Span Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+<<<<<<< HEAD:app/views/highway_structures/bridge/_structural_type_material_form.html.haml
 /= editable_asset_association_tag(@asset, :structure_type, reference_label('highway_structures', 'structure_type_id', 'Structure Type'), StructureType.active.collect{|x| [x.id, x.name]}, include_blank: true)
 = editable_asset_association_tag(@asset, :asset_subtype, reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type'), AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
 = editable_asset_association_tag(@asset, :approach_spans_material_type, reference_label('bridges', 'approach_spans_material_type_id', 'Approach Spans Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
@@ -10,3 +11,14 @@
 = editable_asset_association_tag(@asset, :wearing_surface_type, reference_label('bridges', 'wearing_surface_type_id', 'wearing_surface_type'.titleize))
 = editable_asset_association_tag(@asset, :membrane_type, reference_label('bridges', 'membrane_type_id', 'membrane_type'.titleize))
 = editable_asset_association_tag(@asset, :deck_protection_type, reference_label('bridges', 'deck_protection_type_id', 'deck_protection_type'.titleize))
+=======
+= editable_asset_association_tag(@asset, :approach_spans_material_type, reference_label('bridge_likes', 'approach_spans_material_type_id', 'Approach Spans Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+= editable_asset_association_tag(@asset, :approach_spans_design_construction_type, reference_label('bridge_likes', 'approach_spans_design_construction_type_id', 'Approach Spans Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+
+= editable_asset_association_tag(@asset, :deck_structure_type, reference_label('bridge_likes', 'deck_structure_type_id', 'deck_structure_type'.titleize))
+= editable_asset_association_tag(@asset, :wearing_surface_type, reference_label('bridge_likes', 'wearing_surface_type_id', 'wearing_surface_type'.titleize))
+= editable_asset_association_tag(@asset, :membrane_type, reference_label('bridge_likes', 'membrane_type_id', 'membrane_type'.titleize))
+= editable_asset_association_tag(@asset, :deck_protection_type, reference_label('bridge_likes', 'deck_protection_type_id', 'deck_protection_type'.titleize))
+=# editable_asset_association_tag(@asset, :scour_critical_bridge_type, reference_label('bridge_likes', 'scour_critical_bridge_type_id', 'scour_critical_bridge_type'.titleize))
+        
+>>>>>>> bridge like and culvert models:app/views/highway_structures/bridge/_construction_material_form.html.haml

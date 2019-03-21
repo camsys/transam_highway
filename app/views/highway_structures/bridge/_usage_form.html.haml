@@ -1,0 +1,17 @@
+.row
+  .col-sm-2
+    = editable_asset_association_tag(@asset, :route_signing_prefix, reference_label('highway_structures', 'route_signing_prefix_id', 'Route'))
+  .col-sm-2
+    = editable_asset_field_tag(@asset, :route_number, reference_label('highway_structures', 'route_number', '&nbsp'))
+
+.row
+  .col-sm-6
+    = editable_asset_association_tag(@asset, :strahnet_designation_type, reference_label('bridge_likes', 'strahnet_designation_type_id', 'strahnet_designation_type'.titleize))
+
+.row
+  .col-sm-6
+    = editable_asset_association_tag(@asset, :structure_status_type, reference_label('highway_structures', 'structure_status_type_id', 'Status'))
+
+.row
+  .col-sm-6
+    = editable_asset_field_tag(@asset, :is_temporary, reference_label('highway_structures', 'is_temporary', 'Temporary Structure Designation'), type: 'boolean')

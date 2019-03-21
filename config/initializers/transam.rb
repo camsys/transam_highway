@@ -29,4 +29,4 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'StructureAgentType'
 ]
 
-Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge', 'FieldReference', 'District']
+Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'BridgeLike', 'FieldReference', 'District']

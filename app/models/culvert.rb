@@ -1,0 +1,2 @@
+class Culvert < ApplicationRecord
+end

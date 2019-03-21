@@ -5,7 +5,7 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
   let!(:test_condition_type) { create(:channel_condition_type) }
   let(:test_association_class) { "ChannelConditionType" }
   let!(:test_bridge) { create(:bridge) }
-  let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure) }
+  let!(:test_inspection) { create(:bridge_like_condition, highway_structure: test_bridge.highway_structure) }
   let!(:test_roadway) { create(:roadway, highway_structure: test_bridge.highway_structure) }
   let!(:test_element) { create(:element, inspection: test_inspection) }
   let!(:test_defect) { create(:defect, inspection: test_inspection, element: test_element) }
@@ -22,7 +22,7 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
       expect(response).to render_template(:index)
       expect(json).not_to be_empty
       expect(json['status']).to eq('success')
-      expect(json['data'].keys).to match_array(['inspections', 'elements', 'structures', 'roadways', 'bridge_conditions', 'images', 'documents'])
+      expect(json['data'].keys).to match_array(['inspections', 'elements', 'structures', 'roadways', 'bridge_like_conditions', 'images', 'documents'])
     end
 
     it 'includes structures data' do 
@@ -36,9 +36,9 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
       expect(json['data']['inspections'][0]["id"]).to eq(test_inspection.guid)
     end
 
-    it 'includes bridge_conditions data' do 
-      expect(json['data']['bridge_conditions'].size).to eq(1)
-      expect(json['data']['bridge_conditions'][0]["id"]).to eq(test_inspection.guid)
+    it 'includes bridge_like_conditions data' do
+      expect(json['data']['bridge_like_conditions'].size).to eq(1)
+      expect(json['data']['bridge_like_conditions'][0]["id"]).to eq(test_inspection.guid)
     end
 
     it 'includes roadways data' do 
