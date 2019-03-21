@@ -44,7 +44,7 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
     end
 
     it 'includes element_defect_definitions data' do 
-      expect(json['data'].keys).to include('element_defect_definitions')
+      expect(json['data']['element_defect_definitions']).to match_array([[test_element.element_definition.id, test_defect.defect_definition.id]])
     end
 
   end

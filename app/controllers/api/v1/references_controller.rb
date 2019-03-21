@@ -39,7 +39,7 @@ class Api::V1::ReferencesController < Api::ApiController
 
   def query_element_defect_definitions
     @element_defect_definitions = Defect.joins(:defect_definition, inspection: :highway_structure, element: :element_definition)
-                    .where("inspections.transam_asset_id": @highway_structures.pluck("transam_assets.id"))
+                    .where("inspections.transam_asset_id": @highway_structures.pluck("transam_assetible_id"))
                     .pluck("element_definitions.id", "defect_definitions.id")
                     .each{|r| {element_definition_id: r[0], defect_definition_id: r[1]}}
   end
