@@ -2,13 +2,9 @@ class BridgeLikeCondition < ApplicationRecord
 
   acts_as :inspection, as: :inspectionible, dependent: :destroy
 
-  belongs_to :deck_condition_rating_type, class_name: 'BridgeConditionRatingType'
-  belongs_to :superstructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
-  belongs_to :substructure_condition_rating_type, class_name: 'BridgeConditionRatingType'
-
   belongs_to :structural_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
   belongs_to :deck_geometry_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
-  belongs_to :underclearance_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
+
   belongs_to :waterway_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
   belongs_to :approach_alignment_appraisal_rating_type, class_name: 'BridgeAppraisalRatingType'
 

@@ -1,5 +1,5 @@
 class Culvert < BridgeLike
 
-  has_many :culvert_conditions, -> {where.not(culvert_condition_type_id: nil)}, through: :inspections, source: :inspectionible, source_type: 'CulvertCondition'
+  has_many :culvert_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'CulvertCondition'
 
 end
