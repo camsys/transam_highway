@@ -8,10 +8,6 @@ class BridgeLike < TransamAssetRecord
   belongs_to :approach_spans_design_construction_type, class_name: 'DesignConstructionType'
 
   belongs_to :strahnet_designation_type
-  belongs_to :deck_structure_type
-  belongs_to :wearing_surface_type
-  belongs_to :membrane_type
-  belongs_to :deck_protection_type
   belongs_to :service_on_type
   belongs_to :service_under_type
   belongs_to :bridge_toll_type
