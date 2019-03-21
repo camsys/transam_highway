@@ -21,7 +21,7 @@ json.roadways do
 end
 
 json.bridge_like_conditions do
-  json.partial! 'api/v1/bridge_like_conditions/listing', collection: @bridge_like_conditions, as: :bridge_like_condition
+  json.partial! 'api/v1/bridge_conditions/listing', collection: @bridge_like_conditions, as: :bridge_like_condition
 end
 
 json.images do 

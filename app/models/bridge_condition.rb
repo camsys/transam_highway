@@ -1,0 +1,2 @@
+class BridgeCondition < BridgeLikeCondition
+end
