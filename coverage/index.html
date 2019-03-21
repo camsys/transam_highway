@@ -231,7 +231,7 @@
       </tr>
       
       <tr>
-        <td class="strong"><a href="#b6ddb36bf06827ae5dc0040de34489240684412b" class="src_link" title="app/models/bridge_condition.rb">app/models/bridge_condition.rb</a></td>
+        <td class="strong"><a href="#b6ddb36bf06827ae5dc0040de34489240684412b" class="src_link" title="app/models/bridge_like_condition.rb">app/models/bridge_like_condition.rb</a></td>
         <td class="red strong">77.42 %</td>
         <td>56</td>
         <td>31</td>
@@ -956,7 +956,7 @@
       </tr>
       
       <tr>
-        <td class="strong"><a href="#b6ddb36bf06827ae5dc0040de34489240684412b" class="src_link" title="app/models/bridge_condition.rb">app/models/bridge_condition.rb</a></td>
+        <td class="strong"><a href="#b6ddb36bf06827ae5dc0040de34489240684412b" class="src_link" title="app/models/bridge_like_condition.rb">app/models/bridge_like_condition.rb</a></td>
         <td class="red strong">77.42 %</td>
         <td>56</td>
         <td>31</td>
@@ -1929,7 +1929,7 @@
         <li class="never" data-hits="" data-linenumber="4">
           
           
-          <code class="ruby">  # GET /bridge_conditions</code>
+          <code class="ruby">  # GET /bridge_like_conditions</code>
         </li>
       
         <li class="missed" data-hits="0" data-linenumber="5">
@@ -2019,7 +2019,7 @@
         <li class="missed" data-hits="0" data-linenumber="19">
           
           
-          <code class="ruby">    @bridge_conditions = BridgeCondition.where(transam_asset_id: structure.transam_asset.id)</code>
+          <code class="ruby">    @bridge_like_conditions = BridgeCondition.where(transam_asset_id: structure.transam_asset.id)</code>
         </li>
       
         <li class="missed" data-hits="0" data-linenumber="20">
@@ -2031,7 +2031,7 @@
         <li class="missed" data-hits="0" data-linenumber="21">
           
           
-          <code class="ruby">      @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))</code>
+          <code class="ruby">      @bridge_like_conditions = @bridge_like_conditions.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))</code>
         </li>
       
         <li class="missed" data-hits="0" data-linenumber="22">
@@ -2049,7 +2049,7 @@
         <li class="missed" data-hits="0" data-linenumber="24">
           
           
-          <code class="ruby">      @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))</code>
+          <code class="ruby">      @bridge_like_conditions = @bridge_like_conditions.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))</code>
         </li>
       
         <li class="missed" data-hits="0" data-linenumber="25">
@@ -4091,7 +4091,7 @@
         <li class="covered" data-hits="5" data-linenumber="50">
           <span class="hits">5</span>
           
-          <code class="ruby">    @bridge_conditions = BridgeCondition.where(&quot;inspections.id&quot;: @inspection_ids)</code>
+          <code class="ruby">    @bridge_like_conditions = BridgeCondition.where(&quot;inspections.id&quot;: @inspection_ids)</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="51">
@@ -6348,7 +6348,7 @@
         <li class="covered" data-hits="1" data-linenumber="25">
           <span class="hits">1</span>
           
-          <code class="ruby">  has_many :bridge_conditions, through: :inspections, source: :inspectionible, source_type: &#39;BridgeCondition&#39;</code>
+          <code class="ruby">  has_many :bridge_like_conditions, through: :inspections, source: :inspectionible, source_type: &#39;BridgeCondition&#39;</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="26">
@@ -7620,7 +7620,7 @@
         <li class="missed" data-hits="0" data-linenumber="237">
           
           
-          <code class="ruby">      bridge.bridge_conditions.each(&amp;:destroy)</code>
+          <code class="ruby">      bridge.bridge_like_conditions.each(&amp;:destroy)</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="238">
@@ -8652,7 +8652,7 @@
         <li class="missed" data-hits="0" data-linenumber="409">
           
           
-          <code class="ruby">    self.calculated_condition = bridge_conditions.ordered.first&amp;.calculated_condition</code>
+          <code class="ruby">    self.calculated_condition = bridge_like_conditions.ordered.first&amp;.calculated_condition</code>
         </li>
       
         <li class="missed" data-hits="0" data-linenumber="410">
@@ -8843,7 +8843,7 @@
       
         <div class="source_table" id="b6ddb36bf06827ae5dc0040de34489240684412b">
   <div class="header">
-    <h3>app/models/bridge_condition.rb</h3>
+    <h3>app/models/bridge_like_condition.rb</h3>
     <h4><span class="red">77.42 %</span> covered</h4>
     <div>
       <b>31</b> relevant lines. 

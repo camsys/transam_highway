@@ -14,7 +14,7 @@ Rails.application.routes.draw do
       get 'reference_data' => 'references#index'
       get 'associations' => 'associations#index'
       get 'inspections' => 'inspections#index'
-      get 'bridge_conditions' => 'bridge_conditions#index'
+      get 'bridge_like_conditions' => 'bridge_like_conditions#index'
       get 'elements' => 'elements#index'
       get 'defects' => 'defects#index'
       get 'defect_definitions' => 'defect_definitions#index'

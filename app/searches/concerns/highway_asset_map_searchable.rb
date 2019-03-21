@@ -37,19 +37,19 @@ module HighwayAssetMapSearchable
           ON highway_structures.region_id = regions.id
         LEFT OUTER JOIN structure_status_types 
           ON highway_structures.structure_status_type_id = structure_status_types.id
-        LEFT OUTER JOIN bridges 
-          ON highway_structures.highway_structurible_id = bridges.id AND highway_structures.highway_structurible_type = 'Bridge'
+        LEFT OUTER JOIN bridge_likes 
+          ON highway_structures.highway_structurible_id = bridge_likes.id AND highway_structures.highway_structurible_type = 'BridgeLike'
         LEFT OUTER JOIN roadways 
           ON highway_structures.id = roadways.transam_asset_id
       SQL
 
       @highway_klass ||= @klass.joins(join_sql)
-    elsif asset_type_class_name == 'Bridge'
+    elsif asset_type_class_name == 'BridgeLike'
       @highway_klass = @klass.left_outer_joins(:service_on_type, :service_under_type, :highway_structure => [:region, :structure_status_type, :roadways])
     elsif asset_type_class_name == 'HighwayStructure'
       join_sql = <<-SQL 
-        LEFT OUTER JOINS bridges 
-          ON highway_structures.highway_structurible_id = bridges.id AND highway_structures.highway_structurible_type = 'Bridge'
+        LEFT OUTER JOINS bridge_likes 
+          ON highway_structures.highway_structurible_id = bridge_likes.id AND highway_structures.highway_structurible_type = 'BridgeLike'
       SQL
 
       @highway_klass = @klass.left_outer_joins(:region, :structure_status_type, :roadways)
@@ -79,12 +79,12 @@ module HighwayAssetMapSearchable
 
   def service_on_type_id_conditions
     clean_service_on_type_ids = remove_blanks(service_on_type_id)
-    highway_klass.where("bridges.service_on_type_id": clean_service_on_type_ids) unless clean_service_on_type_ids.empty?
+    highway_klass.where("bridge_likes.service_on_type_id": clean_service_on_type_ids) unless clean_service_on_type_ids.empty?
   end
 
   def service_under_type_id_conditions
     clean_service_under_type_ids = remove_blanks(service_under_type_id)
-    highway_klass.where("bridges.service_under_type_id": clean_service_under_type_ids) unless clean_service_under_type_ids.empty?
+    highway_klass.where("bridge_likes.service_under_type_id": clean_service_under_type_ids) unless clean_service_under_type_ids.empty?
   end
 
   def on_national_highway_system_conditions
