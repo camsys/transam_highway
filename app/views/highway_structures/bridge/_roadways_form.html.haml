@@ -1,0 +1,11 @@
+%legend
+  %h5 Roadway On Structure
+%table.table
+  = render partial: 'highway_structures/bridge/roadways_table', locals: {roadways: @asset.roadways.on}
+        
+%legend
+  %h5 Roadways Under Structure
+%table.table
+  = render partial: 'highway_structures/bridge/roadways_table', locals: {roadways: @asset.roadways.under}
+
+  
