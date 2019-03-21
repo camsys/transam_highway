@@ -1,0 +1,45 @@
+%thead
+  %tr
+    %th.center= reference_label('roadways', 'on_under_indicator', 'On Under')
+    %th.center= reference_label('roadways', 'route_signing_prefix_id', 'Road Prefix')
+    %th.center= reference_label('roadways', 'level_of_service_type_id', 'Level of Service')
+    %th.center= reference_label('roadways', 'route_number', 'Highway Segment')
+    %th.right= reference_label('roadways', 'min_vertical_clearance', 'Minimum Vertical Clearance')
+    %th.center= reference_label('roadways', 'on_base_network', 'Base Highway Network')
+    %th.center= reference_label('roadways', 'lrs_route', 'LRS Inventory Route')
+    %th.center= reference_label('roadways', 'lrs_subroute', 'Subroute Number')
+    %th.center= reference_label('roadways', 'functional_class_id', 'Functional Classification')
+    %th.right= reference_label('roadways', 'lanes', 'Lanes')
+    %th.right= reference_label('roadways', 'average_daily_traffic', 'Average Daily Traffic')
+    %th.right= reference_label('roadways', 'average_daily_traffic_year', 'Year of Average Daily Traffic')
+    %th.right= reference_label('roadways', 'total_horizontal_clearance', 'Total Horizontal Clearance')
+    %th.center= reference_label('roadways', 'strahnet_designation_type_id', 'Strategic Highway Network')
+    %th.center= reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
+    %th.center= reference_label('roadways', 'on_national_higway_system', 'NHS')
+    %th.right= reference_label('roadways', 'average_daily_truck_traffic_percent', 'Truck ADT')
+    %th.center= reference_label('roadways', 'on_truck_network', 'Designated National Network')
+    %th.right= reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
+    %th.right= reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
+  %tbody
+    - roadways.each do |r|
+      %tr
+        %td.center= r.on_under_indicator
+        %td.center= r.route_signing_prefix
+        %td.center= r.service_level_type
+        %td.center= suppress_values(r.route_number)
+        %td.right= format_as_quantity(r.min_vertical_clearance, 'ft')
+        %td.center= format_as_yes_no(r.on_base_network)
+        %td.center= suppress_values(r.lrs_route)
+        %td.center= suppress_values(r.lrs_subroute)
+        %td.center= r.functional_class
+        %td.right= r.lanes
+        %td.right= suppress_values(r.average_daily_traffic)
+        %td.right= suppress_values(r.average_daily_traffic_year)
+        %td.right= format_as_quantity(r.total_horizontal_clearance, 'ft')
+        %td.center= r.strahnet_designation_type
+        %td.center= r.traffic_direction_type
+        %td.center= format_as_yes_no(r.on_national_highway_system)
+        %td.right= suppress_values(r.average_daily_truck_traffic_percent){|v| format_as_percentage v}
+        %td.center= format_as_yes_no(r.on_truck_network)
+        %td.right= suppress_values(r.future_average_daily_traffic)
+        %td.right= suppress_values(r.future_average_daily_traffic_year)
