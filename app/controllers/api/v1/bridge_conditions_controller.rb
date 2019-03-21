@@ -1,7 +1,7 @@
 class Api::V1::BridgeConditionsController < Api::ApiController
   before_action :query_bridge_conditions
 
-  # GET /bridge_conditionss
+  # GET /bridge_conditions
   def index
   end
 
@@ -16,12 +16,12 @@ class Api::V1::BridgeConditionsController < Api::ApiController
       render status: :not_found, json: json_response(:fail, data: @data)
     end
 
-    @bridge_conditionss = BridgeCondition.where(transam_asset_id: structure.transam_asset.id)
+    @bridge_conditions = BridgeCondition.where(transam_asset_id: structure.transam_asset.id)
     unless params[:start_date].blank?
-      @bridge_conditionss = @bridge_conditionss.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
+      @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
     end
     unless params[:end_date].blank?
-      @bridge_conditionss = @bridge_conditionss.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))
+      @bridge_conditions = @bridge_conditions.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))
     end
   end
 
