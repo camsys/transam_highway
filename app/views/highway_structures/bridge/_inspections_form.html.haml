@@ -1,6 +1,6 @@
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
+    = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')
   .display-value
     = format_as_date @asset.inspection_date
 .form-group
@@ -10,46 +10,46 @@
     = @asset.inspection_frequency
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'fracture_critical_inspection_required', 'Fracture Critical Inspection Required')
+    = reference_label('bridges', 'fracture_critical_inspection_required', 'Fracture Critical Inspection Required')
   .display-value
     = @asset.fracture_critical_inspection_required ? 'Yes' : 'No'
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'fracture_critical_inspection_frequency', 'Fracture Critical Inspection Frequency')
+    = reference_label('bridges', 'fracture_critical_inspection_frequency', 'Fracture Critical Inspection Frequency')
   .display-value
     = @asset.fracture_critical_inspection_frequency
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'fracture_critical_inspection_date', 'Fracture Critical Details (critical feature)')
+    = reference_label('bridges', 'fracture_critical_inspection_date', 'Fracture Critical Details (critical feature)')
   .display-value
     = format_as_date @asset.fracture_critical_inspection_date
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'underwater_inspection_required', 'Underwater Inspection Required')
+    = reference_label('bridges', 'underwater_inspection_required', 'Underwater Inspection Required')
   .display-value
     = @asset.underwater_inspection_required ? 'Yes' : 'No'
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'underwater_inspection_frequency', 'Underwater Inspection Frequency')
+    = reference_label('bridges', 'underwater_inspection_frequency', 'Underwater Inspection Frequency')
   .display-value
     = @asset.underwater_inspection_frequency
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'underwater_inspection_date', 'Underwater Inspection (critical feature)')
+    = reference_label('bridges', 'underwater_inspection_date', 'Underwater Inspection (critical feature)')
   .display-value
     = format_as_date @asset.underwater_inspection_date
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'other_special_inspection_required', 'Other Special Inspection Required')
+    = reference_label('bridges', 'other_special_inspection_required', 'Other Special Inspection Required')
   .display-value
     = @asset.other_special_inspection_required ? 'Yes' : 'No'
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'other_special_inspection_frequency', 'Other Special Inspection Frequency')
+    = reference_label('bridges', 'other_special_inspection_frequency', 'Other Special Inspection Frequency')
   .display-value
     = @asset.other_special_inspection_frequency
 .form-group
   %label.control-label
-    = reference_label('highway_structures', 'other_special_inspection_date', 'Other Special Inspection (critical feature)')
+    = reference_label('bridges', 'other_special_inspection_date', 'Other Special Inspection (critical feature)')
   .display-value
     = format_as_date @asset.other_special_inspection_date
