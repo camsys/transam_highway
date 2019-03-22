@@ -3,8 +3,8 @@
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
-        Roadway
-    .panel-collapse{role:"tabpanel"}
+        %a{data: {toggle: 'collapse'}, href: '#collapse-roadway'}Roadway
+    #collapse-roadway.panel-collapse.collapse.in
       .panel-body
         %label.control-label{for: 'on_under_indicator_tab'}
           = reference_label('roadways', 'service_type', 'Service Type')

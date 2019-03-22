@@ -2,7 +2,7 @@
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
-        Ownership
-    .panel-collapse{role:"tabpanel"}
+        %a{data: {toggle: 'collapse'}, href: '#collapse-ownership'}Ownership
+    #collapse-ownership.panel-collapse.collapse.in
       .panel-body
         = @search_form.input :owner_id, as: :check_boxes, collection: StructureAgentType.active.order(:code).collect{|t| [t.name, t.id]}, label: reference_label('highway_structures', 'owner_id', 'Onwer')

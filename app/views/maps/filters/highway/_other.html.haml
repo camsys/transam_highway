@@ -2,6 +2,6 @@
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
-        Other
-    .panel-collapse{role:"tabpanel"}
+        %a{data: {toggle: 'collapse'}, href: '#collapse-other'}Other
+    #collapse-other.panel-collapse.collapse.in
       .panel-body

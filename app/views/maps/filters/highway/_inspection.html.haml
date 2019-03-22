@@ -5,7 +5,7 @@
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
-        Inspection
-    .panel-collapse{role:"tabpanel"}
+        %a{data: {toggle: 'collapse'}, href: '#collapse-inspection'}Inspection
+    #collapse-inspection.panel-collapse.collapse.in
       .panel-body
         = @search_form.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
