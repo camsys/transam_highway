@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :bridge_condition do
+  factory :culvert_condition do
     
   end
 end
