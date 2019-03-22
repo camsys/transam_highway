@@ -1,10 +1,51 @@
-= editable_asset_association_tag(@asset, :railings_safety_type, reference_label('bridge_conditions', 'railings_safety_type_id', 'Bridge Rail'), include_blank: true)
-= editable_asset_association_tag(@asset, :transitions_safety_type, reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions'), include_blank: true)
-= editable_asset_association_tag(@asset, :approach_rail_safety_type, reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Guardrail'), include_blank: true)
-= editable_asset_association_tag(@asset, :approach_rail_end_safety_type, reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'End Treatments'), include_blank: true)
-= editable_asset_association_tag(@asset, :structural_appraisal_rating_type, reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Evaluation'), include_blank: true)
-= editable_asset_association_tag(@asset, :deck_geometry_appraisal_rating_type, reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry'), include_blank: true)
-= editable_asset_association_tag(@asset, :underclearance_appraisal_rating_type, reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearances Appraisal'), include_blank: true)
-= editable_asset_association_tag(@asset, :waterway_appraisal_rating_type, reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Adequacy'), include_blank: true)
-= editable_asset_association_tag(@asset, :approach_alignment_appraisal_rating_type, reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Roadway Alignment'), include_blank: true)
-= editable_asset_association_tag(@asset, :scour_critical_bridge_type, reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical'), include_blank: true)
+- latest_bridge_condition = @asset.latest_bridge_condition
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'railings_safety_type_id', 'Bridge Rail')
+  .display-value
+    = latest_bridge_condition&.railings_safety_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions')
+  .display-value
+    = latest_bridge_condition&.transitions_safety_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Guardrail')
+  .display-value
+    = latest_bridge_condition&.approach_rail_safety_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'End Treatments')
+  .display-value
+    = latest_bridge_condition&.approach_rail_end_safety_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Evaluation')
+  .display-value
+    = latest_bridge_condition&.structural_appraisal_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry')
+  .display-value
+    = latest_bridge_condition&.deck_geometry_appraisal_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearances Appraisal')
+  .display-value
+    = latest_bridge_condition&.underclearance_appraisal_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Adequacy')
+  .display-value
+    = latest_bridge_condition&.waterway_appraisal_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Roadway Alignment')
+  .display-value
+    = latest_bridge_condition&.approach_alignment_appraisal_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical')
+  .display-value
+    = latest_bridge_condition&.scour_critical_bridge_type

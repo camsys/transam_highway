@@ -2,12 +2,12 @@
 %tr.defect
   %td.left!= "#{indent_str}#{html_rjust(defect.defect_definition, 4)}"
   %td.left!= "#{indent_str}#{defect.defect_definition.short_name}"
-  %td.right= format_as_decimal(defect.total_quantity)
+  %td.right= format_as_integer(defect.total_quantity)
   %td.left
-  %td.right= format_as_decimal(defect.condition_state_1_quantity)
-  %td.right= format_as_decimal(defect.condition_state_2_quantity)
-  %td.right= format_as_decimal(defect.condition_state_3_quantity)
-  %td.right= format_as_decimal(defect.condition_state_4_quantity)
+  %td.right= format_as_integer(defect.condition_state_1_quantity)
+  %td.right= format_as_integer(defect.condition_state_2_quantity)
+  %td.right= format_as_integer(defect.condition_state_3_quantity)
+  %td.right= format_as_integer(defect.condition_state_4_quantity)
 - if defect.notes.present?
   %tr.notes
     %td

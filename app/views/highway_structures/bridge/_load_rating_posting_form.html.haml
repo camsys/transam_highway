@@ -1,5 +1,10 @@
 = editable_asset_association_tag(@asset, :design_load_type, reference_label('bridges', 'design_load_type_id', 'Design Load'), include_blank: true)
-= editable_asset_association_tag(@asset, :operational_status_type, reference_label('bridges', 'operational_status_type_id', 'Posting Status'), include_blank: true)
+- latest_bridge_condition = @asset.latest_bridge_condition
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'operational_status_type_id', 'Posting Status')
+  .display-value
+    = latest_bridge_condition&.operational_status_type
 = editable_asset_association_tag(@asset, :operating_rating_method_type, reference_label('bridges', 'operating_rating_method_type_id', 'Method for Operating Rating'), include_blank: true)
 = editable_asset_field_tag(@asset, :operating_rating, reference_label('bridges', 'operating_rating', 'Operating Rating Tons'))
 = editable_asset_association_tag(@asset, :inventory_rating_method_type, reference_label('bridges', 'inventory_rating_method_type_id', 'Method for Inventory Rating'), include_blank: true)
