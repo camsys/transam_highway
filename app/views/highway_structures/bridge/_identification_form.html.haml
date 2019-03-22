@@ -1,22 +1,53 @@
-= editable_asset_field_tag(@asset, :asset_tag, reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number'))
-= editable_asset_association_tag(@asset, :asset_subtype, reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type'), AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
-= editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried'))
+= editable_asset_association_tag(@asset, :state, reference_label('highway_structures', 'state', '* State'), ISO3166::Country['US'].states.keys.map{|k| [k, k]}, suffix: '')
+= editable_asset_association_tag(@asset, :region, reference_label('highway_structures', 'region_id', 'Region'))
+= editable_asset_association_tag(@asset, :maintenance_section, reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section'))
+.profile-county
+  = editable_asset_field_tag(@asset, :county, reference_label('highway_structures', 'county', 'County'))
+.profile-city
+  = editable_asset_field_tag(@asset, :city, reference_label('highway_structures', 'city', '* City'))
 = editable_asset_field_tag(@asset, :features_intersected, reference_label('highway_structures', 'features_intersected', 'Feature Intersected'))
+= editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried'))
+= editable_asset_field_tag(@asset, :structure_number, reference_label('highway_structures', 'transam_assets.structure_number', 'Structure Number'))
+= editable_asset_field_tag(@asset, :asset_tag, reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'))
+/= editable_asset_field_tag(@asset, :structure_alias, reference_label('highway_structures', 'structure_alias', 'Structure Alias'), required: false)
+= editable_asset_field_tag(@asset, :location_description, reference_label('highway_structures', 'location_description', 'Location Description'))
 = editable_asset_field_tag(@asset, :milepoint, reference_label('highway_structures', 'milepoint', 'Milepoint'))
-= editable_asset_field_tag(@asset, :manufacture_year, reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built'), required: true, type: 'number', min: get_system_asset_starting_year, max: Date.today.year)
-= editable_asset_association_tag(@asset, :maintenance_responsibility, reference_label('highway_structures', 'maintenance_responsibility_id', 'Maintenance Responsibility'))
-= editable_asset_association_tag(@asset, :owner, reference_label('highway_structures', 'owner_id', 'Owner'))
-.row
-  .col-sm-6
-    = editable_asset_field_tag(@asset, :remarks, type: 'textarea')
-    
-%legend
-  %h5 Border Bridge
+.form-group
+  %label.control-label
+    = reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude')
+  .display-value
+    = @asset.geometry.try(:y)
+.form-group
+  %label.control-label
+    = reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude')
+  .display-value
+    = @asset.geometry.try(:x)
 .row
   .col-sm-2
     = editable_asset_association_tag(@asset, :border_bridge_state, reference_label('bridges', 'border_bridge_state', 'State (border)'), [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
-  .col-sm-2
+  .col-sm-3
     = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
-  .col-sm-2
+  .col-sm-3
     = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
+= editable_asset_field_tag(@asset, :remarks, type: 'textarea')
+
+
+:javascript
+  $(function() {
+    $('.profile-city .editable-field').on('shown', function(e, editable) {
+      $('#city_group input').typeahead({
+        items: 10,
+        source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
+      });
+    });
+
+    $('.profile-county .editable-field').on('shown', function(e, editable) {
+      $('#county_group input').typeahead({
+        items: 10,
+        source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
+      });
+    });
+
+  });
+
     
