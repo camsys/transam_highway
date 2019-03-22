@@ -6,6 +6,6 @@
   %label.control-label
     = reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
   .display-value
-    = @asset.highway_structurible_type
+    = @asset.class.name
 = editable_asset_association_tag(@asset, :historical_significance_type, reference_label('highway_structures', 'historical_significance_type_id', 'Historical Significance'), include_blank: true)
 = editable_asset_field_tag(@asset, :is_temporary, reference_label('highway_structures', 'is_temporary', 'Temporary Structure'), type: 'boolean')
