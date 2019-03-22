@@ -157,8 +157,6 @@ class BridgeLike < TransamAssetRecord
       facility_carried: bridge_hash['FACILITY'],
       location_description: bridge_hash['LOCATION'],
       description: bridge_hash['LOCATION'],
-      maintenance_responsibility: StructureAgentType.find_by(code: bridge_hash['CUSTODIAN']),
-      owner: StructureAgentType.find_by(code: bridge_hash['OWNER']),
       structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
       historical_significance_type: HistoricalSignificanceType.find_by(code: bridge_hash['HISTSIGN']),
       main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
@@ -196,13 +194,34 @@ class BridgeLike < TransamAssetRecord
       remarks: bridge_hash['NOTES']
     }
 
+    # Validate Owner and maintenance responsibility. Could DRY the code some
+    unknown = StructureAgentType.find_by(name: 'Unknown')
+
+    custodian = bridge_hash['CUSTODIAN']
+    agent = StructureAgentType.find_by(code: custodian)
+    if custodian == '-1'
+      agent = unknown
+    elsif custodian.size == 1
+      agent = StructureAgentType.find_by(code: custodian.rjust(2, '0'))
+    end
+    optional[:maintenance_responsibility] = agent
+
+    owner = bridge_hash['OWNER']
+    agent = StructureAgentType.find_by(code: owner)
+    if owner == '-1'
+      agent = unknown
+    elsif owner.size == 1
+      agent = StructureAgentType.find_by(code: owner.rjust(2, '0'))
+    end
+    optional[:owner] = agent
+    
     # Bridge vs. Culvert
-    case struct_type_code
+    case struct_class_code
     when 'BRIDGE'
-      optional[deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
-      optional[wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
-      optional[membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])
-      optional[deck_protection_type] = DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
+      optional[:deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
+      optional[:wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
+      optional[:membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])
+      optional[:deck_protection_type] = DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
     when 'CULVERT'
     end
     
