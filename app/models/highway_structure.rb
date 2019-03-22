@@ -146,7 +146,7 @@ class HighwayStructure < TransamAssetRecord
   protected
 
   def update_next_inspection_date
-    if inspection_date_changed? || inspection_frequency_changed?
+    if (inspection_date_changed? || inspection_frequency_changed?) && inspection_date.present? && inspection_frequency.present?
       self.next_inspection_date = (inspection_date + (inspection_frequency).months).at_beginning_of_month
     end
   end
