@@ -48,8 +48,8 @@
     .display-value= @asset.asset_subtype
 
   .form-group
-    %label.control-label Structure Type (43C)
-    .display-value PENDING
+    %label.control-label= reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type')
+    .display-value= @asset.highway_structure_type
   .form-group
     %label.control-label Inspection Program (80)
     .display-value PENDING
