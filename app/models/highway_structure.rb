@@ -3,6 +3,8 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  before_save :update_next_inspection_date
+
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
   belongs_to :highway_structure_type
@@ -138,6 +140,14 @@ class HighwayStructure < TransamAssetRecord
         json.merge! field => self.send(field).to_s
       end
       json
+    end
+  end
+
+  protected
+
+  def update_next_inspection_date
+    if inspection_date_changed? || inspection_frequency_changed?
+      self.next_inspection_date = (inspection_date + (inspection_frequency).months).at_beginning_of_month
     end
   end
 end
