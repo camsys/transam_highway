@@ -301,7 +301,7 @@ class BridgeLike < TransamAssetRecord
       inspection.channel_condition_type = ChannelConditionType.find_by(code: i_hash['CHANRATING'])
       inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: i_hash['SCOURCRIT'])
 
-      if struct_type_code == 'BRIDGE'
+      if struct_class_code == 'BRIDGE'
         # condition ratings
         {deck_condition_rating_type_id: 'DKRATING',
          superstructure_condition_rating_type_id: 'SUPRATING',
@@ -384,7 +384,7 @@ class BridgeLike < TransamAssetRecord
     end
 
     # set calculated condition based on existing completed inspections
-    bridgelike.set_calculated_condition! if struct_type_code == 'BRIDGE'
+    bridgelike.set_calculated_condition! if struct_class_code == 'BRIDGE'
 
     return true, msg, bridgelike.class.name
   end
@@ -402,6 +402,10 @@ class BridgeLike < TransamAssetRecord
       else
         1
       end
+    # Validate ON_UNDER
+    on_under = hash['ON_UNDER']
+    return unless (on_under.size == 1) && (/[12A-Z]/ =~ on_under)
+    
     bridgelike.roadways.create!(
       highway_structure: bridgelike,
       on_under_indicator: hash['ON_UNDER'],
