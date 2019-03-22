@@ -68,12 +68,13 @@ class BridgeLike < TransamAssetRecord
     end
     successful = true
     msg = ''
+    class_name = nil
     
     if ext == '.zip'
       #
     else
       begin
-        successful, msg = create_or_update_from_xml(io, &block)
+        successful, msg, class_name = create_or_update_from_xml(io, &block)
       rescue TypeError, NoMethodError => e
         if Rails.env.sandbox?
           Rails.logger.warn e.message
@@ -84,7 +85,7 @@ class BridgeLike < TransamAssetRecord
         end
       end
     end
-    return successful, msg
+    return successful, msg, class_name
   end
 
   def self.create_or_update_from_xml(io, &block)
@@ -111,17 +112,22 @@ class BridgeLike < TransamAssetRecord
       struct_class_code == 'CULVERT'
     end
     
-    unless struct_class_code == 'BRIDGE'
+    # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
+    bridgelike = nil
+    case struct_class_code
+    when 'BRIDGE'
+      bridgelike = Bridge.find_or_initialize_by(asset_tag: asset_tag)
+    when 'CULVERT'
+      bridgelike = Culvert.find_or_initialize_by(asset_tag: asset_tag)
+    else
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
     end
-
-    # Structure Class, NBI 24 is 'BridgeLike' or 'Culvert'
-    bridge = BridgeLike.find_or_initialize_by(asset_tag: asset_tag)
+      
     required = {}
-    is_new = bridge.new_record?
+    is_new = bridgelike.new_record?
     if is_new
-      msg = "Created bridge #{asset_tag}"
+      msg = "Created #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
       # standardize format
@@ -135,9 +141,9 @@ class BridgeLike < TransamAssetRecord
         purchase_date: Date.today,
         purchased_new: true
       }
-      bridge.attributes = required
+      bridgelike.attributes = required
     else
-      msg = "Updated bridge #{asset_tag}"
+      msg = "Updated #{struct_class_code} #{asset_tag}"
     end
     
     # Extract relevant fields
@@ -187,12 +193,18 @@ class BridgeLike < TransamAssetRecord
       inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE']),
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING']),
-      deck_structure_type: DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP']),
-      wearing_surface_type: WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE']),
-      membrane_type: MembraneType.find_by(code: bridge_hash['DKMEMBTYPE']),
-      deck_protection_type: DeckProtectionType.find_by(code: bridge_hash['DKPROTECT']),
       remarks: bridge_hash['NOTES']
     }
+
+    # Bridge vs. Culvert
+    case struct_type_code
+    when 'BRIDGE'
+      optional[deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
+      optional[wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
+      optional[membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])
+      optional[deck_protection_type] = DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
+    when 'CULVERT'
+    end
     
     # process district, NBI 2E, 2M
     # split into region and maintenance section
@@ -207,11 +219,14 @@ class BridgeLike < TransamAssetRecord
                                        district_type: DistrictType.find_by(name: 'Place')).name
 
     # See if guid needs to be initialized
-    bridge.update_attributes(guid: SecureRandom.uuid) unless bridge.guid
+    bridgelike.update_attributes(guid: SecureRandom.uuid) unless bridgelike.guid
+    
+    # Necessary to create bridge if new before processing roadway associations
+    bridgelike.save! if is_new
     
     # Process roadway fields
     # Clear out any old roadways
-    bridge.roadways.destroy_all unless is_new
+    bridgelike.roadways.destroy_all unless is_new
 
     on_hash = {}
     if roadway_hash.is_a?(Array)
@@ -220,10 +235,10 @@ class BridgeLike < TransamAssetRecord
         if h['ON_UNDER'] == '1'
           on_hash = h
         end
-        process_roadway(h, bridge)
+        process_roadway(h, bridgelike)
       end
     else
-      process_roadway(roadway_hash, bridge)
+      process_roadway(roadway_hash, bridgelike)
     end
 
     # process milepost, NBI 11A
@@ -244,11 +259,9 @@ class BridgeLike < TransamAssetRecord
     # NBI 32
     optional[:approach_roadway_width] = Uom.convert(on_hash['AROADWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS)
     
-    # Process Structure Type
-
-    bridge.attributes = optional
+    bridgelike.attributes = optional
     # Save
-    bridge.save!
+    bridgelike.save!
 
     # process inspection data
     # NBI 90, 91
@@ -256,7 +269,7 @@ class BridgeLike < TransamAssetRecord
     inspection_frequency = nil
     unless is_new
       # delete all existing inspection data and refresh
-      bridge.bridge_like_conditions.each(&:destroy)
+      bridgelike.bridge_like_conditions.each(&:destroy)
     end
     
     inspections = {}
@@ -270,10 +283,10 @@ class BridgeLike < TransamAssetRecord
       # inspection type
       type = InspectionType.find_by(code: i_hash['INSPTYPE'])
       
-      inspection = BridgeLikeCondition.new(event_datetime: date, name: bridge.asset_tag,
+      inspection = BridgeLikeCondition.new(event_datetime: date, name: bridgelike.asset_tag,
                                            inspection_type: type, notes: i_hash['NOTES'])
 
-      bridge.inspections << inspection
+      bridgelike.inspections << inspection
       inspections[i_hash['INSPKEY']] = inspection
 
       # safety ratings
@@ -287,26 +300,31 @@ class BridgeLike < TransamAssetRecord
       inspection.operational_status_type = OperationalStatusType.find_by(code: i_hash['OPPOSTCL'])
       inspection.channel_condition_type = ChannelConditionType.find_by(code: i_hash['CHANRATING'])
       inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: i_hash['SCOURCRIT'])
-      
-      # condition ratings
-      {deck_condition_rating_type_id: 'DKRATING',
-       superstructure_condition_rating_type_id: 'SUPRATING',
-       substructure_condition_rating_type_id: 'SUBRATING'}.each do |attribute, key|
-        inspection[attribute] = BridgeConditionRatingType.where(code: i_hash[key]).pluck(:id).first
-      end
+
+      if struct_type_code == 'BRIDGE'
+        # condition ratings
+        {deck_condition_rating_type_id: 'DKRATING',
+         superstructure_condition_rating_type_id: 'SUPRATING',
+         substructure_condition_rating_type_id: 'SUBRATING'}.each do |attribute, key|
+          inspection[attribute] = BridgeConditionRatingType.where(code: i_hash[key]).pluck(:id).first
+        end
+
+        inspection.underclearance_appraisal_rating_type_id = BridgeAppraisalRatingType.where(code: i_hash['UNDERCLR']).pluck(:id).first
+      else # Culvert
+        inspection.culvert_condition_type_id = CulvertConditionType.where(code: i_hash['CULVRATING']).pluck(:id).first
+      end      
 
       # appraisal ratings
       {structural_appraisal_rating_type_id: 'STRRATING',
        deck_geometry_appraisal_rating_type_id: 'DECKGEOM',
-       underclearance_appraisal_rating_type_id: 'UNDERCLR',
        waterway_appraisal_rating_type_id: 'WATERADEQ',
        approach_alignment_appraisal_rating_type_id: 'APPRALIGN'}.each do |attribute, key|
         inspection[attribute] = BridgeAppraisalRatingType.where(code: i_hash[key]).pluck(:id).first
       end
-      
+
       inspection.save!
     end
-    bridge.update_attributes(inspection_date: last_inspection_date,
+    bridgelike.update_attributes(inspection_date: last_inspection_date,
                              inspection_frequency: inspection_frequency)
 
     elements = {}
@@ -366,12 +384,12 @@ class BridgeLike < TransamAssetRecord
     end
 
     # set calculated condition based on existing completed inspections
-    bridge.set_calculated_condition!
+    bridgelike.set_calculated_condition! if struct_type_code == 'BRIDGE'
 
-    return true, msg
+    return true, msg, bridgelike.class.name
   end
 
-  def self.process_roadway(hash, bridge)
+  def self.process_roadway(hash, bridgelike)
     # Convert STRAHNET
     strahnet_code =
       case hash['DEFHWY']
@@ -384,11 +402,11 @@ class BridgeLike < TransamAssetRecord
       else
         1
       end
-    bridge.roadways.create!(
-      highway_structure: bridge,
+    bridgelike.roadways.create!(
+      highway_structure: bridgelike,
       on_under_indicator: hash['ON_UNDER'],
       route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
-      service_level_type: ServiceLevelType.find_by(code: hash['LVL_SRVC']),
+      service_level_type: ServiceLevelType.find_by(code: hash['LEVL_SRVC']),
       route_number: hash['ROUTENUM'],
       min_vertical_clearance: Uom.convert(hash['VCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
       on_base_network: hash['ONBASENET'] == '1',
@@ -426,11 +444,7 @@ class BridgeLike < TransamAssetRecord
   # Instance Methods
   #
   #-----------------------------------------------------------------------------  
-  def set_calculated_condition!
-    self.calculated_condition = bridge_like_conditions.ordered.first&.calculated_condition
-    self.save
-  end
-  
+
   def dup
     super.tap do |new_asset|
       new_asset.highway_structure = self.highway_structure.dup

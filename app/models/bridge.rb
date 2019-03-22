@@ -7,5 +7,13 @@ class Bridge < BridgeLike
 
   has_many :bridge_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'BridgeCondition'
 
-
+  #-----------------------------------------------------------------------------
+  #
+  # Instance Methods
+  #
+  #-----------------------------------------------------------------------------  
+  def set_calculated_condition!
+    self.calculated_condition = bridge_conditions.ordered.first&.calculated_condition
+    self.save
+  end
 end
