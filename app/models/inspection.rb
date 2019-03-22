@@ -14,7 +14,6 @@ class Inspection < ApplicationRecord
 
   scope :ordered, -> { order(event_datetime: :desc) }
 
-  # mirror method on Asset to get typed version
   def self.get_typed_inspection(inspection)
     if inspection
       if inspection.specific
