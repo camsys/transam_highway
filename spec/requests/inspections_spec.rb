@@ -5,7 +5,7 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
   let!(:test_condition_type) { create(:channel_condition_type) }
   let(:test_association_class) { "ChannelConditionType" }
   let!(:test_bridge) { create(:bridge) }
-  let!(:test_inspection) { create(:bridge_like_condition, highway_structure: test_bridge.highway_structure) }
+  let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure) }
   let!(:test_roadway) { create(:roadway, highway_structure: test_bridge.highway_structure) }
   let!(:test_element) { create(:element, inspection: test_inspection) }
   let!(:test_defect) { create(:defect, inspection: test_inspection, element: test_element) }

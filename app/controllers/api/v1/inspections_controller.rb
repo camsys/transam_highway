@@ -31,7 +31,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_bridges
-    @bridges = BridgeLike.where("highway_structures.id": @highway_structure_ids)
+    @bridges = Bridg.where("highway_structures.id": @highway_structure_ids)
   end
 
   def query_inspections
@@ -47,7 +47,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_bridge_conditions
-    @bridge_like_conditions = BridgeLikeCondition.where("inspections.id": @inspection_ids)
+    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids)
   end
 
   def query_elements
