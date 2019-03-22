@@ -10,9 +10,9 @@
           = reference_label('roadways', 'service_type', 'Service Type')
         %ul.nav.nav-tabs#on_under_indicator_tab
           %li.active#service_on_type_header
-            %a{:href => '#service_on_type', :data =>{:toggle => 'tab'}}= reference_label('highway_structures', 'service_on_type_id', 'On')
+            %a{:href => '#service_on_type', :data =>{:toggle => 'tab'}}= reference_label('bridges', 'service_on_type_id', 'On')
           %li#service_under_type_header
-            %a{:href => '#service_under_type', :data =>{:toggle => 'tab'}}= reference_label('highway_structures', 'service_under_type_id', 'Under')
+            %a{:href => '#service_under_type', :data =>{:toggle => 'tab'}}= reference_label('bridges', 'service_under_type_id', 'Under')
         .tab-content{style: 'min-height: 100px;'}
           .tab-pane.fade.in.active#service_on_type
             = @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: false
