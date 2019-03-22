@@ -20,11 +20,7 @@ class Inspection < ApplicationRecord
         inspection = inspection.specific
 
         typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
-        if typed_asset.class.to_s == 'Bridge'
-          inspection = inspection.becomes(BridgeCondition)
-        elsif typed_asset.class.to_s == 'Culvert'
-          inspection = inspection.becomes(CulvertCondition)
-        end
+        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if defined?((typed_asset.class.to_s + 'Condition').constantize)
       end
 
       inspection
