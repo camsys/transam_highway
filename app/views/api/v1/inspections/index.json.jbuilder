@@ -20,8 +20,8 @@ json.roadways do
   json.partial! 'api/v1/roadways/listing', collection: @roadways, as: :roadway
 end
 
-json.bridge_like_conditions do
-  json.partial! 'api/v1/bridge_conditions/listing', collection: @bridge_like_conditions, as: :bridge_like_condition
+json.bridge_conditions do
+  json.partial! 'api/v1/bridge_conditions/listing', collection: @bridge_conditions, as: :bridge_condition
 end
 
 json.images do 
