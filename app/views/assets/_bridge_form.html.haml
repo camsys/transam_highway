@@ -42,7 +42,7 @@
         %h2.form-section-header
           Identification & Classification
 
-        = f.input :asset_tag, label: reference_label('transam_assets', 'transam_assets.asset_tag', 'Structure Key')
+        = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
         
         = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: 'Subtype'
 

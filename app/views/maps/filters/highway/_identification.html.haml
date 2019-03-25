@@ -5,4 +5,4 @@
         %a{data: {toggle: 'collapse'}, href: '#collapse-identification'}Identification
     #collapse-identification.panel-collapse.collapse.in
       .panel-body
-        = @search_form.input :asset_tag, label: reference_label('transam_assets', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
+        = @search_form.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
