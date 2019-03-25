@@ -35,7 +35,27 @@ class BridgeLike < TransamAssetRecord
     :deck_structure_type_id,
     :wearing_surface_type_id,
     :membrane_type_id,
-    :deck_protection_type_id
+    :deck_protection_type_id,
+    :service_on_type_id,
+    :service_under_type_id,
+    :bridge_toll_type_id,
+    :max_span_length,
+    :left_curb_sidewalk_width,
+    :right_curb_sidewalk_width,
+    :roadway_width,
+    :deck_width,
+    :min_vertical_clearance_above,
+    :vertical_reference_feature_below_id,
+    :min_vertical_clearance_below,
+    :lateral_reference_feature_below_id,
+    :min_lateral_clearance_below_right,
+    :min_lateral_clearance_below_left,
+    :design_load_type_id,
+    :operating_rating_method_type_id,
+    :operating_rating,
+    :inventory_rating_method_type_id,
+    :inventory_rating,
+    :bridge_posting_type_id
   ]
 
   CLEANSABLE_FIELDS = [

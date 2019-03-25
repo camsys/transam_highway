@@ -68,7 +68,13 @@ class HighwayStructure < TransamAssetRecord
       :milepoint,
       :maintenance_responsibility_id,
       :owner_id,
-      :approach_roadway_width
+      :approach_roadway_width,
+      :region_id,
+      :remarks,
+      :lanes_on,
+      :lanes_under,
+      :historical_significance_type_id,
+      :highway_structure_type_id
   ]
 
   CLEANSABLE_FIELDS = [
