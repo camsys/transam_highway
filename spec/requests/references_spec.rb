@@ -5,6 +5,9 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
   let!(:test_condition_type) { create(:channel_condition_type) }
   let(:test_association_class) { "ChannelConditionType" }
   let!(:test_highway_structure) { create(:highway_structure) }
+  let!(:test_inspection) { create(:inspection, highway_structure: test_highway_structure) }
+  let!(:test_element) { create(:element, inspection: test_inspection) }
+  let!(:test_defect) { create(:defect, inspection: test_inspection, element: test_element) }
 
   let(:valid_headers) { {"X-User-Email" => test_user.email, "X-User-Token" => test_user.authentication_token} }
 
@@ -25,9 +28,23 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
       expect(json['data']['associations']['ChannelConditionType'][0]["id"]).to eq(test_condition_type.id)
     end
 
-    it 'includes highway_structures data' do 
-      expect(json['data']['highway_structures'].size).to eq(1)
-      expect(json['data']['highway_structures'][0]["object_key"]).to eq(test_highway_structure.object_key)
+    it 'includes structures data' do 
+      expect(json['data']['structures'].size).to eq(1)
+      expect(json['data']['structures'][0]["object_key"]).to eq(test_highway_structure.object_key)
+    end
+
+    it 'includes element_definition data' do 
+      expect(json['data']['element_definitions'].size).to eq(1)
+      expect(json['data']['element_definitions'][0]["id"]).to eq(test_element.element_definition.id)
+    end
+
+    it 'includes defect_definition data' do 
+      expect(json['data']['defect_definitions'].size).to eq(1)
+      expect(json['data']['defect_definitions'][0]["id"]).to eq(test_defect.defect_definition.id)
+    end
+
+    it 'includes element_defect_definitions data' do 
+      expect(json['data']['element_defect_definitions']).to match_array([[test_element.element_definition.id, test_defect.defect_definition.id]])
     end
 
   end

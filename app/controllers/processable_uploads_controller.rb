@@ -48,14 +48,15 @@ class ProcessableUploadsController < TransamController
     if successful
       @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'In Progress'))
       if klass.respond_to? :process_upload
-        successful, msg = klass.process_upload(file, ext)
+        successful, msg, actual_class = klass.process_upload(file, ext)
       else
         successful = false
         msg = "Class: #{klass} does not support upload processing"
       end
     end
     if successful
-      @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'Complete'))
+      @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'Complete'),
+                                            class_name: actual_class)
       redirect_to processable_uploads_path, notice: 'File was successfully processed. ' + msg
     else
       @processable_upload.update_attributes(file_status_type: FileStatusType.find_by(name: 'Errored'))

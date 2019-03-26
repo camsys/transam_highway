@@ -3,9 +3,12 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  before_save :update_next_inspection_date
+
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
-
+  belongs_to :highway_structure_type
+  
   belongs_to :route_signing_prefix
 
   belongs_to :structure_status_type
@@ -17,10 +20,15 @@ class HighwayStructure < TransamAssetRecord
   belongs_to :maintenance_responsibility, class_name: 'StructureAgentType'
   belongs_to :owner, class_name: 'StructureAgentType'
 
+  belongs_to :historical_significance_type
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections
   has_many :defects, through: :elements
+
+  has_many :roadways, foreign_key: :transam_asset_id, dependent: :destroy,
+           after_add: :reset_lanes, after_remove: :reset_lanes
 
   callable_by_submodel def self.asset_seed_class_name
     'AssetType'
@@ -38,6 +46,7 @@ class HighwayStructure < TransamAssetRecord
       :route_signing_prefix_id,
       :route_number,
       :features_intersected,
+      :facility_carried,
       :structure_number,
       :location_description,
       :length,
@@ -59,7 +68,13 @@ class HighwayStructure < TransamAssetRecord
       :milepoint,
       :maintenance_responsibility_id,
       :owner_id,
-      :approach_roadway_width
+      :approach_roadway_width,
+      :region_id,
+      :remarks,
+      :lanes_on,
+      :lanes_under,
+      :historical_significance_type_id,
+      :highway_structure_type_id
   ]
 
   CLEANSABLE_FIELDS = [
@@ -112,10 +127,12 @@ class HighwayStructure < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
-  def calculated_condition
-    'unknown'
+  def reset_lanes(roadway)
+    self.lanes_on = roadways.on.sum(:lanes)
+    self.lanes_under = roadways.under.sum(:lanes)
+    save!
   end
-
+  
   def dup
     super.tap do |new_asset|
       new_asset.transam_asset = self.transam_asset.dup
@@ -129,6 +146,14 @@ class HighwayStructure < TransamAssetRecord
         json.merge! field => self.send(field).to_s
       end
       json
+    end
+  end
+
+  protected
+
+  def update_next_inspection_date
+    if (inspection_date_changed? || inspection_frequency_changed?) && inspection_date.present? && inspection_frequency.present?
+      self.next_inspection_date = (inspection_date + (inspection_frequency).months).at_beginning_of_month
     end
   end
 end

@@ -1,0 +1,11 @@
+= editable_asset_association_tag(@asset, :bridge_toll_type, reference_label('bridges', 'bridge_toll_type_id', 'Toll'), include_blank: true)
+= editable_asset_association_tag(@asset, :maintenance_responsibility, reference_label('highway_structures', 'maintenance_responsibility_id', 'Maintenance Responsibility'), include_blank: true)
+= editable_asset_association_tag(@asset, :owner, reference_label('highway_structures', 'owner_id', 'Owner'), include_blank: true)
+= editable_asset_association_tag(@asset, :structure_status_type, reference_label('highway_structures', 'structure_status_type_id', 'Structure Status'), include_blank: true)
+.form-group
+  %label.control-label
+    = reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+  .display-value
+    = @asset.class.name
+= editable_asset_association_tag(@asset, :historical_significance_type, reference_label('highway_structures', 'historical_significance_type_id', 'Historical Significance'), include_blank: true)
+= editable_asset_field_tag(@asset, :is_temporary, reference_label('highway_structures', 'is_temporary', 'Temporary Structure'), type: 'boolean')

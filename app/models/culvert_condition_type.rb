@@ -1,0 +1,2 @@
+class CulvertConditionType < ApplicationRecord
+end

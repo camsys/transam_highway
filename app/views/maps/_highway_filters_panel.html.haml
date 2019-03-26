@@ -2,6 +2,7 @@
 = render 'maps/filters/highway/inspection'
 = render 'maps/filters/highway/location'
 = render 'maps/filters/highway/ownership'
+= render 'maps/filters/highway/roadway'
 = render 'maps/filters/highway/usage'
 = render 'maps/filters/highway/other'
 
@@ -12,24 +13,70 @@
     filters['asset_tag'] = $('#searcher_asset_tag').val();
     filters['region_code'] = $('.searcher_region_code input:checked').map(function(){return $(this).val();}).get();
     filters['structure_status_type_code'] = $('.searcher_structure_status_type_code input:checked').map(function(){return $(this).val()}).get();
-    filters['owner_id'] = $('.searcher_owner_id option:selected').val();
-
+    filters['owner_id'] = $('.searcher_owner_id input:checked').map(function(){return $(this).val()}).get();
+    filters['calculated_condition'] = $('.searcher_calculated_condition input:checked').map(function(){return $(this).val()}).get();
+    filters['on_under_indicator'] = $('#service_on_type_header').hasClass('active') ? 'on' : 'under';
+    filters['service_on_type_id'] = $('.searcher_service_on_type_id input:checked').map(function(){return $(this).val()}).get();
+    filters['service_under_type_id'] = $('.searcher_service_under_type_id input:checked').map(function(){return $(this).val()}).get();
+    filters['on_national_highway_system'] = $('.searcher_on_national_highway_system option:selected').val();
+    filters['structure_county'] = $('#searcher_structure_county').val();
+    filters['structure_city'] = $('#searcher_structure_city').val();
     return filters;
   }
 
   function load_cached_highway_filters(filters) {
     $('#searcher_asset_tag').val(filters['asset_tag']);
+    $('#searcher_structure_county').val(filters['structure_county']);
+    $('#searcher_structure_city').val(filters['structure_city']);
+    
     if(filters['region_code']) {
       filters['region_code'].forEach(function(region_code) {
         $('.searcher_region_code input[value=' + region_code +']').prop('checked', true);
       });
     }
+
     if(filters['structure_status_type_code']) {
       filters['structure_status_type_code'].forEach(function(type_code) {
         $('.searcher_structure_status_type_code input[value=' + type_code +']').prop('checked', true);
       });
     }
+
     if(filters['owner_id']) {
-      $('.searcher_owner_id option[value=' + filters['owner_id'] +']').prop('selected', true);
+      filters['owner_id'].forEach(function(owner_id) {
+        $('.searcher_owner_id input[value=' + owner_id +']').prop('checked', true);
+      });
     }
+
+    if(filters['calculated_condition']) {
+      filters['calculated_condition'].forEach(function(condition) {
+        $('.searcher_calculated_condition input[value=' + condition +']').prop('checked', true);
+      });
+    }
+
+    if(filters['on_under_indicator'] == 'under') {
+      $('#service_under_type_header a').tab('show');
+    } else {
+      $('#service_on_type_header a').tab('show');
+    }
+
+    if(filters['service_on_type_id']) {
+      filters['service_on_type_id'].forEach(function(service_on_type_id) {
+        $('.searcher_service_on_type_id input[value=' + service_on_type_id +']').prop('checked', true);
+      });
+    }
+
+    if(filters['service_under_type_id']) {
+      filters['service_under_type_id'].forEach(function(service_under_type_id) {
+        $('.searcher_service_under_type_id input[value=' + service_under_type_id +']').prop('checked', true);
+      });
+    }
+
+    if(filters['on_national_highway_system']) {
+      $('.searcher_on_national_highway_system option[value=' + filters['on_national_highway_system'] +']').prop('selected', true);
+    }
+  }
+
+  function reset_highway_filters() {
+    var active_type_code = "#{StructureStatusType.find_by_name('Active').try(:code)}";
+    $('.searcher_structure_status_type_code input[value=' + active_type_code +']').prop('checked', true);
   }

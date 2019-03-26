@@ -14,7 +14,9 @@ organization_types = [
     }
 ]
 asset_types = [
-    {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true}
+    {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},
+    {name: 'Culvert', description: 'Culvert', class_name: 'Culvert', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true}
+
 ]
 asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Arch', description: 'Arched Bridge', active: true},
@@ -22,7 +24,8 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Slab', description: 'Slab Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Suspension', description: 'Suspension Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Truss', description: 'Truss Bridge', active: true},
-  {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true}
+  {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true},
+  {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true}
 ]
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true},
@@ -81,7 +84,7 @@ design_construction_types = [
   {active: true, code: '16', name:	'Movable - Bascule', belongs_to: 'asset_subtype', type: 'Other'},
   {active: true, code: '17', name:	'Movable - Swing', belongs_to: 'asset_subtype', type: 'Other'},
   {active: true, code: '18', name:	'Tunnel', belongs_to: 'asset_subtype', type: 'Other'},
-  {active: true, code: '19', name:	'Culvert (includes frame culverts)', belongs_to: 'asset_subtype', type: 'Other'},
+  {active: true, code: '19', name:	'Culvert (includes frame culverts)', belongs_to: 'asset_subtype', type: 'Culvert'},
   {active: true, code: '20', name:	'Mixed types', belongs_to: 'asset_subtype', type: 'Other'},
   {active: true, code: '21', name: 'Segmental Box Girder', belongs_to: 'asset_subtype', type: 'Beam'},
   {active: true, code: '22', name:	'Channel Beam', belongs_to: 'asset_subtype', type: 'Beam'},
@@ -112,6 +115,22 @@ channel_condition_types = [
 {active: true, code: '2', name:	'Bridge Collapse Imminent', description:	'The channel has changed to the extent the bridge is near a state of collapse.'},
 {active: true, code: '1', name:	'Closed Pending Repairs', description:	'Bridge closed because of channel failure. Corrective action may put back in light service.'},
 {active: true, code: '0', name:	'Closed Pending Replacement', description: 'Bridge closed because of channel failure. Replacement necessary.'}
+]
+
+culvert_condition_types = [
+    {active: true, code: 'N', name: 'Not applicable', description: 'Used if structure is not a culvert.'},
+    {active: true, code: '9', name: 'Excellent', description: 'No deficiencies.'},
+    {active: true, code: '8', name: 'Very good', description: 'No noticeable or noteworthy deficiencies which affect the condition of the culvert. Insignificant scrape marks caused by drift.'},
+    {active: true, code: '7', name: 'Good', description: 'Shrinkage cracks, light scaling and insignificant spalling which does not expose reinforcing steel. Insignificant damage caused by drift with no misalignment and not requiring corrective action. Some minor scouring has occurred near curtain walls, wingwalls or pipes. Metal culverts have a smooth symmetrical curvature with superficial corrosion and no pitting.'},
+    {active: true, code: '6', name: 'Satisfactory', description: 'Deterioration or initial disintegration, minor chloride contamination, cracking with some leaching, or spalls on concrete or masonry walls and slabs. Local minor scouring at curtain walls, wingwalls or pipes. Metal culverts have a smooth curvature, non-symmetrical shape, significant corrosion or moderate pitting.'},
+    {active: true, code: '5', name: 'Fair', description: 'Moderate to major deterioration or disintegration, extensive cracking and leaching or spalls on concrete or masonry walls and slabs. Minor settlement or misalignment. Noticeable scouring or erosion at curtain walls, wingwalls or pipes. Metal culverts have significant distortion and deflection in one section, significant corrosion or deep pitting.'},
+    {active: true, code: '4', name: 'Poor', description: 'Large spalls, heavy scaling, wide cracks, considerable efflorescence or opened construction joint permitting loss of backfill. Considerable settlement or misalignment. Considerable scouring or erosion at curtain walls, wingwalls or pipes. Metal culverts have significant distortion and deflection throughout, extensive corrosion or deep pitting.'},
+    {active: true, code: '3', name: 'Serious', description: 'Any condition described in Code 4 but which is excessive in scope. Severe movement or differential settlement of the segments or loss of fill. Holes may exist in walls or slabs. Integral wingwalls nearly severed from culvert. Severe scour or erosion at curtain walls, wingwalls or pipes. Metal culverts have extreme distortion and deflection in one
+    section, extensive corrosion, or deep pitting with scattered perforations.'},
+    {active: true, code: '2', name: 'Critical', description: 'Integral wingwalls collapsed, severe settlement of roadway due to loss of fill. Section of culvert may have failed and can no longer support embankment. Complete undermining at curtain walls and pipes. Corrective action required to maintain traffic. Metal culverts have extreme distortion and deflection and deflection throughout with extensive perforations due to corrosion.'},
+    {active: true, code: '1', name: 'Imminent failure', description: 'Bridge closed. Corrective action may put back in light service.'},
+    {active: true, code: '0', name: 'Failed', description: 'Bridge closed. Replacement necessary.'}
+
 ]
 
 bridge_appraisal_rating_types = [
@@ -212,7 +231,8 @@ structure_agent_types = [
   {code: '21', name: 'Other State Agencies', active: true},
   {code: '25', name: 'Other Local Agencies', active: true},
   {code: '26', name: 'Private (other than railroad)', active: true},
-  {code: '27', name: 'Railroad 31 State Toll Authority', active: true},
+  {code: '27', name: 'Railroad', active: true},
+  {code: '31', name: 'State Toll Authority', active: true},
   {code: '32', name: 'Local Toll Authority', active: true},
   {code: '60', name: 'Other Federal Agencies (not listed below)', active: true},
   {code: '61', name: 'Indian Tribal Government', active: true},
@@ -257,6 +277,118 @@ assembly_types = [
     {name: 'Deck', active: true}, {name: 'Superstructure', active: true}, 
     {name: 'Substructure', active: true}, {name: 'Joints', active: true}, 
     {name: 'Rails', active: true}, {name: 'Other', active: true}
+]
+
+service_on_types = [
+    {active: true, code: '1',	name: 'Highway'},
+    {active: true, code: '2',	name: 'Railroad'},
+    {active: true, code: '3',	name: 'Pedestrian-bicycle'},
+    {active: true, code: '4',	name: 'Highway-railroad'},
+    {active: true, code: '5',	name: 'Highway-pedestrian'},
+    {active: true, code: '6',	name: 'Overpass/Second level',	description: 'Overpass structure at an interchange or second level of a multilevel interchange'},
+    {active: true, code: '7',	name: 'Third level',	description: 'Third level (Interchange)'},
+    {active: true, code: '8',	name: 'Fourth level',	description: 'Fourth level (Interchange)'},
+    {active: true, code: '9',	name: 'Building or plaza'},
+    {active: true, code: '0',	name: 'Other'},
+]
+
+service_under_types = [
+    {active: true, code: '1',	name: 'Highway', description: 'Highway, with or without pedestrian'},
+    {active: true, code: '2',	name: 'Railroad'},
+    {active: true, code: '3',	name: 'Pedestrian-bicycle'},
+    {active: true, code: '4',	name: 'Highway-railroad'},
+    {active: true, code: '5',	name: 'Waterway'},
+    {active: true, code: '6',	name: 'Highway-waterway'},
+    {active: true, code: '7',	name: 'Railroad-waterway'},
+    {active: true, code: '8',	name: 'Highway-waterway-railroad'},
+    {active: true, code: '9',	name: 'Relief for waterway'},
+    {active: true, code: '0',	name: 'Other'},
+]
+
+historical_significance_types = [
+    {active: true, code: '1',	name: 'On NHRP', description: 'Bridge is on the National Register of Historic Places(NRHP).'},
+    {active: true, code: '2',	name: 'NHRP eligible', description: 'Bridge is eligible for the NRHP.'},
+    {active: true, code: '3',	name: 'NHRP possible or state/local register', description: 'Bridge is possibly eligible for the NRHP(requires further investigation before determination can be made) or bridge is on a State or local historic register.'},
+    {active: true, code: '4',	name: 'Cannot be determined', description: 'Historical significance is not determinable at this time. '},
+    {active: true, code: '5',	name: 'Not NHRP eligible', description: 'Bridge is not eligible for the NRHP.'},
+]
+
+bridge_toll_types = [
+    {active: true, code: '1',	name: 'Toll bridge', description: 'Tolls are paid specifically to use the structure.'},
+    {active: true, code: '2',	name: 'On toll road', description: 'The structure carries a toll road, i.e. tolls are paid to the facility, which includes
+    both the highway and the structure.'},
+    {active: true, code: '3',	name: 'On free road', description: 'The structure is toll-free and carries a toll-free highway.'},
+    {active: true, code: '4',	name: 'On Interstate toll segment', description: 'On Interstate toll segment under Secretarial Agreement. Structure functions as a part of the toll segment.'},
+    {active: true, code: '5',	name: 'Interstate toll bridge', description: 'Toll bridge is a segment under Secretarial Agreement. Structure is separate agreement from highway segment.'},
+]
+
+design_load_types = [
+    {active: true, code: '1',	name: 'H 10'},
+    {active: true, code: '2',	name: 'H 15'},
+    {active: true, code: '3',	name: 'HS 15'},
+    {active: true, code: '4',	name: 'H 20'},
+    {active: true, code: '5',	name: 'HS 20'},
+    {active: true, code: '6',	name: 'HS 20+Mod'},
+    {active: true, code: '7',	name: 'Pedestrian'},
+    {active: true, code: '8',	name: 'Railroad'},
+    {active: true, code: '9',	name: 'HS 25'},
+    {active: true, code: '0',	name: 'Other/Unknown'},
+]
+
+load_rating_method_types = [
+    {active: true, code: '1',	name: 'Load Factor(LF)'},
+    {active: true, code: '2',	name: 'Allowable Stress(AS)'},
+    {active: true, code: '3',	name: 'Load and Resistance Factor(LRFR)'},
+    {active: true, code: '4',	name: 'Load Testing'},
+    {active: true, code: '5',	name: 'No rating analysis performed'},
+]
+
+bridge_posting_types = [
+    {active: true, code: '5',	name: 'Equal to or above legal loads'},
+    {active: true, code: '4',	name: '00.1 - 09.9 % below'},
+    {active: true, code: '3',	name: '10.0 - 19.9 % below'},
+    {active: true, code: '2',	name: '20.0 - 29.9 % below'},
+    {active: true, code: '1',	name: '30.0 - 39.9 % below'},
+    {active: true, code: '0',	name: '> 39.9% below'},
+]
+
+reference_feature_types = [
+    {active: true, code: 'H',	name: 'Highway beneath structure'},
+    {active: true, code: 'R',	name: 'Railroad beneath structure'},
+    {active: true, code: 'N',	name: 'Feature not a highway or railroad'},
+]
+
+service_level_types = [
+    {active: true, code: '0',	name: 'Other'},
+    {active: true, code: '1',	name: 'Mainline'},
+    {active: true, code: '2',	name: 'Alternate'},
+    {active: true, code: '3',   name: 'Bypass'},
+    {active: true, code: '4',	name: 'Spur'},
+    {active: true, code: '6',	name: 'Business'},
+    {active: true, code: '7',	name: 'Ramp/Wye/Connector'},
+    {active: true, code: '8',	name: 'Service/Frontage Road'}
+]
+
+functional_classes = [
+    {active: true, code: '01',	name: 'Rural Principal Arterial - Interstate'},
+    {active: true, code: '02',	name: 'Rural Principal Arterial - Other'},
+    {active: true, code: '06',	name: 'Rural Minor Arterial'},
+    {active: true, code: '07',	name: 'Rural Major Collector'},
+    {active: true, code: '08',	name: 'Rural Minor Collector'},
+    {active: true, code: '09',	name: 'Rural Local'},
+    {active: true, code: '11',	name: 'Urban Principal Arterial - Interstate'},
+    {active: true, code: '12',	name: 'Urban Principal Arterial - Other Freeways or Expressways'},
+    {active: true, code: '14',	name: 'Urban Other Principal Arterial'},
+    {active: true, code: '16',	name: 'Urban Minor Arterial'},
+    {active: true, code: '17',	name: 'Urban Collector'},
+    {active: true, code: '19',	name: 'Urban Local'}
+]
+
+traffic_direction_types = [
+    {active: true, code: '0',	name: 'Highway traffic not carried'},
+    {active: true, code: '1',	name: '1-way traffic'},
+    {active: true, code: '2',	name: '2-way traffic'},
+    {active: true, code: '3',	name: 'One lane bridge for 2-way traffic'}
 ]
 
 defect_definitions = [
@@ -444,7 +576,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types
 }
 
 replace_tables.each do |table_name|

@@ -7,7 +7,7 @@
   :search => 'false'}}
   %thead
     %tr
-      %th Asset Type
+      %th Structure Class
       %th File
       %th Size
       %th Status
@@ -42,8 +42,8 @@
               :url => processable_uploads_path,
               :wrapper => :vertical_form,
               :wrapper_mappings => {:file => :vertical_file_input}) do |f|
-            .col-md-3
-              = f.input :class_name, include_blank: false, collection: ['Bridge']
+            .col-md-4
+              = f.input :class_name, label: 'Expected Structure Class', include_blank: false, collection: ['Bridge', 'Culvert']
             .row
               .col-md-12
                 = f.simple_fields_for :document do |d|

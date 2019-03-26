@@ -13,4 +13,17 @@ class Inspection < ApplicationRecord
   has_many :elements, dependent: :destroy
 
   scope :ordered, -> { order(event_datetime: :desc) }
+
+  def self.get_typed_inspection(inspection)
+    if inspection
+      if inspection.specific
+        inspection = inspection.specific
+
+        typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
+        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if defined?((typed_asset.class.to_s + 'Condition').constantize)
+      end
+
+      inspection
+    end
+  end
 end

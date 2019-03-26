@@ -14,7 +14,19 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'RouteSigningPrefix',
   'StructureStatusType',
   'Region',
-  'MaintenanceSection'
+  'MaintenanceSection',
+  'ServiceOnType',
+  'ServiceUnderType',
+  'HistoricalSignificanceType',
+  'BridgeTollType',
+  'DesignLoadType',
+  'LoadRatingMethodType',
+  'BridgePostingType',
+  'ReferenceFeatureType',
+  'ServiceLevelType',
+  'FunctionalClass',
+  'TrafficDirectionType',
+  'StructureAgentType'
 ]
 
-Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'Bridge', 'FieldReference']
+Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'BridgeLike', 'FieldReference', 'District']

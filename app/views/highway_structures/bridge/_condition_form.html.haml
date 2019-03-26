@@ -1,26 +1,26 @@
--#.form-group
--#  %label.control-label
--#    Last Inspection Date
--#  .display-value
--#    = format_as_date(@asset.inspection_date)
--#.form-group
--#  %label.control-label
--#    Overall Bridge Condition
--#  .display-value
--#    = @asset.calculated_condition&.titleize
--#.form-group
--#  %label.control-label
--#    Deck Condition
--#  .display-value
--#    = @asset.deck_condition_rating_type
--#.form-group
--#  %label.control-label
--#    Superstructure Condition
--#  .display-value
--#    = @asset.superstructure_condition_rating_type
--#.form-group
--#  %label.control-label
--#    Substructure Condition
--#  .display-value
--#    = @asset.substructure_condition_rating_type
-
+- latest_bridge_condition = @asset.latest_bridge_condition
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck')
+  .display-value
+    = latest_bridge_condition&.deck_condition_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure')
+  .display-value
+    = latest_bridge_condition&.superstructure_condition_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure')
+  .display-value
+    = latest_bridge_condition&.substructure_condition_rating_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel Protection')
+  .display-value
+    = latest_bridge_condition&.channel_condition_type
+.form-group
+  %label.control-label
+    = reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+  .display-value
+    = latest_bridge_condition&.calculated_condition&.titleize

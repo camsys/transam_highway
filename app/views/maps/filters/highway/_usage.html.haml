@@ -1,8 +1,9 @@
+- @searcher.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @searcher.structure_status_type_code
 #highwayUsageFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default
     .panel-heading{role:"tab"}
       %h5.panel-title
-        Usage
-    .panel-collapse{role:"tabpanel"}
+        %a{data: {toggle: 'collapse'}, href: '#collapse-usage'}Usage
+    #collapse-usage.panel-collapse.collapse.in
       .panel-body
         = @search_form.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: reference_label('highway_structures', 'structure_status_type_id', 'Status')

@@ -1,0 +1,22 @@
+- roadways.each do |r|
+  %tr
+    %td.center= r.on_under_indicator
+    %td.center= r.route_signing_prefix
+    %td.center= r.service_level_type
+    %td.center= suppress_values(r.route_number)
+    %td.right= format_as_quantity(r.min_vertical_clearance, 'ft')
+    %td.center= format_as_yes_no(r.on_base_network)
+    %td.center= suppress_values(r.lrs_route)
+    %td.center= suppress_values(r.lrs_subroute)
+    %td.center= r.functional_class
+    %td.right= r.lanes
+    %td.right= suppress_values(r.average_daily_traffic)
+    %td.right= suppress_values(r.average_daily_traffic_year)
+    %td.right= format_as_quantity(r.total_horizontal_clearance, 'ft')
+    %td.center= r.strahnet_designation_type
+    %td.center= r.traffic_direction_type
+    %td.center= format_as_yes_no(r.on_national_highway_system)
+    %td.right= suppress_values(r.average_daily_truck_traffic_percent){|v| format_as_percentage v}
+    %td.center= format_as_yes_no(r.on_truck_network)
+    %td.right= suppress_values(r.future_average_daily_traffic)
+    %td.right= suppress_values(r.future_average_daily_traffic_year)

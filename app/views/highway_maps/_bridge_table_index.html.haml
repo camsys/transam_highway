@@ -45,7 +45,7 @@
 
       %thead
         %tr
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Number')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_type'}}= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')

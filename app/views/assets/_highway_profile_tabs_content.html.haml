@@ -1,32 +1,25 @@
-- prefix = "highway_structures/#{@asset.class.name.underscore}"
+:ruby
+  tabs = {
+    identification: 'Identification',
+    age_service: 'Age & Service',
+    appraisal: 'Appraisal',
+    classification: 'Classification',
+    condition: 'Condition',
+    geometric_data: 'Geometric Data',
+    inspections: 'Inspections',
+    load_rating_posting: 'Load Rating & Posting',
+    proposed_improvements: 'Proposed Improvements',
+    roadways: 'Roadway',
+    structural_type_material: 'Structural Type & Material',
+    navigation_data: 'Navigation Data'
+  }
 
-.tab-pane.fade#id
-  .tab-content
-    %legend
-      Identification
-    = render "#{prefix}/identification_form"
-.tab-pane.fade#location
-  .tab-content
-    %legend
-      Location
-    = render "#{prefix}/location_form"
-.tab-pane.fade#usage
-  .tab-content
-    %legend
-      Usage
-    = render "#{prefix}/usage_form"
-.tab-pane.fade#candm
-  .tab-content
-    %legend
-      Construction & Material
-    = render "#{prefix}/construction_material_form"
-.tab-pane.fade#gandl
-  .tab-content
-    %legend
-      Geometry & Layout
-    = render "#{prefix}/geometry_layout_form"
-.tab-pane.fade#inspection
-  .tab-content
-    %legend
-      Inspection Scheduling
-    = render "#{prefix}/inspection_scheduling_form"
+  prefix = "highway_structures/#{@asset.class.name.underscore}"
+
+- tabs.each do |key, label|
+  .tab-pane.fade{id: "#{key}"}
+    .tab-content
+      %legend
+        = label
+      = render "#{prefix}/#{key}_form"
+

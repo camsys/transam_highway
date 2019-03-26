@@ -1,19 +1,20 @@
-%li
-  %a{href: '#id', data: {toggle: 'tab'}}
-    Identification
-%li
-  %a{href: '#location', data: {toggle: 'tab'}}
-    Location
-%li
-  %a{href: '#usage', data: {toggle: 'tab'}}
-    Usage
-%li
-  %a{href: '#candm', data: {toggle: 'tab'}}
-    Construction & Material
-%li
-  %a{href: '#gandl', data: {toggle: 'tab'}}
-    Geometry & Layout
-%li
-  %a{href: '#inspection', data: {toggle: 'tab'}}
-    Inspection Scheduling
-    
+:ruby
+  tabs = {
+    identification: 'Identification',
+    age_service: 'Age & Service',
+    appraisal: 'Appraisal',
+    classification: 'Classification',
+    condition: 'Condition',
+    geometric_data: 'Geometric Data',
+    inspections: 'Inspections',
+    load_rating_posting: 'Load Rating & Posting',
+    proposed_improvements: 'Proposed Improvements',
+    roadways: 'Roadway',
+    structural_type_material: 'Structural Type & Material',
+    navigation_data: 'Navigation Data'
+  }
+
+- tabs.each do |key, label|
+  %li
+    %a{href: "##{key}", data: {toggle: 'tab'}}
+      = label

@@ -12,30 +12,58 @@
   }
 .col-sm-4
   .form-group
-    %label.control-label= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
-    .display-value= @asset.asset_subtype
+    %label.control-label= reference_label('highway_structures', 'route_number', '&nbsp')
+    .display-value= @asset.route_number
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'milepoint', 'Milepoint')
+    .display-value= @asset.milepoint
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'city', '* City')
+    .display-value= @asset.city
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'county', 'County')
+    .display-value= @asset.county
+
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'maintenance_responsibility_id', 'Maintenance Responsibility')
+    .display-value= @asset.maintenance_responsibility
+
   .form-group
     %label.control-label= reference_label('highway_structures', 'owner_id', 'Organization')
     .display-value= @asset.owner
+
   .form-group
-    %label.control-label= reference_label('highway_structures', 'inspection_frequency', 'Routine Inspection Frequency')
-    .display-value= @asset.inspection_frequency
-  .form-group
-    %label.control-label= reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
-    .display-value= @asset.bridge_conditions.ordered.first.try(:deck_condition_rating_type)
-  .form-group
-    %label.control-label= reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
-    .display-value= @asset.bridge_conditions.ordered.first.try(:superstructure_condition_rating_type)
-  .form-group
-    %label.control-label= reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
-    .display-value= @asset.bridge_conditions.ordered.first.try(:substructure_condition_rating_type)
+    %label.control-label Suffiency Rating
+    .display-value PENDING
+
+.col-sm-4
   .form-group
     %label.control-label= reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
     .display-value= @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
+  .form-group
+    %label.control-label= reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
+    .display-value= @asset.bridge_conditions.ordered.first.try(:scour_critical_bridge_type)
+  .form-group
+    %label.control-label= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
+    .display-value= @asset.asset_subtype
+
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type')
+    .display-value= @asset.highway_structure_type
+  .form-group
+    %label.control-label Inspection Program (80)
+    .display-value PENDING
+
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
+    .display-value= format_as_date(@asset.inspection_date)
+  .form-group
+    %label.control-label= reference_label('highway_structures', 'next_inspection_date', 'Next Routine Inspection')
+    .display-value= @asset.next_inspection_date.strftime('%B %Y') if @asset.next_inspection_date.present?
 
 .col-sm-4
   - if Image.where(base_imagable: @asset.transam_asset, classification: ['Roadway', 'Elevation', 'Superstructure']).count > 0
-    #recentImagesCarousel.carousel.slide
+    .row.form-group#recentImagesCarousel.carousel.slide
       %ol.carousel-indicators
         %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
         %li{data: {target: "#recentImagesCarousel", slide_to: "1"}}
@@ -71,7 +99,6 @@
         %span.glyphicon.glyphicon-chevron-left
       %a.right.carousel-control{href: "#recentImagesCarousel", role: "button", data: {slide:"next"}}
         %span.glyphicon.glyphicon-chevron-right
-.col-sm-4
   .row
     = render 'map_thumbnail'
   .row.text-center
