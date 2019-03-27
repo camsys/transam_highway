@@ -25,8 +25,8 @@
     %tbody
       %tr
         %td{colspan: 20} Roadway On structure
-      = render partial: 'highway_structures/bridge/roadways_table', locals: {roadways: @asset.roadways.on}
+      = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: @asset.roadways.on}
       %tr
         %td{colspan: 20}= "#{'Roadway'.pluralize(@asset.roadways.under.count)} Under Structure"
-      = render partial: 'highway_structures/bridge/roadways_table', locals: {roadways: @asset.roadways.under}
+      = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: @asset.roadways.under}
 

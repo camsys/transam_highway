@@ -497,7 +497,7 @@ class BridgeLike < TransamAssetRecord
   def as_json(options={})
     super(options).tap do |json|
       json.merge! acting_as.as_json(options)
-      json.merge! "bridge_type" => self.asset_subtype.to_s
+      json.merge! "bridge_like_type" => self.asset_subtype.to_s
       json
     end
   end

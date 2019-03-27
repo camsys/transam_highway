@@ -1,1 +1,5 @@
-= render "highway_structures/#{@asset.class.name.underscore}/subheader"
+:ruby 
+  asset_dir = @asset_class_name.underscore
+  asset_dir = 'bridge_like' if ['bridge', 'culvert'].include?(asset_dir)
+  
+= render "highway_structures/#{asset_dir}/subheader"

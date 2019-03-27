@@ -8,7 +8,7 @@
   }
 
 #subheader-label
-  %h2 Highway Assets
+  %h2 Highway Structures
   %legend.asset-subheader
 
 #table_actions.btn-toolbar
@@ -52,7 +52,7 @@
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'location_description'}}= reference_label('highway_structures', 'location_description', 'Location Description')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
-          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label('bridges', 'length', 'Length')
+          %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label('highway_structures', 'length', 'Length (49)')
           %th.center{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')
 
 = render 'shared/table_formatters'

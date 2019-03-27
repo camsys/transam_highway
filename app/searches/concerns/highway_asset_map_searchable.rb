@@ -48,7 +48,7 @@ module HighwayAssetMapSearchable
       @highway_klass = @klass.left_outer_joins(:service_on_type, :service_under_type, :highway_structure => [:region, :structure_status_type, :roadways])
     elsif asset_type_class_name == 'HighwayStructure'
       join_sql = <<-SQL 
-        LEFT OUTER JOINS bridge_likes 
+        LEFT OUTER JOIN bridge_likes 
           ON highway_structures.highway_structurible_id = bridge_likes.id AND highway_structures.highway_structurible_type = 'BridgeLike'
       SQL
 

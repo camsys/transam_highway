@@ -1,21 +1,24 @@
+:ruby
+  is_bridge_condition = @inspection.highway_structure.asset_type&.class_name == 'Bridge'
 .row
-  .col-md-6
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
-      .display-value
-        = @inspection.deck_condition_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
-      .display-value
-        = @inspection.superstructure_condition_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
-      .display-value
-        = @inspection.substructure_condition_rating_type
-    %hr
+  .col-md-6 
+    - if is_bridge_condition
+      .form-group
+        %label.control-label
+          = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
+        .display-value
+          = @inspection.deck_condition_rating_type
+      .form-group
+        %label.control-label
+          = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
+        .display-value
+          = @inspection.superstructure_condition_rating_type
+      .form-group
+        %label.control-label
+          = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
+        .display-value
+          = @inspection.substructure_condition_rating_type
+      %hr
     .form-group
       %label.control-label
         = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Appraisal Rating')
@@ -26,11 +29,12 @@
         = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry Appraisal Rating')
       .display-value
         = @inspection.deck_geometry_appraisal_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating')
-      .display-value
-        = @inspection.underclearance_appraisal_rating_type
+    - if is_bridge_condition
+      .form-group
+        %label.control-label
+          = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating')
+        .display-value
+          = @inspection.underclearance_appraisal_rating_type
     .form-group
       %label.control-label
         = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Appraisal Rating')

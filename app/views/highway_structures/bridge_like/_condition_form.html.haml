@@ -1,0 +1,32 @@
+- if @asset_class_name == 'Bridge'
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck')
+    .display-value
+      = @latest_condition&.deck_condition_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure')
+    .display-value
+      = @latest_condition&.superstructure_condition_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure')
+    .display-value
+      = @latest_condition&.substructure_condition_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel Protection')
+    .display-value
+      = @latest_condition&.channel_condition_type
+- elsif @asset_class_name == 'Culvert'
+  .form-group
+    %label.control-label
+      = reference_label('culvert_conditions', 'culvert_condition_type_id', 'Culvert Condition')
+    .display-value
+      = @latest_condition&.culvert_condition_type
+.form-group
+  %label.control-label
+    = reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+  .display-value
+    = @latest_condition&.calculated_condition&.titleize
