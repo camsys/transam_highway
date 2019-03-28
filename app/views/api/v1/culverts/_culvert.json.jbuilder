@@ -1,0 +1,1 @@
+json.partial! 'api/v1/bridge_likes/bridge_like', bridge_like: culvert

@@ -13,6 +13,11 @@ if @highway_structures
         json.partial! 'api/v1/bridges/listing', collection: @bridges, as: :bridge
       end
     end
+    if @culverts
+      json.culverts do
+        json.partial! 'api/v1/culverts/listing', collection: @culverts, as: :culvert
+      end
+    end
   end
 end
 

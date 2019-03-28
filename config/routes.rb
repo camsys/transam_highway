@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       get 'element_definitions' => 'element_definitions#index'
 
       resources :bridges
+      resources :culverts
       resources :highway_structures
     end
   end

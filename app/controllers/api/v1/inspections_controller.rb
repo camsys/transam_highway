@@ -11,8 +11,10 @@ class Api::V1::InspectionsController < Api::ApiController
     # sequence matters
     query_highway_structures
     query_bridges
+    query_culverts
     query_inspections
     query_bridge_conditions
+    query_culvert_conditions
     query_elements
     query_defects
     query_roadways
@@ -34,6 +36,10 @@ class Api::V1::InspectionsController < Api::ApiController
     @bridges = Bridge.where("highway_structures.id": @highway_structure_ids)
   end
 
+  def query_culverts
+    @culverts = Culvert.where("highway_structures.id": @highway_structure_ids)
+  end
+
   def query_inspections
     @inspections = Inspection.where(transam_asset_id: @transam_asset_ids)
     unless params[:start_date].blank?
@@ -48,6 +54,10 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_bridge_conditions
     @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids)
+  end
+
+  def query_culvert_conditions
+    @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids)
   end
 
   def query_elements
