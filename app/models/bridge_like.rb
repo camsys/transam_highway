@@ -423,7 +423,7 @@ class BridgeLike < TransamAssetRecord
     end
 
     # set calculated condition based on existing completed inspections
-    bridgelike.set_calculated_condition! if struct_class_code == 'BRIDGE'
+    bridgelike.set_calculated_condition!
 
     return true, msg, bridgelike.class.name
   end
