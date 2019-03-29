@@ -21,4 +21,11 @@ FactoryBot.define do
     active { true }
   end
 
+  factory :culvert_subtype, :class => :asset_subtype do
+    association :asset_type, :factory => :culvert_type
+    name { "Test Culvert Subtype" }
+    description { "Test Culvert Subtype" }
+    active { true }
+  end
+
 end
