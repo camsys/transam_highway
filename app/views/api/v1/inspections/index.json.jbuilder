@@ -29,6 +29,10 @@ json.bridge_conditions do
   json.partial! 'api/v1/bridge_conditions/listing', collection: @bridge_conditions, as: :bridge_condition
 end
 
+json.culvert_conditions do
+  json.partial! 'api/v1/culvert_conditions/listing', collection: @culvert_conditions, as: :culvert_condition
+end
+
 json.images do 
   json.partial! 'api/v1/images/image', collection: @images, as: :image
 end

@@ -34,10 +34,12 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_bridges
     @bridges = Bridge.where("highway_structures.id": @highway_structure_ids)
+    @bridge_asset_ids = @bridges.pluck("transam_assetible_id")
   end
 
   def query_culverts
     @culverts = Culvert.where("highway_structures.id": @highway_structure_ids)
+    @culvert_asset_ids = @bridges.pluck("transam_assetible_id")
   end
 
   def query_inspections
@@ -53,11 +55,11 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_bridge_conditions
-    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids)
+    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @bridge_asset_ids)
   end
 
   def query_culvert_conditions
-    @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids)
+    @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @culvert_asset_ids)
   end
 
   def query_elements
