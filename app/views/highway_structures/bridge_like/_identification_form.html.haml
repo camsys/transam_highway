@@ -1,3 +1,6 @@
+:ruby
+  city_names = District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name)
+  county_names = District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name)
 :css
   .profile-location-remarks .editable-inline, .profile-location-description .editable-inline {
     width: 50%;
@@ -40,18 +43,42 @@
 
 :javascript
   $(function() {
+    function isCountyInvalid(newCounty) {
+      return newCounty && #{county_names.to_json.html_safe || []}.indexOf(newCounty) < 0; 
+    }
+
+    function isCityInvalid(newCity) {
+      return newCity && #{city_names.to_json.html_safe || []}.indexOf(newCity) < 0; 
+    }
+
     $('.profile-city .editable-field').on('shown', function(e, editable) {
       $('#city_group input').typeahead({
         items: 10,
-        source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
+        source: #{city_names.to_json.html_safe || []}
       });
     });
 
     $('.profile-county .editable-field').on('shown', function(e, editable) {
       $('#county_group input').typeahead({
         items: 10,
-        source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
+        source: #{county_names.to_json.html_safe || []}
       });
+    });
+
+    var old_city = "#{@asset.city}";
+    var old_county = "#{@asset.county}";
+    // validate against district entries
+    // restore original value if not match
+    $('.save-xeditable-button').click(function() {
+      var newCity = $('.profile-city input').val();
+      if(isCityInvalid(newCity)) {
+        $('.profile-city .editable-field').editable('setValue', old_city);
+      }
+
+      var newCounty = $('.profile-county input').val();
+      if(isCountyInvalid(newCounty)) {
+        $('.profile-county .editable-field').editable('setValue', old_county);
+      }
     });
 
   });
