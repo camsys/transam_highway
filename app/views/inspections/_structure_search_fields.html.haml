@@ -1,0 +1,61 @@
+:ruby
+  conditions = ['good', 'fair', 'poor', 'unknown'].map{|r| [r.titleize, r]}
+  @search_proxy.on_under_indicator = 'on' unless @search_proxy.on_under_indicator
+  @search_proxy.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @search_proxy.structure_status_type_code
+:css
+  .region-filter-label {
+    display: block;
+  }
+  .region-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
+
+.col-sm-2
+  %h3 Identification
+  = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
+  = f.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: reference_label('highway_structures', 'region_id', 'Region'), item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
+  = f.input :structure_county, label: reference_label('highway_structures', 'county', 'County'), :input_html => {:autocomplete => 'off', class: 'structure_county_input'}
+  = f.input :structure_city, label: reference_label('highway_structures', 'city', 'City'), :input_html => {:autocomplete => 'off', class: 'structure_city_input'}
+
+.col-sm-2
+  %h3 Age & Service
+  %label.control-label{for: 'on_under_indicator_tab'}
+    = reference_label('roadways', 'service_type', 'Service Type')
+  %ul.nav.nav-tabs#on_under_indicator_tab
+    %li.active#service_on_type_header
+      %a{:href => '#service_on_type', :data =>{:toggle => 'tab'}}
+        On (42A)
+    %li#service_under_type_header
+      %a{:href => '#service_under_type', :data =>{:toggle => 'tab'}}
+        Under (42B)
+  .tab-content{style: 'min-height: 100px;'}
+    .tab-pane.fade.in.active#service_on_type
+      = f.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: false
+
+    .tab-pane.fade.in#service_under_type
+      = f.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: false
+  
+  = f.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS')
+.col-sm-6
+  %h3 Classification
+  .col-sm-6
+    = f.input :owner_id, as: :check_boxes, collection: StructureAgentType.active.order(:code).collect{|t| [t.name, t.id]}, label: reference_label('highway_structures', 'owner_id', 'Onwer')
+  .col-sm-6
+    = f.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: reference_label('highway_structures', 'structure_status_type_id', 'Status')
+.col-sm-2
+  %h3 Condition
+  = f.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+
+:javascript
+  $('.structure_county_input').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []},
+    appendTo: 'body'
+  });
+
+  $('.structure_city_input').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []},
+    appendTo: 'body'
+  });

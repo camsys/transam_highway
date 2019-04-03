@@ -1,0 +1,107 @@
+:css
+  .popover-title{
+      background: #fbf381;
+  }
+  .popover-action:hover {
+    cursor: pointer;
+    cursor: hand;
+  }
+
+#inspection_table_actions.btn-toolbar
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => "inspection-table",
+    :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'true',
+    :show_pagination_switch => 'true',
+    :sortable => 'true',
+    :sort_order => 'asc',
+    :state_save => 'true',
+    :state_save_id_table => "pckordid",
+    :state_save_expire => "1d",
+    :page_list => "[5, 10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
+    :search => 'false',
+    :toolbar => "#inspection_table_actions",
+    :show_columns => 'true',
+    :show_export => 'true',
+    :export_types => "['csv', 'txt', 'excel']",
+    :resizable => 'true',
+    :maintain_selected => 'true',
+    :single_select => 'false'}}
+    %thead
+      %tr
+        %th.center{:data => {:field => 'checked', :checkbox => 'true'}} Selected
+        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+        %th.center.hidden Inspection Key
+        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
+        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
+        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
+        %th
+
+    %tbody
+      - @search_results.each do |insp|
+        - structure = TransamAsset.get_typed_asset insp.highway_structure
+        %tr
+          %td.center
+          %td.center= structure.class.name
+          %td.center= structure.asset_tag
+          %td.center.hidden= insp.object_key
+          %td.center= structure.location_description
+          %td.center= structure.owner
+          %td.center= structure.calculated_condition&.titleize
+          %td
+
+
+:javascript 
+  var selected_rows = new Set();
+
+  $(document).ready(function() {
+    // Initialize popovers
+    $('[data-toggle="popover"]').popover();
+
+    // Enables or disables the package actions depending on how many are selected
+    function enable_disable_table_actions() {
+      if (selected_rows.size > 0) {
+        //TODO
+      } else {
+        //TODO
+      }
+    };
+
+    // Updates the selected rows in the table
+    function update_selected() {
+      var selected = $('#inspection-table').bootstrapTable('getSelections');
+      selected_rows = new Set();
+      for (i = 0; i < selected.length; i++) {
+        var insp_key = selected[i][1];
+        if(!selected_rows.has(insp_key)) {
+          selected_rows.add(insp_key);
+        }
+      }
+      enable_disable_table_actions();
+    };
+
+    // Removes an object identified by its object key from the set of objects selected
+    function remove_from_selected(object_key) {
+      selected_rows.delete(object_key);
+      enable_disable_table_actions();
+    };
+
+    $('#inspection-table').on('check.bs.table', function(e, row) {
+      update_selected();
+    }).on('uncheck.bs.table', function(e, row) {
+      update_selected();
+    }).on('check-all.bs.table', function(e, row) {
+      update_selected();
+    }).on('uncheck-all.bs.table', function(e, row) {
+      update_selected();
+    }).on('all.bs.table', function(e, row) {
+      $('[data-toggle="popover"]').popover();
+    });
+
+  });
+  $(window).resize(function() {
+    $('#inspection-table').bootstrapTable('resetView');
+  });

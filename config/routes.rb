@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
 
-  resources :inspections
+  resources :inspections do 
+    collection do 
+      get 'reset'
+      post 'new_search'
+    end
+  end
 
   resources :processable_uploads, only: [:index, :create, :destroy] do
     member do

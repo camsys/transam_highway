@@ -1,0 +1,66 @@
+:css
+  .reset-addon {
+    cursor: pointer;
+    color: red;
+  }
+#search-form.search-panel.collpase
+  .panel.panel-default{:style => 'margin-bottom: 5px;'}
+    .panel-heading{:role => 'tab'}
+      %h4.panel-title
+        = link_to 'Search Inspections', '#search-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+    #search-panel-collapse.in
+      .panel-body
+        = simple_form_for(@search_proxy,
+          :html => {:class => 'form-vertical', :autocomplete => 'off'},
+          :url => new_search_inspections_path,
+          :role => 'search',
+          :remote => true,
+          :wrapper => :vertical_form,
+          :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+          :radio_buttons => :vertical_radio_and_checkboxes,
+          :file => :vertical_file_input,
+          :boolean => :vertical_boolean}) do |f|
+
+          .row
+            %ul.nav.nav-tabs
+              %li.active
+                %a{:href => '#structure_search_fields', :data =>{:toggle => 'tab'}}
+                  Structure
+              %li
+                %a{:href => '#inspection_search_fields', :data =>{:toggle => 'tab'}}
+                  Inspection
+            .tab-content.form-section
+              .tab-pane.fade.in.active#structure_search_fields
+                = render 'structure_search_fields', f: f
+              .tab-pane.fade.in.active#inspection_search_fields
+                = render 'inspection_search_fields', f: f
+            
+          .row  
+            .pull-right
+              = button_tag :type => 'submit', :id => 'form-submit', :class => 'btn btn-primary btn-sm', :style => 'margin-left: 2px;' do
+                %i.fa.fa-search.fa-1-5x
+                = " Search"
+              = link_to reset_inspections_path, :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
+                %i.fa.fa-refresh.fa-1-5x
+
+= render 'shared/table_formatters'
+
+:javascript
+  
+  // Show the spinner while the form request is being handled
+  $("#new_inspection_proxy").on("ajax:send", function (xhr) {
+    $('#search-panel-collapse').collapse('hide');
+    $("#inspection-table-container").hide();
+    $("#errors").hide();
+    $("#spinner").show();
+  }).on("ajax:complete", function(xhr, status) {
+    $('#spinner').hide();
+    $("#inspection-table-container").show();
+  });
+
+  $(document).ready(function() {
+    // Hide the spinner
+    $("#spinner").hide();
+
+  });

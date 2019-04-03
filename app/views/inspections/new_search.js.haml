@@ -1,0 +1,14 @@
+- if @errors.present?
+  $('#errors').html("#{escape_javascript(render 'inspections/errors')}").show();
+- else
+  $('#errors').hide();
+
+$('#inspection-table-container').html("#{escape_javascript(render 'inspections/inspections_table')}");
+$('#inspection-table').bootstrapTable();
+$('#inspection-table').bootstrapTable('selectPage', 1);
+
+
+- if @message.present?
+  transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
+
+//$('[data-toggle="popover"]').popover();
