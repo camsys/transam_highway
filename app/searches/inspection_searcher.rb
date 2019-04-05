@@ -43,7 +43,7 @@ class InspectionSearcher < BaseSearcher
         ON highway_structures.id = roadways.transam_asset_id
     SQL
 
-    @inspection_klass ||= Inspection.joins(highway_structure: :transam_asset).joins(join_sql)
+    @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}}).joins(join_sql)
   end
 
   # Add any new conditions here. The property name must end with _conditions
