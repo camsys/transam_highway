@@ -59,6 +59,21 @@ class Inspection < ApplicationRecord
     #inspection_group.present? && inspection_team.present?
     true
   end
+
+  def as_json(options={})
+    #TODO: any options to process
+    structure = TransamAsset.get_typed_asset self.highway_structure
+    {
+      highway_structurible_type: structure.class.name,
+      transam_assets_asset_tag: structure.asset_tag,
+      location_description: structure.location_description,
+      owner: structure.owner&.to_s,
+      calculated_condition: structure.calculated_condition&.titleize,
+
+      object_key: object_key
+    }
+  end
+  
   def can_make_ready(user)
     user.try(:is_inspection_admin)
   end
@@ -66,6 +81,7 @@ class Inspection < ApplicationRecord
   def allowed_to_assign
     inspectors.count > 0
   end
+  
   def can_assign(user)
     user.try(:is_editor)
   end
@@ -77,6 +93,7 @@ class Inspection < ApplicationRecord
   def can_qc(user)
     user.try(:is_qc_reviewer)
   end
+  
   def can_qa(user)
     user.try(:is_qa_reviewer)
   end
@@ -85,9 +102,11 @@ class Inspection < ApplicationRecord
     # can skip QA
     true
   end
+  
   def can_submit(user)
     user.try(:is_submitter)
   end
+  
   def can_finalize(user)
     user.try(:is_finalizer)
   end

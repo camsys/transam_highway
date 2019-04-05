@@ -13,14 +13,17 @@
     :data => {:toggle => 'table',
     :card_view => "false",
     :pagination => 'true',
-    :show_pagination_switch => 'true',
+    :url => inspections_path(:format => :json),
+    :side_pagination => 'server',
+    :show_pagination_switch => 'false',
+    :page_number => '1',
+    :page_list => "[5, 10, 20, 50, 100]",
+    :page_size => current_user.num_table_rows,
     :sortable => 'true',
     :sort_order => 'asc',
     :state_save => 'true',
-    :state_save_id_table => "pckordid",
+    :state_save_id_table => "inspections_table_id",
     :state_save_expire => "1d",
-    :page_list => "[5, 10, 20, 50, 100, 200]",
-    :page_size => current_user.num_table_rows,
     :search => 'false',
     :toolbar => "#inspection_table_actions",
     :show_columns => 'true',
@@ -32,30 +35,42 @@
     %thead
       %tr
         %th.center{:data => {:field => 'checked', :checkbox => 'true'}} Selected
-        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
-        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
-        %th.center.hidden Inspection Key
-        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
-        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
-        %th.center{:data => {:sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
+        %th.center{:data => {:field => 'highway_structurible_type', :sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+        %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+        %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
+        %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
+        %th.center{:data => {:field => 'owner', :sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
+        %th.center{:data => {:field => 'calculated_condition', :sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
         %th
 
-    %tbody
-      - @search_results.each do |insp|
-        - structure = TransamAsset.get_typed_asset insp.highway_structure
-        %tr
-          %td.center
-          %td.center= structure.class.name
-          %td.center= structure.asset_tag
-          %td.center.hidden= insp.object_key
-          %td.center= structure.location_description
-          %td.center= structure.owner
-          %td.center= structure.calculated_condition&.titleize
-          %td
-
+= render 'shared/table_formatters'
 
 :javascript 
   var selected_rows = new Set();
+
+  // stub correct sorting field name
+  var inspection_search_sorting_mappings = {
+    transam_assets_asset_tag: "transam_assets.asset_tag",
+    highway_structurible_type: "highway_structures.highway_structurible_type",
+    location_description: "highway_structures.location_description",
+    owner: "owners.code",
+    calculated_condition: "highway_structures.calculated_condition"
+  };
+
+  $('#inspection-table-container table').bootstrapTable({
+    onLoadError: function(status, res) {
+      alert('An error occurred loading your search results. Please refresh the page and try your search again.');
+    },
+    queryParams: function(params) {
+      var sort_field = params.sort;
+      var map_field = inspection_search_sorting_mappings[sort_field];
+      if(map_field) {
+        params.sort = map_field;
+      }
+
+      return params;
+    }
+  });
 
   $(document).ready(function() {
     // Initialize popovers

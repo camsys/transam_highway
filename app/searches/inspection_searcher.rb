@@ -33,6 +33,8 @@ class InspectionSearcher < BaseSearcher
     join_sql = <<-SQL 
       LEFT OUTER JOIN regions 
         ON highway_structures.region_id = regions.id
+      LEFT OUTER JOIN structure_agent_types as owners 
+        ON highway_structures.owner_id = owners.id
       LEFT OUTER JOIN structure_status_types 
         ON highway_structures.structure_status_type_id = structure_status_types.id
       LEFT OUTER JOIN bridge_likes 

@@ -12,17 +12,19 @@ class InspectionsController < TransamController
     # Set up any view vars needed to set the search context
     #---------------------------------------------------------------------------
     if params[:inspection_proxy].present?
-      @search_proxy = InspectionProxy.new(inspection_proxy_form_params)
-      # Make sure we flag this as not being a new search so the results table will
-      # not be hidden
-      @search_proxy.new_search = '0'
-
-      cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
-
-      # Run the search query
-      run_searcher
+      perform_search
     else
       setup_inspection_search_vars
+    end
+
+    respond_to do |format|
+      format.html
+      format.json {
+        render :json => {
+          :total => @total_count,
+          :rows =>  index_rows_as_json
+        }
+      }
     end
   end
 
@@ -70,43 +72,24 @@ class InspectionsController < TransamController
   end
 
   #-----------------------------------------------------------------------------
-  # Perform a new search for inspections
-  #-----------------------------------------------------------------------------
-  # POST /inspections/new_search
-  def new_search
-    @search_proxy = InspectionProxy.new(inspection_proxy_form_params)
-    # Make sure we flag this as not being a new search so the results table will
-    # not be hidden
-    @search_proxy.new_search = '0'
-
-    # Run the search query
-    run_searcher
-
-    # cache the search results
-    cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
-
-    # Cache the result set for paging through the detail view
-    cache_list(@search_results, INDEX_KEY_LIST_VAR)
-
-    Rails.logger.debug "Rows returned = #{@search_results.count}"
-
-    respond_to do |format|
-      format.js
-      format.json { render json: @search_results }
-    end
-  end
-
-  #-----------------------------------------------------------------------------
   # Reset the search, this clears out the search params and sets the defaults
   # for the current user
   #-----------------------------------------------------------------------------
   # GET /inspections/reset
   def reset
-
     clear_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
     cache_list([], INDEX_KEY_LIST_VAR)
 
     redirect_to params[:redirect_to] || inspections_path, status: 303
+  end
+
+  # POST /inspections/new_search
+  def new_search
+    perform_search
+
+    respond_to do |format|
+      format.js
+    end
   end
 
   private
@@ -126,6 +109,24 @@ class InspectionsController < TransamController
     end
 
     #-----------------------------------------------------------------------------
+    # Perform a new search for inspections
+    #-----------------------------------------------------------------------------
+    def perform_search
+      @search_proxy = InspectionProxy.new(inspection_proxy_form_params)
+      # Make sure we flag this as not being a new search so the results table will
+      # not be hidden
+      @search_proxy.new_search = '0'
+
+      # Run the search query
+      run_searcher
+
+      # cache the search results
+      cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
+
+      Rails.logger.debug "Rows returned = #{@total_count}"
+    end
+
+    #-----------------------------------------------------------------------------
     # Initializes the search variables @search_proxy
     #-----------------------------------------------------------------------------
     def setup_inspection_search_vars
@@ -137,24 +138,44 @@ class InspectionsController < TransamController
         @search_proxy = InspectionProxy.new
         # Flag this as a new search so the search results will be hidden
         @search_proxy.new_search = '1'
+
+        cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
       end
 
       #---------------------------------------------------------------------------
       # cache the search proxy
       #---------------------------------------------------------------------------
       Rails.logger.debug @search_proxy.inspect
-      cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
 
       #---------------------------------------------------------------------------
-      # Run the query, this sets @errors and @search_results
+      # Run the query, this sets @errors and search results
       #---------------------------------------------------------------------------
       run_searcher
     end
 
     def run_searcher
       @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy})
-      @search_results = @searcher.data
-      @search_results_count = @search_results.count
-      @errors = [] #TODO: not sure what errors can have??
+      @inspections = @searcher.data
+      @total_count = @inspections.count
+    end
+
+    def index_rows_as_json
+      params[:sort] ||= 'transam_assets.asset_tag'
+
+      multi_sort = params[:multiSort]
+      unless (multi_sort.nil?)
+        sorting_string = ""
+
+        multi_sort.each { |x|
+          sorting_string = sorting_string + "#{x[0]}: :#{x[1]}"
+        }
+
+      else
+        sorting_string = "#{params[:sort]} #{params[:order]}"
+      end
+
+      cache_list(@inspections.order(sorting_string), INDEX_KEY_LIST_VAR)
+
+      @inspections.order(sorting_string).limit(params[:limit]).offset(params[:offset]).as_json
     end
 end

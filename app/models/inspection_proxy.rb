@@ -25,15 +25,19 @@ class InspectionProxy < Proxy
   #-----------------------------------------------------------------------------
 
   # List of allowable form param hash keys
+
   FORM_PARAMS = [
-    :asset_tag, :on_under_indicator, :structure_county, :structure_city,
-    on_national_highway_system: [],
-    region_code: [], 
-    service_on_type_id: [], 
-    service_under_type_id: [], 
-    owner_id: [], 
-    structure_status_type_code: [], 
-    calculated_condition: []
+    :asset_tag, :on_under_indicator, :structure_county, :structure_city
+  ]
+
+  NESTED_FORM_PARAMS = [
+    { :on_national_highway_system => [] }, 
+    { :region_code => [] }, 
+    { :service_on_type_id => [] }, 
+    { :service_under_type_id => [] }, 
+    { :owner_id => [] }, 
+    { :structure_status_type_code => [] }, 
+    { :calculated_condition => [] }
   ]
 
   #-----------------------------------------------------------------------------
@@ -43,7 +47,7 @@ class InspectionProxy < Proxy
   #-----------------------------------------------------------------------------
 
   def self.allowable_params
-    FORM_PARAMS
+    FORM_PARAMS + NESTED_FORM_PARAMS
   end
 
   #-----------------------------------------------------------------------------
@@ -60,6 +64,11 @@ class InspectionProxy < Proxy
     a = {}
     FORM_PARAMS.each do |param|
       a[param] = self.try(param) unless self.try(param).blank?
+    end
+
+    NESTED_FORM_PARAMS.each do |param|
+      p_key = param.keys.first
+      a[p_key] = self.try(p_key) unless self.try(p_key).blank?
     end
     
     h[:inspection_proxy] = a

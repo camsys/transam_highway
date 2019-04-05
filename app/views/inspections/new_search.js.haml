@@ -2,10 +2,7 @@
   $('#errors').html("#{escape_javascript(render 'inspections/errors')}").show();
 - else
   $('#errors').hide();
-
-$('#inspection-table-container').html("#{escape_javascript(render 'inspections/inspections_table')}");
-$('#inspection-table').bootstrapTable();
-$('#inspection-table').bootstrapTable('selectPage', 1);
+$('#inspection-table').bootstrapTable('refresh', {url: "#{inspections_path(:format => :json)}"});
 
 
 - if @message.present?
