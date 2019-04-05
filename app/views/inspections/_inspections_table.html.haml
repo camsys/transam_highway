@@ -35,6 +35,7 @@
     %thead
       %tr
         %th.center{:data => {:field => 'checked', :checkbox => 'true'}} Selected
+        %th.center{:data => {:field => 'to_global_id', :visible => 'false'}} Global ID
         %th.center{:data => {:field => 'highway_structurible_type', :sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
         %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
         %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key

@@ -1,0 +1,13 @@
+.btn-group.pull-right.panel-action
+  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    %i.fa.fa-cog
+    = " Actions"
+    %span.caret
+  %ul.dropdown-menu{:role => 'menu'}
+    - if can? :update, @inspection
+      - @inspection.allowable_events.each do |evt|
+        - if can? evt.to_sym, @inspection
+          %li
+            = link_to fire_workflow_events_transam_workflow_index_path(:global_id => @inspection.to_global_id,:event_name => evt) do
+              %i.fa.fa-fw{:class => get_workflow_event_icon(evt)}
+              = evt.titleize

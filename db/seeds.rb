@@ -11,7 +11,14 @@ organization_types = [
         :active => 1, :name => 'Highway Authority', :class_name => "HighwayAuthority",
         :display_icon_name => "fa fa-highway", :map_icon_name => "redIcon",
         :description => 'Manage highway structures, bridges.'
-    }
+    },
+    {name: "Highway Consultant",
+     class_name: "HighwayConsultanty",
+     display_icon_name: "fa fa-user-circle",
+     map_icon_name: "purpleIcon",
+     description: "Consultant on highway structures, bridges.",
+     roles: nil,
+     active: true}
 ]
 asset_types = [
     {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},
