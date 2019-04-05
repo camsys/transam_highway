@@ -64,6 +64,7 @@ class Inspection < ApplicationRecord
     #TODO: any options to process
     structure = TransamAsset.get_typed_asset self.highway_structure
     {
+      structure_object_key: structure.object_key,
       highway_structurible_type: structure.class.name,
       transam_assets_asset_tag: structure.asset_tag,
       location_description: structure.location_description,

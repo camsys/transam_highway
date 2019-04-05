@@ -42,7 +42,7 @@
           %td.left TODO
           %td.left= inspection.inspection_type
           %td.left= format_as_date(inspection.event_datetime)
-          %td.left= Inspection.get_typed_inspection(inspection).calculated_condition
+          %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
           %td.left= format_as_list(inspection.inspectors)
           %td.left TODO
           %td.left TODO

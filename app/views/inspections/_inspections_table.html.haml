@@ -36,12 +36,12 @@
       %tr
         %th.center{:data => {:field => 'checked', :checkbox => 'true'}} Selected
         %th.center{:data => {:field => 'highway_structurible_type', :sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
-        %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+        %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
         %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
         %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
         %th.center{:data => {:field => 'owner', :sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
         %th.center{:data => {:field => 'calculated_condition', :sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
-        %th
+        %th.center{:data => {:field => 'dummy1', :formatter => 'inspection_link_formatter'}}
 
 = render 'shared/table_formatters'
 
@@ -71,6 +71,19 @@
       return params;
     }
   });
+
+  // more table formatters
+  function structure_link_formatter(value, row) {
+    if (value == null) {
+      return "-";
+    } else {
+      return '<a href="/inventory/' + row['structure_object_key'] + '">' + value + '</a>';
+    }
+  }
+
+  function inspection_link_formatter(value, row) {
+    return '<a href="/inspections/' + row['object_key'] + '">View</a>';
+  }
 
   $(document).ready(function() {
     // Initialize popovers
