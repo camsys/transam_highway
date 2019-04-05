@@ -338,7 +338,9 @@ class BridgeLike < TransamAssetRecord
       i_hashes = hash['inspevnt'].is_a?(Array) ? hash['inspevnt'] : [hash['inspevnt']]
       i_hashes.each do |i_hash|
         date = Date.parse(i_hash['INSPDATE'])
-        if date.is_nil? || date > last_inspection_date
+        last_inspection_date = date unless last_inspection_date
+
+        if date.nil? || date >= last_inspection_date
           last_inspection_date = date 
           inspection_frequency = i_hash['BRINSPFREQ']
         end
