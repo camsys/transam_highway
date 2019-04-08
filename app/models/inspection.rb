@@ -8,7 +8,7 @@ class Inspection < ApplicationRecord
 
   belongs_to :highway_structure, foreign_key: :transam_asset_id
 
-  belongs_to :assigned_organization
+  belongs_to :assigned_organization, class_name: 'Organization'
 
   belongs_to :inspection_type
 
