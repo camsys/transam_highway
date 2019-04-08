@@ -6,8 +6,8 @@
   %ul.dropdown-menu{:role => 'menu'}
     - if can? :update, @inspection
       - @inspection.allowable_events.each do |evt|
-        - if can? evt.to_sym, @inspection
+        - if (can? evt.to_sym, @inspection) && !(['make_ready', 'assign'].include? evt.to_s)
           %li
-            = link_to fire_workflow_events_transam_workflow_index_path(:global_id => @inspection.to_global_id,:event_name => evt) do
+            = link_to fire_workflow_event_transam_workflow_index_path(:global_id => @inspection.to_global_id,:event_name => evt) do
               %i.fa.fa-fw{:class => get_workflow_event_icon(evt)}
               = evt.titleize
