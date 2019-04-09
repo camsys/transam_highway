@@ -13,7 +13,7 @@ organization_types = [
         :description => 'Manage highway structures, bridges.'
     },
     {name: "Highway Consultant",
-     class_name: "HighwayConsultanty",
+     class_name: "HighwayConsultant",
      display_icon_name: "fa fa-user-circle",
      map_icon_name: "purpleIcon",
      description: "Consultant on highway structures, bridges.",
