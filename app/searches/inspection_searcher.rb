@@ -33,6 +33,12 @@ class InspectionSearcher < BaseSearcher
     join_sql = <<-SQL 
       LEFT OUTER JOIN regions 
         ON highway_structures.region_id = regions.id
+      LEFT OUTER JOIN organization_types 
+        ON highway_structures.organization_type_id = organization_types.id
+      LEFT OUTER JOIN inspection_programs 
+        ON highway_structures.inspection_program_id = inspection_programs.id
+      LEFT OUTER JOIN organizations as assigned_organizations
+        ON inspections.assigned_organization_id = assigned_organizations.id
       LEFT OUTER JOIN structure_agent_types as owners 
         ON highway_structures.owner_id = owners.id
       LEFT OUTER JOIN structure_status_types 
@@ -103,5 +109,52 @@ class InspectionSearcher < BaseSearcher
   def city_conditions
     inspection_klass.where("highway_structures.city": search_proxy&.structure_city) unless search_proxy&.structure_city.blank?
   end
+
+  def inspection_program_id_conditions
+    inspection_klass.where("highway_structures.inspection_program_id": search_proxy&.inspection_program_id) unless search_proxy&.inspection_program_id.blank?
+  end
+
+  def organization_type_id_conditions
+    inspection_klass.where("highway_structures.organization_type_id": search_proxy&.organization_type_id) unless search_proxy&.organization_type_id.blank?
+  end
+
+  def assigned_organization_id_conditions
+    inspection_klass.where("inspections.assigned_organization_id": search_proxy&.assigned_organization_id) unless search_proxy&.assigned_organization_id.blank?
+  end
+
+  def state_conditions
+    clean_states = remove_blanks(search_proxy&.state)
+    inspection_klass.where("inspections.state": clean_states) unless clean_states.empty?
+  end
+
+  def qa_inspector_id_conditions
+    inspection_klass.where("inspections.qa_inspector_id": search_proxy&.qa_inspector_id) unless search_proxy&.qa_inspector_id.blank?
+  end
+
+  def qc_inspector_id_conditions
+    inspection_klass.where("inspections.qc_inspector_id": search_proxy&.qc_inspector_id) unless search_proxy&.qc_inspector_id.blank?
+  end
+
+  def inspection_trip_conditions
+    inspection_klass.where("highway_structures.inspection_trip": search_proxy&.inspection_trip) unless search_proxy&.inspection_trip.blank?
+  end
+
+  def min_next_inspection_date_conditions
+    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].gteq(search_proxy&.min_next_inspection_date)) unless search_proxy&.min_next_inspection_date.blank?
+  end
+
+  def max_next_inspection_date_conditions
+    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].lteq(search_proxy&.max_next_inspection_date)) unless search_proxy&.max_next_inspection_date.blank?
+  end
+
+  def min_inspection_date_conditions
+    inspection_klass.where(Inspection.arel_table[:event_datetime].gteq(search_proxy&.min_inspection_date)) unless search_proxy&.min_inspection_date.blank?
+  end
+
+  def max_inspection_date_conditions
+    inspection_klass.where(Inspection.arel_table[:event_datetime].lteq(search_proxy&.max_inspection_date)) unless search_proxy&.max_inspection_date.blank?
+  end
+
+  #TODO: inspector_id, inspection_zone, etc
 
 end

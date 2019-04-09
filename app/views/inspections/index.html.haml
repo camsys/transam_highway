@@ -6,14 +6,14 @@
     = render 'inspections/search_form'
 
   .col-sm-12
+    .col-sm-12
+      = render 'inspections/assignments_form'
+  
+  .col-sm-12
     #spinner{:style => 'padding: 20px;'}
       = loader_panel_tag({:message => "Searching...", :size => 3, :spinner => "refresh"})
 
     #errors
-
-    .row
-      .col-sm-10.col-sm-offset-1
-        = render 'inspections/assignments_form'
 
     #inspection-table-container
       = render 'inspections/inspections_table'

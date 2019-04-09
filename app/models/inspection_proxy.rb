@@ -14,7 +14,12 @@ class InspectionProxy < Proxy
                   :asset_tag, :region_code, :structure_status_type_code, :owner_id, 
                   :calculated_condition,
                   :on_under_indicator, :service_on_type_id, :service_under_type_id,
-                  :on_national_highway_system, :structure_county, :structure_city
+                  :on_national_highway_system, :structure_county, :structure_city,
+                  :inspection_program_id, :organization_type_id, :assigned_organization_id,
+                  :state, :min_next_inspection_date, :max_next_inspection_date, 
+                  :min_inspection_date, :max_inspection_date,
+                  :inspection_frequency, :inspector_id, :qa_inspector_id, :qc_inspector_id, 
+                  :inspection_trip, :inspection_zone
 
   #-----------------------------------------------------------------------------
   # Validations
@@ -27,17 +32,22 @@ class InspectionProxy < Proxy
   # List of allowable form param hash keys
 
   FORM_PARAMS = [
-    :asset_tag, :on_under_indicator, :structure_county, :structure_city
+    :asset_tag, :on_under_indicator, :structure_county, :structure_city, :on_national_highway_system,
+    :min_next_inspection_date, :max_next_inspection_date,
+    :min_inspection_date, :max_inspection_date,
+    :assigned_organization_id, :inspection_program_id, :organization_type_id, 
+    :inspection_frequency, :inspector_id, :qa_inspector_id, :qc_inspector_id,
+    :inspection_trip, :inspection_zone
   ]
 
   NESTED_FORM_PARAMS = [
-    { :on_national_highway_system => [] }, 
     { :region_code => [] }, 
     { :service_on_type_id => [] }, 
     { :service_under_type_id => [] }, 
     { :owner_id => [] }, 
     { :structure_status_type_code => [] }, 
-    { :calculated_condition => [] }
+    { :calculated_condition => [] },
+    { :state => [] }
   ]
 
   #-----------------------------------------------------------------------------

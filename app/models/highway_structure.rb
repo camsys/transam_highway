@@ -22,6 +22,8 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :historical_significance_type
 
+  belongs_to :inspection_program
+  belongs_to :organization_type
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections

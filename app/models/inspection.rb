@@ -12,6 +12,8 @@ class Inspection < ApplicationRecord
 
   belongs_to :inspection_type
 
+  belongs_to :qc_inspector, class_name: 'User'
+  belongs_to :qa_inspector, class_name: 'User'
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
   has_many :elements, dependent: :destroy
@@ -72,6 +74,9 @@ class Inspection < ApplicationRecord
 
   def as_json(options={})
     #TODO: any options to process
+
+    #TODO:
+    # Inspection Zone (87), Inspector (83), Inspection Type, Inspection Category
     structure = TransamAsset.get_typed_asset self.highway_structure
     {
       to_global_id: self.to_global_id.to_s,
@@ -81,8 +86,16 @@ class Inspection < ApplicationRecord
       location_description: structure.location_description,
       owner: structure.owner&.to_s,
       calculated_condition: structure.calculated_condition&.titleize,
+      next_inspection_date: structure.next_inspection_date,
+      inspection_program: structure.inspection_program&.to_s,
+      organization_type: structure.organization_type&.to_s,
+      inspection_trip: structure.inspection_trip,
 
-      object_key: object_key
+      object_key: object_key,
+      event_datetime: self.event_datetime,
+      state: self.state,
+      assigned_organization: self.assigned_organization&.to_s,
+      routine_report_submitted_at: self.routine_report_submitted_at
     }
   end
   
