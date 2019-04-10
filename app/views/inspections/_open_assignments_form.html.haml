@@ -1,3 +1,10 @@
+:ruby
+  inspection_teams = Organization.active.map{|l| {
+    name: l.coded_name, 
+    id: l.id, 
+    organization_type_id: l.organization_type_id
+  }}.sort{|r| r[:name]}
+
 = simple_form_for(:transam_workflow_model_proxy,
   :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
   :url => fire_workflow_events_transam_workflow_index_path,
@@ -12,23 +19,46 @@
   = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
 
   .row
-    .col-sm-6= f.input :organization_type_id, collection: OrganizationType.where('class_name LIKE ?', "%#{'Highway'}%"), label: 'Inspection Group', include_blank: false
+    .col-sm-6
+      = f.input :organization_type_id, collection: OrganizationType.where('class_name LIKE ?', "%#{'Highway'}%"), label: 'Inspection Group', include_blank: false
     .col-sm-6
       = f.input :assigned_organization_id, label: 'Inspection Team' do
-        = f.select :assigned_organization_id, Organization.active.map{ |l| [l.coded_name, l.id, {'data-organization-type-id': l.organization_type_id} ] }, {}, {class: 'form-control'}
+        = f.select :assigned_organization_id, [], {}, {class: 'form-control'}
 
-  = f.button :submit, 'Assign', :class => "btn btn-primary"
+  = f.button :submit, 'Assign', :class => "btn btn-primary", :id => 'submit_group_team_assignment', disabled: true
 
 :javascript
+
+  function enable_disable_group_team_assignment_submit() {
+    if($('#transam_workflow_model_proxy_assigned_organization_id').val() && $('#inspection-table').bootstrapTable('getSelections').length > 0) {
+      $('#submit_group_team_assignment').removeAttr('disabled');
+    } else {
+      $('#submit_group_team_assignment').attr('disabled', 'disabled');
+    }
+  }
+
+  function update_inspection_teams_for_assignment(type_id) {
+    if(type_id) {
+      type_id = parseInt(type_id);
+    }
+    $('#transam_workflow_model_proxy_assigned_organization_id option').remove();
+
+    var inspection_teams = #{inspection_teams.to_json.html_safe || {}};
+    inspection_teams.filter(function(l){return l.organization_type_id == type_id;}).forEach(function(l) {
+      $('#transam_workflow_model_proxy_assigned_organization_id').append("<option data-organization-type-id='" + type_id + "' value='" + l.id + "'>" + l.name + "</>");
+    });
+  }
 
   $('#open_assignments_form').validate({
     submitHandler: function(form){
       var selected = $('#inspection-table').bootstrapTable('getSelections');
       selected_rows = new Set();
       for (i = 0; i < selected.length; i++) {
-        var insp_key = selected[i][1];
-        if(!selected_rows.has(insp_key)) {
-          selected_rows.add(insp_key);
+        if(selected[i]) {
+          var insp_key = selected[i].to_global_id;
+          if(!selected_rows.has(insp_key)) {
+            selected_rows.add(insp_key);
+          }
         }
       }
 
@@ -47,4 +77,15 @@
         $(this).hide();
       }
     });
+
+    enable_disable_group_team_assignment_submit();
+    update_inspection_teams_for_assignment(type_id);
+    update_inspection_inspectors_for_assignment($('#transam_workflow_model_proxy_organization_type_id').val());
   });
+
+  $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
+    var type_id = $('#transam_workflow_model_proxy_organization_type_id').val();
+    var team_id = $(this).val();
+    update_inspection_inspectors_for_assignment(team_id);
+  });
+

@@ -39,8 +39,8 @@
         %th.center{:data => {:field => 'highway_structurible_type', :sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
         %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
         %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
-        /%th.center{:data => {:field => 'inspection_category', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_category', 'Inspection Category')
-        /%th.center{:data => {:field => 'inspection_type', :sortable => 'true'}}= reference_label('inspections', 'inspection_type_id', 'Inspection Type')
+        %th.center{:data => {:field => 'inspection_category', :sortable => 'false'}}= reference_label('highway_structures', 'inspection_category_id', 'Inspection Category')
+        %th.center{:data => {:field => 'inspection_category_type', :sortable => 'false'}}= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
         %th.center{:data => {:field => 'next_inspection_date', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('highway_structures', 'next_inspection_date', 'Next Routine Inspection')
         %th.center{:data => {:field => 'event_datetime', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
         %th.center{:data => {:field => 'state', :sortable => 'true'}}= reference_label('inspections', 'state', 'Inspection Status')
@@ -51,7 +51,7 @@
         %th.center{:data => {:field => 'inspection_trip', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
         %th.center{:data => {:field => 'organization_type', :sortable => 'true'}}= reference_label('highway_structures', 'organization_type_id', 'Inspection Group')
         %th.center{:data => {:field => 'assigned_organization', :sortable => 'true'}}= reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
-        /%th.center{:data => {:field => 'inspector', :sortable => 'true'}}= reference_label('inspections', 'inspector_id', 'Inspector')
+        %th.center{:data => {:field => 'inspectors', :sortable => 'false'}}= reference_label('inspections', 'inspectors', 'Inspectors')
         /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone', 'Inspection Zone')
         %th.center{:data => {:field => 'routine_report_submitted_at', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'routine_report_submitted_at', 'Routine Inspection Submitted')
         %th.center{:data => {:field => 'dummy1', :formatter => 'inspection_link_formatter'}}
@@ -109,11 +109,8 @@
 
     // Enables or disables the package actions depending on how many are selected
     function enable_disable_table_actions() {
-      if (selected_rows.size > 0) {
-        //TODO
-      } else {
-        //TODO
-      }
+      enable_disable_group_team_assignment_submit();
+      enable_disable_inspector_assignment_submit();
     };
 
     // Updates the selected rows in the table

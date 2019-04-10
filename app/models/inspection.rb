@@ -93,9 +93,12 @@ class Inspection < ApplicationRecord
 
       object_key: object_key,
       event_datetime: self.event_datetime,
-      state: self.state,
+      state: self.state&.titleize,
       assigned_organization: self.assigned_organization&.to_s,
-      routine_report_submitted_at: self.routine_report_submitted_at
+      routine_report_submitted_at: self.routine_report_submitted_at,
+      inspectors: self.inspectors.map(&:name).join(', '),
+      inspection_category: 'Scheduled', # Hard-code for now
+      inspection_category_type: 'Routine' # Hard-code for now
     }
   end
   
