@@ -35,8 +35,16 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true}
 ]
 system_config_extensions = [
-    {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', active: true},
-    {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', active: true}
+    {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', engine_name: 'highway', active: true},
+    {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', engine_name: 'highway', active: true},
+    {class_name: 'TransamAsset', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'TransamAsset', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Inspection', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Element', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Defect', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Image', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Document', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Roadway', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
 ]
 
 route_signing_prefixes = [
