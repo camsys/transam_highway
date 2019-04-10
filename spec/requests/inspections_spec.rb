@@ -9,8 +9,8 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
   let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure) }
   let!(:test_culvert_inspection) { create(:culvert_condition, highway_structure: test_culvert.highway_structure) }
   let!(:test_roadway) { create(:roadway, highway_structure: test_bridge.highway_structure) }
-  let!(:test_element) { create(:element, inspection: test_inspection) }
-  let!(:test_defect) { create(:defect, inspection: test_inspection, element: test_element) }
+  let!(:test_element) { create(:element, inspection: test_inspection.inspection) }
+  let!(:test_defect) { create(:defect, inspection: test_inspection.inspection, element: test_element) }
 
   let(:valid_headers) { {"X-User-Email" => test_user.email, "X-User-Token" => test_user.authentication_token} }
 
