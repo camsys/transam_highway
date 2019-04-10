@@ -139,6 +139,10 @@ class InspectionSearcher < BaseSearcher
     inspection_klass.where("highway_structures.inspection_trip": search_proxy&.inspection_trip) unless search_proxy&.inspection_trip.blank?
   end
 
+  def inspection_frequency_conditions
+    inspection_klass.where("highway_structures.inspection_frequency": search_proxy&.inspection_frequency) unless search_proxy&.inspection_frequency.blank?
+  end
+
   def min_next_inspection_date_conditions
     inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].gteq(search_proxy&.min_next_inspection_date)) unless search_proxy&.min_next_inspection_date.blank?
   end
