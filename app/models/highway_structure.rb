@@ -151,6 +151,20 @@ class HighwayStructure < TransamAssetRecord
     end
   end
 
+  def open_inspection
+    if inspections.where.not(state: 'final').count > 0
+      inspections.where.not(state: 'final').first
+    else
+      old = Inspection.get_typed_inspection(inspections.ordered.first)
+      new = old.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :inspection_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:object_key, :guid, {defects: [:object_key, :guid]}]}]
+      new.next_inspection_date = (new.next_inspection_date + (new.inspection_frequency).months).at_beginning_of_month
+      new.save
+
+      new
+    end
+
+  end
+
   protected
 
   def update_next_inspection_date
