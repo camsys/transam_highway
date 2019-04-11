@@ -182,6 +182,12 @@ class BridgeLike < TransamAssetRecord
     end
     
     # Extract relevant fields
+    # USERKEY1 (Inspection Program) mapping
+    prog_hash = {
+      'ONSYS' => InspectionProgram.find_by(name: 'On-System'),
+      'OFFSYS' => InspectionProgram.find_by(name: 'Off-System')
+    }
+    
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: 'CO',
@@ -226,7 +232,9 @@ class BridgeLike < TransamAssetRecord
       inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE'].to_s),
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
-      remarks: bridge_hash['NOTES']
+      remarks: bridge_hash['NOTES'],
+      inspection_program: prog_hash[bridge_hash['USERKEY1']],
+      inspection_trip: bridge_hash['USERKEY4']
     }
 
     # Validate Owner and maintenance responsibility. Could DRY the code some
@@ -348,7 +356,8 @@ class BridgeLike < TransamAssetRecord
         type = InspectionType.find_by(code: i_hash['INSPTYPE'])
         
         inspection = BridgeLikeCondition.new(event_datetime: date, name: bridgelike.asset_tag,
-                                             inspection_type: type, notes: i_hash['NOTES'])
+                                             inspection_type: type, notes: i_hash['NOTES'],
+                                             state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection
@@ -392,6 +401,7 @@ class BridgeLike < TransamAssetRecord
       bridgelike.update_attributes(inspection_date: last_inspection_date,
                                    inspection_frequency: inspection_frequency)
     end # if hash['inspevnt']
+    bridgelike.open_inspection
 
     elements = {}
 
