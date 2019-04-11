@@ -6,6 +6,10 @@ json.elements do
   json.partial! 'api/v1/elements/listing', collection: @elements, as: :element
 end
 
+json.defects do
+  json.partial! 'api/v1/defects/listing', collection: @defects, as: :defect
+end
+
 if @highway_structures
   json.structures do
     if @bridges
