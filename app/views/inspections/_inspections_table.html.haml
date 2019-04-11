@@ -49,7 +49,7 @@
         %th.center{:data => {:field => 'calculated_condition', :sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
         %th.center{:data => {:field => 'inspection_program', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
         %th.center{:data => {:field => 'inspection_trip', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
-        %th.center{:data => {:field => 'organization_type', :sortable => 'true'}}= reference_label('highway_structures', 'organization_type_id', 'Inspection Group')
+        %th.center{:data => {:field => 'organization_type', :sortable => 'true'}}= reference_label('inspections', 'organization_type_id', 'Inspection Group')
         %th.center{:data => {:field => 'assigned_organization', :sortable => 'true'}}= reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
         %th.center{:data => {:field => 'inspectors', :sortable => 'false'}}= reference_label('inspections', 'inspectors', 'Inspectors')
         /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone', 'Inspection Zone')
@@ -75,7 +75,7 @@
     inspection_trip: "highway_structures.inspection_trip"
   };
 
-  $('#inspection-table-container table').bootstrapTable({
+  $('#inspection-table').bootstrapTable({
     onLoadError: function(status, res) {
       alert('An error occurred loading your search results. Please refresh the page and try your search again.');
     },

@@ -33,8 +33,6 @@ class InspectionSearcher < BaseSearcher
     join_sql = <<-SQL 
       LEFT OUTER JOIN regions 
         ON highway_structures.region_id = regions.id
-      LEFT OUTER JOIN organization_types 
-        ON highway_structures.organization_type_id = organization_types.id
       LEFT OUTER JOIN inspection_programs 
         ON highway_structures.inspection_program_id = inspection_programs.id
       LEFT OUTER JOIN organizations as assigned_organizations
@@ -49,7 +47,9 @@ class InspectionSearcher < BaseSearcher
         ON highway_structures.id = roadways.transam_asset_id
     SQL
 
-    @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}}).joins(join_sql)
+    @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}})
+                                    .left_outer_joins(:organization_type)
+                                    .joins(join_sql)
   end
 
   # Add any new conditions here. The property name must end with _conditions
@@ -115,7 +115,7 @@ class InspectionSearcher < BaseSearcher
   end
 
   def organization_type_id_conditions
-    inspection_klass.where("highway_structures.organization_type_id": search_proxy&.organization_type_id) unless search_proxy&.organization_type_id.blank?
+    inspection_klass.where("inspections.organization_type_id": search_proxy&.organization_type_id) unless search_proxy&.organization_type_id.blank?
   end
 
   def assigned_organization_id_conditions

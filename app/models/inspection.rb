@@ -8,6 +8,7 @@ class Inspection < ApplicationRecord
 
   belongs_to :highway_structure, foreign_key: :transam_asset_id
 
+  belongs_to :organization_type
   belongs_to :assigned_organization, class_name: 'Organization'
 
   belongs_to :inspection_type
@@ -40,7 +41,9 @@ class Inspection < ApplicationRecord
       :temperature,
       :weather,
       :notes,
-      :assigned_organization_id
+      :organization_type_id,
+      :assigned_organization_id,
+      :inspector_ids => []
     ]
   end
 
@@ -88,12 +91,12 @@ class Inspection < ApplicationRecord
       calculated_condition: structure.calculated_condition&.titleize,
       next_inspection_date: structure.next_inspection_date,
       inspection_program: structure.inspection_program&.to_s,
-      organization_type: structure.organization_type&.to_s,
       inspection_trip: structure.inspection_trip,
 
       object_key: object_key,
       event_datetime: self.event_datetime,
       state: self.state&.titleize,
+      organization_type: self.organization_type&.to_s,
       assigned_organization: self.assigned_organization&.to_s,
       routine_report_submitted_at: self.routine_report_submitted_at,
       inspectors: self.inspectors.map(&:name).join(', '),

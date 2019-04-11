@@ -5,7 +5,7 @@
 
 .col-sm-3
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
-  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id), label: reference_label('highway_structures', 'organization_type_id', 'Inspection Group')
+  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id), label: reference_label('inspections', 'organization_type_id', 'Inspection Group')
   = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
 .col-sm-2
   = f.input :state, as: :check_boxes, collection: Inspection.state_names.map{|r| [r.titleize, r]}, label: reference_label('inspections', 'state', 'Inspection Status')
@@ -18,7 +18,9 @@
         = f.input_field :min_next_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_min_next_inspection_date'}, :value => f.object.min_next_inspection_date
         %span.input-group-addon
           %i.fa.fa-calendar
-    .col-sm-5.pull-right
+    .col-sm-2.text-center
+      = "---"
+    .col-sm-5
       = f.input :max_next_inspection_date, :label => false, :wrapper => :vertical_append do
         = f.input_field :max_next_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_next_inspection_date'}, :value => f.object.max_next_inspection_date
         %span.input-group-addon
@@ -31,7 +33,9 @@
         = f.input_field :min_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_min_inspection_date'}, :value => f.object.min_inspection_date
         %span.input-group-addon
           %i.fa.fa-calendar
-    .col-sm-5.pull-right
+    .col-sm-2.text-center
+      = "---"
+    .col-sm-5
       = f.input :max_inspection_date, :label => false, :wrapper => :vertical_append do
         = f.input_field :max_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_inspection_date'}, :value => f.object.max_inspection_date
         %span.input-group-addon

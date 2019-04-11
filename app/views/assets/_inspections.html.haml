@@ -28,24 +28,28 @@
     %thead
       %tr
         %th.center{:data => {:sortable => 'true'}} Group
+        %th.center{:data => {:sortable => 'true'}} Team
         %th.center{:data => {:sortable => 'true'}} Inspection Type
         %th.center{:data => {:sortable => 'true'}} Scheduled Date
         %th.center{:data => {:sortable => 'true'}} Overall Condition
         %th.center{:data => {:sortable => 'true'}} Inspectors
-        %th.center{:data => {:sortable => 'true'}} Reviewer
+        %th.center{:data => {:sortable => 'true'}} QA Level 1
+        %th.center{:data => {:sortable => 'true'}} QA Level 2
         %th.center{:data => {:sortable => 'true'}} Status
         %th.center{:data => {:sortable => 'false'}} Actions
 
     %tbody
       - @asset.inspections.ordered.each do |inspection|
         %tr
-          %td.left TODO
+          %td.left= inspection.organization_type
+          %td.left= inspection.assigned_organization
           %td.left= inspection.inspection_type
           %td.left= format_as_date(inspection.event_datetime)
           %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
           %td.left= format_as_list(inspection.inspectors)
-          %td.left TODO
-          %td.left TODO
+          %td.left= inspection.qa_inspector
+          %td.left= inspection.qc_inspector
+          %td.left= inspection.state&.titleize
           %td.left
             = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do
               %i.fa.fa-play
