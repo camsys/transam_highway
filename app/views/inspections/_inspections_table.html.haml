@@ -21,14 +21,16 @@
     :page_size => current_user.num_table_rows,
     :sortable => 'true',
     :sort_order => 'asc',
-    :state_save => 'true',
-    :state_save_id_table => "inspections_table_id",
-    :state_save_expire => "1d",
+    :cookie => 'true',
+    :cookie_id_table => "inspections_table_id",
+    :cookie_expire => "1d",
     :search => 'false',
     :toolbar => "#inspection_table_actions",
     :show_columns => 'true',
     :show_export => 'true',
     :export_types => "['csv', 'txt', 'excel']",
+    :id_field => 'object_key',
+    :query_params => "query_params",
     :resizable => 'true',
     :maintain_selected => 'true',
     :single_select => 'false'}}
@@ -75,20 +77,17 @@
     inspection_trip: "highway_structures.inspection_trip"
   };
 
-  $('#inspection-table').bootstrapTable({
-    onLoadError: function(status, res) {
-      alert('An error occurred loading your search results. Please refresh the page and try your search again.');
-    },
-    queryParams: function(params) {
-      var sort_field = params.sort;
-      var map_field = inspection_search_sorting_mappings[sort_field];
-      if(map_field) {
-        params.sort = map_field;
-      }
-
-      return params;
+  function query_params(params) {
+    params.sort = params.sort || params.sortName;
+    params.order = params.order || params.sortOrder;
+    var sort_field = params.sort;
+    var map_field = inspection_search_sorting_mappings[sort_field];
+    if(map_field) {
+      params.sort = map_field;
     }
-  });
+
+    return params;
+  }
 
   // more table formatters
   function structure_link_formatter(value, row) {
