@@ -413,7 +413,8 @@ class BridgeLike < TransamAssetRecord
 
         if defect_def
           # set quantities
-          parent_elem.defects.build(defect_definition: defect_def,
+          parent_elem.defects.build(inspection: inspection,
+                                    defect_definition: defect_def,
                                     total_quantity: process_quantities(e_hash['ELEM_QUANTITY'], units),
                                     notes: e_hash['ELEM_NOTES'],
                                     condition_state_1_quantity: process_quantities(e_hash['ELEM_QTYSTATE1'], units),
@@ -427,9 +428,10 @@ class BridgeLike < TransamAssetRecord
                                               element_classification: bme_class)
           if bme_def
             Rails.logger.debug "bd: #{bme_def}"
-            bme = parent_elem.children.build(element_definition: bme_def,
-                                       quantity: process_quantities(e_hash['ELEM_QUANTITY'], bme_def.quantity_unit),
-                                       notes: e_hash['ELEM_NOTES'])
+            bme = parent_elem.children.build(inspection: inspection,
+                                             element_definition: bme_def,
+                                             quantity: process_quantities(e_hash['ELEM_QUANTITY'], bme_def.quantity_unit),
+                                             notes: e_hash['ELEM_NOTES'])
             elements[bme_def.number] = bme
           end
         end
