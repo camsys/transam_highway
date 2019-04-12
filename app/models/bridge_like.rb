@@ -401,7 +401,6 @@ class BridgeLike < TransamAssetRecord
       bridgelike.update_attributes(inspection_date: last_inspection_date,
                                    inspection_frequency: inspection_frequency)
     end # if hash['inspevnt']
-    bridgelike.open_inspection
 
     elements = {}
 
@@ -464,6 +463,9 @@ class BridgeLike < TransamAssetRecord
     # set calculated condition based on existing completed inspections
     bridgelike.set_calculated_condition!
 
+    # Add the open inspection
+    bridgelike.open_inspection
+    
     return true, msg, bridgelike.class.name
   end
 
