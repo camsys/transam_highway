@@ -50,12 +50,10 @@
 :javascript
   $('.structure_county_input').typeahead({
     items: 10,
-    source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []},
-    appendTo: 'body'
+    source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
   });
 
   $('.structure_city_input').typeahead({
     items: 10,
-    source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []},
-    appendTo: 'body'
+    source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
   });
