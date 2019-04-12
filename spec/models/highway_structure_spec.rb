@@ -22,6 +22,21 @@ RSpec.describe HighwayStructure, type: :model do
 
     end
 
+    describe 'if no inspections' do
+      it 'creates new typed inspection if typed asset' do
+        test_bridge.inspections = []
+
+        expect(test_bridge.open_inspection).to be_a_new(BridgeCondition)
+      end
+      it 'creates new inspection if HighwayStructure' do
+        test_highway_structure = create(:highway_structure)
+
+        expect(test_highway_structure.open_inspection).to be_a_new(Inspection)
+        expect(test_highway_structure.inspections.empty?).to eq(false)
+      end
+    end
+
+
     it "copies" do
 
       copy = test_bridge.open_inspection
@@ -48,6 +63,16 @@ RSpec.describe HighwayStructure, type: :model do
       expect(copy.qc_inspector_id).to eq(nil)
       expect(copy.qa_inspector_id).to eq(nil)
       expect(copy.routine_report_submitted_at).to eq(nil)
+    end
+
+    it 'copies child elements' do
+      test_child_element = create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this child element', parent: test_element)
+
+      copy = test_bridge.open_inspection
+
+      expect(copy.elements.first).to eq(copy.elements.last.parent)
+      expect(copy.elements.first.parent).to eq(nil)
+      expect(copy.elements.last.parent).not_to eq(nil)
     end
   end
 end

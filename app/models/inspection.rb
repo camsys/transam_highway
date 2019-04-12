@@ -27,7 +27,7 @@ class Inspection < ApplicationRecord
         inspection = inspection.specific
 
         typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
-        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if defined?((typed_asset.class.to_s + 'Condition').constantize)
+        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if eval("defined?(#{typed_asset.class}Condition)")
       end
 
       inspection

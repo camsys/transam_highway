@@ -153,13 +153,32 @@ class HighwayStructure < TransamAssetRecord
   def open_inspection
     if inspections.where.not(state: 'final').count > 0
       Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
-    else
+    elsif inspections.count > 0
       old = Inspection.get_typed_inspection(inspections.ordered.first)
-      new = old.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:object_key, :guid, {defects: [:object_key, :guid]}]}]
+      new = old.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:guid, {defects: [:object_key, :guid]}]}]
+
+      old.elements.where(id: old.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
+        new_parent_elem = new.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
+        new.elements.select{|e| e.parent_element_id == old_parent_elem.id}.each do |kopy_element|
+          kopy_element.parent = new_parent_elem
+        end
+      end
+      new.elements.each do |elem|
+        elem.object_key = nil
+      end
+
       new.state = 'open'
-      new.save
+
+      new.save!
 
       new
+    else
+      typed_asset = TransamAsset.get_typed_asset(self)
+      if eval("defined?(#{typed_asset.class}Condition)")
+        (typed_asset.class.to_s + 'Condition').constantize.new(highway_structure: self)
+      else
+        self.inspections.build
+      end
     end
 
   end
