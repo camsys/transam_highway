@@ -355,9 +355,16 @@ class BridgeLike < TransamAssetRecord
         # inspection type
         type = InspectionType.find_by(code: i_hash['INSPTYPE'])
         
-        inspection = BridgeLikeCondition.new(event_datetime: date, name: bridgelike.asset_tag,
-                                             inspection_type: type, notes: i_hash['NOTES'],
-                                             state: 'final')
+        inspection_klass = case struct_class_code
+                           when 'BRIDGE'
+                             BridgeCondition
+                           when 'CULVERT'
+                             CulvertCondition
+                           end
+
+        inspection = inspection_klass.new(event_datetime: date, name: bridgelike.asset_tag,
+                                          inspection_type: type, notes: i_hash['NOTES'],
+                                          state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection

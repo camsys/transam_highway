@@ -18,6 +18,7 @@ class Inspection < ApplicationRecord
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
   has_many :elements, dependent: :destroy
+  has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
   scope :ordered, -> { order(event_datetime: :desc) }
 
