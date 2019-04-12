@@ -144,21 +144,25 @@ class InspectionSearcher < BaseSearcher
   end
 
   def min_next_inspection_date_conditions
-    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].gteq(search_proxy&.min_next_inspection_date)) unless search_proxy&.min_next_inspection_date.blank?
+    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].gteq(parse_date(search_proxy&.min_next_inspection_date))) unless search_proxy&.min_next_inspection_date.blank?
   end
 
   def max_next_inspection_date_conditions
-    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].lteq(search_proxy&.max_next_inspection_date)) unless search_proxy&.max_next_inspection_date.blank?
+    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].lteq(parse_date(search_proxy&.max_next_inspection_date))) unless search_proxy&.max_next_inspection_date.blank?
   end
 
   def min_inspection_date_conditions
-    inspection_klass.where(Inspection.arel_table[:event_datetime].gteq(search_proxy&.min_inspection_date)) unless search_proxy&.min_inspection_date.blank?
+    inspection_klass.where(Inspection.arel_table[:event_datetime].gteq(parse_date(search_proxy&.min_inspection_date))) unless search_proxy&.min_inspection_date.blank?
   end
 
   def max_inspection_date_conditions
-    inspection_klass.where(Inspection.arel_table[:event_datetime].lteq(search_proxy&.max_inspection_date)) unless search_proxy&.max_inspection_date.blank?
+    inspection_klass.where(Inspection.arel_table[:event_datetime].lteq(parse_date(search_proxy&.max_inspection_date))) unless search_proxy&.max_inspection_date.blank?
   end
 
   #TODO: inspector_id, inspection_zone, etc
+
+  def parse_date(mm_dd_yyyy_str)
+    Date.strptime(mm_dd_yyyy_str, "%m/%d/%Y")
+  end
 
 end
