@@ -67,7 +67,7 @@ class Inspection < ApplicationRecord
         {event_name: 'qa_review', from_state: 'qc_reviewed', to_state: 'qa_reviewed', can: :can_qa},
         {event_name: 'qc_submit', from_state: ['qc_reviewed', 'qa_reviewed'], to_state: 'submitted', guard: :allowed_to_submit, can: :can_submit},
 
-        {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize},
+        {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize, after: :open_new_inspection},
 
     ]
   end
@@ -90,12 +90,12 @@ class Inspection < ApplicationRecord
       location_description: structure.location_description,
       owner: structure.owner&.to_s,
       calculated_condition: structure.calculated_condition&.titleize,
-      next_inspection_date: structure.next_inspection_date,
       inspection_program: structure.inspection_program&.to_s,
       inspection_trip: structure.inspection_trip,
 
       object_key: object_key,
       event_datetime: self.event_datetime,
+      next_inspection_date: self.next_inspection_date,
       state: self.state&.titleize,
       organization_type: self.organization_type&.to_s,
       assigned_organization: self.assigned_organization&.to_s,
@@ -141,6 +141,12 @@ class Inspection < ApplicationRecord
   
   def can_finalize(user)
     user.try(:is_finalizer)
+  end
+
+  # called as callback after `finalize` event
+  # to open a new inspection
+  def open_new_inspection
+    self.highway_structure.open_inspection
   end
 
 end
