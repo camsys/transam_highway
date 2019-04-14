@@ -48,7 +48,7 @@ class InspectionSearcher < BaseSearcher
     SQL
 
     @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}})
-                                    .left_outer_joins(:organization_type)
+                                    .left_outer_joins(:organization_type, :inspectors)
                                     .joins(join_sql)
   end
 
@@ -125,6 +125,10 @@ class InspectionSearcher < BaseSearcher
   def state_conditions
     clean_states = remove_blanks(search_proxy&.state)
     inspection_klass.where("inspections.state": clean_states) unless clean_states.empty?
+  end
+
+  def inspector_id_conditions
+    inspection_klass.where("inspections_users.user_id": search_proxy&.inspector_id) unless search_proxy&.inspector_id.blank?
   end
 
   def qa_inspector_id_conditions
