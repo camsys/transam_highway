@@ -17,9 +17,9 @@
               Under (42B)
         .tab-content{style: 'min-height: 100px;'}
           .tab-pane.fade.in.active#service_on_type
-            = @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:name).pluck(:name, :id), label: false
+            = @search_form.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:code, :name).map{|r| [r.to_s, r.id]}, label: false
 
           .tab-pane.fade.in#service_under_type
-            = @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:name).pluck(:name, :id), label: false
+            = @search_form.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:code, :name).map{|r| [r.to_s, r.id]}, label: false
         
         = @search_form.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS')
