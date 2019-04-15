@@ -3,7 +3,7 @@
     name: l.coded_name, 
     id: l.id, 
     organization_type_id: l.organization_type_id
-  }}.sort{|r| r[:name]}
+  }}.sort_by{|r| r[:name]}
 
 = simple_form_for(:transam_workflow_model_proxy,
   :html => {:class => 'form-vertical', :id => 'open_assignments_form'},

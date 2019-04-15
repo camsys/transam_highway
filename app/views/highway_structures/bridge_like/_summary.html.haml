@@ -39,7 +39,7 @@
 .col-sm-4
   .form-group
     %label.control-label= reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
-    .display-value= @asset.calculated_condition ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : ''
+    .display-value= @asset.calculated_condition ? (@asset.inspections.any? ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : @asset.calculated_condition) : ''
   .form-group
     %label.control-label= reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
     .display-value= @latest_condition.try(:scour_critical_bridge_type)
