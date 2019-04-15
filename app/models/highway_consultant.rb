@@ -66,7 +66,7 @@ class HighwayConsultant < Organization
   def set_defaults
     super
     self.organization_type ||= OrganizationType.find_by_class_name(self.name).first
-    self.license_holder = self.license_holder.nil? ? true : self.license_holder
+    self.license_holder = self.license_holder.nil? ? false : self.license_holder
   end
 
 end
