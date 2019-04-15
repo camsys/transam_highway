@@ -8,6 +8,6 @@
       - @inspection.allowable_events.each do |evt|
         - if (can? evt.to_sym, @inspection) && !(['make_ready', 'assign'].include? evt.to_s)
           %li
-            = link_to fire_workflow_event_transam_workflow_index_path(:global_id => @inspection.to_global_id,:event_name => evt) do
+            = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt) do
               %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.to_s)}
               = @inspection.get_workflow_event_label(evt.to_s)
