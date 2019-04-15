@@ -95,7 +95,7 @@ class Inspection < ApplicationRecord
 
       object_key: object_key,
       event_datetime: self.event_datetime,
-      next_inspection_date: self.next_inspection_date,
+      calculated_inspection_due_date: self.calculated_inspection_due_date,
       state: self.state&.titleize,
       organization_type: self.organization_type&.to_s,
       assigned_organization: self.assigned_organization&.to_s,

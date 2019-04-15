@@ -59,8 +59,8 @@
     .display-value= format_as_date(@asset.inspection_date)
   .form-group
     %label.control-label= reference_label('highway_structures', 'next_inspection_date', 'Next Routine Inspection')
-    - next_inspection_date = @asset.last_closed_inspection&.next_inspection_date
-    .display-value= next_inspection_date.strftime('%B %Y') if next_inspection_date.present?
+    - calculated_inspection_due_date = @asset.active_inspection&.calculated_inspection_due_date
+    .display-value= calculated_inspection_due_date.strftime('%B %Y') if calculated_inspection_due_date.present?
 
 .col-sm-4
   - if Image.where(base_imagable: @asset.transam_asset, classification: ['Roadway', 'Elevation', 'Superstructure']).count > 0

@@ -16,7 +16,7 @@ class InspectionProxy < Proxy
                   :on_under_indicator, :service_on_type_id, :service_under_type_id,
                   :on_national_highway_system, :structure_county, :structure_city,
                   :inspection_program_id, :organization_type_id, :assigned_organization_id,
-                  :state, :min_next_inspection_date, :max_next_inspection_date, 
+                  :state, :min_calculated_inspection_due_date, :max_calculated_inspection_due_date, 
                   :min_inspection_date, :max_inspection_date,
                   :inspection_frequency, :inspector_id, :qa_inspector_id, :qc_inspector_id, 
                   :inspection_trip, :inspection_zone
@@ -33,7 +33,7 @@ class InspectionProxy < Proxy
 
   FORM_PARAMS = [
     :asset_tag, :on_under_indicator, :structure_county, :structure_city, :on_national_highway_system,
-    :min_next_inspection_date, :max_next_inspection_date,
+    :min_calculated_inspection_due_date, :max_calculated_inspection_due_date,
     :min_inspection_date, :max_inspection_date,
     :assigned_organization_id, :inspection_program_id, :organization_type_id, 
     :inspection_frequency, :inspector_id, :qa_inspector_id, :qc_inspector_id,

@@ -335,7 +335,6 @@ class BridgeLike < TransamAssetRecord
     # process inspection data
     # NBI 90, 91
     last_inspection_date = nil
-    inspection_frequency = nil
     unless is_new
       # delete all existing inspection data and refresh
       bridgelike.bridge_like_conditions.each(&:destroy)
@@ -346,11 +345,11 @@ class BridgeLike < TransamAssetRecord
       i_hashes = hash['inspevnt'].is_a?(Array) ? hash['inspevnt'] : [hash['inspevnt']]
       i_hashes.each do |i_hash|
         date = Date.parse(i_hash['INSPDATE'])
+        inspection_frequency = i_hash['BRINSPFREQ']
         last_inspection_date = date unless last_inspection_date
 
         if date.nil? || date >= last_inspection_date
           last_inspection_date = date 
-          inspection_frequency = i_hash['BRINSPFREQ']
         end
         # inspection type
         type = InspectionType.find_by(code: i_hash['INSPTYPE'])
@@ -362,9 +361,8 @@ class BridgeLike < TransamAssetRecord
                              CulvertCondition
                            end
 
-        inspection = inspection_klass.new(event_datetime: date, name: bridgelike.asset_tag,
-                                          inspection_type: type, notes: i_hash['NOTES'],
-                                          state: 'final')
+        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,inspection_frequency: inspection_frequency,
+                                          name: bridgelike.asset_tag, inspection_type: type, notes: i_hash['NOTES'], state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection
@@ -405,8 +403,7 @@ class BridgeLike < TransamAssetRecord
         inspection.save!
       end # i_hashes.each
       
-      bridgelike.update_attributes(inspection_date: last_inspection_date,
-                                   inspection_frequency: inspection_frequency)
+      bridgelike.update_attributes(inspection_date: last_inspection_date)
     end # if hash['inspevnt']
 
     elements = {}
