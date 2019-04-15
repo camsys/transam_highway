@@ -18,7 +18,7 @@ class Bridge < BridgeLike
   end
 
   def set_calculated_condition!
-    self.calculated_condition = latest_bridge_condition&.calculated_condition
+    self.calculated_condition = latest_bridge_condition&.calculated_condition || 'unknown'
     self.save
   end
 end
