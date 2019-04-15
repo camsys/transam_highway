@@ -177,8 +177,11 @@ class HighwayStructure < TransamAssetRecord
       end
 
       new_insp.state = 'open'
+      
       new_insp.inspection_frequency = old_insp.inspection_frequency
-      new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
+      if new_insp.inspection_frequency && old_insp.calculated_inspection_due_date
+        new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
+      end
 
       new_insp.save!
 
