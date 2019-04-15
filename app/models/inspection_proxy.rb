@@ -10,7 +10,7 @@ class InspectionProxy < Proxy
   # Attributes
   #-----------------------------------------------------------------------------
   # new_search: Flag to indicate if the search has been reset or is new. Values are '1' (new search) or '0'
-  attr_accessor   :new_search, 
+  attr_accessor   :new_search, :asset_type, :asset_subtype,
                   :asset_tag, :region_code, :structure_status_type_code, :owner_id, 
                   :calculated_condition,
                   :on_under_indicator, :service_on_type_id, :service_under_type_id,
@@ -41,6 +41,8 @@ class InspectionProxy < Proxy
   ]
 
   NESTED_FORM_PARAMS = [
+    { :asset_type => [] }, 
+    { :asset_subtype => [] }, 
     { :region_code => [] }, 
     { :service_on_type_id => [] }, 
     { :service_under_type_id => [] }, 

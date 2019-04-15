@@ -64,6 +64,16 @@ class InspectionSearcher < BaseSearcher
   #------------------------------------------------------------------------------
   # search proxy conditions
   #------------------------------------------------------------------------------
+
+  def asset_subtype_conditions
+    clean_subtypes = remove_blanks(search_proxy&.asset_subtype)
+    inspection_klass.where("asset_subtypes.id": clean_subtypes) unless clean_subtypes.blank?
+  end
+
+  def asset_tag_conditions
+    inspection_klass.where(Arel.sql("transam_assets.asset_tag LIKE '%#{search_proxy&.asset_tag}%'")) unless search_proxy&.asset_tag.blank?
+  end
+
   def asset_tag_conditions
     inspection_klass.where(Arel.sql("transam_assets.asset_tag LIKE '%#{search_proxy&.asset_tag}%'")) unless search_proxy&.asset_tag.blank?
   end
