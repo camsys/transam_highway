@@ -1,0 +1,5 @@
+:ruby
+  conditions = ['good', 'fair', 'poor', 'unknown'].map{|r| [r.titleize, r]}
+
+.col-sm-2
+  = f.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
