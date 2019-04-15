@@ -42,7 +42,7 @@
         %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
         %th.center{:data => {:field => 'inspection_category', :sortable => 'false'}}= reference_label('highway_structures', 'inspection_category_id', 'Inspection Category')
         %th.center{:data => {:field => 'inspection_category_type', :sortable => 'false'}}= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
-        %th.center{:data => {:field => 'next_inspection_date', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('highway_structures', 'next_inspection_date', 'Next Routine Inspection')
+        %th.center{:data => {:field => 'calculated_inspection_due_date', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
         %th.center{:data => {:field => 'event_datetime', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
         %th.center{:data => {:field => 'state', :sortable => 'true'}}= reference_label('inspections', 'state', 'Inspection Status')
         %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
@@ -72,7 +72,6 @@
     assigned_organization: "assigned_organizations.name",
     organization_type: "organization_types.name",
     inspection_program: "inspection_programs.name",
-    next_inspection_date: "highway_structures.next_inspection_date",
     inspection_trip: "highway_structures.inspection_trip"
   };
 

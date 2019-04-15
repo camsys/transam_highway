@@ -144,15 +144,15 @@ class InspectionSearcher < BaseSearcher
   end
 
   def inspection_frequency_conditions
-    inspection_klass.where("highway_structures.inspection_frequency": search_proxy&.inspection_frequency) unless search_proxy&.inspection_frequency.blank?
+    inspection_klass.where("inspections.inspection_frequency": search_proxy&.inspection_frequency) unless search_proxy&.inspection_frequency.blank?
   end
 
-  def min_next_inspection_date_conditions
-    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].gteq(parse_date(search_proxy&.min_next_inspection_date))) unless search_proxy&.min_next_inspection_date.blank?
+  def min_calculated_inspection_due_date_conditions
+    inspection_klass.where(Inspection.arel_table[:calculated_inspection_due_date].gteq(parse_date(search_proxy&.min_calculated_inspection_due_date))) unless search_proxy&.min_calculated_inspection_due_date.blank?
   end
 
-  def max_next_inspection_date_conditions
-    inspection_klass.where(HighwayStructure.arel_table[:next_inspection_date].lteq(parse_date(search_proxy&.max_next_inspection_date))) unless search_proxy&.max_next_inspection_date.blank?
+  def max_calculated_inspection_due_date_conditions
+    inspection_klass.where(Inspection.arel_table[:calculated_inspection_due_date].lteq(parse_date(search_proxy&.max_calculated_inspection_due_date))) unless search_proxy&.max_calculated_inspection_due_date.blank?
   end
 
   def min_inspection_date_conditions
