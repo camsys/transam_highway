@@ -3,6 +3,12 @@
   qa_inspectors = User.where(id: Inspection.all.pluck(:qa_inspector_id).uniq).map{|r| [r.name, r.id]}
   qc_inspectors = User.where(id: Inspection.all.pluck(:qc_inspector_id).uniq).map{|r| [r.name, r.id]}
 
+  inspection_team_ids_by_group = {}
+  Organization.active.pluck(:id,:organization_type_id).each{|r| 
+    inspection_team_ids_by_group[r[1]] = [] unless inspection_team_ids_by_group[r[1]]
+    inspection_team_ids_by_group[r[1]] << r[0]
+    }
+
 .col-sm-3
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
   = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id), label: reference_label('inspections', 'organization_type_id', 'Inspection Group')
@@ -52,5 +58,30 @@
   $(function() {
     $('.datepicker-clear').bootstrapDP({
       autoclose: true
+    });
+
+    function show_hide_inspection_team_options(group_id) {
+      if(group_id) {
+        var inspection_team_ids_by_group = #{inspection_team_ids_by_group.to_json.html_safe || {}};
+        group_id = parseInt(group_id);
+        var team_ids = inspection_team_ids_by_group[group_id];
+        $('#inspection_proxy_assigned_organization_id option').hide();
+        team_ids.forEach(function(team_id) {
+          $('#inspection_proxy_assigned_organization_id option[value=' + team_id + ']').show();
+        });
+
+        $('#inspection_proxy_assigned_organization_id option[value=""]').show();
+      } else {
+        $('#inspection_proxy_assigned_organization_id option').show();
+      }
+    }
+    show_hide_inspection_team_options("#{@search_proxy.organization_type_id}");
+
+    $('#inspection_proxy_organization_type_id').change(function() {
+      var group_id = $(this).val();
+      show_hide_inspection_team_options(group_id);
+      if(group_id) {
+        $('#inspection_proxy_assigned_organization_id').val('');
+      }
     });
   });
