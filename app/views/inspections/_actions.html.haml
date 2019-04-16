@@ -5,9 +5,9 @@
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
     - if can? :update, @inspection
-      - @inspection.allowable_events.each do |evt|
-        - if (can? evt.to_sym, @inspection) && !(['make_ready', 'assign'].include? evt.to_s)
+      - @inspection.allowable_event_objects.each do |evt|
+        - if (can? evt.name.to_sym, @inspection) && !(['make_ready', 'assign'].include? evt.name)
           %li
-            = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt) do
-              %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.to_s)}
-              = @inspection.get_workflow_event_label(evt.to_s)
+            = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
+              %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
+              = evt.human_name
