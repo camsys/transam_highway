@@ -43,8 +43,15 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
       expect(json['data']['defect_definitions'][0]["id"]).to eq(test_defect.defect_definition.id)
     end
 
-    it 'includes element_defect_definitions data' do 
-      expect(json['data']['element_defect_definitions']).to match_array([[test_element.element_definition.id, test_defect.defect_definition.id]])
+    it 'includes element_defect_definitions data' do
+      # Set up cross associations and test again
+      test_element.element_definition.defect_definition_ids = test_defect.defect_definition.id
+      test_defect.defect_definition.element_definition_ids = test_element.element_definition.id
+
+      get "/api/v1/reference_data.json", headers: valid_headers
+      expect(json['data']['element_defect_definitions'])
+        .to match_array([{'defect_definition_id' => test_defect.defect_definition.id,
+                          'element_definition_id' => test_element.element_definition.id}])
     end
 
   end

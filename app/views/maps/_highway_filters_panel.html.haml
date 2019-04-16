@@ -79,4 +79,5 @@
   function reset_highway_filters() {
     var active_type_code = "#{StructureStatusType.find_by_name('Active').try(:code)}";
     $('.searcher_structure_status_type_code input[value=' + active_type_code +']').prop('checked', true);
+    $('.searcher_calculated_condition input[value!="unknown"]').prop('checked', true); // exclude Unknowns by default
   }

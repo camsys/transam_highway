@@ -6,7 +6,7 @@
 %hr
 .control-group
   %label.display-label
-    Bridge Notes
+    = "#{@inspection.highway_structure.asset_type&.class_name} Notes"
   .display-value
     = format_as_text(@inspection.highway_structure.remarks)
 .control-group

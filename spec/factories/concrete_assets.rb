@@ -24,12 +24,21 @@ FactoryBot.define do
     association :asset_subtype, :factory => :bridge_subtype
   end
 
+  trait :culvert_attributes do
+    highway_structure_attributes
+    association :asset_subtype, :factory => :culvert_subtype
+  end
+
   factory :highway_structure, :class => :highway_structure do
     highway_structure_attributes
   end
 
   factory :bridge, :class => :bridge do
     bridge_attributes
+  end
+
+  factory :culvert, :class => :culvert do
+    culvert_attributes
   end
 
 end

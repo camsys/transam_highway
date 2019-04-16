@@ -1,0 +1,2 @@
+class DefectDefinitionsElementDefinition < ApplicationRecord
+end

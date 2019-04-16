@@ -17,7 +17,7 @@ class BridgeLikeCondition < ApplicationRecord
   belongs_to :approach_rail_safety_type, class_name: 'FeatureSafetyType'
   belongs_to :approach_rail_end_safety_type, class_name: 'FeatureSafetyType'
 
-  def bridge
+  def bridge_like
     TransamAsset.get_typed_asset(highway_structure)
   end
 

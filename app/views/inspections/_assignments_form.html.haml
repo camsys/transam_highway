@@ -1,0 +1,24 @@
+#inspection-assignments-form.collpase
+  .panel.panel-default{:style => 'margin-bottom: 5px;'}
+    .panel-heading{:role => 'tab'}
+      %h4.panel-title
+        = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+    #inspection-assignments-panel-collapse.in
+      .panel-body
+        %ul.nav.nav-tabs
+          %li.active
+            %a{:href => '#open_assignments', :data =>{:toggle => 'tab'}}
+              Group / Team
+          %li
+            %a{:href => '#ready_assignments', :data =>{:toggle => 'tab'}}
+              Inspector
+        .tab-content.form-section{style: 'min-height: 100px;'}
+          .tab-pane.fade.in.active#open_assignments
+            = render 'inspections/open_assignments_form'
+          .tab-pane.fade#ready_assignments
+            = render 'inspections/ready_assignments_form'
+
+:javascript
+  update_inspection_teams_for_assignment($('#transam_workflow_model_proxy_organization_type_id').val());
+  update_inspection_inspectors_for_assignment($('#transam_workflow_model_proxy_assigned_organization_id').val());

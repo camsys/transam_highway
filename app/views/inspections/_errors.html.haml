@@ -1,0 +1,3 @@
+.alert.alert-warning.alert-dismissible{:role=> "alert"}
+  - @errors.each_with_index do |error, idx|
+    %p= "<strong>#{error.split(':').first}</strong> #{error.split(':').last.titleize}".html_safe

@@ -114,7 +114,7 @@
           = f.input_field :inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.inspection_date)
           %span.input-group-addon
             %i.fa.fa-calendar
-        = f.input :inspection_frequency, collection: [12, 24, 48, 72]
+        /= f.input :inspection_frequency, collection: [12, 24, 48, 72]
 
         .row
           .col-sm-6

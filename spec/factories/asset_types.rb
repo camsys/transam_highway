@@ -14,7 +14,7 @@ FactoryBot.define do
     class_name { "HighwayStructure" } # For core, no concrete classes exist
     description { "Highway Structure" }
     active { true }
-    display_icon_name { "fa fa-bridge" }
+    display_icon_name { "fa fa-structure" }
     map_icon_name { "redIcon" }
   end
 
@@ -25,5 +25,14 @@ FactoryBot.define do
     active { true }
     display_icon_name { "fa fa-bridge" }
     map_icon_name { "redIcon" }
+  end
+
+  factory :culvert_type, :class => :asset_type do
+    name { "Culvert" }
+    class_name { "Culvert" } # For core, no concrete classes exist
+    description { "Culvert" }
+    active { true }
+    display_icon_name { "fa fa-culvert" }
+    map_icon_name { "blueIcon" }
   end
 end

@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
 
-  resources :inspections
+  resources :inspections do 
+    collection do 
+      get 'reset'
+      post 'new_search'
+    end
+  end
 
   resources :processable_uploads, only: [:index, :create, :destroy] do
     member do
@@ -21,6 +26,7 @@ Rails.application.routes.draw do
       get 'element_definitions' => 'element_definitions#index'
 
       resources :bridges
+      resources :culverts
       resources :highway_structures
     end
   end

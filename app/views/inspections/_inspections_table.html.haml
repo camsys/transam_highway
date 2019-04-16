@@ -1,0 +1,152 @@
+:css
+  .popover-title{
+      background: #fbf381;
+  }
+  .popover-action:hover {
+    cursor: pointer;
+    cursor: hand;
+  }
+
+#inspection_table_actions.btn-toolbar
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => "inspection-table",
+    :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'true',
+    :url => inspections_path(:format => :json),
+    :side_pagination => 'server',
+    :show_pagination_switch => 'false',
+    :page_number => '1',
+    :page_list => "[5, 10, 20, 50, 100]",
+    :page_size => current_user.num_table_rows,
+    :sortable => 'true',
+    :sort_order => 'asc',
+    :cookie => 'true',
+    :cookie_id_table => "inspections_table_id",
+    :cookie_expire => "1d",
+    :search => 'false',
+    :toolbar => "#inspection_table_actions",
+    :show_columns => 'true',
+    :show_export => 'true',
+    :export_types => "['csv', 'txt', 'excel']",
+    :id_field => 'object_key',
+    :resizable => 'true',
+    :maintain_selected => 'true',
+    :single_select => 'false'}}
+    %thead
+      %tr
+        %th.center{:data => {:field => 'checked', :checkbox => 'true'}} Selected
+        %th.center{:data => {:field => 'to_global_id', :visible => 'false'}} Global ID
+        %th.center{:data => {:field => 'highway_structurible_type', :sortable => 'true'}}= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+        %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+        %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
+        %th.center{:data => {:field => 'inspection_category', :sortable => 'false'}}= reference_label('highway_structures', 'inspection_category_id', 'Inspection Category')
+        %th.center{:data => {:field => 'inspection_category_type', :sortable => 'false'}}= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
+        %th.center{:data => {:field => 'calculated_inspection_due_date', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
+        %th.center{:data => {:field => 'event_datetime', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
+        %th.center{:data => {:field => 'state', :sortable => 'true'}}= reference_label('inspections', 'state', 'Inspection Status')
+        %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
+        %th.center{:data => {:field => 'owner', :sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
+        %th.center{:data => {:field => 'calculated_condition', :sortable => 'true'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
+        %th.center{:data => {:field => 'inspection_program', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
+        %th.center{:data => {:field => 'inspection_trip', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
+        %th.center{:data => {:field => 'organization_type', :sortable => 'true'}}= reference_label('inspections', 'organization_type_id', 'Inspection Group')
+        %th.center{:data => {:field => 'assigned_organization', :sortable => 'true'}}= reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
+        %th.center{:data => {:field => 'inspectors', :sortable => 'false'}}= reference_label('inspections', 'inspectors', 'Inspectors')
+        /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone', 'Inspection Zone')
+        %th.center{:data => {:field => 'routine_report_submitted_at', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'routine_report_submitted_at', 'Routine Inspection Submitted')
+        %th.center{:data => {:field => 'dummy1', :formatter => 'inspection_link_formatter'}}
+
+= render 'shared/table_formatters'
+
+:javascript 
+  var selected_rows = new Set();
+
+  // stub correct sorting field name
+  var inspection_search_sorting_mappings = {
+    transam_assets_asset_tag: "transam_assets.asset_tag",
+    highway_structurible_type: "asset_types.class_name",
+    location_description: "highway_structures.location_description",
+    owner: "owners.code",
+    calculated_condition: "highway_structures.calculated_condition",
+    assigned_organization: "assigned_organizations.name",
+    organization_type: "organization_types.name",
+    inspection_program: "inspection_programs.name",
+    inspection_trip: "highway_structures.inspection_trip"
+  };
+
+  $('#inspection-table').bootstrapTable({
+    onLoadError: function(status, res) {
+      alert('An error occurred loading your search results. Please refresh the page and try your search again.');
+    },
+    queryParams: function(params) {
+      params.sort = params.sort || params.sortName;
+      params.order = params.order || params.sortOrder;
+      var sort_field = params.sort;
+      var map_field = inspection_search_sorting_mappings[sort_field];
+      if(map_field) {
+        params.sort = map_field;
+      }
+
+      return params;
+    }
+  });
+
+  // more table formatters
+  function structure_link_formatter(value, row) {
+    if (value == null) {
+      return "-";
+    } else {
+      return '<a href="/inventory/' + row['structure_object_key'] + '">' + value + '</a>';
+    }
+  }
+
+  function inspection_link_formatter(value, row) {
+    return '<a href="/inspections/' + row['object_key'] + '">View</a>';
+  }
+
+  $(document).ready(function() {
+    // Initialize popovers
+    $('[data-toggle="popover"]').popover();
+
+    // Enables or disables the package actions depending on how many are selected
+    function enable_disable_table_actions() {
+      enable_disable_group_team_assignment_submit();
+      enable_disable_inspector_assignment_submit();
+    };
+
+    // Updates the selected rows in the table
+    function update_selected() {
+      var selected = $('#inspection-table').bootstrapTable('getSelections');
+      selected_rows = new Set();
+      for (i = 0; i < selected.length; i++) {
+        var insp_key = selected[i][1];
+        if(!selected_rows.has(insp_key)) {
+          selected_rows.add(insp_key);
+        }
+      }
+      enable_disable_table_actions();
+    };
+
+    // Removes an object identified by its object key from the set of objects selected
+    function remove_from_selected(object_key) {
+      selected_rows.delete(object_key);
+      enable_disable_table_actions();
+    };
+
+    $('#inspection-table').on('check.bs.table', function(e, row) {
+      update_selected();
+    }).on('uncheck.bs.table', function(e, row) {
+      update_selected();
+    }).on('check-all.bs.table', function(e, row) {
+      update_selected();
+    }).on('uncheck-all.bs.table', function(e, row) {
+      update_selected();
+    }).on('all.bs.table', function(e, row) {
+      $('[data-toggle="popover"]').popover();
+    });
+
+  });
+  $(window).resize(function() {
+    $('#inspection-table').bootstrapTable('resetView');
+  });

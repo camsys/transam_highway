@@ -8,6 +8,8 @@ class ElementDefinition < ApplicationRecord
 
   has_many :elements
   
+  has_and_belongs_to_many :defect_definitions
+  
   validates :number, :uniqueness => true
 
   def to_s

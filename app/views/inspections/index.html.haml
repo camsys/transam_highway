@@ -1,0 +1,25 @@
+#subheader-label
+  %h2 Inspection Manager
+  %legend.asset-subheader
+.row
+  .col-sm-12
+    = render 'inspections/search_form'
+
+  .col-sm-12
+    = render 'inspections/assignments_form'
+  
+  .col-sm-12
+    #spinner{:style => 'padding: 20px;'}
+      = loader_panel_tag({:message => "Searching...", :size => 3, :spinner => "refresh"})
+
+    #errors
+
+    #inspection-table-container
+      = render 'inspections/inspections_table'
+
+
+:javascript
+
+  $(window).resize(function() {
+    $('#inspections-table').bootstrapTable('resetView');
+  });

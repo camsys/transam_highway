@@ -1,5 +1,6 @@
 :ruby
   conditions = ['good', 'fair', 'poor', 'unknown'].map{|r| [r.titleize, r]}
+  @searcher.calculated_condition = ['good', 'fair', 'poor'] unless @searcher.calculated_condition
 
 #highwayInspectionFilterContainer.panel-group{role:"tablist", "aria-multiselectable":"true"}
   .panel.panel-default

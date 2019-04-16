@@ -1,3 +1,5 @@
-json.id bridge_condition.guid
-json.structure_id bridge_condition.bridge.try(:guid)
-json.inspection_id bridge_condition.inspection.try(:guid)
+json.partial! 'api/v1/bridge_like_conditions/listing', bridge_like_condition: bridge_condition
+json.deck_geometry_appraisal_rating_type_id bridge_condition.deck_geometry_appraisal_rating_type_id
+json.deck_geometry_appraisal_rating_type bridge_condition.deck_geometry_appraisal_rating_type&.name
+json.underclearance_appraisal_rating_type_id bridge_condition.underclearance_appraisal_rating_type_id
+json.underclearance_appraisal_rating_type bridge_condition.underclearance_appraisal_rating_type&.name

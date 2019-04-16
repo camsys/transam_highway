@@ -53,7 +53,7 @@
             %th.center CS 4
 
         %tbody
-          - @inspection.elements.ordered.each do |element|
+          - @inspection.parent_elements.ordered.each do |element|
             = render partial: "element_row", locals: {element: element, indent: 0, html_class: 'element'}
             - element.defects.ordered.each do |defect|
               = render partial: "defect_row", locals: {defect: defect, indent: 1}

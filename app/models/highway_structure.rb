@@ -3,8 +3,6 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
-  before_save :update_next_inspection_date
-
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
   belongs_to :highway_structure_type
@@ -22,6 +20,7 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :historical_significance_type
 
+  belongs_to :inspection_program
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections
@@ -51,7 +50,6 @@ class HighwayStructure < TransamAssetRecord
       :location_description,
       :length,
       :inspection_date,
-      :inspection_frequency,
       :fracture_critical_inspection_required,
       :fracture_critical_inspection_frequency,
       :underwater_inspection_required,
@@ -149,11 +147,55 @@ class HighwayStructure < TransamAssetRecord
     end
   end
 
-  protected
-
-  def update_next_inspection_date
-    if (inspection_date_changed? || inspection_frequency_changed?) && inspection_date.present? && inspection_frequency.present?
-      self.next_inspection_date = (inspection_date + (inspection_frequency).months).at_beginning_of_month
-    end
+  def inspection_frequency
+    active_inspection&.inspection_frequency
   end
+
+  def active_inspection
+    inspections.where.not(state: 'final').ordered.first
+  end
+
+  def last_closed_inspection
+    inspections.where(state: 'final').ordered.first
+  end
+
+  def open_inspection
+    if inspections.where.not(state: 'final').count > 0
+      Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
+    elsif inspections.count > 0
+      old_insp = Inspection.get_typed_inspection(last_closed_inspection)
+      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:guid, {defects: [:object_key, :guid]}]}]
+
+      old_insp.elements.where(id: old_insp.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
+        new_parent_elem = new_insp.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
+        new_insp.elements.select{|e| e.parent_element_id == old_parent_elem.id}.each do |kopy_element|
+          kopy_element.parent = new_parent_elem
+        end
+      end
+      new_insp.elements.each do |elem|
+        elem.object_key = nil
+      end
+
+      new_insp.state = 'open'
+      
+      new_insp.inspection_frequency = old_insp.inspection_frequency
+      if new_insp.inspection_frequency && old_insp.calculated_inspection_due_date
+        new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
+      end
+
+      new_insp.save!
+
+      new_insp
+    else
+      typed_asset = TransamAsset.get_typed_asset(self)
+      if eval("defined?(#{typed_asset.class}Condition)")
+        (typed_asset.class.to_s + 'Condition').constantize.new(highway_structure: self)
+      else
+        self.inspections.build
+      end
+    end
+
+  end
+
+  protected
 end

@@ -11,8 +11,10 @@ class Api::V1::InspectionsController < Api::ApiController
     # sequence matters
     query_highway_structures
     query_bridges
+    query_culverts
     query_inspections
     query_bridge_conditions
+    query_culvert_conditions
     query_elements
     query_defects
     query_roadways
@@ -26,12 +28,24 @@ class Api::V1::InspectionsController < Api::ApiController
       @highway_structures = @highway_structures.limit(params[:limit])
     end
 
-    @highway_structure_ids = @highway_structures.pluck(:id)
-    @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
+    # HACK: until we have filtering by user org, we have a temporary filter here to only
+    # include bridges that have inspections, to filter out all the bridge stubs we've
+    # added temporarily for sprint 7
+    # @highway_structure_ids = @highway_structures.pluck(:id)
+    struct_ids = HighwayStructure.all.joins(:inspections).uniq.pluck(:id)
+    @highway_structure_ids = params[:limit].blank? ? struct_ids : struct_ids[0, params[:limit].to_i]
+    # @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
+    @transam_asset_ids = HighwayStructure.where(id: @highway_structure_ids).pluck("transam_assetible_id")
   end
 
   def query_bridges
     @bridges = Bridge.where("highway_structures.id": @highway_structure_ids)
+    @bridge_asset_ids = @bridges.pluck("transam_assetible_id")
+  end
+
+  def query_culverts
+    @culverts = Culvert.where("highway_structures.id": @highway_structure_ids)
+    @culvert_asset_ids = @bridges.pluck("transam_assetible_id")
   end
 
   def query_inspections
@@ -47,7 +61,11 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_bridge_conditions
-    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids)
+    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @bridge_asset_ids)
+  end
+
+  def query_culvert_conditions
+    @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @culvert_asset_ids)
   end
 
   def query_elements

@@ -1,0 +1,80 @@
+:ruby
+  table_title = @asset_class_name.pluralize
+
+:css
+  .flag-column {
+    :width: 30px;
+  }
+
+#subheader-label
+  %h2= table_title
+  %legend.asset-subheader
+
+#table_actions.btn-toolbar
+  - table_dom_id = SecureRandom.hex
+
+  .table-responsive
+    %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+      :url => inventory_index_path(:format => :json),
+      :card_view => "false",
+      :pagination => 'true',
+
+      :side_pagination => 'server',
+      :show_pagination_switch => 'false',
+      :page_number => '1',
+      :page_list => "[5, 10, 20, 50, 100]",
+      :page_size => current_user.num_table_rows,
+
+      :sort_order => 'asc',
+      :sortable => 'true',
+      :click_to_select => 'false',
+      :search => 'false',
+      :query_params => "query_params",
+
+      :sticky_header => 'true',
+      :sticky_header_offset_y => '65px',
+      :export_types => "['csv', 'txt', 'excel']",
+      :show_export => 'true',
+      :show_columns => 'true',
+      :cookie => 'true',
+      :cookie_id_table => "highway_assets_id",
+      :cookie_expire => "1y",
+      :show_multi_sort => 'false',
+      :single_select => 'false'}}
+
+      %thead
+        %tr
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
+          %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_like_type'}}= reference_label(table_title.underscore, 'transam_assets.asset_subtype_id', 'Type')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= reference_label('highway_structures', 'features_intersected', 'Feature Intersected')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'location_description'}}= reference_label('highway_structures', 'location_description', 'Location Description')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
+          %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
+          %th.right{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label(table_title.underscore, 'length', 'Length')
+          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')
+
+= render 'shared/table_formatters'
+
+:javascript
+
+  var asset_type = #{@asset_type.to_i};
+
+  function query_params(params) {
+    if (asset_type > 0) {
+      params.asset_type = asset_type;
+    }
+    return params;
+  }
+
+  // table formatters
+  function asset_link_formatter(value, data) {
+    return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
+  function length_formatter(value, data) {
+    return parseFloat(value).toFixed(2) + " ft"
+  };
+

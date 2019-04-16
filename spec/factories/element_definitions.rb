@@ -1,5 +1,7 @@
 FactoryBot.define do
   factory :element_definition do
-    sequence(:number) { |n| "element_definition_number_#{n}" }
+    sequence :number do |n|
+      n
+    end
   end
 end

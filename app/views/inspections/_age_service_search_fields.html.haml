@@ -1,0 +1,22 @@
+:ruby
+  @search_proxy.on_under_indicator = 'on' unless @search_proxy.on_under_indicator
+
+.col-sm-4
+  .col-sm-6
+    %label.control-label{for: 'on_under_indicator_tab'}
+      = reference_label('roadways', 'service_type', 'Service Type')
+    %ul.nav.nav-tabs#on_under_indicator_tab
+      %li.active#service_on_type_header
+        %a{:href => '#service_on_type', :data =>{:toggle => 'tab'}}
+          On (42A)
+      %li#service_under_type_header
+        %a{:href => '#service_under_type', :data =>{:toggle => 'tab'}}
+          Under (42B)
+    .tab-content{style: 'min-height: 100px;'}
+      .tab-pane.fade.in.active#service_on_type
+        = f.input :service_on_type_id, as: :check_boxes, collection: ServiceOnType.active.order(:code, :name).map{|r| [r.to_s, r.id]}, label: false
+
+      .tab-pane.fade.in#service_under_type
+        = f.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:code, :name).map{|r| [r.to_s, r.id]}, label: false
+  .col-sm-6
+    = f.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS')
