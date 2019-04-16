@@ -19,12 +19,6 @@
 
   prefix = "highway_structures/#{asset_dir}"
 
-  if @asset_class_name == 'Bridge'
-    @latest_condition = @asset.latest_bridge_condition
-  elsif @asset_class_name == 'Culvert'
-    @latest_condition = @asset.latest_culvert_condition
-  end
-
 - tabs.each do |key, label|
   .tab-pane.fade{id: "#{key}"}
     .tab-content
