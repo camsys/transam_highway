@@ -15,6 +15,6 @@ class Roadway < ApplicationRecord
   scope :under, -> { where.not(on_under_indicator: '1') }
 
   def reset_lanes_if_needed
-    highway_structure.reset_lanes(self) if lanes_changed?
+    highway_structure.reset_lanes(self) if saved_change_to_attribute?(:lanes)
   end
 end

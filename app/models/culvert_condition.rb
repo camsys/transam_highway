@@ -20,7 +20,7 @@ class CulvertCondition < BridgeLikeCondition
   end
 
   def update_calculated_condition
-    if self.culvert_condition_type_id_changed?
+    if self.saved_change_to_attribute?(:culvert_condition_type_id)
       ta = TransamAsset.get_typed_asset(self.highway_structure)
       ta.try(:set_calculated_condition!) if ta
     end

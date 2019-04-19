@@ -23,9 +23,9 @@ class BridgeCondition < BridgeLikeCondition
   end
 
   def update_calculated_condition
-    if self.deck_condition_rating_type_id_changed? ||
-        self.superstructure_condition_rating_type_id_changed? ||
-        self.substructure_condition_rating_type_id_changed?
+    if self.saved_change_to_attribute?(:deck_condition_rating_type_id) ||
+        self.saved_change_to_attribute?(:superstructure_condition_rating_type_id) ||
+        self.saved_change_to_attribute?(:substructure_condition_rating_type_id)
       # get bridge
       br = TransamAsset.get_typed_asset(self.highway_structure)
       br.try(:set_calculated_condition!) if br
