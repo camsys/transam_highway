@@ -1,7 +1,12 @@
 class CreateStreambedProfiles < ActiveRecord::Migration[5.2]
   def change
     create_table :streambed_profiles do |t|
-      t.uuid :guid
+      if ActiveRecord::Base.configurations[Rails.env]['adapter'].include?('mysql2')
+        t.string :guid
+      else
+        t.uuid :guid
+      end
+
       t.references :inspection, foreign_key: true
       t.datetime :date
       t.decimal :water_level
