@@ -20,6 +20,8 @@ class Inspection < ApplicationRecord
   has_many :elements, dependent: :destroy
   has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
+  has_many :streambed_profiles
+
   scope :ordered, -> { order(event_datetime: :desc) }
 
   def self.get_typed_inspection(inspection)
