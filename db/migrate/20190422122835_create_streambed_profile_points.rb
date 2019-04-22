@@ -2,7 +2,7 @@ class CreateStreambedProfilePoints < ActiveRecord::Migration[5.2]
   def change
     create_table :streambed_profile_points do |t|
       if ActiveRecord::Base.configurations[Rails.env]['adapter'].include?('mysql2')
-        t.string :guid
+        t.string :guid, limit: 36
       else
         t.uuid :guid
       end
