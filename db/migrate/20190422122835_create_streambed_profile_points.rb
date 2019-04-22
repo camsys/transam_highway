@@ -9,7 +9,7 @@ class CreateStreambedProfilePoints < ActiveRecord::Migration[5.2]
 
       t.references :streambed_profile, foreign_key: true
       t.decimal :distance
-      t.distance :value
+      t.decimal :value
 
       t.timestamps
     end
