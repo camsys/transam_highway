@@ -151,4 +151,8 @@ class Inspection < ApplicationRecord
     self.highway_structure.open_inspection
   end
 
+  def updatable?
+    state != 'final'
+  end
+
 end

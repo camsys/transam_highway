@@ -34,6 +34,11 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true}
 ]
+
+roles = [
+    {name: 'inspector', show_in_user_mgmt: true, privilege: false, weight: 5}
+]
+
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', engine_name: 'highway', active: true},
     {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', engine_name: 'highway', active: true},
@@ -636,7 +641,7 @@ defect_definitions_element_definitions = {
       7000 => nil
     }
 
-merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
+merge_tables = %w{ organization_types asset_types asset_subtypes roles system_config_extensions }
 
 merge_tables.each do |table_name|
   puts "  Merging #{table_name}"
