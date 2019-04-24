@@ -52,24 +52,24 @@ class Inspection < ApplicationRecord
 
   def self.transam_workflow_transitions
     [
-        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready},
+        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
-        {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign},
+        {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
-        {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field'},
+        {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field', human_name: 'To In Field'},
 
-        {event_name: 'reassign', from_state: ['in_field', 'draft_report', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'ready', can: {in_field: :can_start, draft_report: :can_start, draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}},
+        {event_name: 'reassign', from_state: ['in_field', 'draft_report', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'ready', can: {in_field: :can_start, draft_report: :can_start, draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}, human_name: 'To Ready'},
 
-        {event_name: 'revert', from_state: ['in_field', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'draft_report', can: {in_field: :can_start,  draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}},
+        {event_name: 'revert', from_state: ['in_field', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'draft_report', can: {in_field: :can_start,  draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}, human_name: 'To Draft Report'},
 
-        {event_name: 'finish', from_state: ['in_field', 'draft_report'], to_state: 'draft_complete', can: :can_start},
+        {event_name: 'finish', from_state: ['in_field', 'draft_report'], to_state: 'draft_complete', can: :can_start, human_name: 'To Draft Complete'},
 
-        {event_name: 'qc_review', from_state: 'draft_complete', to_state: 'qc_reviewed', can: :can_qc},
+        {event_name: 'qc_review', from_state: 'draft_complete', to_state: 'qc_reviewed', can: :can_qc, human_name: 'To QC Reviewed'},
 
-        {event_name: 'qa_review', from_state: 'qc_reviewed', to_state: 'qa_reviewed', can: :can_qa},
-        {event_name: 'qc_submit', from_state: ['qc_reviewed', 'qa_reviewed'], to_state: 'submitted', guard: :allowed_to_submit, can: :can_submit},
+        {event_name: 'qa_review', from_state: 'qc_reviewed', to_state: 'qa_reviewed', can: :can_qa, human_name: 'To QA Reviewed'},
+        {event_name: 'qc_submit', from_state: ['qc_reviewed', 'qa_reviewed'], to_state: 'submitted', guard: :allowed_to_submit, can: :can_submit, human_name: 'To Submitted'},
 
-        {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize, after: :open_new_inspection},
+        {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
 
     ]
   end
