@@ -6,7 +6,7 @@ class AddFeatureSafetyTypes < ActiveRecord::DataMigration
         {code: 'N', name:'Not applicable', description:	'Not applicable or a safety feature is not required.', active: true}
     ].each do |type|
 
-      seed = FeatureSafetyType.find_by(type[:name])
+      seed = FeatureSafetyType.find_by(name: type[:name])
       if seed
         seed.update!(type)
       else
