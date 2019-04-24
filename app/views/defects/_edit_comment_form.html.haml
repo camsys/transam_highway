@@ -1,0 +1,34 @@
+.row
+  = simple_form_for(@defect,
+  :url => inspection_element_defect_path(@inspection, @element, @defect),
+  :method => 'put',
+  :html => {:class => 'form-vertical defect_comment_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    = f.input :notes, as: :text, label: 'Comment'
+
+    .col-md-12
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_defect_comment_form{type: 'button'}
+        Cancel
+
+:javascript
+  $(function() {
+
+    // jquery validations
+    $('.defect_comment_form').validate({
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+
+    $('#cancel_defect_comment_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+  });
+
+
+

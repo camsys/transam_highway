@@ -13,12 +13,35 @@
     font-style: italic;
     color: gray;
   }
+
+  .cs_1_quantity {
+    background-color: #D6F5D6;
+  }
+
+  .cs_2_quantity {
+    background-color: #F5EC9E;
+  }
+
+  .cs_3_quantity {
+    background-color: #F4CB91;
+  }
+
+  .cs_4_quantity {
+    background-color: #F99C9B;
+  }
   
 :ruby
   table_dom_id = SecureRandom.hex
 
+.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+
 .row
   .col-md-12
+    #table_actions.btn-toolbar
+      .btn-group
+        = link_to new_inspection_element_path(@inspection.object_key), remote: true, class: 'btn btn-default', title: 'New Element' do
+          %i.fa.fa-plus
+          = " New Element"
     .table-responsive
       -# Remove .table-hover with data-classes
       %table{:id => table_dom_id,
@@ -45,20 +68,21 @@
           %tr
             %th.centern Elem
             %th.center Description
-            %th.center Total Quantity
+            %th.center Quantity
             %th.center Unit
-            %th.center CS 1
-            %th.center CS 2
-            %th.center CS 3
-            %th.center CS 4
+            %th.center.cs_1_quantity CS 1
+            %th.center.cs_2_quantity CS 2
+            %th.center.cs_3_quantity CS 3
+            %th.center.cs_4_quantity CS 4
+            %th.center
 
         %tbody
           - @inspection.parent_elements.ordered.each do |element|
-            = render partial: "element_row", locals: {element: element, indent: 0, html_class: 'element'}
+            = render partial: "element_row", locals: {element: element, indent: 0, is_child: false}
             - element.defects.ordered.each do |defect|
               = render partial: "defect_row", locals: {defect: defect, indent: 1}
             - element.children.ordered.each do |bme|
-              = render partial: "element_row", locals: {element: bme, indent: 1, html_class: 'bme'}
+              = render partial: "element_row", locals: {element: bme, indent: 1, is_child: true}
               - bme.defects.ordered.each do |defect|
                 = render partial: "defect_row", locals: {defect: defect, indent: 2}
-          
+        

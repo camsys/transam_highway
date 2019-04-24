@@ -1,6 +1,19 @@
 Rails.application.routes.draw do
 
   resources :inspections do 
+    resources :elements do 
+      member do 
+        get :edit_comment
+      end
+
+      resources :child_elements
+      resources :defects do 
+        member do 
+          get :edit_comment
+        end
+      end
+    end
+
     collection do 
       get 'reset'
       post 'new_search'

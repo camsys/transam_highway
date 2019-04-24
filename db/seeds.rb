@@ -691,7 +691,7 @@ end
 data = eval(table_name)
 klass = table_name.classify.constantize
 data.each do |row|
-  x = klass.new(row.except(:is_nbe, :is_protective, :cat_key, :type_key, :mat_key))
+  x = klass.new(row.except(:is_nbe, :cat_key, :type_key, :mat_key))
   x.element_material = ElementMaterial.find_by(code: row[:mat_key])
   x.element_classification = 
     ElementClassification.find_by(name: row[:is_nbe] == 'Y' ? 'NBE' : 'BME')

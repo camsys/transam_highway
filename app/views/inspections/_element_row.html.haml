@@ -1,6 +1,8 @@
-- indent_str = '&nbsp;'*indent*4
+:ruby
+  html_class = is_child ? 'bme' : 'element'
+  indent_str = '&nbsp;'*indent*4
 %tr{class: "#{html_class}"}
-  %td.left!= "#{indent_str}#{html_rjust(element.element_definition, 4)}"
+  %td.left!= "#{indent_str}#{html_rjust(element.element_definition.number, 4)}"
   %td.left!= "#{indent_str}#{element.element_definition.short_name}"
   %td.right= format_as_integer(element.quantity)
   %td.left= element.element_definition.quantity_unit
@@ -8,6 +10,11 @@
   %td.right= format_as_integer(element.defects.sum(:condition_state_2_quantity))
   %td.right= format_as_integer(element.defects.sum(:condition_state_3_quantity))
   %td.right= format_as_integer(element.defects.sum(:condition_state_4_quantity))
+  %td.center
+    - if is_child
+      = render 'child_element_row_action_buttons', element: element
+    - else
+      = render 'element_row_action_buttons', element: element
 - if element.notes.present?
   %tr.notes
     %td

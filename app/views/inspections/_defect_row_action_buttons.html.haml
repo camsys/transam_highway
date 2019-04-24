@@ -1,0 +1,13 @@
+.dropdown
+  %button.btn.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    .fa.fa-ellipsis-h
+  %ul.dropdown-menu.dropdown-menu-right{:role => 'menu'}
+    %li.text-left
+      = link_to edit_inspection_element_defect_path(defect.inspection, defect.element, defect), remote: true do
+        = "Edit Defect"
+    %li.text-left
+      = link_to edit_comment_inspection_element_defect_path(defect.inspection, defect.element, defect), remote: true do
+        = "Edit Comment"
+    %li.text-left
+      = link_to inspection_element_defect_path(defect.inspection, defect.element, defect), method: :delete, data: { confirm: 'Are you sure?' }  do
+        = "Delete"

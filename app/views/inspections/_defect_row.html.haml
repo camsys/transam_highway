@@ -1,6 +1,6 @@
 - indent_str = '&nbsp;'*indent*4
 %tr.defect
-  %td.left!= "#{indent_str}#{html_rjust(defect.defect_definition, 4)}"
+  %td.left!= "#{indent_str}#{html_rjust(defect.defect_definition.number, 4)}"
   %td.left!= "#{indent_str}#{defect.defect_definition.short_name}"
   %td.right= format_as_integer(defect.total_quantity)
   %td.left
@@ -8,6 +8,8 @@
   %td.right= format_as_integer(defect.condition_state_2_quantity)
   %td.right= format_as_integer(defect.condition_state_3_quantity)
   %td.right= format_as_integer(defect.condition_state_4_quantity)
+  %td.center
+    = render 'defect_row_action_buttons', defect: defect
 - if defect.notes.present?
   %tr.notes
     %td
