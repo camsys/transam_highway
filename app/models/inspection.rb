@@ -1,4 +1,4 @@
-class Inspection < ApplicationRecord
+class Inspection < InspectionRecord
 
   actable as: :inspectionible
 
@@ -24,6 +24,17 @@ class Inspection < ApplicationRecord
 
   scope :ordered, -> { order(event_datetime: :desc) }
 
+  FORM_PARAMS = [
+      :name,
+      :event_datetime,
+      :temperature,
+      :weather,
+      :notes,
+      :organization_type_id,
+      :assigned_organization_id,
+      :inspector_ids => []
+  ]
+
   def self.get_typed_inspection(inspection)
     if inspection
       if inspection.specific
@@ -38,16 +49,7 @@ class Inspection < ApplicationRecord
   end
 
   def self.allowable_params
-    [
-      :name,
-      :event_datetime,
-      :temperature,
-      :weather,
-      :notes,
-      :organization_type_id,
-      :assigned_organization_id,
-      :inspector_ids => []
-    ]
+    FORM_PARAMS
   end
 
   def self.transam_workflow_transitions

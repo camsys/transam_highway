@@ -6,6 +6,10 @@ class CulvertCondition < BridgeLikeCondition
 
   after_save :update_calculated_condition
 
+  FORM_PARAMS = [
+      :culvert_condition_type_id
+  ]
+
   def calculated_condition
     case culvert_condition_type&.value
       when 0..4

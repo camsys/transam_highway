@@ -8,6 +8,8 @@ class BridgeCondition < BridgeLikeCondition
 
   after_save :update_calculated_condition
 
+  FORM_PARAMS = []
+
   def calculated_condition
     case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
           substructure_condition_rating_type&.value].compact.min

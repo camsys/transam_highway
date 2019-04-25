@@ -58,10 +58,16 @@ class InspectionsController < TransamController
 
   # PATCH/PUT /inspections/1
   def update
-    if @inspection.update(inspection_params)
-      redirect_to @inspection, notice: 'Inspection was successfully updated.'
-    else
-      render :edit
+
+    respond_to do |format|
+      if @inspection.update!(typed_inspection_params(@inspection))
+        notify_user(:notice, "Inspection was successfully updated.")
+        format.html { redirect_to inspection_path(@inspection.object_key) }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @inspection.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -102,6 +108,10 @@ class InspectionsController < TransamController
     # Only allow a trusted parameter "white list" through.
     def inspection_params
       params.require(:inspection).permit(Inspection.allowable_params)
+    end
+
+    def typed_inspection_params(inspection)
+      params.require(:inspection).permit(inspection.allowable_params)
     end
 
     def inspection_proxy_form_params

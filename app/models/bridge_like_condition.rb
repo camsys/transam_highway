@@ -1,4 +1,4 @@
-class BridgeLikeCondition < ApplicationRecord
+class BridgeLikeCondition < InspectionRecord
 
   acts_as :inspection, as: :inspectionible, dependent: :destroy
 
@@ -16,6 +16,19 @@ class BridgeLikeCondition < ApplicationRecord
   belongs_to :transitions_safety_type, class_name: 'FeatureSafetyType'
   belongs_to :approach_rail_safety_type, class_name: 'FeatureSafetyType'
   belongs_to :approach_rail_end_safety_type, class_name: 'FeatureSafetyType'
+
+  FORM_PARAMS = [
+      :structural_appraisal_rating_type_id,
+      :deck_geometry_appraisal_rating_type_id,
+      :waterway_appraisal_rating_type_id,
+      :approach_alignment_appraisal_rating_type_id,
+      :operational_status_type_id,
+      :channel_condition_type_id,
+      :scour_critical_bridge_type_id,
+      :transitions_safety_type_id,
+      :approach_rail_safety_type_id,
+      :approach_rail_end_safety_type_id
+  ]
 
   def bridge_like
     TransamAsset.get_typed_asset(highway_structure)
