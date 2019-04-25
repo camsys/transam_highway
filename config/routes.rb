@@ -35,12 +35,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'reference_data' => 'references#index'
       get 'associations' => 'associations#index'
-      get 'inspections' => 'inspections#index'
       get 'bridge_conditions' => 'bridge_conditions#index'
       get 'elements' => 'elements#index'
       get 'defects' => 'defects#index'
       get 'defect_definitions' => 'defect_definitions#index'
       get 'element_definitions' => 'element_definitions#index'
+
+      resources :inspections, only: [:index]
 
       resources :bridges
       resources :culverts

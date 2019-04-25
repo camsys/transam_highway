@@ -104,7 +104,13 @@
     $('.number-input').show();
   }
 
+  function disable_quantity_editing() {
+    $('.number-input').hide();
+    $('.number-display').show();
+  }
+
   function validate_quantity() {
+    var is_valid = true;
     $('tr.element').each(function() {
       var element_id = $(this).attr('data-element-id');
       var element_total_quantity_td = $(this).find('> td.total_quantity');
@@ -120,11 +126,15 @@
       if(defect_quantity_total > element_quantity) {
         element_total_quantity_input.addClass('error');
         element_total_quantity_td.append('<label class="error">Invalid quantity</label>');
+
+        is_valid = false;
       } 
     }); 
+
+    return is_valid;
   }
 
-  function submit_changes() {
+  function submit_element_changes() {
     $("#spinner").show();
     $.ajax({
       url: "#{save_quantity_changes_inspection_elements_path(@inspection.object_key)}",

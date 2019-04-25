@@ -1,14 +1,10 @@
 %ul.nav.nav-tabs
-  = nav_tab_count_tag("#elements", "Elements", @inspection.elements.count)
   %li
-    %a{:href => '#conditions', :data =>{:toggle => 'tab'}}
+    %a.active{:href => '#conditions', :data =>{:toggle => 'tab'}}
       %span.nowrap
         Conditions
 
 .tab-content.editable-fields-container
-  .tab-pane.fade#elements
-    .tab-content.autoscroll
-      = render 'elements'
   .tab-pane.fade#conditions
     .tab-content
       = render 'conditions'

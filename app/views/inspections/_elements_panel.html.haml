@@ -1,0 +1,41 @@
+.row
+  .col-sm-12#elements_panel
+    .panel.panel-default
+      .panel-heading
+        .row
+          .col-sm-10
+            %h3.panel-title
+              %a{data: {toggle: 'collapse'}, href: '#collapse-elements'}
+                Elements
+                %span.badge= @inspection.elements.count
+          - if can?(:update, @inspection)
+            .pull-right
+              %button.btn.btn-primary.edit-elements-button
+                Edit
+              .save-elements-buttons{style: 'display: none;'}
+                %button.btn.btn-primary.save-elements-button
+                  Save
+                %button.btn.btn-primary.cancel-elements-button
+                  Cancel
+      #collapse-elements.panel-collapse.collapse.in
+        .panel-body
+          = render 'elements_table'
+
+:javascript
+  $(function() {
+    $('.edit-elements-button').on('click', function() {
+      $('.edit-elements-button').hide();
+      $('.save-elements-buttons').show();
+      enable_quantity_editing();
+    });
+    $('.save-elements-button').on('click', function() {
+      if(validate_quantity()) {
+        submit_element_changes();
+      }
+    });
+    $('.cancel-elements-button').on('click', function() {
+      $('.save-elements-buttons').hide();
+      $('.edit-elements-button').show();
+      disable_quantity_editing();
+    });
+  });
