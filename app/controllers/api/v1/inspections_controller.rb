@@ -5,6 +5,10 @@ class Api::V1::InspectionsController < Api::ApiController
   def index
   end
 
+  def update
+    
+  end
+
   private
 
   def get_data
