@@ -1,7 +1,7 @@
 class ElementsController < TransamController
 
   before_action :set_inspection
-  before_action :set_element, except: [:new, :create]
+  before_action :set_element, except: [:new, :create, :save_quantity_changes]
 
   # GET /inspections/:inspection_id/elements/new
   def new
@@ -42,6 +42,26 @@ class ElementsController < TransamController
   end
 
   def edit_comment
+  end
+
+  # both element and defect changes
+  def save_quantity_changes
+    unless params[:quantity_changes].blank?
+      if params[:quantity_changes][:elements]
+        params[:quantity_changes][:elements].each do |el_id, quantity|
+          el = Element.find_by_id(el_id)
+          el.update(quantity: quantity) if el
+        end
+      end
+      if params[:quantity_changes][:defects]
+        params[:quantity_changes][:defects].each do |defect_id, quan_changes|
+          defect = Defect.find_by_id(defect_id)
+          defect.update(quan_changes.permit(Defect.allowable_params).to_h) if defect
+        end
+      end
+    end
+
+    redirect_to @inspection, notice: 'Changes were successfully saved.'
   end
 
 

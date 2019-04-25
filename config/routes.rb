@@ -2,6 +2,10 @@ Rails.application.routes.draw do
 
   resources :inspections do 
     resources :elements do 
+      collection do 
+        post :save_quantity_changes
+      end
+
       member do 
         get :edit_comment
       end
