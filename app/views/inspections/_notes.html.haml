@@ -1,0 +1,6 @@
+.row
+  .col-sm-6
+    = editable_field_tag(@inspection, :notes, 'Inspection Notes', model_name: 'Inspection')
+  .col-sm-6
+    = editable_field_tag(@inspection, :temperature, 'Temperature', model_name: 'Inspection')
+    = editable_field_tag(@inspection, :weather, 'Weather', model_name: 'Inspection')
