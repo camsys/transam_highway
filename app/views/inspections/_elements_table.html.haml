@@ -162,7 +162,6 @@
     }
 
     function update_cs234_col_total(element_id, quan_class) {
-      console.log('update_cs234');
       var el_row = $('tr.element[data-element-id=' + element_id + ']');
       var total_quan = 0;
       $('.defect[data-element-id=' + element_id + '] .' + quan_class + ' .number-input').each(function() {
@@ -176,6 +175,10 @@
       var defect_row = $('.defect[data-defect-id=' + defect_id + ']');
       var total_quan = parseFloat(defect_row.find('.cs1 .number-input').val()) + parseFloat(defect_row.find('.cs2 .number-input').val()) + parseFloat(defect_row.find('.cs3 .number-input').val()) + parseFloat(defect_row.find('.cs4 .number-input').val());
       defect_row.find('.total_quantity').text(parseInt(total_quan));  
+      if(!quantity_changes.defects[defect_id]) {
+        quantity_changes.defects[defect_id] = {};
+      }
+      quantity_changes.defects[defect_id].total_quantity = total_quan;  
     }
 
     $('body').on('change', '.cs1 .number-input', function() {
@@ -200,7 +203,7 @@
       var defect_row = $(this).parents('.defect');
       var defect_id = defect_row.attr('data-defect-id');
       var el_id = defect_row.attr("data-element-id");
-      update_defect_row_total();
+      update_defect_row_total(defect_id);
       update_cs234_col_total(el_id, $(this).data('type'));
       update_cs1_col_total(el_id);
 
@@ -226,7 +229,6 @@
     });
 
     $('body').on('blur', 'input.required', function() {
-      console.log('blur');
       var val = $(this).val();
       if(!val && val !== 0) {
         $(this).addClass('error');
