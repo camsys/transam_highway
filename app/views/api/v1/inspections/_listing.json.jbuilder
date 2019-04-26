@@ -1,9 +1,9 @@
 json.id inspection.guid
-json.structure_id inspection.highway_structure.try(:guid)
-json.date inspection.event_datetime.try(:strftime, "%m/%d/%Y")
+json.high_structure_id inspection.highway_structure.try(:guid)
+json.event_datetime inspection.event_datetime.try(:strftime, "%m/%d/%Y")
 json.(inspection, :weather, :temperature, :notes, :inspection_type_id)
 json.inspection_type inspection.inspection_type&.name
 json.status inspection.state
-json.due_date inspection.calculated_inspection_due_date
+json.calculated_inspection_due_date inspection.calculated_inspection_due_date
 json.inspectors inspection.inspectors, :to_s
 json.inspector_emails inspection.inspectors, :email

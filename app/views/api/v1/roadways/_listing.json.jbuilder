@@ -1,5 +1,5 @@
 json.id roadway.guid
-json.structure_id roadway.highway_structure.try(:guid)
+json.high_structure_id roadway.highway_structure.try(:guid)
 json.(roadway, :on_base_network, :strahnet_designation_type_id, 
               :traffic_direction_type_id, :on_truck_network, 
               :lrs_route, :lrs_subroute,
