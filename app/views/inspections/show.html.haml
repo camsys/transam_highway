@@ -7,7 +7,23 @@
 .subheader-label
   %h2 #{@inspection.highway_structure.asset_type.name.singularize} #{@inspection.highway_structure.asset_tag} Inspection
 
-= render 'subheader'
+%legend
+  .row
+    .col-sm-10
+      %span #{@inspection.highway_structure.inspection_program}
+      = " : "
+      - # hard-coded for now
+      %span Routine
+      =" : "
+      %span #{format_as_date(@inspection.calculated_inspection_due_date)}
+    .col-sm-2
+      .pull-right.btn-toolbar.panel-action
+        .btn-group{:role => 'group'}
+          %button.btn.btn-primary{:type => 'button', :onclick => '$(".panel-collapse").collapse("show");'}
+            Expand
+          %button.btn.btn-primary.move-assets-button.dropdown-toggle{:type => 'button', :onclick => '$(".panel-collapse").collapse("hide");'}
+            Collapse
+
 .row
   .col-sm-12
     .panel.panel-default

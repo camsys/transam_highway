@@ -1,7 +1,7 @@
 .row
   .col-sm-3
     .form-group
-      %label.control-label Structure
+      %label.control-label= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
       .display-value
         = link_to(@inspection.highway_structure, inventory_path(@inspection.highway_structure))
     .form-group
@@ -11,9 +11,9 @@
         = @inspection.highway_structure.inspection_program
     .form-group
       %label.control-label
-        = reference_label('inspections', 'calculated_inspection_due_date', 'Inspection Due Date')
+        = reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
       .display-value
-        = @inspection.calculated_inspection_due_date
+        = format_as_date(@inspection.calculated_inspection_due_date)
     .form-group
       %label.control-label= reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
       .display-value= format_as_date(@inspection.highway_structure.inspection_date)
