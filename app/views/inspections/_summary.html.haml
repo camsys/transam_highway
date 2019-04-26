@@ -1,7 +1,9 @@
 .row
   .col-sm-3
-    = format_field("Structure", link_to(@inspection.highway_structure, inventory_path(@inspection.highway_structure)) )
-    = format_field("Name", @inspection.name)
+    .form-group
+      %label.control-label Structure
+      .display-value
+        = link_to(@inspection.highway_structure, inventory_path(@inspection.highway_structure))
     .form-group
       %label.control-label
         = reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
@@ -20,11 +22,6 @@
         = reference_label('inspections', 'inspection_frequency', 'Routine Inspection Frequency')
       .display-value
         = @inspection.highway_structure.inspection_frequency
-    .form-group
-      %label.control-label
-        = reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
-      .display-value
-        = @inspection.highway_structure.inspection_trip
     .form-group
       %label.control-label
         = reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
