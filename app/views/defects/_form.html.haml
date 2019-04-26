@@ -1,5 +1,6 @@
 :ruby
-  defect_definitions = DefectDefinition.order(:number).pluck(:id, :description).to_h
+  @defs = @element.element_definition.defect_definitions
+  defect_definitions = @defs.order(:number).pluck(:id, :description).to_h
 .row
   = simple_form_for(@defect,
   :url => @defect.new_record? ? inspection_element_defects_path(@inspection, @element) : inspection_element_defect_path(@inspection, @element, @defect),
@@ -18,7 +19,7 @@
         %p
           = @element.element_definition
     .col-sm-12
-      = f.association :defect_definition, collection: DefectDefinition.order(:number), label: 'Defect ID', required: true, :prompt => 'Select...'
+      = f.association :defect_definition, collection: @defs.order(:number), label: 'Defect ID', required: true, :prompt => 'Select...'
 
     .col-sm-12
       .form-group

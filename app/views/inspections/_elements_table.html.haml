@@ -16,6 +16,14 @@
 
   .number-input {
     width: 120px;
+    text-align: right;
+    float: right;
+  }
+
+  .number-input[type=number]::-webkit-inner-spin-button, 
+  .number-input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
   }
 
   .cs_1_quantity {
@@ -46,7 +54,7 @@
 
     #table_actions.btn-toolbar
       .btn-group
-        = link_to new_inspection_element_path(@inspection.object_key), remote: true, class: 'btn btn-default', title: 'New Element' do
+        = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
           %i.fa.fa-plus
           = " New Element"
     .table-responsive
@@ -102,11 +110,37 @@
   function enable_quantity_editing() {
     $('.number-display').hide();
     $('.number-input').show();
+
+    // local New Element and action buttons
+    $('#new_element_link, .element_defect_row_action_button').hide();
+
   }
 
   function disable_quantity_editing() {
     $('.number-input').hide();
     $('.number-display').show();
+    $('#new_element_link, .element_defect_row_action_button').show();
+  }
+
+  function is_form_valid() {
+    if($('.number-input.error').length == 0) {
+      $('.save-elements-button').removeAttr('disabled');
+      return true;
+    } else {
+      $('.save-elements-button').attr('disabled', 'disabled');
+      return false;
+    }
+  }
+
+  function validate_input(input) {
+    var val = $(input).val();
+    if((!val && val !== 0) || ($(input).val() <= 0)) {
+      if(!$(input).hasClass('error')) {
+        $(input).addClass('error');
+      }
+    } else {
+      $(input).removeClass('error');
+    }
   }
 
   function validate_quantity() {
@@ -115,7 +149,7 @@
       var element_id = $(this).attr('data-element-id');
       var element_total_quantity_td = $(this).find('> td.total_quantity');
       var element_total_quantity_input = element_total_quantity_td.find('.number-input');
-      var element_quantity = parseInt(element_total_quantity_input.val());
+      var element_quantity = parseFloat(element_total_quantity_input.val());
       var defect_quantity_total = 0;
       $('tr.defect[data-element-id=' + element_id + '] td.total_quantity').each(function() {
         defect_quantity_total += parseFloat($(this).text());
@@ -131,7 +165,11 @@
       } 
     }); 
 
-    return is_valid;
+    $('.number-input').each(function() {
+      validate_input(this);
+    });
+
+    return is_form_valid() && is_valid;
   }
 
   function submit_element_changes() {
@@ -156,9 +194,13 @@
   $(function() {
     function update_cs1_col_total(element_id) {
       var el_row = $('tr.element[data-element-id=' + element_id + ']');
-      var total_quan = parseInt(el_row.find('.total_quantity .number-input').val());
-      var cs234_total = parseInt(el_row.find('.cs2').text()) + parseInt(el_row.find('.cs3').text()) + parseInt(el_row.find('.cs4').text());
-      el_row.find('.cs1').text(parseInt(total_quan - cs234_total));
+      var total_quan = parseFloat(el_row.find('.total_quantity .number-input').val());
+      var cs234_total = parseFloat(el_row.find('.cs2').text()) + parseFloat(el_row.find('.cs3').text()) + parseFloat(el_row.find('.cs4').text());
+      var t = parseFloat(total_quan - cs234_total);
+      if(t == 'NaN') {
+        t = '-';
+      }
+      el_row.find('.cs1').text(t);
     }
 
     function update_cs234_col_total(element_id, quan_class) {
@@ -168,13 +210,22 @@
         total_quan += parseFloat($(this).val());
       });
 
-      el_row.find("." + quan_class).text(parseInt(total_quan));    
+      var t = parseFloat(total_quan);
+      if(t == 'NaN') {
+        t = '-';
+      }
+      el_row.find("." + quan_class).text(t);    
     }
 
     function update_defect_row_total(defect_id) {
       var defect_row = $('.defect[data-defect-id=' + defect_id + ']');
       var total_quan = parseFloat(defect_row.find('.cs1 .number-input').val()) + parseFloat(defect_row.find('.cs2 .number-input').val()) + parseFloat(defect_row.find('.cs3 .number-input').val()) + parseFloat(defect_row.find('.cs4 .number-input').val());
-      defect_row.find('.total_quantity').text(parseInt(total_quan));  
+      
+      var t = parseFloat(total_quan);
+      if(t == 'NaN') {
+        t = '-';
+      }
+      defect_row.find('.total_quantity').text(t);  
       if(!quantity_changes.defects[defect_id]) {
         quantity_changes.defects[defect_id] = {};
       }
@@ -189,13 +240,13 @@
       if(!quantity_changes.defects[defect_id]) {
         quantity_changes.defects[defect_id] = {};
       }
-      quantity_changes.defects[defect_id].condition_state_1_quantity = parseInt($(this).val());
+      quantity_changes.defects[defect_id].condition_state_1_quantity = parseFloat($(this).val());
     });
 
     $('body').on('change', '.total_quantity .number-input', function() {
       var el_id = $(this).parents('.element').attr('data-element-id');
       update_cs1_col_total(el_id);
-      quantity_changes.elements[el_id] = parseInt($(this).val());
+      quantity_changes.elements[el_id] = parseFloat($(this).val());
     });
 
     $('body').on('change', '.cs2 .number-input, .cs3 .number-input, .cs4 .number-input', function() {
@@ -224,16 +275,14 @@
           break;
       }
       if(cs_field_name) {
-        quantity_changes.defects[defect_id][cs_field_name] = parseInt($(this).val());  
+        quantity_changes.defects[defect_id][cs_field_name] = parseFloat($(this).val());  
       }
     });
 
     $('body').on('blur', 'input.required', function() {
-      var val = $(this).val();
-      if(!val && val !== 0) {
-        $(this).addClass('error');
-        $(this).after('<label class="error">Required</label>');
-      }
+      validate_input(this);
+
+      is_form_valid();
     });
   });
         

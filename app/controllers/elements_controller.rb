@@ -20,7 +20,7 @@ class ElementsController < TransamController
     @element.inspection = @inspection
 
     if @element.save
-      redirect_to @inspection, notice: 'Element was successfully created.'
+      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :new
     end
@@ -29,7 +29,7 @@ class ElementsController < TransamController
   # PATCH/PUT /inspections/:inspection_id/elements/1
   def update
     if @element.update(element_params)
-      redirect_to @inspection, notice: 'Element was successfully updated.'
+      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :edit
     end
@@ -38,7 +38,7 @@ class ElementsController < TransamController
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
     @element.destroy
-    redirect_to @inspection, notice: 'Element was successfully destroyed.'
+    redirect_to @inspection, anchor: 'collapse-elements'
   end
 
   def edit_comment
@@ -61,7 +61,7 @@ class ElementsController < TransamController
       end
     end
 
-    redirect_to @inspection, notice: 'Changes were successfully saved.'
+    redirect_to @inspection, anchor: 'collapse-elements'
   end
 
 
