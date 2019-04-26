@@ -7,72 +7,110 @@ class Api::V1::InspectionsController < Api::ApiController
   # PUT/PATCH /inspections/:id
   def update
     @inspection = Inspection.find_by_object_key(params[:id])
-    Inspection.transaction do 
-      if params[:inspection]
-        inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
-        @inspection.update!(inspection_hash) if @inspection
-      end
-      if params[:bridge_condition]
-        @bridge_condition = Inspection.get_typed_inspection(@inspection)
-        bc_hash = params[:bridge_condition].permit(params[:bridge_condition].keys).except(:id).to_h
-        @bridge_condition.update!(bc_hash) if @bridge_condition
-      end
-      if params[:culvert_condition]
-        @culvert_condition = Inspection.get_typed_inspection(@inspection)
-        cc_hash = params[:culvert_condition].permit(params[:culvert_condition].keys).except(:id).to_h
-        @culvert_condition.update!(cc_hash) if @culvert_condition
-      end
-      if params[:elements] && params[:elements].any?
-        params[:elements].each do |el_params|
-          change_type = el_params[:change_type]&.upcase
+    begin 
+      ActiveRecord::Base.transaction do 
 
-          clean_params = el_params.permit(el_params.keys).except(:id, :parent_id, :inspection_id, :change_type).to_h
-          el_guid = el_params[:id]
-          if el_params[:parent_id]
-            el_parent = Element.find_by_guid(el_params[:parent_id])
-          end
+        if params[:inspection]
+          inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
+          @inspection.update!(inspection_hash) if @inspection
+        end
 
-          next if ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
-          if change_type == 'ADD'
-            clean_params["guid"] = el_guid
-            clean_params.parent = el_parent if el_parent
-            Element.create!(clean_params)
-          elsif change_type == 'REMOVE'
-            el = Element.find_by_guid(el_guid)
-            el.destroy! if el
-          else
-            el = Element.find_by_guid(el_guid)
-            clean_params.parent = el_parent if el_parent
-            el.update!(clean_params) if el
+        if params[:bridge_condition]
+          @bridge_condition = Inspection.get_typed_inspection(@inspection)
+          bc_hash = params[:bridge_condition].permit(params[:bridge_condition].keys).except(:id).to_h
+          @bridge_condition.update!(bc_hash) if @bridge_condition
+        end
+
+        if params[:culvert_condition]
+          @culvert_condition = Inspection.get_typed_inspection(@inspection)
+          cc_hash = params[:culvert_condition].permit(params[:culvert_condition].keys).except(:id).to_h
+          @culvert_condition.update!(cc_hash) if @culvert_condition
+        end
+        
+        if params[:elements] && params[:elements].any?
+          params[:elements].each do |el_params|
+            change_type = el_params[:change_type]&.upcase
+
+            clean_params = el_params.permit(el_params.keys).except(:id, :parent_id, :inspection_id, :change_type).to_h
+            el_guid = el_params[:id]
+            if el_params[:parent_id]
+              el_parent = Element.find_by_guid(el_params[:parent_id])
+            end
+
+            next unless ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
+            if change_type == 'ADD'
+              if el_guid.blank?
+                @el_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = el_guid
+              clean_params.parent = el_parent if el_parent
+              Element.create!(clean_params)
+            elsif change_type == 'REMOVE'
+              el = Element.find_by_guid(el_guid)
+              el.destroy! if el
+            else
+              el = Element.find_by_guid(el_guid)
+              clean_params.parent = el_parent if el_parent
+              el.update!(clean_params) if el
+            end
           end
         end
-      end
 
-      if params[:defects] && params[:defects].any?
-        params[:defects].each do |df_params|
-          change_type = df_params[:change_type]&.upcase
+        if params[:defects] && params[:defects].any?
+          params[:defects].each do |df_params|
+            change_type = df_params[:change_type]&.upcase
 
-          clean_params = df_params.permit(df_params.keys).except(:id, :element_id, :inspection_id, :change_type).to_h
-          df_guid = df_params[:id]
-          if df_params[:element_id]
-            el_parent = Element.find_by_guid(df_params[:element_id])
-          end
-          
-          next if ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
-          if change_type == 'ADD'
-            clean_params["guid"] = df_guid
-            clean_params.element = el_parent if el_parent
-            Defect.create!(clean_params)
-          elsif change_type == 'REMOVE'
-            el = Defect.find_by_guid(df_guid)
-            el.destroy! if el
-          else
-            el = Defect.find_by_guid(df_guid)
-            clean_params.element = el_parent if el_parent
-            el.update!(clean_params) if el
+            clean_params = df_params.permit(df_params.keys).except(:id, :element_id, :inspection_id, :change_type).to_h
+            df_guid = df_params[:id]
+            if df_params[:element_id]
+              el_parent = Element.find_by_guid(df_params[:element_id])
+            end
+            
+            next if ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
+            if change_type == 'ADD'
+              if df_guid.blank?
+                @df_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = df_guid
+              clean_params.element = el_parent if el_parent
+              Defect.create!(clean_params)
+            elsif change_type == 'REMOVE'
+              el = Defect.find_by_guid(df_guid)
+              el.destroy! if el
+            else
+              el = Defect.find_by_guid(df_guid)
+              clean_params.element = el_parent if el_parent
+              el.update!(clean_params) if el
+            end
           end
         end
+        @is_valid = true
       end
+    rescue ActiveRecord::RecordInvalid => invalid
+      raise ActiveRecord::Rollback
+
+      # generic errors
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
+      render status: 400, json: json_response(:fail, message: @message)
+    end
+
+    # element guid is required to add a new element
+    if @el_guid_required_to_add
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data" 
+      render status: 400, json: json_response(:fail, message: @message)
+    end
+
+    # defect guid is required to add a new defect
+    if @df_guid_required_to_add
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
+      render status: 400, json: json_response(:fail, message: @message)
     end
   end
 
