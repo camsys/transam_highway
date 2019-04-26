@@ -22,6 +22,8 @@
         = reference_label('inspections', 'inspection_frequency', 'Routine Inspection Frequency')
       .display-value
         = @inspection.highway_structure.inspection_frequency
+
+  .col-sm-3
     .form-group
       %label.control-label
         = reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
@@ -30,7 +32,6 @@
     .form-group
       %label.control-label Inspectors
       .display-value= format_as_list(@inspection.inspectors)
-  .col-sm-3
     .form-group
       %label.control-label= reference_label('inspections', 'organization_type_id', 'Inspection Group')
       .display-value= @inspection.organization_type
@@ -43,12 +44,6 @@
     .form-group
       %label.control-label= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
       .display-value= "Routine" # hard-coded for now
-    .form-group
-      %label.control-label QC Reviewed
-      .display-value PENDING
-    .form-group
-      %label.control-label QA Reviewed
-      .display-value PENDING
   .col-sm-3
     .form-group
       %label.control-label= reference_label('inspections', 'state', 'Inspection Status')
