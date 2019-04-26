@@ -2,16 +2,15 @@
   .col-sm-12#elements_panel
     .panel.panel-default
       .panel-heading
-        .row
-          .col-sm-10
-            %h3.panel-title
-              %a{data: {toggle: 'collapse'}, href: '#collapse-elements'}
-                Elements
-                %span.badge= @inspection.elements.count
+        %h3.panel-title
+          %a{data: {toggle: 'collapse'}, href: '#collapse-elements'}
+            Elements
+            %span.badge= @inspection.elements.count
           - if can?(:update, @inspection)
-            .pull-right
-              %button.btn.btn-primary.edit-elements-button
-                Edit
+            .btn-group.pull-right.panel-action
+              %div
+                %button.btn.btn-primary.edit-elements-button
+                  Edit
               .save-elements-buttons{style: 'display: none;'}
                 %button.btn.btn-primary.save-elements-button
                   Save
