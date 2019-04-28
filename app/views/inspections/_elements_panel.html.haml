@@ -33,8 +33,7 @@
       }
     });
     $('.cancel-elements-button').on('click', function() {
-      $('.save-elements-buttons').hide();
-      $('.edit-elements-button').show();
-      disable_quantity_editing();
+      // reload
+      window.location.href = "#{inspection_path(@inspection, anchor: 'collapse-elements')}";
     });
   });

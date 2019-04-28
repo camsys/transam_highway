@@ -19,7 +19,7 @@ class ChildElementsController < TransamController
     @child_element.inspection = @inspection
 
     if @child_element.save
-      redirect_to @inspection, anchor: 'collapse-elements'
+      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :new
     end
@@ -28,7 +28,7 @@ class ChildElementsController < TransamController
   # PATCH/PUT /inspections/:inspection_id/elements/1
   def update
     if @child_element.update(element_params)
-      redirect_to @inspection, anchor: 'collapse-elements'
+      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :edit
     end
@@ -37,7 +37,7 @@ class ChildElementsController < TransamController
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
     @child_element.destroy
-    redirect_to @inspection, anchor: 'collapse-elements'
+    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
   private

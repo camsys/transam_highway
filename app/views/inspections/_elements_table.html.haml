@@ -14,6 +14,10 @@
     color: gray;
   }
 
+  #elements_table_container, #elements_table_container .fixed-table-body {
+    overflow: visible !important;
+  }
+
   .number-input {
     width: 120px;
     text-align: right;
@@ -57,7 +61,7 @@
         = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
           %i.fa.fa-plus
           = " New Element"
-    .table-responsive
+    .table-responsive#elements_table_container
       -# Remove .table-hover with data-classes
       %table{:id => table_dom_id,
               :data => {:toggle => 'table',
@@ -134,7 +138,7 @@
 
   function validate_input(input) {
     var val = $(input).val();
-    if((!val && val !== 0) || ($(input).val() <= 0)) {
+    if((!val && val !== 0) || $(input).val() < 0 || ($(input).hasClass('positive-num') && $(input).val() == 0)) {
       if(!$(input).hasClass('error')) {
         $(input).addClass('error');
       }
@@ -192,12 +196,16 @@
   }
 
   $(function() {
+    function isNumNaN(n) {
+      return isNaN(n) || n == 'NaN';
+    }
+
     function update_cs1_col_total(element_id) {
       var el_row = $('tr.element[data-element-id=' + element_id + ']');
       var total_quan = parseFloat(el_row.find('.total_quantity .number-input').val());
       var cs234_total = parseFloat(el_row.find('.cs2').text()) + parseFloat(el_row.find('.cs3').text()) + parseFloat(el_row.find('.cs4').text());
       var t = parseFloat(total_quan - cs234_total);
-      if(t == 'NaN') {
+      if(isNumNaN(t)) {
         t = '-';
       }
       el_row.find('.cs1').text(t);
@@ -211,7 +219,7 @@
       });
 
       var t = parseFloat(total_quan);
-      if(t == 'NaN') {
+      if(isNumNaN(t)) {
         t = '-';
       }
       el_row.find("." + quan_class).text(t);    
@@ -222,7 +230,7 @@
       var total_quan = parseFloat(defect_row.find('.cs1 .number-input').val()) + parseFloat(defect_row.find('.cs2 .number-input').val()) + parseFloat(defect_row.find('.cs3 .number-input').val()) + parseFloat(defect_row.find('.cs4 .number-input').val());
       
       var t = parseFloat(total_quan);
-      if(t == 'NaN') {
+      if(isNumNaN(t)) {
         t = '-';
       }
       defect_row.find('.total_quantity').text(t);  

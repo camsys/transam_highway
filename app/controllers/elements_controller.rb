@@ -38,7 +38,7 @@ class ElementsController < TransamController
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
     @element.destroy
-    redirect_to @inspection, anchor: 'collapse-elements'
+    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
   def edit_comment
@@ -61,7 +61,7 @@ class ElementsController < TransamController
       end
     end
 
-    redirect_to @inspection, anchor: 'collapse-elements'
+    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
 
