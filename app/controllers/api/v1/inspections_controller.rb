@@ -161,7 +161,7 @@ class Api::V1::InspectionsController < Api::ApiController
     @inspection_ids = []
     # return open inspection and last two finished ones
     @highway_structures.each do |s|
-      @inspection_ids << s.inspections.ordered.limit(3).pluck("inspections.id")
+      @inspection_ids += s.inspections.ordered.limit(3).pluck("inspections.id")
     end
 
     @inspections = Inspection.where(id: @inspection_ids)
