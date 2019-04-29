@@ -60,16 +60,17 @@ class Inspection < InspectionRecord
 
         {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field', human_name: 'To In Field'},
 
-        {event_name: 'reassign', from_state: ['in_field', 'draft_report', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'ready', can: {in_field: :can_start, draft_report: :can_start, draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}, human_name: 'To Ready'},
+        {event_name: 'start', from_state: 'in_field', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
 
-        {event_name: 'revert', from_state: ['in_field', 'draft_complete', 'qc_reviewed', 'qa_reviewed', 'submitted'], to_state: 'draft_report', can: {in_field: :can_start,  draft_complete: :can_qc, qc_reviewed: :can_qa, qa_reviewed: :can_submit, submitted: :can_finalize}, human_name: 'To Draft Report'},
+        {event_name: 'reassign', from_state: ['in_field', 'in_progress', 'draft_report', 'qc_review', 'qa_review', 'submitted'], to_state: 'ready', can: {in_field: :can_start, in_process: :can_start, draft_report: :can_start, qc_review: :can_qc, qa_review: :can_qa, submitted: :can_finalize}, human_name: 'To Ready'},
 
-        {event_name: 'finish', from_state: ['in_field', 'draft_report'], to_state: 'draft_complete', can: :can_start, human_name: 'To Draft Complete'},
+        {event_name: 'edit', from_state: ['in_field', 'in_progress', 'qc_review', 'qa_review', 'submitted'], to_state: 'draft_report', can: {in_field: :can_start,  in_progress: :can_start, qc_review: :can_qc, qa_review: :can_qa, submitted: :can_finalize}, human_name: 'To Draft Report'},
 
-        {event_name: 'qc_review', from_state: 'draft_complete', to_state: 'qc_reviewed', can: :can_qc, human_name: 'To QC Reviewed'},
+        {event_name: 'finish', from_state: ['in_field', 'in_progress', 'draft_report'], to_state: 'qc_review', can: :can_start, human_name: 'To QC Review'},
 
-        {event_name: 'qa_review', from_state: 'qc_reviewed', to_state: 'qa_reviewed', can: :can_qa, human_name: 'To QA Reviewed'},
-        {event_name: 'qc_submit', from_state: ['qc_reviewed', 'qa_reviewed'], to_state: 'submitted', guard: :allowed_to_submit, can: :can_submit, human_name: 'To Submitted'},
+        {event_name: 'qc', from_state: 'qc_review', to_state: 'qa_review', can: :can_qc, human_name: 'To QA Review'},
+
+        {event_name: 'qa', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_qa}, human_name: 'To Submitted'},
 
         {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
 
@@ -132,15 +133,6 @@ class Inspection < InspectionRecord
   
   def can_qa(user)
     user.try(:is_qa_reviewer)
-  end
-
-  def allowed_to_submit
-    # can skip QA
-    true
-  end
-  
-  def can_submit(user)
-    user.try(:is_submitter)
   end
   
   def can_finalize(user)
