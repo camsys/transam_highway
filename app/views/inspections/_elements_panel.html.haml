@@ -35,5 +35,6 @@
     $('.cancel-elements-button').on('click', function() {
       // reload
       window.location.href = "#{inspection_path(@inspection.object_key, anchor: 'collapse-elements')}";
+      window.location.reload();
     });
   });
