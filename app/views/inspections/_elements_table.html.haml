@@ -57,10 +57,11 @@
       = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
 
     #table_actions.btn-toolbar
-      .btn-group
-        = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
-          %i.fa.fa-plus
-          = " New Element"
+      - if can?(:update, @inspection)
+        .btn-group
+          = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
+            %i.fa.fa-plus
+            = " New Element"
     .table-responsive#elements_table_container
       -# Remove .table-hover with data-classes
       %table{:id => table_dom_id,
