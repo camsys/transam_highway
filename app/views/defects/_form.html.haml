@@ -11,6 +11,12 @@
     :radio_buttons => :vertical_radio_and_checkboxes,
     :file => :vertical_file_input,
     :boolean => :vertical_boolean}) do |f|
+    = f.hidden_field :condition_state_1_quantity, value: 0
+    = f.hidden_field :condition_state_2_quantity, value: 0
+    = f.hidden_field :condition_state_3_quantity, value: 0
+    = f.hidden_field :condition_state_4_quantity, value: 0
+    = f.hidden_field :total_quantity, value: 0
+
     .col-sm-12
       .form-group
         %label.control-label
