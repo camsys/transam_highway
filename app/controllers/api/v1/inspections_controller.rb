@@ -12,6 +12,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
         if params[:inspection]
           inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
+          inspection_hash[:state] = 'in_progress' if inspection_hash[:state] == 'in_field' # special case
           @inspection.update!(inspection_hash) if @inspection
         end
 
@@ -158,6 +159,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_inspections
+    @change_inspection_state = true # a flag to be used to change state in API response
     @inspections = Inspection.where(transam_asset_id: @transam_asset_ids)
     unless params[:start_date].blank?
       @inspections = @inspections.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
