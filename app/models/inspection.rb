@@ -60,15 +60,15 @@ class Inspection < InspectionRecord
 
         {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field', human_name: 'To In Field'},
 
-        {event_name: 'start', from_state: 'in_field', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
+        {event_name: 'start', from_state: ['in_field', 'draft_report'], to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
 
-        {event_name: 'reassign', from_state: ['in_field', 'in_progress', 'draft_report', 'qc_review', 'qa_review', 'submitted'], to_state: 'ready', can: {in_field: :can_start, in_process: :can_start, draft_report: :can_start, qc_review: :can_qc, qa_review: :can_qa, submitted: :can_finalize}, human_name: 'To Ready'},
+        {event_name: 'reassign', from_state: 'in_field', to_state: 'ready', can: :can_start, human_name: 'To Ready'},
 
-        {event_name: 'edit', from_state: ['in_field', 'in_progress', 'qc_review', 'qa_review', 'submitted'], to_state: 'draft_report', can: {in_field: :can_start,  in_progress: :can_start, qc_review: :can_qc, qa_review: :can_qa, submitted: :can_finalize}, human_name: 'To Draft Report'},
+        {event_name: 'edit', from_state: ['in_progress', 'qc_review'], to_state: 'draft_report', can: {in_field: :can_start, qc_review: :can_qc}, human_name: 'To Draft Report'},
 
-        {event_name: 'finish', from_state: ['in_field', 'in_progress', 'draft_report'], to_state: 'qc_review', can: :can_start, human_name: 'To QC Review'},
+        {event_name: 'finish', from_state: ['draft_report', 'qa_review'], to_state: 'qc_review', can: {draft_report: :can_start, qa_review: :can_qc}, human_name: 'To QC Review'},
 
-        {event_name: 'qc', from_state: 'qc_review', to_state: 'qa_review', can: :can_qc, human_name: 'To QA Review'},
+        {event_name: 'qc', from_state: ['qc_review', 'submitted'], to_state: 'qa_review', can: {qc_review: :can_qc, submitted: :can_qa}, human_name: 'To QA Review'},
 
         {event_name: 'qa', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_qa}, human_name: 'To Submitted'},
 

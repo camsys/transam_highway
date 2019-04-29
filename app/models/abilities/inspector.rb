@@ -9,7 +9,7 @@ module Abilities
       end
 
       can :update, Inspection do |inspection|
-        (inspection.inspector_ids.include? user.id) && (['in_progress', 'draft_report', 'qc_review'].include? inspection.state)
+        (inspection.inspector_ids.include? user.id) && (['draft_report', 'qc_review'].include? inspection.state)
       end
 
     end
