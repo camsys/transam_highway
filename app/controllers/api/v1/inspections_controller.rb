@@ -133,19 +133,16 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_highway_structures
-    @highway_structures = HighwayStructure.all
+    inspection_states = [:assigned, :in_field, :in_progress]
+    org_ids = @user&.viewable_organization_ids
+
+    @highway_structures = HighwayStructure.joins(:inspections).where(inspections: {state: inspection_states, assigned_organization_id: org_ids}).uniq
     unless params[:limit].blank?
       @highway_structures = @highway_structures.limit(params[:limit])
     end
 
-    # HACK: until we have filtering by user org, we have a temporary filter here to only
-    # include bridges that have inspections, to filter out all the bridge stubs we've
-    # added temporarily for sprint 7
-    # @highway_structure_ids = @highway_structures.pluck(:id)
-    struct_ids = HighwayStructure.all.joins(:inspections).uniq.pluck(:id)
-    @highway_structure_ids = params[:limit].blank? ? struct_ids : struct_ids[0, params[:limit].to_i]
-    # @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
-    @transam_asset_ids = HighwayStructure.where(id: @highway_structure_ids).pluck("transam_assetible_id")
+    @highway_structure_ids = @highway_structures.pluck(:id)
+    @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
   end
 
   def query_bridges
@@ -160,15 +157,14 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_inspections
     @change_inspection_state = true # a flag to be used to change state in API response
-    @inspections = Inspection.where(transam_asset_id: @transam_asset_ids)
-    unless params[:start_date].blank?
-      @inspections = @inspections.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
-    end
-    unless params[:end_date].blank?
-      @inspections = @inspections.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))
+
+    @inspection_ids = []
+    # return open inspection and last two finished ones
+    @highway_structures.each do |s|
+      @inspection_ids << s.inspections.ordered.limit(3).pluck("inspections.id")
     end
 
-    @inspection_ids = @inspections.pluck(:id)
+    @inspections = Inspection.where(id: @inspection_ids)
   end
 
   def query_bridge_conditions
