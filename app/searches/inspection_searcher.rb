@@ -53,7 +53,7 @@ class InspectionSearcher < BaseSearcher
   # Add any new conditions here. The property name must end with _conditions
   def organization_conditions
     if organization_ids.blank? 
-      organization_ids = user&.organization_ids
+      organization_ids = user&.viewable_organization_ids
     end
 
     inspection_klass.where("transam_assets.organization_id": organization_ids) if organization_ids.any?

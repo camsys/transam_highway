@@ -137,7 +137,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_highway_structures
     inspection_status = [:assigned, :in_field, :in_progress]
-    org_ids = @user&.viewable_organization_ids
+    org_ids = @user&.organization_ids
 
     @highway_structures = HighwayStructure.joins(:inspections).where(inspections: {status: inspection_status, assigned_organization_id: org_ids}).uniq
     unless params[:limit].blank?
