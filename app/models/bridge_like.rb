@@ -234,7 +234,7 @@ class BridgeLike < TransamAssetRecord
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
       inspection_program: prog_hash[bridge_hash['USERKEY1']],
-      inspection_trip: bridge_hash['USERKEY4']
+      inspection_trip: (bridge_hash['USERKEY4'] == '-1') ? '' : bridge_hash['USERKEY4'].upcase
     }
 
     # Validate Owner and maintenance responsibility. Could DRY the code some
