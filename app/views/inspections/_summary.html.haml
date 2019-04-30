@@ -47,7 +47,7 @@
   .col-sm-3
     .form-group
       %label.control-label= reference_label('inspections', 'state', 'Inspection Status')
-      .display-value= @inspection.machine.human_state_name
+      .display-value= @inspection.machine.human_state_name[0] == @inspection.machine.human_state_name[0].downcase ? @inspection.machine.human_state_name.titleize : @inspection.machine.human_state_name
     .form-group
       %label.control-label Temperature
       .display-value= @inspection.temperature
