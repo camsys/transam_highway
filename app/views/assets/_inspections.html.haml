@@ -27,15 +27,24 @@
           :single_select => 'false'}}
     %thead
       %tr
-        %th.center{:data => {:sortable => 'true'}} Group
-        %th.center{:data => {:sortable => 'true'}} Team
-        %th.center{:data => {:sortable => 'true'}} Inspection Type
-        %th.center{:data => {:sortable => 'true'}} Scheduled Date
-        %th.center{:data => {:sortable => 'true'}} Overall Condition
-        %th.center{:data => {:sortable => 'true'}} Inspectors
-        %th.center{:data => {:sortable => 'true'}} QA Level 1
-        %th.center{:data => {:sortable => 'true'}} QA Level 2
-        %th.center{:data => {:sortable => 'true'}} Status
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'organization_type_id', 'Inspection Group')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'inspection_type_id', 'Inspection Type')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'inspector_id', 'Inspectors')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'qa_inspector_id', 'QA Level 1')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'qc_inspector_id', 'QA Level 2')
+        %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'state', 'Inspection Status')
         %th.center{:data => {:sortable => 'false'}} Actions
 
     %tbody

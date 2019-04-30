@@ -85,8 +85,9 @@ class Inspection < InspectionRecord
     #TODO: any options to process
 
     #TODO:
-    # Inspection Zone (87), Inspector (83), Inspection Type, Inspection Category
+    # Inspection Zone (87), Inspection Category
     structure = TransamAsset.get_typed_asset self.highway_structure
+    insp = Inspection.get_typed_inspection(self)
     {
       to_global_id: self.to_global_id.to_s,
       structure_object_key: structure.object_key,
@@ -94,20 +95,20 @@ class Inspection < InspectionRecord
       transam_assets_asset_tag: structure.asset_tag,
       location_description: structure.location_description,
       owner: structure.owner&.to_s,
-      calculated_condition: structure.calculated_condition&.titleize,
       inspection_program: structure.inspection_program&.to_s,
       inspection_trip: structure.inspection_trip,
 
       object_key: object_key,
       event_datetime: self.event_datetime,
+      calculated_condition: insp.calculated_condition&.titleize,
       calculated_inspection_due_date: self.calculated_inspection_due_date,
       state: self.state&.titleize,
       organization_type: self.organization_type&.to_s,
       assigned_organization: self.assigned_organization&.to_s,
+      inspection_type: self.inspection_type&.to_s,
       routine_report_submitted_at: self.routine_report_submitted_at,
       inspectors: self.inspectors.map(&:name).join(', '),
-      inspection_category: 'Scheduled', # Hard-code for now
-      inspection_category_type: 'Routine' # Hard-code for now
+      inspection_category: 'Scheduled' # Hard-code for now
     }
   end
   

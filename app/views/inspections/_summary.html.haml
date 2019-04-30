@@ -42,8 +42,8 @@
       %label.control-label= reference_label('highway_structures', 'inspection_category_id', 'Inspection Category')
       .display-value= "Scheduled" # hard-coded for now
     .form-group
-      %label.control-label= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
-      .display-value= "Routine" # hard-coded for now
+      %label.control-label= reference_label('inspections', 'inspection_type_id', 'Inspection Type')
+      .display-value= @inspection.inspection_type
   .col-sm-3
     .form-group
       %label.control-label= reference_label('inspections', 'state', 'Inspection Status')
