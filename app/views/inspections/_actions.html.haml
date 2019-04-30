@@ -1,4 +1,4 @@
-- allowable_events = @inspection.allowable_event_objects.select{|e| (can? e.name.to_sym, @inspection) && !(['make_ready', 'assign'].include? e.name)}
+- allowable_events = @inspection.allowable_event_objects.select{|e| (can? e.name.to_sym, @inspection.inspection) && !(['make_ready', 'assign'].include? e.name)}
 
 - if allowable_events.count > 0
   .btn-group.pull-right.panel-action
