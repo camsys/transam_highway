@@ -55,8 +55,14 @@ class InspectionSearcher < BaseSearcher
     if organization_ids.blank? 
       organization_ids = user&.viewable_organization_ids
     end
+    if organization_ids.any?
+      if user.organization.organization_type.class_name == 'HighwayAuthority'
+        inspection_klass.where("transam_assets.organization_id": organization_ids)
+      elsif user.organization.organization_type.class_name == 'HighwayConsultant'
+        inspection_klass.where("transam_assets.organization_id": organization_ids).where("inspections.assigned_organization_id": user&.organization_ids)
+      end
+    end
 
-    inspection_klass.where("transam_assets.organization_id": organization_ids) if organization_ids.any?
   end
 
   #------------------------------------------------------------------------------
