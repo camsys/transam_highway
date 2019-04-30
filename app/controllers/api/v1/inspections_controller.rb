@@ -4,7 +4,7 @@ class Api::V1::InspectionsController < Api::ApiController
     get_data
 
     # change inspection status from assigned to in_field
-    @inspections.where(status: 'assigned').update_all(status: 'in_field')
+    @inspections.where(state: 'assigned').update_all(state: 'in_field')
   end
 
   # PUT/PATCH /inspections/:id
