@@ -8,7 +8,7 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :update, Inspection do |inspection|
+      can :update, [Inspection, BridgeCondition, CulvertCondition] do |inspection|
         (inspection.inspector_ids.include? user.id) && (['draft_report', 'qc_review'].include? inspection.state)
       end
 

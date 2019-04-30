@@ -6,7 +6,7 @@
           %a{data: {toggle: 'collapse'}, href: '#collapse-elements'}
             Elements
             %span.badge= @inspection.elements.count
-          - if can?(:update, @inspection)
+          - if can?(:update, @inspection.inspection)
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-elements-button
