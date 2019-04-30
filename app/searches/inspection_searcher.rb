@@ -43,8 +43,6 @@ class InspectionSearcher < BaseSearcher
         ON highway_structures.structure_status_type_id = structure_status_types.id
       LEFT OUTER JOIN bridge_likes 
         ON highway_structures.highway_structurible_id = bridge_likes.id AND highway_structures.highway_structurible_type = 'BridgeLike'
-      LEFT OUTER JOIN roadways 
-        ON highway_structures.id = roadways.transam_asset_id
     SQL
 
     @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}})
@@ -109,7 +107,10 @@ class InspectionSearcher < BaseSearcher
   end
 
   def on_national_highway_system_conditions
-    inspection_klass.where("roadways.on_national_highway_system": search_proxy&.on_national_highway_system == 'yes') unless search_proxy&.on_national_highway_system.blank?
+    unless search_proxy&.on_national_highway_system.blank?
+      asset_ids = Roadway.where(on_national_highway_system: search_proxy&.on_national_highway_system == 'yes').pluck(:transam_asset_id).uniq
+      inspection_klass.where("transam_asset_id": asset_ids) 
+    end
   end
 
   def county_conditions
