@@ -16,7 +16,8 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
 
   describe 'GET /api/v1/inspections' do
 
-    before { 
+    before {
+      test_user.organizations = [test_user.organization]
       test_user.viewable_organizations = [test_user.organization]
       test_user.save
       get "/api/v1/inspections.json", headers: valid_headers 
