@@ -2,6 +2,9 @@ class Api::V1::InspectionsController < Api::ApiController
   # GET /inspections
   def index
     get_data
+
+    # change inspection status from assigned to in_field
+    @inspections.where(status: 'assigned').update_all(status: 'in_field')
   end
 
   # PUT/PATCH /inspections/:id
@@ -156,8 +159,6 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_inspections
-    @change_inspection_status = true # a flag to be used to change status in API response
-
     @inspection_ids = []
     # return open inspection and last two finished ones
     @highway_structures.each do |s|
