@@ -62,15 +62,16 @@ class Inspection < InspectionRecord
 
         {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field', human_name: 'To In Field'},
 
-        {event_name: 'start', from_state: ['in_field', 'draft_report'], to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
+        {event_name: 'start', from_state: 'in_field', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
+        {event_name: 'revert', from_state: 'draft_report', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
 
         {event_name: 'reassign', from_state: 'in_field', to_state: 'ready', can: :can_start, human_name: 'To Ready'},
 
         {event_name: 'edit', from_state: ['in_progress', 'qc_review'], to_state: 'draft_report', can: {in_field: :can_start, qc_review: :can_qc}, human_name: 'To Draft Report'},
 
-        {event_name: 'finish', from_state: ['draft_report', 'qa_review'], to_state: 'qc_review', can: {draft_report: :can_start, qa_review: :can_qc}, human_name: 'To QC Review'},
+        {event_name: 'finish', from_state: ['draft_report', 'qa_review'], to_state: 'qc_review', can: {draft_report: :can_start, qa_review: :can_qc}, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
-        {event_name: 'qc', from_state: ['qc_review', 'submitted'], to_state: 'qa_review', can: {qc_review: :can_qc, submitted: :can_qa}, human_name: 'To QA Review'},
+        {event_name: 'qc', from_state: ['qc_review', 'submitted'], to_state: 'qa_review', can: {qc_review: :can_qc, submitted: :can_qa}, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
 
         {event_name: 'qa', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_qa}, human_name: 'To Submitted'},
 
@@ -78,6 +79,7 @@ class Inspection < InspectionRecord
 
     ]
   end
+
 
   def allowed_to_make_ready
     assigned_organization.present?
@@ -115,7 +117,7 @@ class Inspection < InspectionRecord
   end
   
   def can_make_ready(user)
-    user.try(:is_inspection_admin)
+    true # TEMP
   end
 
   def allowed_to_assign
@@ -123,7 +125,7 @@ class Inspection < InspectionRecord
   end
   
   def can_assign(user)
-    user.try(:is_inspection_editor)
+    true # TEMP
   end
 
   def can_start(user)
@@ -131,16 +133,16 @@ class Inspection < InspectionRecord
   end
 
   def can_qc(user)
-    user.try(:is_qc_reviewer)
+    true # TEMP
   end
   
   def can_qa(user)
-    user.try(:is_qa_reviewer)
+    true # TEMP
   end
   
   def can_finalize(user)
-    user.try(:is_finalizer)
-  end
+    true
+  end # TEMP
 
   # called as callback after `finalize` event
   # to open a new inspection
