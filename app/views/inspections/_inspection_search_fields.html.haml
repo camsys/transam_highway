@@ -54,7 +54,7 @@
   /= f.input :qa_inspector_id, collection: qa_inspectors, label: reference_label('inspections', 'qa_inspector_id', 'QA Level 1')
   /= f.input :qc_inspector_id, collection: qc_inspectors, label: reference_label('inspections', 'qc_inspector_id', 'QA Level 2')
 .col-sm-2
-  = f.input :inspection_trip, collection: HighwayStructure.where.not(inspection_trip: nil).pluck(:inspection_trip).uniq.map{|r| [r, r]}, label: reference_label('highway_structures', 'inspection_trip', 'Inspection Trip'), include_blank: 'Select All'
+  = f.input :inspection_trip, collection: HighwayStructure.where.not(inspection_trip: nil).distinct.pluck(:inspection_trip).map{|r| [r, r]}, label: reference_label('highway_structures', 'inspection_trip', 'Inspection Trip'), include_blank: 'Select All'
 
 :javascript
   $(function() {
