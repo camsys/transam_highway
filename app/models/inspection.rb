@@ -67,7 +67,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'reassign', from_state: 'in_field', to_state: 'ready', can: :can_start, human_name: 'To Ready'},
 
-        {event_name: 'edit', from_state: ['in_progress', 'qc_review'], to_state: 'draft_report', can: {in_field: :can_start, qc_review: :can_qc}, human_name: 'To Draft Report'},
+        {event_name: 'edit', from_state: ['in_progress', 'qc_review'], to_state: 'draft_report', can: :can_start, human_name: 'To Draft Report'},
 
         {event_name: 'finish', from_state: ['draft_report', 'qa_review'], to_state: 'qc_review', can: {draft_report: :can_start, qa_review: :can_qc}, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
