@@ -28,7 +28,6 @@ class Inspection < InspectionRecord
 
   FORM_PARAMS = [
       :name,
-      :status,
       :event_datetime,
       :temperature,
       :weather,

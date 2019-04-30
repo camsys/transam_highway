@@ -15,7 +15,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
         if params[:inspection]
           inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
-          inspection_hash[:status] = 'in_progress' if inspection_hash[:status] == 'in_field' # special case
+          inspection_hash[:status] = 'in_progress' if @inspection.status == 'in_field' # special case
           @inspection.update!(inspection_hash) if @inspection
         end
 
