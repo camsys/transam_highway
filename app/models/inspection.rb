@@ -6,6 +6,8 @@ class Inspection < InspectionRecord
 
   include TransamWorkflow
 
+  alias_attribute :status, :state
+
   belongs_to :highway_structure, foreign_key: :transam_asset_id
 
   belongs_to :organization_type

@@ -12,7 +12,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
         if params[:inspection]
           inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
-          inspection_hash[:state] = 'in_progress' if inspection_hash[:state] == 'in_field' # special case
+          inspection_hash[:status] = 'in_progress' if inspection_hash[:status] == 'in_field' # special case
           @inspection.update!(inspection_hash) if @inspection
         end
 
@@ -133,10 +133,10 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_highway_structures
-    inspection_states = [:assigned, :in_field, :in_progress]
+    inspection_status = [:assigned, :in_field, :in_progress]
     org_ids = @user&.viewable_organization_ids
 
-    @highway_structures = HighwayStructure.joins(:inspections).where(inspections: {state: inspection_states, assigned_organization_id: org_ids}).uniq
+    @highway_structures = HighwayStructure.joins(:inspections).where(inspections: {status: inspection_status, assigned_organization_id: org_ids}).uniq
     unless params[:limit].blank?
       @highway_structures = @highway_structures.limit(params[:limit])
     end
@@ -156,7 +156,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_inspections
-    @change_inspection_state = true # a flag to be used to change state in API response
+    @change_inspection_status = true # a flag to be used to change status in API response
 
     @inspection_ids = []
     # return open inspection and last two finished ones
