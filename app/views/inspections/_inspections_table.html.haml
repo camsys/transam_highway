@@ -41,8 +41,8 @@
         %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
         %th.center.hidden{:data => {:field => 'object_key', :sortable => 'true'}} Inspection Key
         %th.center{:data => {:field => 'inspection_category', :sortable => 'false'}}= reference_label('highway_structures', 'inspection_category_id', 'Inspection Category')
-        %th.center{:data => {:field => 'inspection_type', :sortable => 'false'}}= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
-        %th.center{:data => {:field => 'calculated_inspection_due_date', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
+        %th.center{:data => {:field => 'inspection_type', :sortable => 'true'}}= reference_label('inspections', 'inspection_category_type_id', 'Inspection Type')
+        %th.center{:data => {:field => 'calculated_inspection_due_date', :sortable => 'true', :formatter => "month_year_formatter"}}= reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
         %th.center{:data => {:field => 'event_datetime', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
         %th.center{:data => {:field => 'state', :sortable => 'true'}}= reference_label('inspections', 'state', 'Inspection Status')
         %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
@@ -92,6 +92,14 @@
       return params;
     }
   });
+
+  function month_year_formatter(value) {
+    if (value) {
+      return moment(value).format('MMMM YYYY');
+    } else {
+      return value;
+    }
+  }
 
   // more table formatters
   function structure_link_formatter(value, row) {

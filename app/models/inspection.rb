@@ -104,7 +104,7 @@ class Inspection < InspectionRecord
 
       object_key: object_key,
       event_datetime: self.event_datetime,
-      calculated_condition: insp.calculated_condition&.titleize,
+      calculated_condition: insp.try(:calculated_condition)&.titleize,
       calculated_inspection_due_date: self.calculated_inspection_due_date,
       state: self.state&.titleize,
       organization_type: self.organization_type&.to_s,
