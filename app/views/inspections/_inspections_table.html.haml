@@ -106,12 +106,12 @@
     if (value == null) {
       return "-";
     } else {
-      return '<a href="/inventory/' + row['structure_object_key'] + '">' + value + '</a>';
+      return '<a target="_blank" href="/inventory/' + row['structure_object_key'] + '">' + value + '</a>';
     }
   }
 
   function inspection_link_formatter(value, row) {
-    return '<a target="_blank" href="/inspections/' + row['object_key'] + '">View</a>';
+    return '<a href="/inspections/' + row['object_key'] + '">View</a>';
   }
 
   $(document).ready(function() {
