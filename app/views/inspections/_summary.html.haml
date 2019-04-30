@@ -47,7 +47,7 @@
   .col-sm-3
     .form-group
       %label.control-label= reference_label('inspections', 'state', 'Inspection Status')
-      .display-value= @inspection.state.titleize
+      .display-value= @inspection.machine.human_state_name
     .form-group
       %label.control-label Temperature
       .display-value= @inspection.temperature
