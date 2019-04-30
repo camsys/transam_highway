@@ -9,12 +9,14 @@
     inspection_team_ids_by_group[r[1]] << r[0]
     }
 
+  @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
+
 .col-sm-3
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
   = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id), label: reference_label('inspections', 'organization_type_id', 'Inspection Group')
   = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
 .col-sm-2
-  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r]}, label: reference_label('inspections', 'state', 'Inspection Status')
+  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
 .col-sm-3
   .row
     %label.control-label.col-sm-12
