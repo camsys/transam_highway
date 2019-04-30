@@ -19,4 +19,4 @@
       .tab-pane.fade.in#service_under_type
         = f.input :service_under_type_id, as: :check_boxes, collection: ServiceUnderType.active.order(:code, :name).map{|r| [r.to_s, r.id]}, label: false
   .col-sm-6
-    = f.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS')
+    = f.input :on_national_highway_system, collection: [['On', 'yes'],['Not On', 'no']], label: reference_label('roadways', 'on_national_highway_system', 'NHS'), include_blank: 'Select All'

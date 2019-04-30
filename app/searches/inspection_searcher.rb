@@ -121,15 +121,15 @@ class InspectionSearcher < BaseSearcher
   end
 
   def inspection_program_id_conditions
-    inspection_klass.where("highway_structures.inspection_program_id": search_proxy&.inspection_program_id) unless search_proxy&.inspection_program_id.blank?
+    inspection_klass.where("highway_structures.inspection_program_id": parse_nil_search_value(search_proxy&.inspection_program_id)) unless search_proxy&.inspection_program_id.blank?
   end
 
   def organization_type_id_conditions
-    inspection_klass.where("inspections.organization_type_id": search_proxy&.organization_type_id) unless search_proxy&.organization_type_id.blank?
+    inspection_klass.where("inspections.organization_type_id": parse_nil_search_value(search_proxy&.organization_type_id)) unless search_proxy&.organization_type_id.blank?
   end
 
   def assigned_organization_id_conditions
-    inspection_klass.where("inspections.assigned_organization_id": search_proxy&.assigned_organization_id) unless search_proxy&.assigned_organization_id.blank?
+    inspection_klass.where("inspections.assigned_organization_id": parse_nil_search_value(search_proxy&.assigned_organization_id)) unless search_proxy&.assigned_organization_id.blank?
   end
 
   def state_conditions
@@ -138,16 +138,18 @@ class InspectionSearcher < BaseSearcher
   end
 
   def inspector_id_conditions
-    inspection_klass.where("inspections_users.user_id": search_proxy&.inspector_id) unless search_proxy&.inspector_id.blank?
+    unless search_proxy&.inspector_id.blank?
+      inspection_klass.where("inspections_users.user_id": parse_nil_search_value(search_proxy&.inspector_id)) 
+    end
   end
 
-  def qa_inspector_id_conditions
-    inspection_klass.where("inspections.qa_inspector_id": search_proxy&.qa_inspector_id) unless search_proxy&.qa_inspector_id.blank?
-  end
+  #def qa_inspector_id_conditions
+  #  inspection_klass.where("inspections.qa_inspector_id": parse_nil_search_value(search_proxy&.qa_inspector_id)) unless search_proxy&.qa_inspector_id.blank?
+  #end
 
-  def qc_inspector_id_conditions
-    inspection_klass.where("inspections.qc_inspector_id": search_proxy&.qc_inspector_id) unless search_proxy&.qc_inspector_id.blank?
-  end
+  #def qc_inspector_id_conditions
+  #  inspection_klass.where("inspections.qc_inspector_id": search_proxy&.qc_inspector_id) unless search_proxy&.qc_inspector_id.blank?
+  #end
 
   def inspection_trip_conditions
     inspection_klass.where("highway_structures.inspection_trip": search_proxy&.inspection_trip) unless search_proxy&.inspection_trip.blank?
@@ -173,10 +175,19 @@ class InspectionSearcher < BaseSearcher
     inspection_klass.where(Inspection.arel_table[:event_datetime].lteq(parse_date(search_proxy&.max_inspection_date))) unless search_proxy&.max_inspection_date.blank?
   end
 
-  #TODO: inspector_id, inspection_zone, etc
+  #TODO:inspection_zone, etc
 
   def parse_date(mm_dd_yyyy_str)
     Date.strptime(mm_dd_yyyy_str, "%m/%d/%Y")
+  end
+
+  def parse_nil_search_value(val)
+    # Use -1 to represent nil search
+    if val&.to_s == '-1'
+      nil 
+    else
+      val
+    end 
   end
 
 end
