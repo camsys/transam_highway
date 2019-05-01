@@ -40,10 +40,6 @@
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'inspector_id', 'Inspectors')
         %th.center{:data => {:sortable => 'true'}}
-          = reference_label('inspections', 'qa_inspector_id', 'QA Level 1')
-        %th.center{:data => {:sortable => 'true'}}
-          = reference_label('inspections', 'qc_inspector_id', 'QA Level 2')
-        %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'state', 'Inspection Status')
         %th.center{:data => {:sortable => 'false'}} Actions
 
@@ -56,8 +52,6 @@
           %td.left= format_as_date(inspection.event_datetime)
           %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
           %td.left= format_as_list(inspection.inspectors)
-          %td.left= inspection.qa_inspector
-          %td.left= inspection.qc_inspector
           %td.left= inspection.state&.titleize
           %td.left
             = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do

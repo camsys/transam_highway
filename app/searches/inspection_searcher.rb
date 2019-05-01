@@ -150,14 +150,6 @@ class InspectionSearcher < BaseSearcher
     end
   end
 
-  #def qa_inspector_id_conditions
-  #  inspection_klass.where("inspections.qa_inspector_id": parse_nil_search_value(search_proxy&.qa_inspector_id)) unless search_proxy&.qa_inspector_id.blank?
-  #end
-
-  #def qc_inspector_id_conditions
-  #  inspection_klass.where("inspections.qc_inspector_id": search_proxy&.qc_inspector_id) unless search_proxy&.qc_inspector_id.blank?
-  #end
-
   def inspection_trip_conditions
     inspection_klass.where("highway_structures.inspection_trip": search_proxy&.inspection_trip) unless search_proxy&.inspection_trip.blank?
   end

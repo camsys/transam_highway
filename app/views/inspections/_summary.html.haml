@@ -11,9 +11,9 @@
         = @inspection.highway_structure.inspection_program
     .form-group
       %label.control-label
-        = reference_label('inspections', 'calculated_inspection_due_date', 'Routine Inspection Due Date')
+        = reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')
       .display-value
-        = format_as_date(@inspection.calculated_inspection_due_date)
+        = @inspection.calculated_inspection_due_date.try(:strftime, "%b %Y")
     .form-group
       %label.control-label= reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
       .display-value= format_as_date(@inspection.highway_structure.inspection_date)
