@@ -8,7 +8,12 @@ class BridgeCondition < BridgeLikeCondition
 
   after_save :update_calculated_condition
 
-  FORM_PARAMS = []
+  FORM_PARAMS = [
+    :deck_condition_rating_type_id,
+    :superstructure_condition_rating_type_id,
+    :substructure_condition_rating_type_id,
+    :underclearance_appraisal_rating_type_id
+  ]
 
   def calculated_condition
     case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
