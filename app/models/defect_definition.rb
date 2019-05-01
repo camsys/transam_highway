@@ -6,6 +6,6 @@ class DefectDefinition < ApplicationRecord
   validates :number, :uniqueness => true
 
   def to_s
-    number.to_s
+    "#{number} - #{short_name}"
   end
 end

@@ -16,7 +16,7 @@ class Api::V1::BridgesController < Api::ApiController
     @bridge = Bridge.new(new_form_params)
     unless @bridge.save
       @status = :fail
-      @message  = "Unable to upload bridge due the following error: #{@bridge.errors.messages}" 
+      @message  = "Unable to upload bridge due to the following error: #{@bridge.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -25,7 +25,7 @@ class Api::V1::BridgesController < Api::ApiController
   def update
     unless @bridge.update(form_params)
       @status = :fail
-      @message  = "Unable to update bridge due the following error: #{@bridge.errors.messages}" 
+      @message  = "Unable to update bridge due to the following error: #{@bridge.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -34,7 +34,7 @@ class Api::V1::BridgesController < Api::ApiController
   def destroy
     unless @bridge.destroy
       @status = :fail
-      @message  = "Unable to destroy bridge due the following error: #{@bridge.errors.messages}" 
+      @message  = "Unable to destroy bridge due to the following error: #{@bridge.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end

@@ -34,6 +34,11 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true}
 ]
+
+roles = [
+    {name: 'inspector', show_in_user_mgmt: true, privilege: false, weight: 5}
+]
+
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', engine_name: 'highway', active: true},
     {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', engine_name: 'highway', active: true},
@@ -465,8 +470,8 @@ inspection_types = [
 
 feature_safety_types = [
     {code: '0', name:	'Not acceptable', description:	'Inspected feature does not meet currently acceptable stds. or a safety feature is required and none is provided.', active: true},
-    {code: '1', name:	'Acceptable',	description: 'Inpected feature meets currently acceptable standards.'},
-    {code: 'N', name:'Not applicable', description:	'Not applicable or a safety feature is not required.'}
+    {code: '1', name:	'Acceptable',	description: 'Inpected feature meets currently acceptable standards.', active: true},
+    {code: 'N', name:'Not applicable', description:	'Not applicable or a safety feature is not required.', active: true}
 ]
 
 element_definitions = [
@@ -636,7 +641,7 @@ defect_definitions_element_definitions = {
       7000 => nil
     }
 
-merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
+merge_tables = %w{ organization_types asset_types asset_subtypes roles system_config_extensions }
 
 merge_tables.each do |table_name|
   puts "  Merging #{table_name}"
@@ -686,7 +691,7 @@ end
 data = eval(table_name)
 klass = table_name.classify.constantize
 data.each do |row|
-  x = klass.new(row.except(:is_nbe, :is_protective, :cat_key, :type_key, :mat_key))
+  x = klass.new(row.except(:is_nbe, :cat_key, :type_key, :mat_key))
   x.element_material = ElementMaterial.find_by(code: row[:mat_key])
   x.element_classification = 
     ElementClassification.find_by(name: row[:is_nbe] == 'Y' ? 'NBE' : 'BME')

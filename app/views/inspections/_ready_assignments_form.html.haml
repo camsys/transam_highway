@@ -1,5 +1,5 @@
 :ruby
-  inspectors = User.active.map{|l| {
+  inspectors = User.active.with_role(:inspector).map{|l| {
     name: l.to_s, 
     id: l.id, 
     organization_id: l.organization_id

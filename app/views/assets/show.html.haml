@@ -1,5 +1,12 @@
 :ruby 
   @asset_class_name = @asset.asset_type.class_name
+
+  if @asset_class_name == 'Bridge'
+    @latest_condition = @asset.latest_bridge_condition
+  elsif @asset_class_name == 'Culvert'
+    @latest_condition = @asset.latest_culvert_condition
+  end
+
 :css
   .panel-body-fixed {
     height: 300px;

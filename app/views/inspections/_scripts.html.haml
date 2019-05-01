@@ -1,4 +1,43 @@
+= render partial: 'shared/xeditable_scripts'
+
 :javascript
+
+  // ------ override methods in shared xeditable scripts to handle edit/save buttons in different panels -----------
+  function open_tab(tab_id) {
+    $('.editableform-loading').hide();
+    $('.editableform').show();
+    $('#' + tab_id).collapse('show');
+  }
+
+  $(document).ready(function() {
+    $('.inspection-edit-xeditable-button').on('click', function(e) {
+      e.stopPropagation();
+
+      //set selected radios
+      selected_radio_inputs = $(this).closest('.panel').find('input[type=radio]:checked');
+
+      var tab_id = $(this).parent().parent().parent().parent().parent().find('.panel-collapse').attr('id');
+      $('#'+tab_id+' .editable-field').editable('enable');
+      $('#'+tab_id+' .editable-field').editable('show', false);
+      $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
+      //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
+
+      $('.other-type-container select').each(function() {
+        $(this).closest('.other-type-container').attr('data-original-value', $(this).val());
+      });
+
+      // de-focus form: 1. make it select the first one; 2. lost is focus
+      // the purpose of selecting first one is to avoid focus jumping to others
+      setTimeout(function(){
+        $('#'+tab_id+' .editable-input').find('input, select').first().focus();
+        $(':focus').blur();
+      }, 10);
+
+      $(this).hide();
+      $(this).next('.edit-xeditable-buttons').show();
+    });
+  });
+  // ----------------------------------------------------------------------------------------------------------------
 
   var user_tab_key = 'inspection_tab_key';
 

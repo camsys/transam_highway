@@ -1,14 +1,20 @@
 :ruby
-  inspectors = User.where(id: Inspection.joins(:inspectors).pluck("users.id").uniq).map{|r| [r.name, r.id]}
-  qa_inspectors = User.where(id: Inspection.all.pluck(:qa_inspector_id).uniq).map{|r| [r.name, r.id]}
-  qc_inspectors = User.where(id: Inspection.all.pluck(:qc_inspector_id).uniq).map{|r| [r.name, r.id]}
+  inspectors = User.where(id: Inspection.joins(:inspectors).pluck("users.id").uniq).map{|r| [r.name, r.id]} + [['None', -1]]
+
+  inspection_team_ids_by_group = {}
+  Organization.active.pluck(:id,:organization_type_id).each{|r| 
+    inspection_team_ids_by_group[r[1]] = [] unless inspection_team_ids_by_group[r[1]]
+    inspection_team_ids_by_group[r[1]] << r[0]
+    }
+
+  @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
 
 .col-sm-3
-  = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
-  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id), label: reference_label('inspections', 'organization_type_id', 'Inspection Group')
-  = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
+  = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program'), include_blank: 'Select All'
+  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
+  = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
 .col-sm-2
-  = f.input :state, as: :check_boxes, collection: Inspection.state_names.map{|r| [r.titleize, r]}, label: reference_label('inspections', 'state', 'Inspection Status')
+  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
 .col-sm-3
   .row
     %label.control-label.col-sm-12
@@ -40,17 +46,40 @@
         = f.input_field :max_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_inspection_date'}, :value => f.object.max_inspection_date
         %span.input-group-addon
           %i.fa.fa-calendar
-  = f.input :inspection_frequency, collection: Inspection.where.not(inspection_frequency: nil).pluck(:inspection_frequency).uniq.map{|r| [r, r]}, label: reference_label('inspections', 'inspection_frequency', 'Inspection Frequency')
+  = f.input :inspection_frequency, collection: Inspection.where.not(inspection_frequency: nil).pluck(:inspection_frequency).uniq.map{|r| [r, r]}, label: reference_label('inspections', 'inspection_frequency', 'Inspection Frequency'), include_blank: 'Select All'
 .col-sm-2
-  = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector')
-  = f.input :qa_inspector_id, collection: qa_inspectors, label: reference_label('inspections', 'qa_inspector_id', 'QA Level 1')
-  = f.input :qc_inspector_id, collection: qc_inspectors, label: reference_label('inspections', 'qc_inspector_id', 'QA Level 2')
+  = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 .col-sm-2
-  = f.input :inspection_trip, collection: HighwayStructure.where.not(inspection_trip: nil).pluck(:inspection_trip).uniq.map{|r| [r, r]}, label: reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
+  = f.input :inspection_trip, collection: HighwayStructure.where.not(inspection_trip: nil).distinct.pluck(:inspection_trip).map{|r| [r, r]}, label: reference_label('highway_structures', 'inspection_trip', 'Inspection Trip'), include_blank: 'Select All'
 
 :javascript
   $(function() {
     $('.datepicker-clear').bootstrapDP({
       autoclose: true
+    });
+
+    function show_hide_inspection_team_options(group_id) {
+      if(group_id) {
+        var inspection_team_ids_by_group = #{inspection_team_ids_by_group.to_json.html_safe || {}};
+        group_id = parseInt(group_id);
+        var team_ids = inspection_team_ids_by_group[group_id];
+        $('#inspection_proxy_assigned_organization_id option').hide();
+        team_ids.forEach(function(team_id) {
+          $('#inspection_proxy_assigned_organization_id option[value=' + team_id + ']').show();
+        });
+
+        $('#inspection_proxy_assigned_organization_id option[value=""]').show();
+      } else {
+        $('#inspection_proxy_assigned_organization_id option').show();
+      }
+    }
+    show_hide_inspection_team_options("#{@search_proxy.organization_type_id}");
+
+    $('#inspection_proxy_organization_type_id').change(function() {
+      var group_id = $(this).val();
+      show_hide_inspection_team_options(group_id);
+      if(group_id) {
+        $('#inspection_proxy_assigned_organization_id').val('');
+      }
     });
   });

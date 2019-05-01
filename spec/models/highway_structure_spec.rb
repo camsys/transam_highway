@@ -6,7 +6,7 @@ RSpec.describe HighwayStructure, type: :model do
   describe ".open_inspection" do
 
     let!(:test_bridge) { create(:bridge) }
-    let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure, state: 'final', name: 'Insp ABC', notes: 'we want to copy this') }
+    let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure, state: 'final', notes: 'we want to copy this') }
     let!(:test_element) { create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this element') }
     let!(:test_defect) { create(:defect, inspection: test_inspection.inspection, element: test_element, notes: 'we want to copy this defect') }
 
@@ -40,9 +40,6 @@ RSpec.describe HighwayStructure, type: :model do
     it "copies" do
 
       copy = test_bridge.open_inspection
-
-      expect(copy.name).to eq(test_inspection.name)
-      expect(copy.name).to eq('Insp ABC')
 
       expect(copy.notes).to eq(test_inspection.notes)
       expect(copy.notes).to eq('we want to copy this')

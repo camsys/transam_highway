@@ -1,0 +1,297 @@
+:css
+  tbody > tr.element {
+    background-color: gray;
+  }
+  tbody > tr.bme {
+    background-color: darkgray;
+  }
+  tbody > tr.defect {
+    background-color: lightgray;
+  }  
+  tbody > tr.notes {
+    font-size: 0.9em;
+    font-style: italic;
+    color: gray;
+  }
+
+  #elements_table_container, #elements_table_container .fixed-table-body {
+    overflow: visible !important;
+  }
+
+  .number-input {
+    width: 120px;
+    text-align: right;
+    float: right;
+  }
+
+  .number-input[type=number]::-webkit-inner-spin-button, 
+  .number-input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }
+
+  .cs_1_quantity {
+    background-color: #D6F5D6;
+  }
+
+  .cs_2_quantity {
+    background-color: #F5EC9E;
+  }
+
+  .cs_3_quantity {
+    background-color: #F4CB91;
+  }
+
+  .cs_4_quantity {
+    background-color: #F99C9B;
+  }
+  
+:ruby
+  table_dom_id = SecureRandom.hex
+
+.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+
+.row
+  .col-md-12
+    #spinner{:style => 'padding: 20px; display: none;'}
+      = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
+
+    #table_actions.btn-toolbar
+      - if can?(:update, @inspection.inspection)
+        .btn-group
+          = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
+            %i.fa.fa-plus
+            = " New Element"
+    .table-responsive#elements_table_container
+      -# Remove .table-hover with data-classes
+      %table{:id => table_dom_id,
+              :data => {:toggle => 'table',
+              :card_view => "false",
+              :classes => 'table',
+              :pagination => 'false',
+              :sort_order => 'asc',
+              :sortable => 'false',
+              :search => 'false',
+              :show_columns => 'false',
+              :toolbar => "#table_actions",
+              :row_style => 'row_style',
+              :click_to_select => 'false',
+              :show_export => 'true',
+              :id_field => 'object_key',
+              :export_types => "['csv', 'txt', 'excel']",
+              :cookie => 'true',
+              :cookie_id_table => "inspections_id",
+              :cookie_expire => "1y",
+              :maintain_selected => 'true',
+              :single_select => 'false'}}
+        %thead
+          %tr
+            %th.centern Elem
+            %th.center Description
+            %th.center Quantity
+            %th.center Unit
+            %th.center.cs_1_quantity CS 1
+            %th.center.cs_2_quantity CS 2
+            %th.center.cs_3_quantity CS 3
+            %th.center.cs_4_quantity CS 4
+            %th.center
+
+        %tbody
+          - @inspection.parent_elements.ordered.each do |element|
+            = render partial: "element_row", locals: {element: element, indent: 0, is_child: false}
+            - element.defects.ordered.each do |defect|
+              = render partial: "defect_row", locals: {defect: defect, indent: 1}
+            - element.children.ordered.each do |bme|
+              = render partial: "element_row", locals: {element: bme, indent: 1, is_child: true}
+              - bme.defects.ordered.each do |defect|
+                = render partial: "defect_row", locals: {defect: defect, indent: 2}
+
+:javascript
+  var quantity_changes = {
+    elements: {},
+    defects: {}
+  };
+
+  function enable_quantity_editing() {
+    $('.number-display').hide();
+    $('.number-input').show();
+
+    // local New Element and action buttons
+    $('#new_element_link, .element_defect_row_action_button').hide();
+
+  }
+
+  function disable_quantity_editing() {
+    $('.number-input').hide();
+    $('.number-display').show();
+    $('#new_element_link, .element_defect_row_action_button').show();
+  }
+
+  function is_form_valid() {
+    if($('.number-input.error').length == 0) {
+      $('.save-elements-button').removeAttr('disabled');
+      return true;
+    } else {
+      $('.save-elements-button').attr('disabled', 'disabled');
+      return false;
+    }
+  }
+
+  function validate_input(input) {
+    var val = $(input).val();
+    if((!val && val !== 0) || $(input).val() < 0 || ($(input).hasClass('positive-num') && $(input).val() == 0)) {
+      if(!$(input).hasClass('error')) {
+        $(input).addClass('error');
+      }
+    } else {
+      $(input).removeClass('error');
+    }
+  }
+
+  function validate_quantity() {
+    var is_valid = true;
+    $('tr.element').each(function() {
+      var element_id = $(this).attr('data-element-id');
+      var element_total_quantity_td = $(this).find('> td.total_quantity');
+      var element_total_quantity_input = element_total_quantity_td.find('.number-input');
+      var element_quantity = parseFloat(element_total_quantity_input.val());
+      var defect_quantity_total = 0;
+      $('tr.defect[data-element-id=' + element_id + '] td.total_quantity').each(function() {
+        defect_quantity_total += parseFloat($(this).text());
+      });
+
+      element_total_quantity_input.removeClass('error');
+      element_total_quantity_td.find('label.error').remove();
+      if(defect_quantity_total > element_quantity) {
+        element_total_quantity_input.addClass('error');
+        element_total_quantity_td.append('<label class="error">Invalid quantity</label>');
+
+        is_valid = false;
+      } 
+    }); 
+
+    $('.number-input').each(function() {
+      validate_input(this);
+    });
+
+    return is_form_valid() && is_valid;
+  }
+
+  function submit_element_changes() {
+    $("#spinner").show();
+    $.ajax({
+      url: "#{save_quantity_changes_inspection_elements_path(@inspection.object_key)}",
+      method: 'post',
+      data: {
+        quantity_changes: quantity_changes
+      },
+      success: function() {
+        $("#spinner").hide();
+        window.location.reload();
+      },
+      failure: function() {
+        $("#spinner").hide();
+        alert('An error occurred saving the changes. Please try again.');
+      }
+    })
+  }
+
+  $(function() {
+    function isNumNaN(n) {
+      return isNaN(n) || n == 'NaN';
+    }
+
+    function update_cs1_col_total(element_id) {
+      var el_row = $('tr.element[data-element-id=' + element_id + ']');
+      var total_quan = parseFloat(el_row.find('.total_quantity .number-input').val());
+      var cs234_total = parseFloat(el_row.find('.cs2').text()) + parseFloat(el_row.find('.cs3').text()) + parseFloat(el_row.find('.cs4').text());
+      var t = parseFloat(total_quan - cs234_total);
+      if(isNumNaN(t)) {
+        t = '-';
+      }
+      el_row.find('.cs1').text(t);
+    }
+
+    function update_cs234_col_total(element_id, quan_class) {
+      var el_row = $('tr.element[data-element-id=' + element_id + ']');
+      var total_quan = 0;
+      $('.defect[data-element-id=' + element_id + '] .' + quan_class + ' .number-input').each(function() {
+        total_quan += parseFloat($(this).val());
+      });
+
+      var t = parseFloat(total_quan);
+      if(isNumNaN(t)) {
+        t = '-';
+      }
+      el_row.find("." + quan_class).text(t);    
+    }
+
+    function update_defect_row_total(defect_id) {
+      var defect_row = $('.defect[data-defect-id=' + defect_id + ']');
+      var total_quan = parseFloat(defect_row.find('.cs1 .number-input').val()) + parseFloat(defect_row.find('.cs2 .number-input').val()) + parseFloat(defect_row.find('.cs3 .number-input').val()) + parseFloat(defect_row.find('.cs4 .number-input').val());
+      
+      var t = parseFloat(total_quan);
+      if(isNumNaN(t)) {
+        t = '-';
+      }
+      defect_row.find('.total_quantity').text(t);  
+      if(!quantity_changes.defects[defect_id]) {
+        quantity_changes.defects[defect_id] = {};
+      }
+      quantity_changes.defects[defect_id].total_quantity = total_quan;  
+    }
+
+    $('body').on('change', '.cs1 .number-input', function() {
+      // update row & col total
+      var defect_row = $(this).parents('.defect');
+      var defect_id = defect_row.attr('data-defect-id');
+      update_defect_row_total(defect_id);
+      if(!quantity_changes.defects[defect_id]) {
+        quantity_changes.defects[defect_id] = {};
+      }
+      quantity_changes.defects[defect_id].condition_state_1_quantity = parseFloat($(this).val());
+    });
+
+    $('body').on('change', '.total_quantity .number-input', function() {
+      var el_id = $(this).parents('.element').attr('data-element-id');
+      update_cs1_col_total(el_id);
+      quantity_changes.elements[el_id] = parseFloat($(this).val());
+    });
+
+    $('body').on('change', '.cs2 .number-input, .cs3 .number-input, .cs4 .number-input', function() {
+      // update row & col total
+      var defect_row = $(this).parents('.defect');
+      var defect_id = defect_row.attr('data-defect-id');
+      var el_id = defect_row.attr("data-element-id");
+      update_defect_row_total(defect_id);
+      update_cs234_col_total(el_id, $(this).data('type'));
+      update_cs1_col_total(el_id);
+
+      if(!quantity_changes.defects[defect_id]) {
+        quantity_changes.defects[defect_id] = {};
+      }
+      
+      var cs_field_name = "";
+      switch($(this).data('type')) {
+        case 'cs2':
+          cs_field_name = 'condition_state_2_quantity';
+          break;
+        case 'cs3':
+          cs_field_name = 'condition_state_3_quantity';
+          break;
+        case 'cs4':
+          cs_field_name = 'condition_state_4_quantity';
+          break;
+      }
+      if(cs_field_name) {
+        quantity_changes.defects[defect_id][cs_field_name] = parseFloat($(this).val());  
+      }
+    });
+
+    $('body').on('blur', 'input.required', function() {
+      validate_input(this);
+
+      is_form_valid();
+    });
+  });
+        

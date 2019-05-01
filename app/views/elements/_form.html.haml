@@ -1,0 +1,113 @@
+:ruby
+  element_definitions = ElementDefinition.non_protective.joins(:element_classification).order(:number).pluck(:assembly_type_id, :id, :number, :short_name, :quantity_unit, "element_classifications.name", :description)
+.row
+  = simple_form_for(@element,
+  :url => @element.new_record? ? inspection_elements_path(@inspection) : inspection_element_path(@inspection, @element),
+  :method => @element.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical element_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Assembly Type
+
+        = select_tag(:assembly_type_id, options_from_collection_for_select(AssemblyType.active, :id, :name, @element.element_definition&.assembly_type_id), :class => 'form-control', :prompt => 'Select...')
+    .col-sm-12
+      = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type).order(:number), label: 'Element ID', required: true, :prompt => 'Select...'
+
+    .col-sm-5
+      = f.input :quantity, required: true, input_html: { min: '0' }
+    .col-sm-2
+      .form-group
+        %label.control-label
+          Unit
+        %p#element_quantity_unit
+          = @element.element_definition&.quantity_unit
+    .col-sm-5
+      .form-group
+        %label.control-label
+          Classification
+        %p#element_classification
+          = @element.element_definition&.element_classification
+
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Element Description
+        %textarea.form-control#element_definition_notes{row: 6, readonly: 'readonly'}
+          = @element.element_definition&.description
+
+    .col-md-12
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_element_form{type: 'button'}
+        Cancel
+
+:javascript
+  $(function() {
+    var element_definitions = #{element_definitions.to_json.html_safe};
+
+    function update_element_definitions(assembly_type_id) {
+      $('#element_element_definition_id').find("option[value!='']").remove();
+      if(assembly_type_id) {
+        assembly_type_id = parseInt(assembly_type_id);
+
+        var filtered_els = element_definitions.filter(
+          function(e) {
+            return e[0] == assembly_type_id;
+          }
+        );
+
+        filtered_els.forEach(
+          function(e) {
+            var new_el = '<option value=' + e[1] + '>' + e[2] + ' - ' + e[3] + '</option>';
+            $('#element_element_definition_id').append(new_el);
+          }
+        );
+      } 
+    }
+
+    function update_element_definition_info(el_def_id) {
+      $('#element_quantity_unit').text('');
+      $('#element_classification').text('');
+      $('#element_definition_notes').val('');
+      if(el_def_id) {
+        var el = element_definitions.find(function(e) {
+          return e[1] == parseInt(el_def_id);
+        });
+
+        if(el) {
+          $('#element_quantity_unit').text(el[4]);
+          $('#element_classification').text(el[5]);
+          $('#element_definition_notes').val(el[6]);
+        }
+      }
+    }
+
+    $('#assembly_type_id').change(function() {
+      var assembly_type_id = $(this).val();
+      update_element_definitions(assembly_type_id);
+    });
+
+    $('#element_element_definition_id').change(function() {
+      var el_def_id = $(this).val();
+      update_element_definition_info(el_def_id);
+    });
+
+    // jquery validations
+    $('.element_form').validate({
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+
+    $('#cancel_element_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+  });
+
+
+

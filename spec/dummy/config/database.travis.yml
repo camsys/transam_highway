@@ -6,6 +6,8 @@
 
 mysql: &mysql
   adapter: mysql2rgeo
+  variables:
+            sql_mode: traditional
   username: root
   password:
   database: transam_highway_testing

@@ -16,7 +16,7 @@ class Api::V1::CulvertsController < Api::ApiController
     @culvert = culvert.new(new_form_params)
     unless @culvert.save
       @status = :fail
-      @message  = "Unable to upload culvert due the following error: #{@culvert.errors.messages}" 
+      @message  = "Unable to upload culvert due to the following error: #{@culvert.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -25,7 +25,7 @@ class Api::V1::CulvertsController < Api::ApiController
   def update
     unless @culvert.update(form_params)
       @status = :fail
-      @message  = "Unable to update culvert due the following error: #{@culvert.errors.messages}" 
+      @message  = "Unable to update culvert due to the following error: #{@culvert.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -34,7 +34,7 @@ class Api::V1::CulvertsController < Api::ApiController
   def destroy
     unless @culvert.destroy
       @status = :fail
-      @message  = "Unable to destroy culvert due the following error: #{@culvert.errors.messages}" 
+      @message  = "Unable to destroy culvert due to the following error: #{@culvert.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end

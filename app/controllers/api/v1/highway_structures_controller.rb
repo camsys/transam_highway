@@ -16,7 +16,7 @@ class Api::V1::HighwayStructuresController < Api::ApiController
     @highway_structure = HighwayStructure.new(new_form_params)
     unless @highway_structure.save
       @status = :fail
-      @message  = "Unable to upload highway structure due the following error: #{@highway_structure.errors.messages}" 
+      @message  = "Unable to upload highway structure due to the following error: #{@highway_structure.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -25,7 +25,7 @@ class Api::V1::HighwayStructuresController < Api::ApiController
   def update
     unless @highway_structure.update(form_params)
       @status = :fail
-      @message  = "Unable to update highway structure due the following error: #{@highway_structure.errors.messages}" 
+      @message  = "Unable to update highway structure due to the following error: #{@highway_structure.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end
@@ -34,7 +34,7 @@ class Api::V1::HighwayStructuresController < Api::ApiController
   def destroy
     unless @highway_structure.destroy
       @status = :fail
-      @message  = "Unable to destroy highway structure due the following error: #{@highway_structure.errors.messages}" 
+      @message  = "Unable to destroy highway structure due to the following error: #{@highway_structure.errors.messages}" 
       render status: 400, json: json_response(:fail, message: @message)
     end
   end

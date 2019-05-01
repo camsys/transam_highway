@@ -1,6 +1,23 @@
 Rails.application.routes.draw do
 
   resources :inspections do 
+    resources :elements do 
+      collection do 
+        post :save_quantity_changes
+      end
+
+      member do 
+        get :edit_comment
+      end
+
+      resources :child_elements
+      resources :defects do 
+        member do 
+          get :edit_comment
+        end
+      end
+    end
+
     collection do 
       get 'reset'
       post 'new_search'
@@ -18,12 +35,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'reference_data' => 'references#index'
       get 'associations' => 'associations#index'
-      get 'inspections' => 'inspections#index'
       get 'bridge_conditions' => 'bridge_conditions#index'
       get 'elements' => 'elements#index'
       get 'defects' => 'defects#index'
       get 'defect_definitions' => 'defect_definitions#index'
       get 'element_definitions' => 'element_definitions#index'
+
+      resources :inspections, only: [:index, :update]
 
       resources :bridges
       resources :culverts

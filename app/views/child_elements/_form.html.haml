@@ -1,0 +1,88 @@
+:ruby
+  child_element_defs = ElementDefinition.is_protective
+  element_definitions = child_element_defs.joins(:element_classification).order(:number).pluck(:id, :quantity_unit, "element_classifications.name", :description)
+.row
+  = simple_form_for(@child_element,
+  :url => @child_element.new_record? ? inspection_element_child_elements_path(@inspection, @element) : inspection_element_child_element_path(@inspection, @element, @child_element),
+  :method => @child_element.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical child_element_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Parent Element
+
+        %p
+          = @element.element_definition
+
+    .col-sm-12
+      = f.association :element_definition, collection: child_element_defs.order(:number), label: 'Protective System ID', required: true, :prompt => 'Select...'
+
+    .col-sm-5
+      = f.input :quantity, required: true, input_html: { min: '0' }
+    .col-sm-2
+      .form-group
+        %label.control-label
+          Unit
+        %p#element_quantity_unit
+          = @child_element.element_definition&.quantity_unit
+    .col-sm-5
+      .form-group
+        %label.control-label
+          Classification
+        %p#element_classification
+          = @child_element.element_definition&.element_classification
+
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Element Description
+        %textarea.form-control#element_definition_notes{row: 6, readonly: 'readonly'}
+          = @child_element.element_definition&.description
+
+    .col-md-12
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_child_element_form{type: 'button'}
+        Cancel
+
+:javascript
+  $(function() {
+    var element_definitions = #{element_definitions.to_json.html_safe};
+
+    function update_element_definition_info(el_def_id) {
+      $('#element_quantity_unit').text('');
+      $('#element_classification').text('');
+      $('#element_definition_notes').val('');
+      if(el_def_id) {
+        var el = element_definitions.find(function(e) {
+          return e[0] == parseInt(el_def_id);
+        });
+
+        if(el) {
+          $('#element_quantity_unit').text(el[1]);
+          $('#element_classification').text(el[2]);
+          $('#element_definition_notes').val(el[3]);
+        }
+      }
+    }
+
+    $('#element_element_definition_id').change(function() {
+      var el_def_id = $(this).val();
+      update_element_definition_info(el_def_id);
+    });
+
+    // jquery validations
+    $('.child_element_form').validate({
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+
+    $('#cancel_child_element_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+  });

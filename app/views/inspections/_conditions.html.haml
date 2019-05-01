@@ -3,83 +3,30 @@
 .row
   .col-md-6 
     - if is_bridge_condition
-      .form-group
-        %label.control-label
-          = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition')
-        .display-value
-          = @inspection.deck_condition_rating_type
-      .form-group
-        %label.control-label
-          = reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition')
-        .display-value
-          = @inspection.superstructure_condition_rating_type
-      .form-group
-        %label.control-label
-          = reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition')
-        .display-value
-          = @inspection.substructure_condition_rating_type
-      %hr
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Appraisal Rating')
-      .display-value
-        = @inspection.structural_appraisal_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry Appraisal Rating')
-      .display-value
-        = @inspection.deck_geometry_appraisal_rating_type
-    - if is_bridge_condition
-      .form-group
-        %label.control-label
-          = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating')
-        .display-value
-          = @inspection.underclearance_appraisal_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Appraisal Rating')
-      .display-value
-        = @inspection.waterway_appraisal_rating_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Alignment Appraisal Rating')
-      .display-value
-        = @inspection.approach_alignment_appraisal_rating_type
-  .col-md-6
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'operational_status_type_id', 'Operational Status')
-      .display-value
-        = @inspection.operational_status_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel/Protection Rating')
-      .display-value
-        = @inspection.channel_condition_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
-      .display-value
-        = @inspection.scour_critical_bridge_type
+      = editable_association_tag(@inspection, :deck_condition_rating_type, reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition'), model_name: 'Inspection')
+      = editable_association_tag(@inspection, :superstructure_condition_rating_type, reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition'), model_name: 'Inspection')
+      = editable_association_tag(@inspection, :substructure_condition_rating_type, reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition'), model_name: 'Inspection')
+    - else
+      = editable_association_tag(@inspection, :culvert_condition_type, reference_label('culvert_conditions', 'culvert_condition_type_id', 'Culvert Condition'), model_name: 'Inspection')
     %hr
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'railings_safety_type_id', 'Railings Safety')
-      .display-value
-        = @inspection.railings_safety_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions Safety')
-      .display-value
-        = @inspection.transitions_safety_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Rail Safety')
-      .display-value
-        = @inspection.approach_rail_safety_type
-    .form-group
-      %label.control-label
-        = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'Approach Rail End Safety')
-      .display-value
-        = @inspection.approach_rail_end_safety_type
+    = editable_association_tag(@inspection, :structural_appraisal_rating_type, reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Appraisal Rating'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :deck_geometry_appraisal_rating_type, reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry Appraisal Rating'), model_name: 'Inspection')
+
+    - if is_bridge_condition
+      = editable_association_tag(@inspection, :underclearance_appraisal_rating_type, reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating'), model_name: 'Inspection')
+
+
+    = editable_association_tag(@inspection, :waterway_appraisal_rating_type, reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Appraisal Rating'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :approach_alignment_appraisal_rating_type, reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Alignment Appraisal Rating'), model_name: 'Inspection')
+
+  .col-md-6
+    = editable_association_tag(@inspection, :operational_status_type, reference_label('bridge_conditions', 'operational_status_type_id', 'Operational Status'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :channel_condition_type, reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel/Protection Rating'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :scour_critical_bridge_type, reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge'), model_name: 'Inspection')
+
+    %hr
+    = editable_association_tag(@inspection, :railings_safety_type, reference_label('bridge_conditions', 'railings_safety_type_id', 'Railings Safety'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :transitions_safety_type, reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions Safety'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :approach_rail_safety_type, reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Rail Safety'), model_name: 'Inspection')
+    = editable_association_tag(@inspection, :approach_rail_end_safety_type, reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'Approach Rail End Safety'), model_name: 'Inspection')
 

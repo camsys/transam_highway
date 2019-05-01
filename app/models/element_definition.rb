@@ -12,7 +12,10 @@ class ElementDefinition < ApplicationRecord
   
   validates :number, :uniqueness => true
 
+  scope :is_protective, -> { where(is_protective: true) }
+  scope :non_protective, -> { where(is_protective: [false, nil]) }
+
   def to_s
-    number.to_s
+    "#{number} - #{short_name}"
   end
 end

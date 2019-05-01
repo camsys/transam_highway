@@ -1,8 +1,121 @@
 class Api::V1::InspectionsController < Api::ApiController
-  before_action :get_data
-
   # GET /inspections
   def index
+    get_data
+
+    # change inspection status from assigned to in_field
+    @inspections.where(state: 'assigned').update_all(state: 'in_field')
+  end
+
+  # PUT/PATCH /inspections/:id
+  def update
+    @inspection = Inspection.find_by_object_key(params[:id])
+    begin 
+      ActiveRecord::Base.transaction do 
+
+        if params[:inspection]
+          inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
+          inspection_hash[:status] = 'in_progress' if @inspection.status == 'in_field' # special case
+          @inspection.update!(inspection_hash) if @inspection
+        end
+
+        if params[:bridge_condition]
+          @bridge_condition = Inspection.get_typed_inspection(@inspection)
+          bc_hash = params[:bridge_condition].permit(params[:bridge_condition].keys).except(:id).to_h
+          @bridge_condition.update!(bc_hash) if @bridge_condition
+        end
+
+        if params[:culvert_condition]
+          @culvert_condition = Inspection.get_typed_inspection(@inspection)
+          cc_hash = params[:culvert_condition].permit(params[:culvert_condition].keys).except(:id).to_h
+          @culvert_condition.update!(cc_hash) if @culvert_condition
+        end
+        
+        if params[:elements] && params[:elements].any?
+          params[:elements].each do |el_params|
+            change_type = el_params[:change_type]&.upcase
+
+            clean_params = el_params.permit(el_params.keys).except(:id, :parent_id, :inspection_id, :change_type).to_h
+            el_guid = el_params[:id]
+            if el_params[:parent_id]
+              el_parent = Element.find_by_guid(el_params[:parent_id])
+            end
+
+            next unless ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
+            if change_type == 'ADD'
+              if el_guid.blank?
+                @el_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = el_guid
+              clean_params.parent = el_parent if el_parent
+              Element.create!(clean_params)
+            elsif change_type == 'REMOVE'
+              el = Element.find_by_guid(el_guid)
+              el.destroy! if el
+            else
+              el = Element.find_by_guid(el_guid)
+              clean_params.parent = el_parent if el_parent
+              el.update!(clean_params) if el
+            end
+          end
+        end
+
+        if params[:defects] && params[:defects].any?
+          params[:defects].each do |df_params|
+            change_type = df_params[:change_type]&.upcase
+
+            clean_params = df_params.permit(df_params.keys).except(:id, :element_id, :inspection_id, :change_type).to_h
+            df_guid = df_params[:id]
+            if df_params[:element_id]
+              el_parent = Element.find_by_guid(df_params[:element_id])
+            end
+            
+            next if ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
+            if change_type == 'ADD'
+              if df_guid.blank?
+                @df_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = df_guid
+              clean_params.element = el_parent if el_parent
+              Defect.create!(clean_params)
+            elsif change_type == 'REMOVE'
+              el = Defect.find_by_guid(df_guid)
+              el.destroy! if el
+            else
+              el = Defect.find_by_guid(df_guid)
+              clean_params.element = el_parent if el_parent
+              el.update!(clean_params) if el
+            end
+          end
+        end
+        @is_valid = true
+      end
+    rescue ActiveRecord::RecordInvalid => invalid
+      raise ActiveRecord::Rollback
+
+      # generic errors
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
+      render status: 400, json: json_response(:fail, message: @message)
+    end
+
+    # element guid is required to add a new element
+    if @el_guid_required_to_add
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data" 
+      render status: 400, json: json_response(:fail, message: @message)
+    end
+
+    # defect guid is required to add a new defect
+    if @df_guid_required_to_add
+      @status = :fail
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
+      render status: 400, json: json_response(:fail, message: @message)
+    end
   end
 
   private
@@ -23,19 +136,16 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_highway_structures
-    @highway_structures = HighwayStructure.all
+    inspection_status = [:assigned, :in_field, :in_progress]
+    org_ids = @user&.organization_ids
+
+    @highway_structures = HighwayStructure.joins(:inspections).where(inspections: {status: inspection_status, assigned_organization_id: org_ids}).uniq
     unless params[:limit].blank?
       @highway_structures = @highway_structures.limit(params[:limit])
     end
 
-    # HACK: until we have filtering by user org, we have a temporary filter here to only
-    # include bridges that have inspections, to filter out all the bridge stubs we've
-    # added temporarily for sprint 7
-    # @highway_structure_ids = @highway_structures.pluck(:id)
-    struct_ids = HighwayStructure.all.joins(:inspections).uniq.pluck(:id)
-    @highway_structure_ids = params[:limit].blank? ? struct_ids : struct_ids[0, params[:limit].to_i]
-    # @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
-    @transam_asset_ids = HighwayStructure.where(id: @highway_structure_ids).pluck("transam_assetible_id")
+    @highway_structure_ids = @highway_structures.pluck(:id)
+    @transam_asset_ids = @highway_structures.pluck("transam_assetible_id")
   end
 
   def query_bridges
@@ -49,15 +159,13 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_inspections
-    @inspections = Inspection.where(transam_asset_id: @transam_asset_ids)
-    unless params[:start_date].blank?
-      @inspections = @inspections.where(Inspection.arel_table[:event_datetime].gteq(params[:start_date]))
-    end
-    unless params[:end_date].blank?
-      @inspections = @inspections.where(Inspection.arel_table[:event_datetime].lteq(params[:end_date]))
+    @inspection_ids = []
+    # return open inspection and last two finished ones
+    @highway_structures.each do |s|
+      @inspection_ids += s.inspections.ordered.limit(3).pluck("inspections.id")
     end
 
-    @inspection_ids = @inspections.pluck(:id)
+    @inspections = Inspection.where(id: @inspection_ids)
   end
 
   def query_bridge_conditions

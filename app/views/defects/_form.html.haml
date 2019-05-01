@@ -1,0 +1,70 @@
+:ruby
+  @defs = @element.element_definition.defect_definitions
+  defect_definitions = @defs.order(:number).pluck(:id, :description).to_h
+.row
+  = simple_form_for(@defect,
+  :url => @defect.new_record? ? inspection_element_defects_path(@inspection, @element) : inspection_element_defect_path(@inspection, @element, @defect),
+  :method => @defect.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical defect_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    = f.hidden_field :condition_state_1_quantity, value: 0
+    = f.hidden_field :condition_state_2_quantity, value: 0
+    = f.hidden_field :condition_state_3_quantity, value: 0
+    = f.hidden_field :condition_state_4_quantity, value: 0
+    = f.hidden_field :total_quantity, value: 0
+
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Defect ID
+
+        %p
+          = @element.element_definition
+    .col-sm-12
+      = f.association :defect_definition, collection: @defs.order(:number), label: 'Defect ID', required: true, :prompt => 'Select...'
+
+    .col-sm-12
+      .form-group
+        %label.control-label
+          Defect Description
+        %textarea.form-control#defect_definition_notes{row: 6, readonly: 'readonly'}
+          = @defect.defect_definition&.description
+
+    .col-md-12
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_defect_form{type: 'button'}
+        Cancel
+
+:javascript
+  $(function() {
+    var defect_definitions = #{defect_definitions.to_json.html_safe};
+    function update_defect_definition_info(def_id) {
+      $('#defect_definition_notes').text('');
+      if(def_id) {
+        $('#defect_definition_notes').text(defect_definitions[parseInt(def_id)]);
+      }
+    }
+
+    $('#defect_defect_definition_id').change(function() {
+      var def_id = $(this).val();
+      update_defect_definition_info(def_id);
+    });
+
+    // jquery validations
+    $('.defect_form').validate({
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+
+    $('#cancel_defect_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+  });
+
+
+

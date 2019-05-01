@@ -234,7 +234,7 @@ class BridgeLike < TransamAssetRecord
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
       inspection_program: prog_hash[bridge_hash['USERKEY1']],
-      inspection_trip: bridge_hash['USERKEY4']
+      inspection_trip: (bridge_hash['USERKEY4'] == '-1') ? '' : bridge_hash['USERKEY4'].upcase
     }
 
     # Validate Owner and maintenance responsibility. Could DRY the code some
@@ -361,8 +361,7 @@ class BridgeLike < TransamAssetRecord
                              CulvertCondition
                            end
 
-        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,inspection_frequency: inspection_frequency,
-                                          name: bridgelike.asset_tag, inspection_type: type, notes: i_hash['NOTES'], state: 'final')
+        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,inspection_frequency: inspection_frequency, inspection_type: type, notes: i_hash['NOTES'], state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection

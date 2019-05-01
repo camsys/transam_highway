@@ -1,13 +1,14 @@
-.btn-group.pull-right.panel-action
-  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-    %i.fa.fa-cog
-    = " Actions"
-    %span.caret
-  %ul.dropdown-menu{:role => 'menu'}
-    - if can? :update, @inspection
-      - @inspection.allowable_events.each do |evt|
-        - if (can? evt.to_sym, @inspection) && !(['make_ready', 'assign'].include? evt.to_s)
-          %li
-            = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt) do
-              %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.to_s)}
-              = @inspection.get_workflow_event_label(evt.to_s)
+- allowable_events = @inspection.allowable_event_objects.select{|e| (can? e.name.to_sym, @inspection.inspection) && !(['make_ready', 'assign'].include? e.name)}
+
+- if allowable_events.count > 0
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-cog
+      = " Actions"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
+      - allowable_events.each do |evt|
+        %li
+          = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
+            %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
+            = evt.human_name
