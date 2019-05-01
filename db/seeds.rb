@@ -492,8 +492,8 @@ inspection_types = [
 
 feature_safety_types = [
     {code: '0', name:	'Not acceptable', description:	'Inspected feature does not meet currently acceptable stds. or a safety feature is required and none is provided.', active: true},
-    {code: '1', name:	'Acceptable',	description: 'Inpected feature meets currently acceptable standards.', active: true},
-    {code: 'N', name:'Not applicable', description:	'Not applicable or a safety feature is not required.', active: true}
+    {code: '1', name:	'Acceptable',	description: 'Inpected feature meets currently acceptable standards.'},
+    {code: 'N', name:'Not applicable', description:	'Not applicable or a safety feature is not required.'}
 ]
 
 element_definitions = [
@@ -600,7 +600,45 @@ element_definitions = [
 {number: 510, is_nbe: 'N', is_protective: true, cat_key: '5', type_key: '05', mat_key: '6', short_name: 'Wearing Surfaces', long_name: 'Wearing Surfaces', quantity_unit: 'sq feet', created_at: '2012-12-12 00:00:00', updated_at: '2012-12-12 00:00:00', description: 'This element is for all decks/slabs that have overlays made with flexible (asphaltic concrete), semi rigid (epoxy and polyester material) or rigid (portland cement) materials.'},
 {number: 515, is_nbe: 'N', is_protective: true, cat_key: '5', type_key: '05', mat_key: '6', short_name: 'Steel Protective Coating', long_name: 'Steel Protective Coating', quantity_unit: 'sq feet', created_at: '2012-12-12 00:00:00', updated_at: '2012-12-12 00:00:00', description: 'The element is for steel elements that have a protective coating such as paint, galvanization or other top coat steel corrosion inhibitor.'},
 {number: 520, is_nbe: 'N', is_protective: true, cat_key: '5', type_key: '05', mat_key: '6', short_name: 'Conc Re Prot Sys', long_name: 'Concrete Reinforcing Steel Protective System', quantity_unit: 'sq feet', created_at: '2012-12-12 00:00:00', updated_at: '2012-12-12 00:00:00', description: 'This element defines all types of protective systems used to protect decks or slabs regardless of the type.'},
-{number: 521, is_nbe: 'N', is_protective: true, cat_key: '5', type_key: '05', mat_key: '6', short_name: 'Conc Prot Coating', long_name: 'Concrete Protective Coating', quantity_unit: 'sq feet', created_at: '2012-12-12 00:00:00', updated_at: '2012-12-12 00:00:00', description: 'This element is for concrete elements that have a protective coating applied to them. These coating include silane/siloxane water proofers, crack sealers such as High Molecular Weight Methacrylate (HMWM) or any top coat barrier that protects concrete from deterioration and reinforcing steel from corrosion.'}
+{number: 521, is_nbe: 'N', is_protective: true, cat_key: '5', type_key: '05', mat_key: '6', short_name: 'Conc Prot Coating', long_name: 'Concrete Protective Coating', quantity_unit: 'sq feet', created_at: '2012-12-12 00:00:00', updated_at: '2012-12-12 00:00:00', description: 'This element is for concrete elements that have a protective coating applied to them. These coating include silane/siloxane water proofers, crack sealers such as High Molecular Weight Methacrylate (HMWM) or any top coat barrier that protects concrete from deterioration and reinforcing steel from corrosion.'},
+# 6XX elements
+{number: 601, is_nbe: 'Y', is_protective: 'N', mat_key: '4', long_name: 'Foundation', quantity_unit: 'each', description: 'This element defines the condition of concrete foundations.  These may be concrete caissons, concrete traffic barriers, and rectangular or other formed concrete.  Assign condition ratings on the overall condition of the foundation(s) and ability to function properly.  The condition of grout pads, if present, shall be in-cluded in this element.'},
+{number: 602, is_nbe: 'Y', is_proteciont: 'N', mat_key: '2', long_name: 'Steel - Painted Monotubes', quantity_unit: 'each'},
+{number: 603, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Steel - Unpainted Horizontal Trusses', description: ''},
+{number: 604, is_nbe: 'Y', is_protective: 'N', mat_key: '2', long_name: 'Steel - Painted Horizontal Trusses', description: ''},
+{number: 605, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Steel - Unpaointed Column', description: ''},
+{number: 606, is_nbe: 'Y', is_protective: 'N', mat_key: '2', long_name: 'Steel - Painted Column', description: ''},
+{number: 607, is_nbe: 'Y', is_protective: 'N', mat_key: '3', long_name: 'P/S Concrete Column', description: ''},
+{number: 608, is_nbe: 'Y', is_protective: 'N', mat_key: '4', long_name: 'Concrete - Column', description: ''},
+{number: 609, is_nbe: 'Y', is_protective: 'N', mat_key: '4', long_name: 'Concrete Caison', description: ''},
+{number: 610, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Anchor Bolts', description: 'This element defines the condition of anchor bolts, top nuts, leveling nuts, and washers that secure the base plate to the foundation. The nuts and bolts may be painted or unpainted.   Mention of the condition of the protective coating, such as paint, in the condition states below is for guidance only.  The protective coating of the structure is rated in the coating elements 650-652.'},
+{number: 611, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Base Plate', description: 'This element defines the base plates supporting the structure.  The anchor bolts connecting the base plate to the foundation are evaluated in Element 601-Anchor Bolts.  The welds attaching the pole to the base plate and the gusset plate welds are evaluated in the Element (612) - Base Weld/Gusset Weld.'},
+{number: 612, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Base Weld, Gusset Welds', description: 'This element defines the welds at the base of the pole connecting the pole to the base plate and the gusset plates to the pole and base plate.  Evaluate all of the welds as a unit.  Fatigue cracks, if present, are eva-luated in Smart Flag Element 693 – Fatigue.  The condition of the protective system, if any, is eva-luated in Elements 650-652.'},
+{number: 613, is_nbe: 'Y', is_protective: 'N', mat_key: '2', long_name: 'Concrete Guard Railing Protection', description: ''},
+{number: 614, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Metal Guard Railing Protection', description: ''},
+{number: 615, is_nbe: 'Y', is_protective: 'N', mat_key: '2', long_name: 'Steel - Fatigue', description: ''},
+{number: 616, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Steel Sign and Signal Str.-Bolted Splice Conn.-Pai', description: ''},
+{number: 617, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Steel Sign and Signal Str.-Bolted Splice Conn.-Unp', description: ''},
+{number: 618, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Steel Sign and Signal Str.-Welded. Conn.-Painted', description: ''},
+{number: 619, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Steel Sign and Signal Str.-Welded. Conn.-Unpainted', description: ''},
+{number: 620, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Column - Steel', description: 'This element includes the vertical posts/columns, handhole covers, and caps for the column supports of the structure.  The element components may be painted/unpainted/galvanized/weathering steel or aluminum.  Any mention of the condition of protective coatings is for guidance only.  Protective coatings are evaluated in Elements 650-651.'},
+{number: 621, is_nbe: 'Y', is_protective: 'N', mat_key: '3', long_name: 'Column - Prestressed Concrete', description: 'This element defines the condition states of prestressed concrete columns.'},
+{number: 622, is_nbe: 'Y', is_protective: 'N', mat_key: '4', long_name: 'Column - Reinforced Concrete', description: 'This element defines the condition states of mildly reinforced concrete columns.'},
+{number: 630, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Bolted Upper Connection and Splice', description: 'This element defines those bolted connections that connect portions of the sign, signal, or high-mast light structure together, e.g. the connection of the horizontal members to the pole and horizontal splices in frame members.  Reference to the coating system is for guidance only; the condition of the coating system is ad-dressed in Elements 650, 651, and 652.  Refer to Appendix F for additional guidelines for coding this item with regard to loose bolts, not fully engaged nuts, and gaps between connecting flange plates.'},
+{number: 631, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Welded Upper Connection and Splice', description: 'This element defines those welded connections, including gusset plates, which connect portions of the sign, signal, or high-mast light structure together.  These include welds attaching flange plates at bolted connec-tions to horizontal members of frame and signal mast arms; the welded assembly connecting horizontal members to the pole. Welds at the base are evaluated in Element 612.'},
+{number: 640, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Frame/Mast Arm', description: 'This element defines the general condition of the horizontal frame (sometimes referred to as the frame, mast arm,  span arm, truss, etc.) supporting signal heads, sign panels or VMS message boards.  Reference to coatings in the condition state descriptions is for guidance purposes only.  The condition of coating is addressed in Elements 650, 651, and 652.'},
+{number: 650, is_nbe: 'Y', is_protective: 'N', mat_key: '6', long_name: 'Protective System - Paint', description: 'This element defines the condition of the paint protecting the metal on a structure.'},
+{number: 651, is_nbe: 'Y', is_protective: 'N', mat_key: '6', long_name: 'Protective System - Galvanizing', description: 'This element defines the condition of the galvanized coating protecting the structure.'},
+{number: 652, is_nbe: 'Y', is_protective: 'N', mat_key: '6', long_name: 'Protective System - Weathering Steel Patina', description: 'This element defines the condition of protective patina on a weathering steel structure.'},
+{number: 660, is_nbe: 'Y', is_protective: 'N', mat_key: '4', long_name: 'Guardrail Protection - Concrete', description: 'This element defines the reinforced concrete railing that is specifically installed to protect the structure being inspected.  All elements of the rail must be concrete. Do not include this element if the rail is installed to separate traffic lanes such as along a median, to protect traffic from a nearby steep side slope, or other reason that is not specifically for protection of the sign, signal, or high-mast light. Concrete components mounted on concrete rails such as noise barriers, shall be considered part of this element.'},
+{number: 661, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Guardrail Protection - Steel', description: 'This element defines all types and shapes of metal railing.  Steel, aluminum, metal beam, rolled shapes, etc., will all be considered part of this element.  Rail posts may be either timber or steel. Do not include this element if the rail is installed to separate traffic lanes such as along a median, to protect traffic from a nearby steep side slope, or other reason that is not specifically for protection of the sign, signal, or high-mast light.'},
+{number: 662, is_nbe: 'Y', is_protective: 'N', mat_key: '6', long_name: 'Sign Lighting', description: 'This element defines lighting fixtures attached to sign structures for the purpose of illuminating the sign panels.  The lighting may be of any configuration or type.  This element does not address whether the light-ing fixtures are operational, or not, but only documents if they are present and their physical condition.  Do not count the numbers of fixtures.'},
+{number: 663, is_nbe: 'Y', is_protective: 'N', mat_key: '1', long_name: 'Steel Catwalk', description: 'This element defines the walkway structure intended to provide access to the sign for maintenance and repair.  Painted, galvanized and weathering steel catwalks are all included in this element.  Report the linear feet of catwalk in each of Condition States 2 through 4.  The number of units in Condition State 1 will be the remainder of the units after deducting from the total quantity those linear feet reported in Condition States 2 through 4.'},
+{number: 690, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Traffic Impact - Signal Mast Arm or Sign Frame', description: 'This smart flag addresses damage to signal mast arm or sign frame elements caused by traffic impact.'},
+{number: 691, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Traffic Impact - Poles/Columns', description: 'This smart flag addresses damage to signal poles or sign poles caused by traffic impact.'},
+{number: 692, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Traffic Impact - Guardrail', description: 'This smart flag addresses traffic impact damage to the guardrail system that protects signal poles and sign poles.'},
+{number: 693, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Fatigue', description: 'This element is used to record fatigue damage discovered on any of the steel structural elements of a sign, signal, or high-mast light.   Once recorded, do not exclude this element from future inspections but continue to record the Condition State using the definitions below. Use this element only on those signs, signals, and high-mast lights with steel elements that are indicating fatigue damage.   Fatigue damage may be determined either through visual or non-destructive testing methods.  Indicate the method used to discover the fatigue in the notes section of this element. Do not use this element on steel signs or signals prior to fatigue damage becoming apparent.'},
+{number: 694, is_nbe: 'Y', is_protective: 'N', mat_key: '9', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.'}
 ]
 
 inspection_programs = [
@@ -745,4 +783,15 @@ data.each do |defect, elements|
     end
   end
 
+# Add assembly types (20190227212159_add_assembly_types.rb)
+
+  def set_assembly(elt_nums, type)
+    elt_nums.each do |e|
+      elt = ElementDefinition.find_by(number: e)
+      if elt
+        elt.assembly_type = type
+        elt.save!
+      end
+    end
+  end
 
