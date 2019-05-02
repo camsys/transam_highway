@@ -25,6 +25,7 @@ class BridgeLikeCondition < InspectionRecord
       :operational_status_type_id,
       :channel_condition_type_id,
       :scour_critical_bridge_type_id,
+      :railings_safety_type_id,
       :transitions_safety_type_id,
       :approach_rail_safety_type_id,
       :approach_rail_end_safety_type_id
