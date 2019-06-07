@@ -7,3 +7,10 @@
 %span.subheader_facility_carried="#{@asset.facility_carried}" 
 = " over "
 %span.subheader_features_intersected= "#{@asset.features_intersected}"
+
+.pull-right.btn-toolbar.panel-action
+  .btn-group{:role => 'group'}
+    %button.btn.btn-primary{:type => 'button', :onclick => '$(".panel-collapse").collapse("show");'}
+      Expand
+    %button.btn.btn-primary{:type => 'button', :onclick => '$(".panel-collapse").collapse("hide");'}
+      Collapse
