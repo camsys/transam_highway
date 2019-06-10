@@ -361,7 +361,9 @@ class BridgeLike < TransamAssetRecord
                              CulvertCondition
                            end
 
-        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,inspection_frequency: inspection_frequency, inspection_type: type, notes: i_hash['NOTES'], state: 'final')
+        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
+                                          inspection_frequency: inspection_frequency, inspection_type: type,
+                                          notes: i_hash['NOTES'], state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection
@@ -507,7 +509,7 @@ class BridgeLike < TransamAssetRecord
       traffic_direction_type: TrafficDirectionType.find_by(code: hash['TRAFFICDIR']),
       on_national_highway_system: hash['NHS_IND'] == '1',
       average_daily_truck_traffic_percent: hash['TRUCKPCT'].to_i,
-      on_truck_network: hash['TRUCKNET'] = '1',
+      on_truck_network: hash['TRUCKNET'] == '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
       future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
       strahnet_designation_type: StrahnetDesignationType.find_by(code: strahnet_code)
