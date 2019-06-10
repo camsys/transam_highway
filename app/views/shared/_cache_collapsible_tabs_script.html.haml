@@ -1,0 +1,21 @@
+:javascript
+  $(function() {
+    var cache_key = "#{cache_key}";
+
+    // get last collapsed tabs and collapse them
+    var collapsed_tab_ids = localStorage.getItem(cache_key);
+    if(collapsed_tab_ids){
+      collapsed_tab_ids.split(",").forEach(function(tab_id) {
+        $('#' + tab_id + '.panel-collapse').collapse('hide');
+      });
+    }
+
+    // cache tab ids when page unload
+    $(window).unload(function() {
+      var tab_ids = [];
+      $('.panel-collapse.collapse:not(.in)').each(function() {
+        tab_ids.push($(this).attr('id'));
+      });
+      localStorage.setItem(cache_key, tab_ids);
+    });
+  });
