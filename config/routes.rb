@@ -15,7 +15,11 @@ Rails.application.routes.draw do
         member do 
           get :edit_comment
         end
+
+        resources :images
       end
+
+      resources :images
     end
 
     resources :images

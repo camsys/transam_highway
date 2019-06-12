@@ -8,6 +8,7 @@ class Element < ApplicationRecord
   belongs_to :inspection
   has_one :highway_structure, through: :inspection
   has_many :defects, dependent: :destroy
+  has_many :images, as: :imagable, dependent: :destroy
 
   scope :ordered, -> { joins(:element_definition).merge(ElementDefinition.order(:number)) }
 

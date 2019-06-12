@@ -11,6 +11,10 @@
     %li.text-left
       = link_to new_inspection_element_child_element_path(element.inspection, element), remote: true  do
         = "Add Protective System"
+    - if can? :create, element.images.build
+      %li.text-left
+        = link_to new_inspection_element_image_path(element.inspection, element, form_view: 'elements/photo_form'), :remote => true do
+          Add Photo
     %li.text-left
       = link_to edit_comment_inspection_element_path(element.inspection, element), remote: true  do
         = "Edit Comment"
