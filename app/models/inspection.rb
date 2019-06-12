@@ -24,6 +24,9 @@ class Inspection < InspectionRecord
 
   has_many :streambed_profiles
 
+  # Each asset has zero or more images. Images are deleted when the asset is deleted
+  has_many    :images,      :as => :imagable,       :dependent => :destroy
+
   scope :ordered, -> { order(event_datetime: :desc) }
 
   FORM_PARAMS = [

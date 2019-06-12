@@ -18,6 +18,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :images
+
     collection do 
       get 'reset'
       post 'new_search'
