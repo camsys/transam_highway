@@ -63,7 +63,8 @@
     .display-value= calculated_inspection_due_date.strftime('%B %Y') if calculated_inspection_due_date.present?
 
 .col-sm-4
-  - if Image.where(base_imagable: @asset.transam_asset, classification: ['Roadway', 'Elevation', 'Superstructure']).count > 0
+  - asset_images = Image.joins(:image_classification).where(base_imagable: @asset.transam_asset)
+  - if asset_images.where(image_classifications: { category: 'Inventory', name: ['Roadway', 'Elevation', 'Superstructure']}).count > 0
     .row.form-group#recentImagesCarousel.carousel.slide
       %ol.carousel-indicators
         %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
@@ -73,7 +74,7 @@
         - count = 0
         - active_set = false
 
-        - roadway_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Roadway')
+        - roadway_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Roadway' })
         - if roadway_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(roadway_img.image.url)
@@ -81,7 +82,7 @@
               .h5 Roadway
           - active_set = true
 
-        - elevation_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Elevation')
+        - elevation_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Elevation' })
         - if elevation_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(elevation_img.image.url)
@@ -89,7 +90,7 @@
               .h5 Elevation
           - active_set = true
 
-        - superstructure_img = Image.where(base_imagable: @asset.transam_asset).find_by(classification: 'Superstructure')
+        - superstructure_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Superstructure' })
         - if superstructure_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(superstructure_img.image.url)
