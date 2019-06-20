@@ -38,6 +38,7 @@ ImagesController.class_eval do
                 element_definition = u.base_imagable.element_definition&.number
               end
               if u.base_imagable_type == 'Defect'
+                element_definition = u.base_imagable.element&.element_definition&.number
                 defect_definition = u.base_imagable.defect_definition&.number
               end
 
