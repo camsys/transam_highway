@@ -126,9 +126,8 @@ class HighwayStructure < TransamAssetRecord
   #-----------------------------------------------------------------------------
 
   def reset_lanes(roadway)
-    self.lanes_on = roadways.on.sum(:lanes)
-    self.lanes_under = roadways.under.sum(:lanes)
-    save!
+    update_attributes(lanes_on: roadways.on.sum(:lanes),
+                      lanes_under: roadways.under.sum(:lanes))
   end
   
   def dup
