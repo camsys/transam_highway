@@ -491,7 +491,7 @@ class BridgeLike < TransamAssetRecord
     on_under = hash['ON_UNDER']
     return unless (on_under.size == 1) && (/[12A-Z]/ =~ on_under)
     
-    bridgelike.roadways.create!(
+    Roadway.new(
       highway_structure: bridgelike,
       on_under_indicator: hash['ON_UNDER'],
       route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
@@ -516,6 +516,60 @@ class BridgeLike < TransamAssetRecord
     )
   end
   
+
+  def self.process_inspection(hash, struct_class_code, date)
+    inspection_frequency = hash['BRINSPFREQ']
+
+    # inspection type
+    type = InspectionType.find_by(code: hash['INSPTYPE'])
+    
+    inspection_klass = case struct_class_code
+    when 'BRIDGE'
+      BridgeCondition
+    when 'CULVERT'
+      CulvertCondition
+    end
+
+    inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
+                                      inspection_frequency: inspection_frequency, inspection_type: type,
+                                      notes: hash['NOTES'], state: 'final')
+    # safety ratings
+    {railings_safety_type_id: 'RAILRATING',
+     transitions_safety_type_id: 'TRANSRATIN',
+     approach_rail_safety_type_id: 'ARAILRATIN',
+     approach_rail_end_safety_type_id: 'AENDRATING'}.each do |attribute, key|
+      inspection[attribute] = FeatureSafetyType.where(code: hash[key]).pluck(:id).first
+    end
+
+    inspection.operational_status_type = OperationalStatusType.find_by(code: hash['OPPOSTCL'])
+    inspection.channel_condition_type = ChannelConditionType.find_by(code: hash['CHANRATING'])
+    inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: hash['SCOURCRIT'])
+
+    if struct_class_code == 'BRIDGE'
+      # condition ratings
+      {deck_condition_rating_type_id: 'DKRATING',
+       superstructure_condition_rating_type_id: 'SUPRATING',
+       substructure_condition_rating_type_id: 'SUBRATING'}.each do |attribute, key|
+        inspection[attribute] = BridgeConditionRatingType.where(code: hash[key]).pluck(:id).first
+      end
+
+      inspection.underclearance_appraisal_rating_type_id = BridgeAppraisalRatingType.where(code: hash['UNDERCLR']).pluck(:id).first
+    else # Culvert
+      inspection.culvert_condition_type_id = CulvertConditionType.where(code: hash['CULVRATING']).pluck(:id).first
+    end      
+    
+    # appraisal ratings
+    {structural_appraisal_rating_type_id: 'STRRATING',
+     deck_geometry_appraisal_rating_type_id: 'DECKGEOM',
+     waterway_appraisal_rating_type_id: 'WATERADEQ',
+     approach_alignment_appraisal_rating_type_id: 'APPRALIGN'}.each do |attribute, key|
+      inspection[attribute] = BridgeAppraisalRatingType.where(code: hash[key]).pluck(:id).first
+    end
+
+    inspection.save!
+    inspection
+  end
+      
   # Convert units if needed and round values
   def self.process_quantities(value, target_units)
     case target_units
@@ -529,7 +583,7 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 inspection_program, inspection_trip)
+                                 highway_authority, inspection_program, inspection_trip)
     asset_tag = bridge_hash['BRKEY']
     
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -544,9 +598,7 @@ class BridgeLike < TransamAssetRecord
       return false, msg
     end
       
-    required = {}
-    is_new = bridgelike.new_record?
-    if is_new
+    if bridgelike.new_record?
       msg = "Created #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
@@ -565,10 +617,6 @@ class BridgeLike < TransamAssetRecord
         asset_subtype = DesignConstructionType.find_by(name: 'Culvert').asset_subtype
       end
 
-      highway_authority =
-        Organization.find_by(organization_type:
-                               OrganizationType.find_by(class_name: 'HighwayAuthority'))
-      
       required = {
         asset_subtype: asset_subtype,
         organization: highway_authority,
@@ -670,21 +718,74 @@ class BridgeLike < TransamAssetRecord
     end
 
     # See if guid needs to be initialized
-    bridgelike.update_attributes(guid: SecureRandom.uuid) unless bridgelike.guid
+    bridgelike.guid = SecureRandom.uuid unless bridgelike.guid
     
     bridgelike.attributes = optional
     
-    # Necessary to create bridge if new before processing roadway associations
-    bridgelike.save! if is_new
-
     return bridgelike, msg
   end
 
+  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class)
+    key = hash['ELEM_KEY'].to_i
+    parent_key = hash['ELEM_PARENT_KEY'].to_i
+
+    if parent_key == 0
+      elem_def = ElementDefinition.find_by(number: key)
+
+      # If not found, then probably ADE
+      if elem_def
+        # Process element
+        element = inspection.elements.build(element_definition: elem_def,
+                                            quantity: process_quantities(hash['ELEM_QUANTITY'],
+                                                                         elem_def.quantity_unit),
+                                            notes: hash['ELEM_NOTES'])
+        element.save!
+        parent_elements[key] = element
+      end        
+    else # Has parent, must be BME or defect
+      elem_parent_def = ElementDefinition.find_by(number: parent_key)
+      if elem_parent_def
+        # Find parent element
+        parent_elem = parent_elements[parent_key]
+        units = elem_parent_def.quantity_unit
+        
+        
+        # Assume defect or BME
+        defect_def = DefectDefinition.find_by(number: key)
+
+        if defect_def
+          # set quantities
+          parent_elem.defects.build(inspection: inspection,
+                                    defect_definition: defect_def,
+                                    total_quantity: process_quantities(hash['ELEM_QUANTITY'], units),
+                                    notes: hash['ELEM_NOTES'],
+                                    condition_state_1_quantity: process_quantities(hash['ELEM_QTYSTATE1'], units),
+                                    condition_state_2_quantity: process_quantities(hash['ELEM_QTYSTATE2'], units),
+                                    condition_state_3_quantity: process_quantities(hash['ELEM_QTYSTATE3'], units),
+                                    condition_state_4_quantity: process_quantities(hash['ELEM_QTYSTATE4'], units))
+
+
+        else # Assume BME
+          bme_def = ElementDefinition.find_by(number: key,
+                                              element_classification: bme_class)
+          if bme_def
+            bme = parent_elem.children.build(inspection: inspection,
+                                             element_definition: bme_def,
+                                             quantity: process_quantities(hash['ELEM_QUANTITY'], bme_def.quantity_unit),
+                                             notes: hash['ELEM_NOTES'])
+            parent_elements[key] = bme
+          end
+        end
+        parent_elem.save!
+      end
+    end
+  end
+  
   def self.determine_agent(unknown, code)
     if code == '-1'
       unknown
     elsif code.size == 1
-      StructureAgentType.find_by(code: custodian.rjust(2, '0'))
+      StructureAgentType.find_by(code: code.rjust(2, '0'))
     else
       StructureAgentType.find_by(code: code)
     end
