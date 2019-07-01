@@ -55,7 +55,7 @@
                       - cols = @asset.streambed_profiles.first.try(:all_possible_distances) || []
                       - cols.each do |distance|
                         %th.center= distance
-                      %th.center Water Lever
+                      %th.center Water Level
 
                   %tbody
                     - @asset.streambed_profiles.where('date <= ?', (@inspection.calculated_inspection_due_date + 1.day)).each do |profile|
