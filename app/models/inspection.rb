@@ -1,5 +1,7 @@
 class Inspection < InspectionRecord
 
+  after_initialize :set_defaults
+
   actable as: :inspectionible
 
   include TransamObjectKey
@@ -22,7 +24,7 @@ class Inspection < InspectionRecord
   has_many :elements, dependent: :destroy
   has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
-  has_many :streambed_profiles
+  has_one :streambed_profile
 
   # Each asset has zero or more images. Images are deleted when the asset is deleted
   has_many    :images,      :as => :imagable,       :dependent => :destroy
@@ -155,6 +157,12 @@ class Inspection < InspectionRecord
 
   def updatable?
     state != 'final'
+  end
+
+  protected
+
+  def set_defaults
+    self.create_streambed_profile if self.streambed_profile.nil?
   end
 
 end

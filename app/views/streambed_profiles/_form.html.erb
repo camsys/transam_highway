@@ -1,0 +1,17 @@
+<%= form_with(model: streambed_profile, local: true) do |form| %>
+  <% if streambed_profile.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(streambed_profile.errors.count, "error") %> prohibited this streambed_profile from being saved:</h2>
+
+      <ul>
+      <% streambed_profile.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
