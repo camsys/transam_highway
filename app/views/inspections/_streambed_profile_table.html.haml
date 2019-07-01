@@ -113,7 +113,7 @@
     });
 
     $.ajax({
-      url: "#{inspection_streambed_profile_path(@inspection.object_key, @inspection.streambed_profile)}",
+      url: "#{inspection_streambed_profile_path(@inspection.object_key, @inspection.streambed_profile || 'xxx')}",
       method: 'put',
       data: {
         targets: targets,
