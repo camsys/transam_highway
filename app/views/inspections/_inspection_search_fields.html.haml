@@ -18,7 +18,7 @@
 .col-sm-3
   .row
     %label.control-label.col-sm-12
-      = reference_label('inspections', 'calculated_inspection_due_date', 'Inspection Due Date')
+      = reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')
     .col-sm-5
       = f.input :min_calculated_inspection_due_date, :label => false, :wrapper => :vertical_append do
         = f.input_field :min_calculated_inspection_due_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_min_calculated_inspection_due_date'}, :value => f.object.min_calculated_inspection_due_date
@@ -55,7 +55,19 @@
 :javascript
   $(function() {
     $('.datepicker-clear').bootstrapDP({
+      minViewMode: "months",
       autoclose: true
+    });
+
+    $('#inspection_proxy_max_calculated_inspection_due_date, #inspection_proxy_max_inspection_date').datepicker().on("changeMonth", function(e) {
+      // change to end of month date
+      var currentDate = e.date;
+      console.log(currentDate);
+      var endMonthDate = moment(currentDate).endOf("month").toDate();
+      var _self = this;
+      setTimeout(function() {
+        $(_self).datepicker('update', endMonthDate);
+      }, 50);
     });
 
     function show_hide_inspection_team_options(group_id) {
