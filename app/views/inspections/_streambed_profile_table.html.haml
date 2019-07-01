@@ -1,0 +1,131 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+
+.row
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading
+        %h3.panel-title
+          %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
+          - if can?(:update, @inspection.inspection)
+            .btn-group.pull-right.panel-action
+              %div
+                %button.btn.btn-primary.edit-streambed-profiles-button
+                  Edit
+              .save-streambed-profiles-buttons{style: 'display: none;'}
+                %button.btn.btn-primary.save-streambed-profiles-button
+                  Save
+                %button.btn.btn-primary.cancel-streambed-profiles-button
+                  Cancel
+      #collapse-streambed.panel-collapse.collapse.in
+        .panel-body
+          .row
+            .col-md-12
+              #spinner{:style => 'padding: 20px; display: none;'}
+                = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
+
+              #streambed_table_actions.btn-toolbar
+                - if can?(:update, @inspection.inspection)
+                  .btn-group
+                    = link_to new_inspection_streambed_profile_streambed_profile_point_path(@inspection.object_key, @inspection.streambed_profile.object_key), remote: true, class: 'btn btn-primary', title: 'New Distance' do
+                      %i.fa.fa-plus
+                      = " New Distance"
+              .table-responsive#streambed_table
+                -# Remove .table-hover with data-classes
+                %table{:id => table_dom_id,
+                        :data => {:toggle => 'table',
+                        :card_view => "false",
+                        :classes => 'table',
+                        :pagination => 'false',
+                        :sort_order => 'asc',
+                        :sortable => 'false',
+                        :search => 'false',
+                        :show_columns => 'false',
+                        :toolbar => "#streambed_table_actions",
+                        :row_style => 'row_style',
+                        :click_to_select => 'false',
+                        :show_export => 'true',
+                        :id_field => 'object_key',
+                        :export_types => "['csv', 'txt', 'excel']",
+                        :cookie => 'true',
+                        :cookie_id_table => "inspections_id",
+                        :cookie_expire => "1y",
+                        :maintain_selected => 'true',
+                        :single_select => 'false'}}
+                  %thead
+                    %tr
+                      %th.center Inspection Year
+                      - cols = @inspection.streambed_profile.streambed_profile_points.pluck(:distance)
+                      - cols.each do |distance|
+                        %th.center= distance
+                      %th.center Water Lever
+
+                  %tbody
+                    - @asset.streambed_profiles.each do |profile|
+                      %tr
+                        %td.center= profile.date.year
+                        - cols.each do |distance|
+                          - profile_point = profile.streambed_profile_points.find_by(distance: distance)
+                          - if profile_point
+                            - if profile.inspection.object_key == @inspection.object_key && (can? :update, @inspection)
+                              %td.center
+                                %span.number-display
+                                  = format_as_integer(profile_point.value)
+                                %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
+                            - else
+                              %td.center= profile_point.value
+                          - else
+                            %td.center
+                        %td.center
+                          - if profile.inspection.object_key == @inspection.object_key && (can? :update, @inspection)
+                            %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
+                          - else
+                            = profile.water_level
+
+:javascript
+  $(function() {
+    $('.edit-streambed-profiles-button').on('click', function() {
+      $('.edit-streambed-profiles-button').hide();
+      $('.save-streambed-profiles-buttons').show();
+      enable_streambed_profile_editing();
+    });
+    $('.save-streambed-profiles-button').on('click', function() {
+      submit_streambed_profile_changes();
+    });
+    $('.cancel-streambed-profiles-button').on('click', function() {
+      // reload
+      window.location.href = "#{inspection_path(@inspection.object_key, anchor: 'collapse-streambed')}";
+      window.location.reload();
+    });
+  });
+
+  function enable_streambed_profile_editing() {
+    $('#streambed_table .number-display').hide();
+    $('#streambed_table .number-input').show();
+  }
+
+  function submit_streambed_profile_changes() {
+    $("#spinner").show();
+
+    var targets = {};
+    $( "#streambed_table :not(.water-level)" ).each(function( index ) {
+      targets[$(this).data('streambed-profile-point')] = $(this).val();
+    });
+
+    $.ajax({
+      url: "#{inspection_streambed_profile_path(@inspection.object_key, @inspection.streambed_profile)}",
+      method: 'put',
+      data: {
+        targets: targets,
+        streambed_profile: {water_level: }
+      },
+      success: function() {
+        $("#spinner").hide();
+        window.location.reload();
+      },
+      failure: function() {
+        $("#spinner").hide();
+        alert('An error occurred saving the changes. Please try again.');
+      }
+    })
+  }

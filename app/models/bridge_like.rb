@@ -18,6 +18,8 @@ class BridgeLike < TransamAssetRecord
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
 
+  has_many :streambed_profiles, foreign_key: :transam_asset_id
+
   has_many :bridge_like_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition'
 
 
