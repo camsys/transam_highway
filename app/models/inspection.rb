@@ -1,7 +1,5 @@
 class Inspection < InspectionRecord
 
-  after_initialize :set_defaults
-
   actable as: :inspectionible
 
   include TransamObjectKey
