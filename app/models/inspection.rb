@@ -152,7 +152,7 @@ class Inspection < InspectionRecord
   def open_new_inspection
     new_insp = self.highway_structure.open_inspection
 
-    new_insp.create_streambed_profile
+    new_insp.create_streambed_profile unless new_insp.streambed_profile.present?
 
     new_insp
 

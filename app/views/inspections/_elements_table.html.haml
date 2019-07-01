@@ -51,8 +51,6 @@
 
 .row
   .col-md-12
-    #spinner{:style => 'padding: 20px; display: none;'}
-      = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
 
     #table_actions.btn-toolbar
       - if can?(:update, @inspection.inspection)

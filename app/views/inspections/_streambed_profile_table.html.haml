@@ -7,7 +7,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update, @inspection.inspection)
+          - if @inspection.updatable? && can?(:update, @inspection.inspection)
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -21,11 +21,8 @@
         .panel-body
           .row
             .col-md-12
-              #spinner{:style => 'padding: 20px; display: none;'}
-                = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
-
               #streambed_table_actions.btn-toolbar
-                - if can?(:update, @inspection.inspection)
+                - if @inspection.streambed_profile && @inspection.updatable? && can?(:update, @inspection.inspection)
                   .btn-group
                     = link_to new_inspection_streambed_profile_streambed_profile_point_path(@inspection.object_key, @inspection.streambed_profile.object_key), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
@@ -55,30 +52,34 @@
                   %thead
                     %tr
                       %th.center Inspection Year
-                      - cols = @inspection.streambed_profile.streambed_profile_points.pluck(:distance)
+                      - cols = @asset.streambed_profiles.first.try(:all_possible_distances) || []
                       - cols.each do |distance|
                         %th.center= distance
                       %th.center Water Lever
 
                   %tbody
-                    - @asset.streambed_profiles.each do |profile|
+                    - @asset.streambed_profiles.where('date <= ?', @inspection.calculated_inspection_due_date).each do |profile|
                       %tr
                         %td.center= profile.date.year
                         - cols.each do |distance|
                           - profile_point = profile.streambed_profile_points.find_by(distance: distance)
                           - if profile_point
                             %td.center
-                              %span.number-display
-                                = format_as_decimal(profile_point.value,1)
-                              - if profile.inspection.object_key == @inspection.object_key
+                              - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                                %span.number-display
+                                  = format_as_decimal(profile_point.value,1)
                                 %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
+                              - else
+                                = format_as_decimal(profile_point.value,1)
                           - else
                             %td.center
                         %td.center
-                          %span.number-display
-                            = format_as_decimal(profile.water_level,1)
-                          - if profile.inspection.object_key == @inspection.object_key
+                          - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                            %span.number-display
+                              = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
+                          - else
+                            = format_as_decimal(profile.water_level,1)
 
 
 :javascript

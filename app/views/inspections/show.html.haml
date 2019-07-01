@@ -113,5 +113,8 @@
         .panel-body
           PENDING
 
+#spinner{:style => 'padding: 20px; display: none;'}
+  = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
+
 = render 'scripts'
 = render 'shared/cache_collapsible_tabs_script', cache_key: "inspection-profile-#{@inspection.object_key}"
