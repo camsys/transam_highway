@@ -11,6 +11,17 @@ namespace :transam_highway do
       Rake::Task[cmd].invoke
     end
   end
+
+  desc "check and add streambed profiles to all non-final inspections"
+  task :create_streambed_profiles, [:where_hash] => [:environment] do |t, args|
+    inspections = Inspection.joins('LEFT JOIN streambed_profiles ON inspections.id = streambed_profiles.inspection_id').where(streambed_profiles: {inspection_id: nil}).where.not(state: 'final')
+
+    inspections = inspections.where(args[:where_hash]) unless args[:where_hash].empty?
+
+    inspections.each do |insp|
+      insp.create_streambed_profile
+    end
+  end
 end
 
 namespace :test do

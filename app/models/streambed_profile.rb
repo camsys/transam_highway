@@ -11,6 +11,10 @@ class StreambedProfile < ApplicationRecord
 
   default_scope { order(:date) }
 
+  def self.allowable_params
+    [:water_level]
+  end
+
   protected
 
   def set_defaults
@@ -19,9 +23,16 @@ class StreambedProfile < ApplicationRecord
     self.date ||= inspection.calculated_inspection_due_date
   end
 
+  # look at all related streambed profiles associated with the asset to get all possible columns
+  # this profile instance might not have all those columns but these are all the columns it could have
+  # on create, it pulls these columns. it doesn't update later if new columns are added later or changed
+  def all_possible_distances
+    bridge_like.streambed_profiles.map{|x| x.streambed_profiles.pluck(:distance)}.flatten.uniq.sort
+  end
+
   def create_streambed_profile_points
-    bridge_like.streambed_profiles.last.streambed_profile_points.each do |profile_point|
-      self.streambed_profile_points.create(distance: profile_point.distance)
+    all_possible_distances.each do |dist|
+      self.streambed_profile_points.create(distance: dist)
     end
   end
 end

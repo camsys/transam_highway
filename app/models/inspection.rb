@@ -152,7 +152,12 @@ class Inspection < InspectionRecord
   # called as callback after `finalize` event
   # to open a new inspection
   def open_new_inspection
-    self.highway_structure.open_inspection
+    new_insp = self.highway_structure.open_inspection
+
+    new_insp.create_streambed_profile
+
+    new_insp
+
   end
 
   def updatable?
@@ -160,9 +165,5 @@ class Inspection < InspectionRecord
   end
 
   protected
-
-  def set_defaults
-    self.create_streambed_profile if self.streambed_profile.nil?
-  end
 
 end

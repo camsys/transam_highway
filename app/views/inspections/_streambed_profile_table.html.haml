@@ -77,6 +77,10 @@
                           - else
                             %td.center
                         %td.center
+                          - if profile.inspection.object_key == @inspection.object_key && (can? :update, @inspection)
+                            %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
+                          - else
+                            = profile.water_level
 
 :javascript
   $(function() {
@@ -104,7 +108,7 @@
     $("#spinner").show();
 
     var targets = {};
-    $( "#streambed_table input" ).each(function( index ) {
+    $( "#streambed_table :not(.water-level)" ).each(function( index ) {
       targets[$(this).data('streambed-profile-point')] = $(this).val();
     });
 
@@ -112,7 +116,8 @@
       url: "#{inspection_streambed_profile_path(@inspection.object_key, @inspection.streambed_profile)}",
       method: 'put',
       data: {
-        targets: targets
+        targets: targets,
+        streambed_profile: {water_level: }
       },
       success: function() {
         $("#spinner").hide();

@@ -4,7 +4,7 @@ class StreambedProfilePointsController < ApplicationController
 
   # GET /streambed_profile_points
   def index
-    @streambed_profile_points = StreambedProfilePoint.all
+    @streambed_profile_points = @streambed_profile.streambed_profile_points
   end
 
   # GET /streambed_profile_points/1

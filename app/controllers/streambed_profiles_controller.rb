@@ -1,9 +1,14 @@
 class StreambedProfilesController < ApplicationController
+  before_action :set_inspection
   before_action :set_streambed_profile, only: [:edit, :update, :destroy]
+
+  def index
+    @streambed_profiles = @inspection.streambed_profiles
+  end
 
   # GET /streambed_profiles/new
   def new
-    @streambed_profile = StreambedProfile.new
+    @streambed_profile = @inspection.streambed_profiles.build
   end
 
   # GET /streambed_profiles/1/edit
@@ -12,7 +17,7 @@ class StreambedProfilesController < ApplicationController
 
   # POST /streambed_profiles
   def create
-    @streambed_profile = StreambedProfile.new(streambed_profile_params)
+    @streambed_profile = @inspection.streambed_profiles.build(streambed_profile_params)
 
     if @streambed_profile.save
       redirect_to @streambed_profile, notice: 'Streambed profile was successfully created.'
@@ -45,14 +50,18 @@ class StreambedProfilesController < ApplicationController
   end
 
   private
+
+    def set_inspection
+      @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:inspection_id]))
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_streambed_profile
-      @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:inspection_id]))
       @streambed_profile = StreambedProfile.find_by(object_key: params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def streambed_profile_params
-      params.fetch(:streambed_profile, {})
+      params.require(:streambed_profile).permit(StreambedProfile.allowable_params)
     end
 end
