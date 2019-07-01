@@ -117,7 +117,7 @@
       method: 'put',
       data: {
         targets: targets,
-        streambed_profile: {water_level: }
+        streambed_profile: {water_level: $('input.water-level').val()}
       },
       success: function() {
         $("#spinner").hide();
