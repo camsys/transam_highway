@@ -33,7 +33,8 @@ class StreambedProfilesController < ApplicationController
 
       if params[:targets]
         params[:targets].each do |target, val|
-          @streambed_profile.streambed_profile_points.find_by(object_key: target).update(value: val)
+          profile_point = @streambed_profile.streambed_profile_points.find_by(object_key: target)
+          profile_point.update(value: val) unless profile_point.nil?
         end
       end
 
