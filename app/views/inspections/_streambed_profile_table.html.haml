@@ -67,20 +67,19 @@
                         - cols.each do |distance|
                           - profile_point = profile.streambed_profile_points.find_by(distance: distance)
                           - if profile_point
-                            - if profile.inspection.object_key == @inspection.object_key && (can? :update, @inspection)
-                              %td.center
-                                %span.number-display
-                                  = format_as_integer(profile_point.value)
+                            %td.center
+                              %span.number-display
+                                = format_as_decimal(profile_point.value)
+                              - if profile.inspection.object_key == @inspection.object_key
                                 %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
-                            - else
-                              %td.center= profile_point.value
                           - else
                             %td.center
                         %td.center
-                          - if profile.inspection.object_key == @inspection.object_key && (can? :update, @inspection)
+                          %span.number-display
+                            = format_as_decimal(profile.water_level)
+                          - if profile.inspection.object_key == @inspection.object_key
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
-                          - else
-                            = profile.water_level
+
 
 :javascript
   $(function() {
