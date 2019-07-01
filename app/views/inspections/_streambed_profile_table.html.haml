@@ -58,7 +58,7 @@
                       %th.center Water Lever
 
                   %tbody
-                    - @asset.streambed_profiles.where('date <= ?', @inspection.calculated_inspection_due_date).each do |profile|
+                    - @asset.streambed_profiles.where('date <= ?', (@inspection.calculated_inspection_due_date +1.day)).each do |profile|
                       %tr
                         %td.center= profile.date.year
                         - cols.each do |distance|
