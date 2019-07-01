@@ -69,14 +69,14 @@
                           - if profile_point
                             %td.center
                               %span.number-display
-                                = format_as_decimal(profile_point.value)
+                                = format_as_decimal(profile_point.value,1)
                               - if profile.inspection.object_key == @inspection.object_key
                                 %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
                           - else
                             %td.center
                         %td.center
                           %span.number-display
-                            = format_as_decimal(profile.water_level)
+                            = format_as_decimal(profile.water_level,1)
                           - if profile.inspection.object_key == @inspection.object_key
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
 
