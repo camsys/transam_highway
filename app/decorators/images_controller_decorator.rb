@@ -1,19 +1,18 @@
 ImagesController.class_eval do 
   def index
     if params[:global_base_imagable]
-      @imagable = GlobalID::Locator.locate params[:global_base_imagable]
+      @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_base_imagable]))
+      @images = Image.where(base_imagable: @imagable)
+    elsif params[:global_any_imagable] # parameter to return images of self as parent and children
+      @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_base_imagable]))
+      @images = Image.where(base_imagable: @imagable).or(Image.where(imagable: @imagable))
     else
       @imagable = find_resource
+      @images = @imagable.images
     end
 
+
     if @imagable
-      if @imagable.is_a?(Inspection)
-        insp = @imagable.inspection
-        base_imagables = [insp] + insp.elements + Defect.where(element: insp.elements)
-        @images = Image.where(base_imagable: base_imagables)
-      else
-        @images = @imagable.images
-      end
 
       if params[:sort].present? && params[:order].present?
         if params[:sort] == 'creator'
