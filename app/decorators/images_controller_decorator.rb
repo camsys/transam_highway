@@ -1,4 +1,7 @@
-ImagesController.class_eval do 
+ImagesController.class_eval do
+
+  authorize_resource only: [:new, :create, :edit, :update, :destroy]
+
   def index
     if params[:global_base_imagable]
       @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_base_imagable]))
