@@ -8,7 +8,7 @@ class StreambedProfilesController < ApplicationController
 
   # GET /streambed_profiles/new
   def new
-    @streambed_profile = @inspection.streambed_profiles.build
+    @streambed_profile = @inspection.build_streambed_profile
   end
 
   # GET /streambed_profiles/1/edit
