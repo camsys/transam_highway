@@ -18,6 +18,8 @@ class BridgeLike < TransamAssetRecord
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
 
+  has_many :streambed_profiles, foreign_key: :transam_asset_id
+
   has_many :bridge_like_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition'
 
 
@@ -133,7 +135,7 @@ class BridgeLike < TransamAssetRecord
     when 'CAC', 'CBC', 'PCBC', 'SAC'
       struct_class_code == 'CULVERT'
     end
-    
+
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
     bridgelike = nil
     case struct_class_code
@@ -159,7 +161,7 @@ class BridgeLike < TransamAssetRecord
         asset_subtype = design_type.asset_subtype
         # Sanity check
         unless asset_subtype.asset_type.name.upcase == struct_class_code
-          return false, "#{asset_tag}: main span construction type #{design_type} does not math structure class #{struct_class_code}"
+          return false, "#{asset_tag}: main span construction type #{design_type} does not match structure class #{struct_class_code}"
         end
       elsif struct_class_code == 'BRIDGE'
         asset_subtype = DesignConstructionType.find_by(name: 'Other').asset_subtype
@@ -361,7 +363,9 @@ class BridgeLike < TransamAssetRecord
                              CulvertCondition
                            end
 
-        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,inspection_frequency: inspection_frequency, inspection_type: type, notes: i_hash['NOTES'], state: 'final')
+        inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
+                                          inspection_frequency: inspection_frequency, inspection_type: type,
+                                          notes: i_hash['NOTES'], state: 'final')
 
         bridgelike.inspections << inspection
         inspections[i_hash['INSPKEY']] = inspection
@@ -489,7 +493,7 @@ class BridgeLike < TransamAssetRecord
     on_under = hash['ON_UNDER']
     return unless (on_under.size == 1) && (/[12A-Z]/ =~ on_under)
     
-    bridgelike.roadways.create!(
+    Roadway.new(
       highway_structure: bridgelike,
       on_under_indicator: hash['ON_UNDER'],
       route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
@@ -507,13 +511,67 @@ class BridgeLike < TransamAssetRecord
       traffic_direction_type: TrafficDirectionType.find_by(code: hash['TRAFFICDIR']),
       on_national_highway_system: hash['NHS_IND'] == '1',
       average_daily_truck_traffic_percent: hash['TRUCKPCT'].to_i,
-      on_truck_network: hash['TRUCKNET'] = '1',
+      on_truck_network: hash['TRUCKNET'] == '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
       future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
       strahnet_designation_type: StrahnetDesignationType.find_by(code: strahnet_code)
     )
   end
   
+
+  def self.process_inspection(hash, struct_class_code, date)
+    inspection_frequency = hash['BRINSPFREQ']
+
+    # inspection type
+    type = InspectionType.find_by(code: hash['INSPTYPE'])
+    
+    inspection_klass = case struct_class_code
+    when 'BRIDGE'
+      BridgeCondition
+    when 'CULVERT'
+      CulvertCondition
+    end
+
+    inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
+                                      inspection_frequency: inspection_frequency, inspection_type: type,
+                                      notes: hash['NOTES'], state: 'final')
+    # safety ratings
+    {railings_safety_type_id: 'RAILRATING',
+     transitions_safety_type_id: 'TRANSRATIN',
+     approach_rail_safety_type_id: 'ARAILRATIN',
+     approach_rail_end_safety_type_id: 'AENDRATING'}.each do |attribute, key|
+      inspection[attribute] = FeatureSafetyType.where(code: hash[key]).pluck(:id).first
+    end
+
+    inspection.operational_status_type = OperationalStatusType.find_by(code: hash['OPPOSTCL'])
+    inspection.channel_condition_type = ChannelConditionType.find_by(code: hash['CHANRATING'])
+    inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: hash['SCOURCRIT'])
+
+    if struct_class_code == 'BRIDGE'
+      # condition ratings
+      {deck_condition_rating_type_id: 'DKRATING',
+       superstructure_condition_rating_type_id: 'SUPRATING',
+       substructure_condition_rating_type_id: 'SUBRATING'}.each do |attribute, key|
+        inspection[attribute] = BridgeConditionRatingType.where(code: hash[key]).pluck(:id).first
+      end
+
+      inspection.underclearance_appraisal_rating_type_id = BridgeAppraisalRatingType.where(code: hash['UNDERCLR']).pluck(:id).first
+    else # Culvert
+      inspection.culvert_condition_type_id = CulvertConditionType.where(code: hash['CULVRATING']).pluck(:id).first
+    end      
+    
+    # appraisal ratings
+    {structural_appraisal_rating_type_id: 'STRRATING',
+     deck_geometry_appraisal_rating_type_id: 'DECKGEOM',
+     waterway_appraisal_rating_type_id: 'WATERADEQ',
+     approach_alignment_appraisal_rating_type_id: 'APPRALIGN'}.each do |attribute, key|
+      inspection[attribute] = BridgeAppraisalRatingType.where(code: hash[key]).pluck(:id).first
+    end
+
+    inspection.save!
+    inspection
+  end
+      
   # Convert units if needed and round values
   def self.process_quantities(value, target_units)
     case target_units
@@ -523,6 +581,215 @@ class BridgeLike < TransamAssetRecord
       Uom.convert(value.to_f, Uom::METER, Uom::FEET).round(NDIGITS)
     else
       value.to_f.round(NDIGITS)
+    end
+  end
+
+  def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
+                                 highway_authority, inspection_program, inspection_trip)
+    asset_tag = bridge_hash['BRKEY']
+    
+    # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
+    bridgelike = nil
+    case struct_class_code
+    when 'BRIDGE'
+      bridgelike = Bridge.find_or_initialize_by(asset_tag: asset_tag)
+    when 'CULVERT'
+      bridgelike = Culvert.find_or_initialize_by(asset_tag: asset_tag)
+    else
+      msg = "Skipping processing of Structure Class: #{struct_class_code}"
+      return false, msg
+    end
+      
+    if bridgelike.new_record?
+      msg = "Created #{struct_class_code} #{asset_tag}"
+      # Set asset required fields
+      # determine correct asset_subtype, NBI 43D
+      # standardize format
+      design_code = bridge_hash['DESIGNMAIN'].rjust(2, '0')
+      design_type = DesignConstructionType.find_by(code: design_code)
+      if design_type
+        asset_subtype = design_type.asset_subtype
+        # Sanity check
+        unless asset_subtype.asset_type.name.upcase == struct_class_code
+          return false, "#{asset_tag}: main span construction type #{design_type} does not match structure class #{struct_class_code}"
+        end
+      elsif struct_class_code == 'BRIDGE'
+        asset_subtype = DesignConstructionType.find_by(name: 'Other').asset_subtype
+      elsif struct_class_code == 'CULVERT'
+        asset_subtype = DesignConstructionType.find_by(name: 'Culvert').asset_subtype
+      end
+
+      required = {
+        asset_subtype: asset_subtype,
+        organization: highway_authority,
+        purchase_cost: 0,
+        in_service_date: Date.today,
+        purchase_date: Date.today,
+        purchased_new: true
+      }
+      bridgelike.attributes = required
+    else
+      msg = "Updated #{struct_class_code} #{asset_tag}"
+    end
+    
+    optional = {
+      # TransamAsset, NBI 1, 8, 27
+      state: bridgelike.organization.state,
+      structure_number: bridge_hash['STRUCT_NUM'],
+      manufacture_year: bridge_hash['YEARBUILT'],
+      # HighwayStructure, NBI 6A, 7, 9, 21, 22, 23, 37, 43A, 43B, 43C, 103
+      features_intersected: bridge_hash['FEATINT'],
+      facility_carried: bridge_hash['FACILITY'],
+      location_description: bridge_hash['LOCATION'],
+      description: bridge_hash['LOCATION'],
+      structure_status_type: StructureStatusType.find_by(code: bridge_hash['BRIDGE_STATUS']),
+      historical_significance_type: HistoricalSignificanceType.find_by(code: bridge_hash['HISTSIGN']),
+      main_span_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALMAIN']),
+      main_span_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNMAIN'].rjust(2, '0')),
+      highway_structure_type: HighwayStructureType.find_by(code: struct_type_code),
+      is_temporary: (bridge_hash['TEMPSTRUC'] == 'T'),
+      # BridgeLike, NBI 31, 42A, 42B, 44A, 44B, 45, 46, 48, 49, 50A, 50B, 52, 53, 54A, 54B,
+      # 55A, 55B, 56, 63, 64, 65, 66, 70, 107, 108A, 108B, 108C
+      design_load_type: DesignLoadType.find_by(code: bridge_hash['DESIGNLOAD']),
+      service_on_type: ServiceOnType.find_by(code: bridge_hash['SERVTYPON']),
+      service_under_type: ServiceUnderType.find_by(code: bridge_hash['SERVTYPUND']),
+      approach_spans_material_type: StructureMaterialType.find_by(code: bridge_hash['MATERIALAPPR']),
+      approach_spans_design_construction_type: DesignConstructionType.find_by(code: bridge_hash['DESIGNAPPR'].rjust(2, '0')),
+      num_spans_main: bridge_hash['MAINSPANS'].to_i,
+      num_spans_approach: bridge_hash['APPSPANS'].to_i,
+      max_span_length: Uom.convert(bridge_hash['MAXSPAN'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      length: Uom.convert(bridge_hash['LENGTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      left_curb_sidewalk_width: Uom.convert(bridge_hash['LFTCURBSW'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      right_curb_sidewalk_width: Uom.convert(bridge_hash['RTCURBSW'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      deck_width: Uom.convert(bridge_hash['DECKWIDTH'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      min_vertical_clearance_above: Uom.convert(bridge_hash['VCLROVER'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      vertical_reference_feature_below: ReferenceFeatureType.find_by(code: bridge_hash['REFVUC']),
+      min_vertical_clearance_below: Uom.convert(bridge_hash['VCLRUNDER'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+
+      lateral_reference_feature_below: ReferenceFeatureType.find_by(code: bridge_hash['REFHUC']),
+      min_lateral_clearance_below_right: Uom.convert(bridge_hash['HCLRURT'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      min_lateral_clearance_below_left: Uom.convert(bridge_hash['HCLRULT'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      operating_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['ORTYPE'].to_s),
+      operating_rating: Uom.convert(bridge_hash['ORLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
+      inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE'].to_s),
+      inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
+      bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
+      remarks: bridge_hash['NOTES'],
+      inspection_program: inspection_program,
+      inspection_trip: inspection_trip
+    }
+
+    # Validate Owner and maintenance responsibility. 
+    unknown = StructureAgentType.find_by(name: 'Unknown')
+
+    optional[:maintenance_responsibility] = determine_agent(unknown, bridge_hash['CUSTODIAN'])
+    optional[:owner] = determine_agent(unknown, bridge_hash['OWNER'])
+    
+    # Bridge vs. Culvert
+    case struct_class_code
+    when 'BRIDGE'
+      optional[:deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
+      optional[:wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
+      optional[:membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])
+      optional[:deck_protection_type] = DeckProtectionType.find_by(code: bridge_hash['DKPROTECT'])
+    when 'CULVERT'
+    end
+    
+    # process district, NBI 2E, 2M
+    # split into region and maintenance section
+    district = bridge_hash['DISTRICT']
+    optional[:region] = Region.find_by(code: district[0])
+    optional[:maintenance_section] = MaintenanceSection.find_by(code: district[1])
+
+    # process county & city/placecode, NBI 3, 4
+    optional[:county] = District.find_by(code: bridge_hash['COUNTY'],
+                                         district_type: DistrictType.find_by(name: 'County'))&.name || 'Unknown'
+    optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
+                                       district_type: DistrictType.find_by(name: 'Place'))&.name ||
+                      District.find_by(code: '-1')
+
+    # Process lat/lon, NBI 16, 17
+    lat = bridge_hash['PRECISE_LAT'].to_f
+    lon = -1 * bridge_hash['PRECISE_LON'].to_f
+    c = SystemConfig.instance
+    if lat > c.min_lat && lat < c.max_lat && lon > c.min_lon && lon < c.max_lon
+      optional[:latitude] = lat
+      optional[:longitude] = lon
+    else
+      return false, "Location data not valid for #{asset_tag}. lat: #{lat}, lon: #{lon}"
+    end
+
+    # See if guid needs to be initialized
+    bridgelike.guid = SecureRandom.uuid unless bridgelike.guid
+    
+    bridgelike.attributes = optional
+    
+    return bridgelike, msg
+  end
+
+  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class)
+    key = hash['ELEM_KEY'].to_i
+    parent_key = hash['ELEM_PARENT_KEY'].to_i
+
+    if parent_key == 0
+      elem_def = ElementDefinition.find_by(number: key)
+
+      # If not found, then probably ADE
+      if elem_def
+        # Process element
+        element = inspection.elements.build(element_definition: elem_def,
+                                            quantity: process_quantities(hash['ELEM_QUANTITY'],
+                                                                         elem_def.quantity_unit),
+                                            notes: hash['ELEM_NOTES'])
+        element.save!
+        parent_elements[key] = element
+      end        
+    else # Has parent, must be BME or defect
+      elem_parent_def = ElementDefinition.find_by(number: parent_key)
+      if elem_parent_def
+        # Find parent element
+        parent_elem = parent_elements[parent_key]
+        units = elem_parent_def.quantity_unit
+        
+        
+        # Assume defect or BME
+        defect_def = DefectDefinition.find_by(number: key)
+
+        if defect_def
+          # set quantities
+          parent_elem.defects.build(inspection: inspection,
+                                    defect_definition: defect_def,
+                                    total_quantity: process_quantities(hash['ELEM_QUANTITY'], units),
+                                    notes: hash['ELEM_NOTES'],
+                                    condition_state_1_quantity: process_quantities(hash['ELEM_QTYSTATE1'], units),
+                                    condition_state_2_quantity: process_quantities(hash['ELEM_QTYSTATE2'], units),
+                                    condition_state_3_quantity: process_quantities(hash['ELEM_QTYSTATE3'], units),
+                                    condition_state_4_quantity: process_quantities(hash['ELEM_QTYSTATE4'], units))
+
+
+        else # Assume BME
+          bme_def = ElementDefinition.find_by(number: key,
+                                              element_classification: bme_class)
+          if bme_def
+            bme = parent_elem.children.build(inspection: inspection,
+                                             element_definition: bme_def,
+                                             quantity: process_quantities(hash['ELEM_QUANTITY'], bme_def.quantity_unit),
+                                             notes: hash['ELEM_NOTES'])
+            parent_elements[key] = bme
+          end
+        end
+        parent_elem.save!
+      end
+    end
+  end
+  
+  def self.determine_agent(unknown, code)
+    if code == '-1'
+      unknown
+    elsif code.size == 1
+      StructureAgentType.find_by(code: code.rjust(2, '0'))
+    else
+      StructureAgentType.find_by(code: code)
     end
   end
   

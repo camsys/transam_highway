@@ -37,6 +37,8 @@
 
 = render 'elements_panel'
 
+.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+
 .row
   .col-sm-12
     .panel.panel-default.editable-fields-container
@@ -47,15 +49,8 @@
       #collapse-conditions.panel-collapse.collapse.in
         .panel-body
           = render 'conditions'
-.row
-  .col-sm-12
-    .panel.panel-default
-      .panel-heading
-        %h3.panel-title
-          %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-      #collapse-streambed.panel-collapse.collapse.in
-        .panel-body
-          PENDING
+
+= render 'streambed_profile_table'
 
 .row
   .col-sm-12
@@ -75,7 +70,7 @@
           %a{data: {toggle: 'collapse'}, href: '#collapse-photos'}Photo Log
       #collapse-photos.panel-collapse.collapse.in
         .panel-body
-          PENDING
+          = render 'photo_log'
 
 .row
   .col-sm-12
@@ -118,4 +113,8 @@
         .panel-body
           PENDING
 
+#spinner{:style => 'padding: 20px; display: none;'}
+  = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
+
 = render 'scripts'
+= render 'shared/cache_collapsible_tabs_script', cache_key: "inspection-profile-#{@inspection.object_key}"

@@ -22,7 +22,10 @@ class Inspection < InspectionRecord
   has_many :elements, dependent: :destroy
   has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
-  has_many :streambed_profiles
+  has_one :streambed_profile
+
+  # Each asset has zero or more images. Images are deleted when the asset is deleted
+  has_many    :images,      :as => :imagable,       :dependent => :destroy
 
   scope :ordered, -> { order(event_datetime: :desc) }
 
@@ -147,11 +150,18 @@ class Inspection < InspectionRecord
   # called as callback after `finalize` event
   # to open a new inspection
   def open_new_inspection
-    self.highway_structure.open_inspection
+    new_insp = self.highway_structure.open_inspection
+
+    new_insp.create_streambed_profile if new_insp.streambed_profile.nil?
+
+    new_insp
+
   end
 
   def updatable?
     state != 'final'
   end
+
+  protected
 
 end

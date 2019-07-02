@@ -49,17 +49,13 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
-
 .row
   .col-md-12
-    #spinner{:style => 'padding: 20px; display: none;'}
-      = loader_panel_tag({:message => "Saving...", :size => 3, :spinner => "refresh"})
 
     #table_actions.btn-toolbar
       - if can?(:update, @inspection.inspection)
         .btn-group
-          = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-default', title: 'New Element' do
+          = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-primary', title: 'New Element' do
             %i.fa.fa-plus
             = " New Element"
     .table-responsive#elements_table_container

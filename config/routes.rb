@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
 
-  resources :inspections do 
+  resources :inspections do
+
+    resources :streambed_profiles do
+      resources :streambed_profile_points
+    end
+
     resources :elements do 
       collection do 
         post :save_quantity_changes
@@ -15,8 +20,14 @@ Rails.application.routes.draw do
         member do 
           get :edit_comment
         end
+
+        resources :images
       end
+
+      resources :images
     end
+
+    resources :images
 
     collection do 
       get 'reset'

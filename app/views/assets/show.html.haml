@@ -50,4 +50,5 @@
 
 .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
 
-=render 'show_scripts'
+= render 'show_scripts'
+= render 'shared/cache_collapsible_tabs_script', cache_key: "asset-profile-#{@asset.object_key}"
