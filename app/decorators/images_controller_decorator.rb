@@ -35,12 +35,12 @@ ImagesController.class_eval do
         render :json => {
             :total => @images.count,
             :rows => @images.limit(params[:limit]).offset(params[:offset]).collect{ |u|
-              if u.base_imagable_type == 'Element'
-                element_definition = u.base_imagable.element_definition&.number
+              if u.imagable_type == 'Element'
+                element_definition = u.imagable.element_definition&.number
               end
-              if u.base_imagable_type == 'Defect'
-                element_definition = u.base_imagable.element&.element_definition&.number
-                defect_definition = u.base_imagable.defect_definition&.number
+              if u.imagable_type == 'Defect'
+                element_definition = u.imagable.element&.element_definition&.number
+                defect_definition = u.imagable.defect_definition&.number
               end
 
               u.as_json.merge!({
