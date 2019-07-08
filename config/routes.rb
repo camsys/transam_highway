@@ -2,10 +2,6 @@ Rails.application.routes.draw do
 
   resources :inspections do
 
-    resources :streambed_profiles do
-      resources :streambed_profile_points
-    end
-
     resources :elements do 
       collection do 
         post :save_quantity_changes
@@ -32,6 +28,14 @@ Rails.application.routes.draw do
     collection do 
       get 'reset'
       post 'new_search'
+    end
+  end
+
+  resources :streambed_profiles do
+    resources :streambed_profile_points
+
+    collection do
+      put 'update_many'
     end
   end
 

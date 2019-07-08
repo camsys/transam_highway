@@ -1,5 +1,1 @@
 = nav_tab_count_tag("#insp", "Inspections", @asset.inspections.count)
-- if @asset.class.name == "Bridge"
-  %li
-    %a{:href => "#stream", :data =>{:toggle => 'tab'}}
-      Stream Bed Profile
