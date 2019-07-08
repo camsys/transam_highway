@@ -59,7 +59,7 @@ RSpec.describe StreambedProfilesController, type: :controller do
 
   describe "GET #new" do
     it "returns a success response" do
-      get :new, params: {inspection_id: create(:inspection).object_key, format: :json}, session: valid_session
+      get :new, params: {format: :js}, session: valid_session
       expect(response).to be_successful
     end
   end
