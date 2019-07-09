@@ -27,9 +27,9 @@
                     = link_to new_streambed_profile_path(transam_asset_id: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Profile' do
                       %i.fa.fa-plus
                       = " New Profile"
-                - if @asset.streambed_profiles.last
+                - if @asset.streambed_profiles.where(inspection_id: nil).last
                   .btn-group
-                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
+                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.where(inspection_id: nil).last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
                       = " New Distance"
               .table-responsive#streambed_table
@@ -69,7 +69,7 @@
                         - cols.each do |distance|
                           %td.center
                             - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                            - if can? :update, @asset
+                            - if (can? :update, @asset) && profile.inspection.nil?
                               - if profile_point
                                 %span.number-display
                                   = format_as_decimal(profile_point.value,1)
@@ -79,7 +79,7 @@
                             - else
                               = format_as_decimal(profile_point.value,1) if profile_point
                         %td.center
-                          - if can? :update, @asset
+                          - if (can? :update, @asset) && profile.inspection.nil?
                             %span.number-display
                               = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level, data: {streambed_profile: profile.object_key}}
