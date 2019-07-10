@@ -64,7 +64,7 @@
                         - cols.each do |distance|
                           %td.center
                             - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                            - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                            - if profile.inspection.try(:object_key) == @inspection.object_key && @inspection.updatable?
                               - if profile_point
                                 %span.number-display
                                   = format_as_decimal(profile_point.value,1)
@@ -74,7 +74,7 @@
                             - else
                               = format_as_decimal(profile_point.value,1) if profile_point
                         %td.center
-                          - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                          - if profile.inspection.try(:object_key) == @inspection.object_key && @inspection.updatable?
                             %span.number-display
                               = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
