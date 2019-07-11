@@ -8,6 +8,8 @@
   }
 
 #inspection_table_actions.btn-toolbar
+  %span.col-sm-12
+    %b#selected_inspection_count
 .table-responsive
   %table.table.table-condensed.table-hover{:id => "inspection-table",
     :data => {:toggle => 'table',
@@ -132,6 +134,8 @@
           selected_rows.add(insp_key);
         }
       }
+
+      update_selection_count_text();
       enable_disable_table_actions();
     }
 
@@ -142,7 +146,13 @@
           selected_rows.delete(insp_key);
         }
       }
+
+      update_selection_count_text();
       enable_disable_table_actions();
+    }
+
+    function update_selection_count_text() {
+      $('#selected_inspection_count').text(selected_rows.size + " inspection records selected.");
     }
 
     function check_row_selected() {
