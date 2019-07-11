@@ -17,7 +17,7 @@
     :side_pagination => 'server',
     :show_pagination_switch => 'false',
     :page_number => '1',
-    :page_list => "[5, 10, 20, 50, 100]",
+    :page_list => "[5, 10, 20, 50, 100, 500, 1000]",
     :page_size => current_user.num_table_rows,
     :sortable => 'true',
     :sort_order => 'asc',
@@ -122,35 +122,45 @@
     function enable_disable_table_actions() {
       enable_disable_group_team_assignment_submit();
       enable_disable_inspector_assignment_submit();
-    };
+    }
 
     // Updates the selected rows in the table
-    function update_selected() {
-      var selected = $('#inspection-table').bootstrapTable('getSelections');
-      selected_rows = new Set();
-      for (i = 0; i < selected.length; i++) {
-        var insp_key = selected[i][1];
+    function add_rows(rows) {
+      for (i = 0; i < rows.length; i++) {
+        var insp_key = rows[i].to_global_id;
         if(!selected_rows.has(insp_key)) {
           selected_rows.add(insp_key);
         }
       }
       enable_disable_table_actions();
-    };
+    }
 
-    // Removes an object identified by its object key from the set of objects selected
-    function remove_from_selected(object_key) {
-      selected_rows.delete(object_key);
+    function remove_rows(rows) {
+      for (i = 0; i < rows.length; i++) {
+        var insp_key = rows[i].to_global_id;
+        if(selected_rows.has(insp_key)) {
+          selected_rows.delete(insp_key);
+        }
+      }
       enable_disable_table_actions();
-    };
+    }
 
-    $('#inspection-table').on('check.bs.table', function(e, row) {
-      update_selected();
-    }).on('uncheck.bs.table', function(e, row) {
-      update_selected();
-    }).on('check-all.bs.table', function(e, row) {
-      update_selected();
-    }).on('uncheck-all.bs.table', function(e, row) {
-      update_selected();
+    function check_row_selected() {
+      $("#inspection-table").bootstrapTable("checkBy", {field:"to_global_id", values: Array.from(selected_rows)})
+    }
+
+    $('#inspection-table').on('check.bs.table', function(row, elem) {
+      add_rows([elem]);
+    }).on('uncheck.bs.table', function(row, elem) {
+      remove_rows([elem]);
+    }).on('check-all.bs.table', function(rows, elements) {
+      add_rows(elements);
+    }).on('uncheck-all.bs.table', function(rows, elements) {
+      remove_rows(elements);
+    }).on('page-change.bs.table', function(page_number, page_size) {
+      check_row_selected();
+    }).on('load-success.bs.table', function(data) {
+      check_row_selected();
     }).on('all.bs.table', function(e, row) {
       $('[data-toggle="popover"]').popover();
     });
