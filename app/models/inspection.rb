@@ -28,6 +28,8 @@ class Inspection < InspectionRecord
   has_many    :images,      :as => :imagable,       :dependent => :destroy
 
   scope :ordered, -> { order(event_datetime: :desc) }
+  scope :final,  -> { where(state: 'final') }
+  scope :not_final, -> { where.not(state: 'final') }
 
   FORM_PARAMS = [
       :name,

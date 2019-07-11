@@ -3,7 +3,17 @@ ImagesController.class_eval do
   def index
     if params[:global_base_imagable]
       @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_base_imagable]))
-      @images = Image.where(base_imagable: @imagable)
+
+      if @imagable.class.to_s == 'TransamAsset'
+        # asset images of course
+        # inspection images not final (ie base_imagable: asset, imagable: inspection.final)
+        # element images base_imagable: inspection.final
+        # defect base_imagable: inspection.final
+        typed_asset = TransamAsset.get_typed_asset(@imagable)
+        @images = (Image.where(base_imagable: @imagable).where.not(imagable: typed_asset.inspections.not_final)).or(Image.where(base_imagable: typed_asset.inspections.final))
+      else
+        @images = Image.where(base_imagable: @imagable)
+      end
     elsif params[:global_any_imagable] # parameter to return images of self as parent and children
       @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_any_imagable]))
       @images = Image.where(base_imagable: @imagable).or(Image.where(imagable: @imagable))
