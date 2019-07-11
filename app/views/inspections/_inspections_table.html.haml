@@ -6,10 +6,16 @@
     cursor: pointer;
     cursor: hand;
   }
+  .clear-inspection-selections {
+    cursor: pointer;
+    color: red;
+    padding-left: 5px;
+  }
 
 #inspection_table_actions.btn-toolbar
   %span.col-sm-12
     %b#selected_inspection_count
+    %i.fa.fa-close.clear-inspection-selections{style: 'display: none;', title: 'Clear selections.'}
 .table-responsive
   %table.table.table-condensed.table-hover{:id => "inspection-table",
     :data => {:toggle => 'table',
@@ -126,6 +132,11 @@
       enable_disable_inspector_assignment_submit();
     }
 
+    $('.clear-inspection-selections').on('click', function() {
+      selected_rows = new Set();
+      $('#inspection-table').bootstrapTable('uncheckAll');
+    });
+
     // Updates the selected rows in the table
     function add_rows(rows) {
       for (i = 0; i < rows.length; i++) {
@@ -152,7 +163,13 @@
     }
 
     function update_selection_count_text() {
-      $('#selected_inspection_count').text(selected_rows.size + " inspection records selected.");
+      if(selected_rows.size > 0) {
+        $('#selected_inspection_count').text(selected_rows.size + " inspection records selected.");
+        $('.clear-inspection-selections').show();
+      } else {
+        $('#selected_inspection_count').text("");
+        $('.clear-inspection-selections').hide();
+      }
     }
 
     function check_row_selected() {
