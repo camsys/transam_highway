@@ -172,6 +172,11 @@ class HighwayStructure < TransamAssetRecord
         end
       end
       new_insp.elements.each do |elem|
+        # set inspection id for defects
+        elem.defects.each do |defect|
+          defect.inspection = new_insp
+        end
+
         elem.object_key = nil
       end
 
