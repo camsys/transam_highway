@@ -1,6 +1,12 @@
+%legend
+  Inspection Notes
 .row
   .col-sm-6
-    = editable_field_tag(@inspection, :notes, 'Inspection Notes', model_name: 'Inspection')
+    = editable_field_tag(@inspection, :notes, 'Inspection Notes', model_name: 'Inspection', type: 'textarea')
   .col-sm-6
-    = editable_field_tag(@inspection, :temperature, 'Temperature', model_name: 'Inspection')
-    = editable_field_tag(@inspection, :weather, 'Weather', model_name: 'Inspection')
+    .row
+      .col-sm-2
+        = editable_field_tag(@inspection, :temperature, 'Temperature', model_name: 'Inspection', type: 'number')
+    .row
+      .col-sm-6
+        = editable_field_tag(@inspection, :weather, 'Weather', model_name: 'Inspection')

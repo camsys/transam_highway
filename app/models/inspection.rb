@@ -17,6 +17,9 @@ class Inspection < InspectionRecord
 
   belongs_to :qc_inspector, class_name: 'User'
   belongs_to :qa_inspector, class_name: 'User'
+  belongs_to :inspection_team_leader, class_name: 'User'
+  belongs_to :inspection_team_member, class_name: 'User'
+  belongs_to :inspection_team_member_alt, class_name: 'User'
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
   has_many :elements, dependent: :destroy
@@ -39,6 +42,11 @@ class Inspection < InspectionRecord
       :notes,
       :organization_type_id,
       :assigned_organization_id,
+      :inspection_team_leader_id,
+      :inspection_team_member_id,
+      :inspection_team_member_alt_id,
+      :event_datetime,
+      :inspection_frequency,
       :inspector_ids => []
   ]
 

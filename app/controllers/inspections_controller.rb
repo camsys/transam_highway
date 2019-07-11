@@ -58,7 +58,6 @@ class InspectionsController < TransamController
 
   # PATCH/PUT /inspections/1
   def update
-
     respond_to do |format|
       if @inspection.update!(typed_inspection_params(@inspection))
         notify_user(:notice, "Inspection was successfully updated.")
