@@ -151,8 +151,37 @@ class InspectionSearcher < BaseSearcher
     end
   end
 
-  def inspection_trip_conditions
-    inspection_klass.where("highway_structures.inspection_trip": search_proxy&.inspection_trip) unless search_proxy&.inspection_trip.blank?
+  def inspection_fiscal_year_conditions
+    inspection_klass.where("highway_structures.inspection_fiscal_year": search_proxy&.inspection_fiscal_year) unless search_proxy&.inspection_fiscal_year.blank?
+  end
+
+  def inspection_month_conditions
+    inspection_klass.where("highway_structures.inspection_month": search_proxy&.inspection_month) unless search_proxy&.inspection_month.blank?
+  end
+
+  def inspection_quarter_conditions
+    if !search_proxy&.inspection_quarter.blank? && !search_proxy&.inspection_trip_key.blank?
+      # if both params are provided, then need to query the combo
+      inspection_klass.where(
+        "highway_structures.inspection_quarter": search_proxy&.inspection_quarter, 
+        "highway_structures.inspection_trip_key": search_proxy&.inspection_trip_key
+        ).or(inspection_klass.where(
+          "highway_structures.inspection_second_quarter": search_proxy&.inspection_quarter, 
+          "highway_structures.inspection_second_trip_key": search_proxy&.inspection_trip_key
+          ))
+    elsif !search_proxy&.inspection_quarter.blank?
+      inspection_klass.where(
+        "highway_structures.inspection_quarter": search_proxy&.inspection_quarter
+        ).or(inspection_klass.where(
+          "highway_structures.inspection_second_quarter": search_proxy&.inspection_quarter
+          ))
+    elsif !search_proxy&.inspection_trip_key.blank?
+      inspection_klass.where(
+        "highway_structures.inspection_trip_key": search_proxy&.inspection_trip_key
+        ).or(inspection_klass.where(
+          "highway_structures.inspection_second_trip_key": search_proxy&.inspection_trip_key
+          ))
+    end
   end
 
   def inspection_frequency_conditions

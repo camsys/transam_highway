@@ -50,7 +50,10 @@
 .col-sm-2
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 .col-sm-2
-  = f.input :inspection_trip, collection: HighwayStructure.where.not(inspection_trip: nil).distinct.pluck(:inspection_trip).map{|r| [r, r]}, label: reference_label('highway_structures', 'inspection_trip', 'Inspection Trip'), include_blank: 'Select All'
+  = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), include_blank: 'Select All'
+  = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), include_blank: 'Select All'
+  = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), include_blank: 'Select All'
+  = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), include_blank: 'Select All'
 
 :javascript
   $(function() {

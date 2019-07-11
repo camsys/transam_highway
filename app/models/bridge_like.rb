@@ -190,6 +190,24 @@ class BridgeLike < TransamAssetRecord
       'OFFSYS' => InspectionProgram.find_by(name: 'Off-System')
     }
     
+    inspection_trip = (bridge_hash['USERKEY4'] == '-1') ? '' : bridge_hash['USERKEY4'].upcase
+    unless inspection_trip.blank?
+      # break down 
+      inspection_trip_parts = inspection_trip.split(" ")
+      inspection_fiscal_year = inspection_trip_parts[0]
+      inspection_month = inspection_trip_parts[1]
+      if inspection_trip_parts[2]
+        inspection_quarter = inspection_trip_parts[2][0]
+        inspection_trip_key = inspection_trip_parts[2][1..-1]
+        inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
+        if inspection_trip_parts[3]
+          inspection_second_quarter = inspection_trip_parts[3][0]
+          inspection_second_trip_key = inspection_trip_parts[3][1..-1]
+          inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
+        end
+      end
+    end
+
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: 'CO',
@@ -236,7 +254,13 @@ class BridgeLike < TransamAssetRecord
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
       inspection_program: prog_hash[bridge_hash['USERKEY1']],
-      inspection_trip: (bridge_hash['USERKEY4'] == '-1') ? '' : bridge_hash['USERKEY4'].upcase
+      inspection_trip: inspection_trip,
+      inspection_fiscal_year: inspection_fiscal_year,
+      inspection_month: inspection_month,
+      inspection_quarter: inspection_quarter,
+      inspection_trip_key: inspection_trip_key&.to_i,
+      inspection_second_quarter: inspection_second_quarter,
+      inspection_second_trip_key: inspection_second_trip_key&.to_i
     }
 
     # Validate Owner and maintenance responsibility. Could DRY the code some
