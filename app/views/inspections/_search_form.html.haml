@@ -28,28 +28,14 @@
                 %a{:href => '#inspection_search_fields', :data =>{:toggle => 'tab'}}
                   Inspection
               %li
-                %a{:href => '#identification_search_fields', :data =>{:toggle => 'tab'}}
-                  Identification
-              %li
-                %a{:href => '#age_service_search_fields', :data =>{:toggle => 'tab'}}
-                  Age & Service
-              %li
-                %a{:href => '#classification_search_fields', :data =>{:toggle => 'tab'}}
-                  Classification
-              %li
-                %a{:href => '#condition_search_fields', :data =>{:toggle => 'tab'}}
-                  Condition
+                %a{:href => '#structure_search_fields', :data =>{:toggle => 'tab'}}
+                  Structure
+      
             .tab-content.form-section
               .tab-pane.fade.in.active#inspection_search_fields
                 = render 'inspection_search_fields', f: f
-              .tab-pane.fade.in#identification_search_fields
-                = render 'identification_search_fields', f: f
-              .tab-pane.fade.in#age_service_search_fields
-                = render 'age_service_search_fields', f: f
-              .tab-pane.fade.in#classification_search_fields
-                = render 'classification_search_fields', f: f
-              .tab-pane.fade.in#condition_search_fields
-                = render 'condition_search_fields', f: f
+              .tab-pane.fade.in#structure_search_fields
+                = render 'structure_search_fields', f: f
             
           .row  
             .pull-right

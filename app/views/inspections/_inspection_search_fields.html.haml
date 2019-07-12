@@ -10,12 +10,8 @@
   @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
 
 .col-sm-3
+  = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program'), include_blank: 'Select All'
-  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
-  = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
-.col-sm-2
-  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
-.col-sm-3
   .row
     %label.control-label.col-sm-12
       = reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')
@@ -31,29 +27,19 @@
         = f.input_field :max_calculated_inspection_due_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_calculated_inspection_due_date'}, :value => f.object.max_calculated_inspection_due_date
         %span.input-group-addon
           %i.fa.fa-calendar
-  .row
-    %label.control-label.col-sm-12
-      = reference_label('inspections', 'event_datetime', 'Routine Inspection Date')
-    .col-sm-5
-      = f.input :min_inspection_date, :label => false, :wrapper => :vertical_append do
-        = f.input_field :min_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_min_inspection_date'}, :value => f.object.min_inspection_date
-        %span.input-group-addon
-          %i.fa.fa-calendar
-    .col-sm-2.text-center
-      = "---"
-    .col-sm-5
-      = f.input :max_inspection_date, :label => false, :wrapper => :vertical_append do
-        = f.input_field :max_inspection_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_inspection_date'}, :value => f.object.max_inspection_date
-        %span.input-group-addon
-          %i.fa.fa-calendar
-  = f.input :inspection_frequency, collection: Inspection.where.not(inspection_frequency: nil).pluck(:inspection_frequency).uniq.map{|r| [r, r]}, label: reference_label('inspections', 'inspection_frequency', 'Inspection Frequency'), include_blank: 'Select All'
-.col-sm-2
-  = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
-.col-sm-2
   = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), include_blank: 'Select All'
   = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), include_blank: 'Select All'
   = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), include_blank: 'Select All'
   = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), include_blank: 'Select All'
+
+.col-sm-3
+  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
+  = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
+  = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
+
+.col-sm-3
+  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
+
 
 :javascript
   $(function() {

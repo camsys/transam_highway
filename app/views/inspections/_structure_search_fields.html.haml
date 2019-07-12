@@ -1,0 +1,66 @@
+:ruby
+  @search_proxy.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @search_proxy.structure_status_type_code
+  conditions = ['good', 'fair', 'poor', 'unknown'].map{|r| [r.titleize, r]}
+
+:css
+  .asset-subtype-filters-div {
+    margin-left: 15px;
+  }
+
+  .region-filter-label {
+    display: block;
+  }
+  .region-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
+
+.col-sm-3
+  = f.input :region_code, as: :check_boxes,  collection: Region.active.order(:code).pluck(:code, :code), label: reference_label('highway_structures', 'region_id', 'Region'), item_wrapper_class: 'region-checkboxes checkbox-inline', label_html: { class: 'region-filter-label'} 
+  = f.input :structure_county, label: reference_label('highway_structures', 'county', 'County'), :input_html => {:autocomplete => 'off', class: 'structure_county_input'}
+  = f.input :structure_city, label: reference_label('highway_structures', 'city', 'City'), :input_html => {:autocomplete => 'off', class: 'structure_city_input'}
+
+.col-sm-3
+  %label.control-label
+    = reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+
+  - AssetType.active.each do |asset_type|
+    .asset-type-filters-div{id: asset_type.id}
+      %span.checkbox
+        %label
+          = check_box_tag "inspection_proxy[asset_type][]", asset_type.id, @search_proxy.asset_type && @search_proxy.asset_type.include?(asset_type.id), class: 'asset-type-checkbox'
+          %strong= asset_type
+      .asset-subtype-filters-div
+        = f.input :asset_subtype, collection: asset_type.asset_subtypes.order(:name), as: :check_boxes, label: false
+.col-sm-3
+  = f.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
+  = f.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: reference_label('highway_structures', 'structure_status_type_id', 'Status')
+
+:javascript
+  $('.structure_county_input').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name).to_json.html_safe || []}
+  });
+
+  $('.structure_city_input').typeahead({
+    items: 10,
+    source: #{District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name).to_json.html_safe || []}
+  });
+
+  $('.asset-subtype-filters-div .checkbox input').on('click', function(event) {
+    if ($(this).is(':checked')) {
+      if($(this).parents('.asset-type-filters-div').find('.asset-subtype-filters-div .checkbox input:not(:checked)').length == 0) {
+        $(this).parents('.asset-type-filters-div').find('.asset-type-checkbox').prop('checked', true);
+      }
+    } else {
+      $(this).parents('.asset-type-filters-div').find('.asset-type-checkbox').prop('checked', false);
+    }
+  });
+
+  $('.asset-type-checkbox').on('click', function(event) {
+    if ($(this).is(':checked')) {
+      $(this).parents('.asset-type-filters-div').find('.asset-subtype-filters-div .checkbox input').prop('checked', true);
+    } else {
+      $(this).parents('.asset-type-filters-div').find('.asset-subtype-filters-div .checkbox input').prop('checked', false);
+    }
+  });
