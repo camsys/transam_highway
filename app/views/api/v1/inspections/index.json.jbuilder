@@ -1,3 +1,9 @@
+if @user&.organization
+  json.organization @user.organization, :id, :name, :short_name
+
+  json.users @user.organization.users, :id, :name, :email, :organization_id
+end
+
 json.inspections do
   json.partial! 'api/v1/inspections/listing', collection: @inspections, as: :inspection
 end
