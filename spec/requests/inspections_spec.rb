@@ -27,7 +27,7 @@ RSpec.describe Api::V1::InspectionsController, type: :request do
       expect(response).to render_template(:index)
       expect(json).not_to be_empty
       expect(json['status']).to eq('success')
-      expect(json['data'].keys).to match_array(['inspections', 'elements', 'defects', 'structures', 'roadways', 'bridge_conditions', 'culvert_conditions', 'images', 'documents'])
+      expect(json['data'].keys).to match_array(['inspections', 'elements', 'defects', 'structures', 'roadways', 'bridge_conditions', 'culvert_conditions', 'images', 'documents', 'organization', 'users'])
     end
 
     it 'includes structures data' do 
