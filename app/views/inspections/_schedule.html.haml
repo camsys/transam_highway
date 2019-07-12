@@ -20,7 +20,7 @@
       %td=@inspection.calculated_inspection_due_date.try(:strftime, "%b %Y")
       %td=editable_field_tag(@inspection, :event_datetime, "", type: 'date', model_name: 'Inspection')
       %td=format_as_date(@inspection.routine_report_submitted_at)
-      %td=editable_field_tag(@inspection, :inspection_frequency, "", type: 'number', model_name: 'Inspection')
+      %td=editable_association_tag(@inspection, :inspection_frequency, "", [12, 24, 48, 72].map{|f| [f, f]}, model_name: 'Inspection', suffix: '')
       %td
         - if @inspection.event_datetime && @inspection.inspection_frequency
           - next_due_date = @inspection.event_datetime + @inspection.inspection_frequency.months
