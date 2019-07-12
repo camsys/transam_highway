@@ -135,6 +135,7 @@
     $('.clear-inspection-selections').on('click', function() {
       selected_rows = new Set();
       $('#inspection-table').bootstrapTable('uncheckAll');
+      $('#inspection-table tr.selected').removeClass('selected');
     });
 
     // Updates the selected rows in the table
