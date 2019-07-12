@@ -43,12 +43,18 @@
 
 :javascript
   $(function() {
-    $('.datepicker-clear').bootstrapDP({
+    $('#inspection_proxy_min_calculated_inspection_due_date').bootstrapDP({
+      minViewMode: "months",
+      autoclose: true,
+      orientation: "bottom left"
+    });
+
+    $('#inspection_proxy_max_calculated_inspection_due_date').bootstrapDP({
       minViewMode: "months",
       autoclose: true
     });
 
-    $('#inspection_proxy_max_calculated_inspection_due_date, #inspection_proxy_max_inspection_date').datepicker().on("changeMonth", function(e) {
+    $('#inspection_proxy_max_calculated_inspection_due_date').datepicker().on("changeMonth", function(e) {
       // change to end of month date
       var currentDate = e.date;
       console.log(currentDate);
