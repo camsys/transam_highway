@@ -7,8 +7,6 @@
     inspection_team_ids_by_group[r[1]] << r[0]
     }
 
-  @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
-
 .col-sm-3
   = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program'), include_blank: 'Select All'

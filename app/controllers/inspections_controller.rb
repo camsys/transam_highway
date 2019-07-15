@@ -147,6 +147,8 @@ class InspectionsController < TransamController
         @search_proxy = InspectionProxy.new
         # Flag this as a new search so the search results will be hidden
         @search_proxy.new_search = '1'
+        # Set default state filters
+        @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
 
         cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
       end
