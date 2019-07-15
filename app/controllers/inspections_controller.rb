@@ -171,7 +171,7 @@ class InspectionsController < TransamController
     end
 
     def index_rows_as_json
-      params[:sort] ||= 'transam_assets.asset_tag'
+      params[:sort] ||= 'inspections.object_key'
 
       multi_sort = params[:multiSort]
       unless (multi_sort.nil?)
@@ -184,7 +184,6 @@ class InspectionsController < TransamController
       else
         sorting_string = "#{params[:sort]} #{params[:order]}"
       end
-
       cache_list(@inspections.order(sorting_string), INDEX_KEY_LIST_VAR)
 
       @inspections.order(sorting_string).limit(params[:limit]).offset(params[:offset]).as_json
