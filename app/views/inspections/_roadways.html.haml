@@ -1,0 +1,78 @@
+:ruby
+    highway_structure = @inspection.highway_structure
+
+:css
+    #roadways-table td, #roadways-table th {
+        text-align: left !important;
+    }
+
+    #roadways-table thead tr th:first-child,
+    #roadways-table tbody tr th:first-child,
+    #roadways-table tbody tr td:first-child {
+      width: 20em;
+      min-width: 10em;
+      max-width: 30em;
+      word-break: break-all;
+    }
+
+.table-responsive
+    %table.table#roadways-table
+        %thead
+            %tr
+                %th.center Roadway Fields
+                - highway_structure.roadways.on.each do |r|
+                    %th.center= "On Structure - #{r.on_under_indicator}"   
+                - highway_structure.roadways.under.each do |r|
+                    %th.center= "Under Structure - #{r.on_under_indicator}"   
+        %tbody
+            %tr.field-name
+                %th.center= reference_label('roadways', 'on_under_indicator', 'On Under')
+                %th.center= reference_label('roadways', 'route_signing_prefix_id', 'Road Prefix')
+                %th.center= reference_label('roadways', 'level_of_service_type_id', 'Level of Service')
+                %th.center= reference_label('roadways', 'route_number', 'Highway Segment')
+                %th.center= reference_label('roadways', 'min_vertical_clearance', 'Minimum Vertical Clearance')
+                %th.center= reference_label('roadways', 'on_base_network', 'Base Highway Network')
+                %th.center= reference_label('roadways', 'lrs_route', 'LRS Inventory Route')
+                %th.center= reference_label('roadways', 'lrs_subroute', 'Subroute Number')
+                %th.center= reference_label('roadways', 'functional_class_id', 'Functional Classification')
+                %th.center= reference_label('roadways', 'lanes', 'Lanes')
+                %th.center= reference_label('roadways', 'average_daily_traffic', 'Average Daily Traffic')
+                %th.center= reference_label('roadways', 'average_daily_traffic_year', 'Year of Average Daily Traffic')
+                %th.center= reference_label('roadways', 'total_horizontal_clearance', 'Total Horizontal Clearance')
+                %th.center= reference_label('roadways', 'strahnet_designation_type_id', 'Strategic Highway Network')
+                %th.center= reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
+                %th.center= reference_label('roadways', 'on_national_higway_system', 'NHS')
+                %th.center= reference_label('roadways', 'average_daily_truck_traffic_percent', 'Truck ADT')
+                %th.center= reference_label('roadways', 'on_truck_network', 'Designated National Network')
+                %th.center= reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
+                %th.center= reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.on}
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.under}
+
+:javascript
+    $(function() {
+        function transpose_table_body() {
+            var t = $('#roadways-table tbody').eq(0);
+            var r = t.find('tr');
+            var cols= r.length;
+            var rows= r.eq(0).find('td, th').length;
+            var cell, next, tem, i = 0;
+            var tb= $('<tbody></tbody>');
+
+            while(i<rows){
+                cell= 0;
+                tem= $('<tr></tr>');
+                while(cell<cols){
+                    next= r.eq(cell++).find('td, th').eq(0);
+                    tem.append(next);
+                }
+                tb.append(tem);
+                ++i;
+            }
+            $('#roadways-table').append(tb);
+            t.remove();
+            $('#roadways-table').show();
+        }
+
+        transpose_table_body();
+    });
