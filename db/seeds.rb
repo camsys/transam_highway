@@ -18,7 +18,16 @@ organization_types = [
      map_icon_name: "purpleIcon",
      description: "Consultant on highway structures, bridges.",
      roles: nil,
-     active: true}
+     active: true},
+    {
+        name: "Highway Team",
+        class_name: "HighwayTeam",
+        display_icon_name: "fa fa-users",
+        map_icon_name: "blueIcon",
+        description: "Team for highway authority.",
+        roles: nil,
+        active: true
+    }
 ]
 asset_types = [
     {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},

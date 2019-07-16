@@ -1,9 +1,18 @@
 :ruby
-  inspection_teams = Organization.active.map{|l| {
-    name: l.coded_name, 
-    id: l.id, 
-    organization_type_id: l.organization_type_id
-  }}.sort_by{|r| r[:name]}
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam')
+
+  inspection_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      inspection_teams << {
+                            name: l.coded_name,
+                            id: l.id,
+                            organization_type_id: l.organization_type_id == highway_team_org_type_id ? l.parent.organization_type_id : l.organization_type_id
+                          }
+    end
+  end
+
+  inspection_teams = inspection_teams.sort_by{|r| r[:name]}
 
 = simple_form_for(:transam_workflow_model_proxy,
   :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
@@ -20,7 +29,7 @@
 
   .row
     .col-sm-6
-      = f.input :organization_type_id, collection: OrganizationType.where('class_name LIKE ?', "%#{'Highway'}%"), label: 'Inspection Group', include_blank: false
+      = f.input :organization_type_id, collection: OrganizationType.where(class_name: ['HighwayAuthority', 'HighwayConsultant']), label: 'Inspection Group', include_blank: false
     .col-sm-6
       = f.input :assigned_organization_id, label: 'Inspection Team' do
         = f.select :assigned_organization_id, [], {}, {class: 'form-control'}
