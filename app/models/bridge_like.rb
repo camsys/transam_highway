@@ -150,8 +150,16 @@ class BridgeLike < TransamAssetRecord
       
     required = {}
     is_new = bridgelike.new_record?
+    
+    # USERKEY1 (Inspection Program) mapping
+    prog_hash = {
+      'ONSYS' => InspectionProgram.find_by(name: 'On-System'),
+      'OFFSYS' => InspectionProgram.find_by(name: 'Off-System')
+    }
+    inspection_program = prog_hash[bridge_hash['USERKEY1']]
+
     if is_new
-      msg = "Created #{struct_class_code} #{asset_tag}"
+      msg = "Created #{inspection_program.name} #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
       # standardize format
@@ -180,31 +188,33 @@ class BridgeLike < TransamAssetRecord
       }
       bridgelike.attributes = required
     else
-      msg = "Updated #{struct_class_code} #{asset_tag}"
+      msg = "Updated #{inspection_program.name} #{struct_class_code} #{asset_tag}"
     end
     
     # Extract relevant fields
-    # USERKEY1 (Inspection Program) mapping
-    prog_hash = {
-      'ONSYS' => InspectionProgram.find_by(name: 'On-System'),
-      'OFFSYS' => InspectionProgram.find_by(name: 'Off-System')
-    }
-    
+
     inspection_trip = (bridge_hash['USERKEY4'] == '-1') ? '' : bridge_hash['USERKEY4'].upcase
     unless inspection_trip.blank?
       # break down 
       inspection_trip_parts = inspection_trip.split(" ")
-      inspection_fiscal_year = inspection_trip_parts[0]
-      inspection_month = inspection_trip_parts[1]
-      if inspection_trip_parts[2]
-        inspection_quarter = inspection_trip_parts[2][0]
-        inspection_trip_key = inspection_trip_parts[2][1..-1]
-        inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
-        if inspection_trip_parts[3]
-          inspection_second_quarter = inspection_trip_parts[3][0]
-          inspection_second_trip_key = inspection_trip_parts[3][1..-1]
-          inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
+      case inspection_program.name
+      when 'On-System' # 'FYY MON QTT' 
+        inspection_fiscal_year = inspection_trip_parts[0]
+        inspection_month = inspection_trip_parts[1]
+        if inspection_trip_parts[2]
+          inspection_quarter = inspection_trip_parts[2][0]
+          inspection_trip_key = inspection_trip_parts[2][1..-1]
+          inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
+          if inspection_trip_parts[3]
+            inspection_second_quarter = inspection_trip_parts[3][0]
+            inspection_second_trip_key = inspection_trip_parts[3][1..-1]
+            inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
+          end
         end
+      when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
+        inspection_zone = inspection_trip_parts[0]
+        inspection_fiscal_year = inspection_trip_parts[2]
+      else # Give up for now
       end
     end
 
@@ -253,7 +263,7 @@ class BridgeLike < TransamAssetRecord
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
-      inspection_program: prog_hash[bridge_hash['USERKEY1']],
+      inspection_program: inspection_program,
       inspection_trip: inspection_trip,
       inspection_fiscal_year: inspection_fiscal_year,
       inspection_month: inspection_month,
@@ -625,7 +635,7 @@ class BridgeLike < TransamAssetRecord
     end
       
     if bridgelike.new_record?
-      msg = "Created #{struct_class_code} #{asset_tag}"
+      msg = "Created #{inspection_program} #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
       # standardize format
@@ -653,9 +663,33 @@ class BridgeLike < TransamAssetRecord
       }
       bridgelike.attributes = required
     else
-      msg = "Updated #{struct_class_code} #{asset_tag}"
+      msg = "Updated #{inspection_program} #{struct_class_code} #{asset_tag}"
     end
     
+    unless inspection_trip.blank?
+      # break down 
+      inspection_trip_parts = inspection_trip.split(" ")
+      case inspection_program.name
+      when 'On-System' # 'FYY MON QTT' 
+        inspection_fiscal_year = inspection_trip_parts[0]
+        inspection_month = inspection_trip_parts[1]
+        if inspection_trip_parts[2]
+          inspection_quarter = inspection_trip_parts[2][0]
+          inspection_trip_key = inspection_trip_parts[2][1..-1]
+          inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
+          if inspection_trip_parts[3]
+            inspection_second_quarter = inspection_trip_parts[3][0]
+            inspection_second_trip_key = inspection_trip_parts[3][1..-1]
+            inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
+          end
+        end
+      when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
+        inspection_zone = inspection_trip_parts[0]
+        inspection_fiscal_year = inspection_trip_parts[2]
+      else # Give up for now
+      end
+    end
+
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: bridgelike.organization.state,
@@ -700,7 +734,13 @@ class BridgeLike < TransamAssetRecord
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
       inspection_program: inspection_program,
-      inspection_trip: inspection_trip
+      inspection_trip: inspection_trip,
+      inspection_fiscal_year: inspection_fiscal_year,
+      inspection_month: inspection_month,
+      inspection_quarter: inspection_quarter,
+      inspection_trip_key: inspection_trip_key&.to_i,
+      inspection_second_quarter: inspection_second_quarter,
+      inspection_second_trip_key: inspection_second_trip_key&.to_i
     }
 
     # Validate Owner and maintenance responsibility. 
