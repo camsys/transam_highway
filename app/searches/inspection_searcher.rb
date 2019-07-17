@@ -56,9 +56,9 @@ class InspectionSearcher < BaseSearcher
       organization_ids = user&.viewable_organization_ids
     end
     if organization_ids.any?
-      if user.organization.organization_type.class_name == 'HighwayAuthority'
+      if user.has_role? :manager
         inspection_klass.where("transam_assets.organization_id": organization_ids)
-      elsif user.organization.organization_type.class_name == 'HighwayConsultant'
+      else
         inspection_klass.where("transam_assets.organization_id": organization_ids).where("inspections.assigned_organization_id": user&.organization_ids)
       end
     end

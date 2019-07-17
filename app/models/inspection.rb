@@ -69,33 +69,30 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
-        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
+        {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_reopen, human_name: 'To Open'},
+
+        {event_name: 'make_ready', from_state: ['open', 'assigned'], to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_unassign}, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
-        {event_name: 'send_to_field', from_state: 'assigned', to_state: 'in_field', human_name: 'To In Field'},
+        {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
-        {event_name: 'start', from_state: 'in_field', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
-        {event_name: 'revert', from_state: 'draft_report', to_state: 'in_progress', can: :can_start, human_name: 'To In Progress'},
+        {event_name: 'start', from_state: ['in_field', 'draft_report'], to_state: 'in_progress', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To In Progress'},
 
-        {event_name: 'reassign', from_state: 'in_field', to_state: 'ready', can: :can_start, human_name: 'To Ready'},
+        {event_name: 'complete', from_state: ['in_field', 'draft_report'], to_state: 'field_work_complete', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To Field Work Complete'},
 
-        {event_name: 'edit', from_state: ['in_progress', 'qc_review'], to_state: 'draft_report', can: :can_start, human_name: 'To Draft Report'},
+        {event_name: 'edit', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start,qc_review: :can_start, qa_review: :can_qa}, human_name: 'To Draft Report'},
 
-        {event_name: 'finish', from_state: ['draft_report', 'qa_review'], to_state: 'qc_review', can: {draft_report: :can_start, qa_review: :can_qc}, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
+        {event_name: 'qc', from_state: ['draft_report', 'submitted'], to_state: 'qc_review', can: {draft_report: :can_start, submitted: :can_qc}, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
-        {event_name: 'qc', from_state: ['qc_review', 'submitted'], to_state: 'qa_review', can: {qc_review: :can_qc, submitted: :can_qa}, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
+        {event_name: 'submit', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_submit}, human_name: 'To Submitted'},
 
-        {event_name: 'qa', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_qa}, human_name: 'To Submitted'},
+        {event_name: 'qa', from_state: ['submitted','signature_ready'], to_state: 'qa_review', can: {submitted: :can_submit, signature_ready: :can_qa}, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
 
-        {event_name: 'finalize', from_state: 'submitted', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
+        {event_name: 'sign', from_state: ['submitted', 'qa_review', 'final'], to_state: 'signature_ready', can: {submitted: :can_submit, qa_review: :can_qa, final: :can_finalize}, human_name: 'To Ready for Signature'},
 
+        {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]
-  end
-
-
-  def allowed_to_make_ready
-    assigned_organization.present?
   end
 
   def as_json(options={})
@@ -128,9 +125,36 @@ class Inspection < InspectionRecord
       inspection_category: 'Scheduled' # Hard-code for now
     }
   end
+
+  # ---------------------------------------------------------------------
+  #
+  # Methods to check logic before workflow transitions
+  # Checks conditions (guard) and permissions (can) are met
+  #
+  # -------------------------------------------------------------------
+
+  def allowed_to_reopen
+    assigned_organization.nil?
+  end
+
+  def can_reopen(user)
+    true
+  end
+
+  def allowed_to_make_ready
+    assigned_organization.present?
+  end
   
   def can_make_ready(user)
     true # TEMP
+  end
+
+  def allowed_to_unassign
+    inspectors.count == 0
+  end
+
+  def can_unassign(user)
+    true
   end
 
   def allowed_to_assign
@@ -139,6 +163,10 @@ class Inspection < InspectionRecord
   
   def can_assign(user)
     true # TEMP
+  end
+
+  def can_sync(user)
+    true
   end
 
   def can_start(user)
@@ -150,6 +178,10 @@ class Inspection < InspectionRecord
   end
   
   def can_qa(user)
+    true # TEMP
+  end
+
+  def can_submit(user)
     true # TEMP
   end
   
