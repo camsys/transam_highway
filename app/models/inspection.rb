@@ -89,7 +89,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'qa', from_state: ['submitted','signature_ready'], to_state: 'qa_review', can: {submitted: :can_submit, signature_ready: :can_qa}, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
 
-        {event_name: 'sign', from_state: ['submitted', 'qa_review', 'final'], to_state: 'signature_ready', can: {submitted: :can_submit, qa_review: :can_qa, final: :can_finalize}, human_name: 'To Ready for Signature'},
+        {event_name: 'sign', from_state: ['submitted', 'qa_review'], to_state: 'signature_ready', can: {submitted: :can_submit, qa_review: :can_qa}, human_name: 'To Ready for Signature'},
 
         {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]

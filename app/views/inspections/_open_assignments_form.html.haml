@@ -1,5 +1,5 @@
 :ruby
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam')
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
 
   inspection_teams = []
   Organization.active.each do |l|
@@ -7,7 +7,7 @@
       inspection_teams << {
                             name: l.coded_name,
                             id: l.id,
-                            organization_type_id: l.organization_type_id == highway_team_org_type_id ? l.parent.organization_type_id : l.organization_type_id
+                            organization_type_id: l.organization_type_id == highway_team_org_type_id ? Organization.find_by(id: l.parent_id).organization_type_id : l.organization_type_id
                           }
     end
   end

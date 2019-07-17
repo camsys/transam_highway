@@ -1,9 +1,15 @@
 :ruby
-  inspectors = User.active.with_role(:inspector).map{|l| {
-    name: l.to_s, 
-    id: l.id, 
-    organization_id: l.organization_id
-  }}
+  inspectors = []
+
+  User.active.with_role(:inspector).each do |user|
+    user.organizations.each do |l|
+      inspectors << {
+        name: user.to_s,
+        id: user.id,
+        organization_id: l.id
+      }
+    end
+  end
 
 :css
   .inspector-assignment-label {

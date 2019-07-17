@@ -44,7 +44,9 @@ class HighwayTeam < Organization
   #------------------------------------------------------------------------------
 
   def updates_after_create
-    return
+    User.with_role(:manager).where(organization_id: HighwayAuthority.first.id).each do |user|
+      user.viewable_organization_ids << self.id
+    end
   end
 
   # Dependent on inventory
