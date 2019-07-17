@@ -7,7 +7,7 @@ class StreambedProfile < ApplicationRecord
 
   belongs_to :bridge_like, foreign_key: :transam_asset_id
   belongs_to :inspection
-  has_many :streambed_profile_points
+  has_many :streambed_profile_points, dependent: :destroy
 
   default_scope { order(:date) }
 
