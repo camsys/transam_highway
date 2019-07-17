@@ -26,7 +26,7 @@ class NewUserService
 
     user.update_user_organization_filters unless Rails.application.config.try(:user_organization_filters_ignored).present?
 
-    user.viewable_organizations = HighwayAuthority.all
+    user.viewable_organization_ids << HighwayAuthority.first.id unless user.viewable_organization_ids.include? HighwayAuthority.first.id
     user.save!
 
     UserMailer.send_email_on_user_creation(user).deliver unless assume_user_exists
