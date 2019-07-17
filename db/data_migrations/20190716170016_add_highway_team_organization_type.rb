@@ -9,5 +9,8 @@ class AddHighwayTeamOrganizationType < ActiveRecord::DataMigration
                                  roles: nil,
                                  active: true
                              })
+
+    OrganizationType.find_by(class_name: 'HighwayAuthority').update!(roles: 'manager,inspector')
+    OrganizationType.where.not(class_name: 'HighwayAuthority').update_all(roles: 'inspector')
   end
 end
