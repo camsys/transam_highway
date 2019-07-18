@@ -69,9 +69,9 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
-        {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_reopen, human_name: 'To Open'},
+        {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'make_ready', from_state: ['open', 'assigned'], to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_unassign}, human_name: 'To Ready'},
+        {event_name: 'make_ready', from_state: ['open', 'assigned'], to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
@@ -81,15 +81,15 @@ class Inspection < InspectionRecord
 
         {event_name: 'complete', from_state: ['in_field', 'draft_report'], to_state: 'field_work_complete', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To Field Work Complete'},
 
-        {event_name: 'edit', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start,qc_review: :can_start, qa_review: :can_qa}, human_name: 'To Draft Report'},
+        {event_name: 'edit', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start, qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Draft Report'},
 
-        {event_name: 'qc', from_state: ['draft_report', 'submitted'], to_state: 'qc_review', can: {draft_report: :can_start, submitted: :can_qc}, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
+        {event_name: 'qc', from_state: ['draft_report', 'submitted'], to_state: 'qc_review', can: :can_start, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
-        {event_name: 'submit', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_qc, qa_review: :can_submit}, human_name: 'To Submitted'},
+        {event_name: 'submit', from_state: ['qc_review', 'qa_review'], to_state: 'submitted', can: {qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Submitted'},
 
-        {event_name: 'qa', from_state: ['submitted','signature_ready'], to_state: 'qa_review', can: {submitted: :can_submit, signature_ready: :can_qa}, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
+        {event_name: 'qa', from_state: ['submitted','signature_ready'], to_state: 'qa_review', can: :can_submit, human_name: 'To QA Review', to_state_human_name: 'QA Review'},
 
-        {event_name: 'sign', from_state: ['submitted', 'qa_review'], to_state: 'signature_ready', can: {submitted: :can_submit, qa_review: :can_qa}, human_name: 'To Ready for Signature'},
+        {event_name: 'sign', from_state: ['submitted', 'qa_review'], to_state: 'signature_ready', can: :can_submit, human_name: 'To Ready for Signature'},
 
         {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]
@@ -137,24 +137,16 @@ class Inspection < InspectionRecord
     assigned_organization.nil?
   end
 
-  def can_reopen(user)
-    true
-  end
-
   def allowed_to_make_ready
     assigned_organization.present?
   end
   
   def can_make_ready(user)
-    true # TEMP
+    user.has_role? :manager
   end
 
   def allowed_to_unassign
     inspectors.count == 0
-  end
-
-  def can_unassign(user)
-    true
   end
 
   def allowed_to_assign
@@ -162,7 +154,7 @@ class Inspection < InspectionRecord
   end
   
   def can_assign(user)
-    true # TEMP
+    user.has_role?(:inspector) && assigned_organization.users.include?(user)
   end
 
   def can_sync(user)
@@ -173,20 +165,12 @@ class Inspection < InspectionRecord
     inspectors.include? user
   end
 
-  def can_qc(user)
-    true # TEMP
-  end
-  
-  def can_qa(user)
-    true # TEMP
-  end
-
   def can_submit(user)
     true # TEMP
   end
   
   def can_finalize(user)
-    true
+    inspection_team_leader == user
   end # TEMP
 
   # called as callback after `finalize` event
