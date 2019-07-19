@@ -49,10 +49,17 @@
     }
 
     function get_vc_changes() {
+      if(!is_vc_editing_enabled()) {
+        return null;
+      }
+      
       var changes = {};
 
       $('.roadbed-line-cell').each(function(idx, cell) {
-        var line_id = $(cell).attr('data-line-id');  
+        var line_id = $(cell).attr('data-line-id'); 
+        if(!line_id) {
+          return;
+        } 
         if(!changes[line_id]) {
           changes[line_id] = {};
         }
@@ -61,7 +68,6 @@
         var val = $(cell).find('.number-input').val();
         changes[line_id][number_type] = val;
       });
-      console.log(changes);
       return changes;
     }
 
