@@ -2,9 +2,7 @@ class Roadbed < ApplicationRecord
   include TransamObjectKey
   
   belongs_to :roadway
-  has_one :left_edge, -> { where(number: ['L']).limit(1) }, class_name: "RoadbedLine"
-  has_one :right_edge, -> { where(number: ['R']).limit(1) }, class_name: "RoadbedLine"
-  has_many :roadbed_lines, -> { where.not(number: ['L', 'R']).order(:number) }
+  has_many :roadbed_lines
 
   validates :name, presence: true
   validates :direction, presence: true
@@ -24,33 +22,31 @@ class Roadbed < ApplicationRecord
     return unless roadbed
 
     roadbed.transaction do 
-      roadbed.create_left_edge(number: 'L', inspection: inspection)
-      roadbed.create_right_edge(number: 'R', inspection: inspection)
-      (1..roadbed.number_of_lines).each do |line_number|
+      (['L', 'R'] + (1..roadbed.number_of_lines).to_a).each do |line_number|
         roadbed.roadbed_lines.create(number: line_number, inspection: inspection)
       end
     end
   end
 
+  def left_edge
+    roadbed_lines.where(number: ['L']).first
+  end
+
+  def right_edge
+    roadbed_lines.where(number: ['R']).first
+  end
+
   def minimum
     [
-      left_edge&.entry,
-      left_edge&.exit,
-      right_edge&.entry,
-      right_edge&.exit,
-      roadbed_lines.minimum(:entry),
-      roadbed_lines.minimum(:exit)
-      ].reject{|r| r.nil?}.min
+      roadbed_lines.where.not(entry: [nil, 0]).minimum(:entry),
+      roadbed_lines.where.not(exit: [nil, 0]).minimum(:exit)
+      ].reject{|r| r.nil? || r == 0}.min
   end
 
   def maximum
     [
-      left_edge&.entry,
-      left_edge&.exit,
-      right_edge&.entry,
-      right_edge&.exit,
-      roadbed_lines.maximum(:entry),
-      roadbed_lines.maximum(:exit)
-      ].reject{|r| r.nil?}.max
+      roadbed_lines.where.not(entry: [nil, 0]).maximum(:entry),
+      roadbed_lines.where.not(exit: [nil, 0]).maximum(:exit)
+      ].reject{|r| r.nil? || r == 0}.max
   end
 end
