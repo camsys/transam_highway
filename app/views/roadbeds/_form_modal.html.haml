@@ -1,0 +1,11 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title
+        = @roadbed.new_record? ? 'New Roadbed' : 'Edit Roadbed'
+    .modal-body
+      = render(:partial => 'shared/form_errors', :locals => {:obj => @roadbed}) unless @roadbed.errors.empty?
+
+      = render "roadbeds/form"

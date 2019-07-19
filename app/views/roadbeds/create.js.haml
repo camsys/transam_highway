@@ -1,0 +1,4 @@
+$('#form-modal').modal('hide');
+$('#roadbeds-table').replaceWith("#{escape_javascript(render 'roadbeds/roadbeds_table', roadbeds: @roadbeds)}");
+$('#roadbed_id').replaceWith("#{escape_javascript(render 'roadbeds/roadbed_dropdown', roadbeds: @roadbeds, selected: @roadbed)}");
+$('#roadbed-lines-table').replaceWith("#{escape_javascript(render 'roadbed_lines/roadbed_lines_table', roadbed: @roadbed)}");

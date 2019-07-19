@@ -1,0 +1,97 @@
+:css
+  #roadbed-lines-table .number-input {
+    width: 80px !important;
+  }
+
+%table.table.table-bordered#roadbed-lines-table
+  %thead
+    %tr
+      %th.center Location
+      - if roadbed
+        %th.center L
+        - roadbed.roadbed_lines.each do |l|
+          %th.center= l.number
+        %th.center R
+  %tbody
+    %tr{data: {type: 'entry'}}
+      %td Entry
+      - if roadbed
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'entry'
+        
+
+        - roadbed.roadbed_lines.each do |l|
+          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'entry'
+
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'entry'
+    %tr{data: {type: 'exit'}}
+      %td Exit
+      - if roadbed
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'exit'
+      
+        - roadbed.roadbed_lines.each do |l|
+          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'exit'
+
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'exit'
+
+- if roadbed
+  :javascript
+    function enable_vc_editing() {
+      $('#roadbed-lines-table .number-display').hide();
+      $('#roadbed-lines-table .number-edit').show();
+    }
+
+    function disable_vc_editing() {
+      $('#roadbed-lines-table .number-edit').hide();
+      $('#roadbed-lines-table .number-display').show();
+    }
+
+    function is_vc_form_valid() {
+      //TODO: add form validations
+      return true;
+    }
+
+    function get_vc_changes() {
+      var changes = {};
+
+      $('.roadbed-line-cell').each(function(idx, cell) {
+        var line_id = $(cell).attr('data-line-id');  
+        if(!changes[line_id]) {
+          changes[line_id] = {};
+        }
+
+        var number_type = $(cell).attr('data-number-type');  
+        var val = $(cell).find('.number-input').val();
+        changes[line_id][number_type] = val;
+      });
+      console.log(changes);
+      return changes;
+    }
+
+    function submit_vc_changes() {
+      if(is_vc_form_valid()) {
+        $("#spinner").show();
+        $.ajax({
+          url: "#{save_vertical_clearance_changes_roadbed_path(roadbed&.object_key)}",
+          method: 'post',
+          data: {
+            vertical_clearance_changes: get_vc_changes()
+          },
+          success: function() {
+            $("#spinner").hide();
+            window.location.reload();
+          },
+          failure: function() {
+            $("#spinner").hide();
+            alert('An error occurred saving the changes. Please try again.');
+          }
+        });
+      }
+    }
+
+    $(function() {
+      if(is_vc_editing_enabled()) {
+        enable_vc_editing();
+      }
+    });
+          
+      

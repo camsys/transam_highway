@@ -39,6 +39,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :roadbeds do 
+    member do 
+      post :save_vertical_clearance_changes
+    end
+  end
+  resources :roadbed_lines, only: [:index]
+
   resources :processable_uploads, only: [:index, :create, :destroy] do
     member do
       get 'process_file'

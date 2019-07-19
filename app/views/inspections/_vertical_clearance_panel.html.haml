@@ -4,6 +4,17 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-vertical-clearance'}Vertical Clearance
+
+          - if can?(:update, @inspection.inspection)
+            .btn-group.pull-right.panel-action
+              %div
+                %button.btn.btn-primary.edit-vertical-clearance-button
+                  Edit
+              .save-vertical-clearance-buttons{style: 'display: none;'}
+                %button.btn.btn-primary.save-vertical-clearance-button
+                  Save
+                %button.btn.btn-primary.cancel-vertical-clearance-button
+                  Cancel
       #collapse-vertical-clearance.panel-collapse.collapse.in
         .panel-body
           %ul.nav.nav-tabs
@@ -19,3 +30,24 @@
 
             .tab-pane.fade.in#roadbed
               = render 'roadbed'
+
+:javascript
+  function is_vc_editing_enabled() {
+    return $('.save-vertical-clearance-buttons').is(":visible");
+  }
+
+  $(function() {
+    $('.edit-vertical-clearance-button').on('click', function() {
+      $('.edit-vertical-clearance-button').hide();
+      $('.save-vertical-clearance-buttons').show();
+      enable_vc_editing();
+    });
+    $('.save-vertical-clearance-button').on('click', function() {
+      submit_vc_changes();
+    });
+    $('.cancel-vertical-clearance-button').on('click', function() {
+      // reload
+      window.location.href = "#{inspection_path(@inspection.object_key, anchor: 'collapse-vertical-clearance')}";
+      window.location.reload();
+    });
+  });

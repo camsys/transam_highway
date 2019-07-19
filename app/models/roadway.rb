@@ -11,10 +11,20 @@ class Roadway < ApplicationRecord
   belongs_to :strahnet_designation_type
   belongs_to :traffic_direction_type
 
-  scope :on, -> { where(on_under_indicator: '1').order(:on_under_indicator) }
+  has_many :roadbeds
+
+  scope :on, -> { where(on_under_indicator: '1') }
   scope :under, -> { where.not(on_under_indicator: '1').order(:on_under_indicator) }
 
   def reset_lanes_if_needed
     highway_structure.reset_lanes(self) if saved_change_to_attribute?(:lanes)
+  end
+
+  def to_s
+    if on_under_indicator == '1'
+      "On Structure - 1"
+    else
+      "Under Structure - #{on_under_indicator}"
+    end
   end
 end

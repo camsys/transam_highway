@@ -1,0 +1,19 @@
+%table.table.table-bordered#roadbeds-table
+  %thead
+    %tr
+      %th.center Name
+      %th.center Roadway
+      %th.center Direction of Travel
+      %th.center Lines/Lanes
+      %th.center Minimum
+      %th.center Maximum
+  %tbody
+    - roadbeds.each do |rb|
+      %tr
+        %td.center= rb.name
+        %td.center= rb.roadway&.to_s
+        %td.center= rb.direction
+        %td.center= rb.number_of_lines
+        %td.center= rb.minimum
+        %td.center= rb.maximum
+    
