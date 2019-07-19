@@ -37,16 +37,48 @@ class Roadbed < ApplicationRecord
   end
 
   def minimum
-    [
-      roadbed_lines.where.not(entry: [nil, 0]).minimum(:entry),
-      roadbed_lines.where.not(exit: [nil, 0]).minimum(:exit)
-      ].reject{|r| r.nil? || r == 0}.min
+    (get_adjacent_line_minimums || []).reject{|r| r.nil? || r == 0}.min
   end
 
   def maximum
+    (get_adjacent_line_minimums || []).reject{|r| r.nil? || r == 0}.max
+
     [
       roadbed_lines.where.not(entry: [nil, 0]).maximum(:entry),
       roadbed_lines.where.not(exit: [nil, 0]).maximum(:exit)
       ].reject{|r| r.nil? || r == 0}.max
+  end
+
+  private 
+
+  def get_adjacent_line_minimums
+    @adjacent_line_minimums if defined? @adjacent_line_minimums
+
+    line_nums = roadbed_lines.pluck(:number, :entry, :exit)
+    # get the min of [entry, exit] in each line, exclude nil or 0
+    line_mins = line_nums.map{|l| [l[0], [l[1], l[2]].reject{|r| r.nil? || r == 0}.min]}
+    # sort lines in order of L, 1..., R
+    sorted_line_mins = line_mins.sort_by{|l| 
+      if l[0] == 'L'
+        '0'
+      elsif l[0] != 'R'
+        l[0]
+      else
+        "1000" # crazy big number
+      end
+    }.map{|l| l[1]}
+    
+    adjacent_line_minimums = []
+    idx = 0
+    while idx < sorted_line_mins.size-1
+      adjacent_line_minimums << [sorted_line_mins[idx], sorted_line_mins[idx + 1]].reject{|r| r.nil? || r == 0}.min
+      if idx + 2 < sorted_line_mins.size
+        adjacent_line_minimums << [sorted_line_mins[idx+1], sorted_line_mins[idx + 2]].reject{|r| r.nil? || r == 0}.min
+      end
+
+      idx += 2
+    end
+
+    @adjacent_line_minimums = adjacent_line_minimums
   end
 end
