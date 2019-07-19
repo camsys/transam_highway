@@ -1,5 +1,5 @@
 :ruby
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam')&.id
 
   inspection_teams = []
   Organization.active.each do |l|

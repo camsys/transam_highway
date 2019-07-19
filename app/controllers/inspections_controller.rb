@@ -186,7 +186,6 @@ class InspectionsController < TransamController
         sorting_string = "#{params[:sort]} #{params[:order]}"
       end
       cache_list(@inspections.order(sorting_string), INDEX_KEY_LIST_VAR)
-
       @inspections.order(sorting_string).limit(params[:limit]).offset(params[:offset]).as_json
     end
 end

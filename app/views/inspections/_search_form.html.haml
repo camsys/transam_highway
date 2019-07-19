@@ -42,7 +42,7 @@
               = button_tag :type => 'submit', :id => 'form-submit', :class => 'btn btn-primary btn-sm', :style => 'margin-left: 2px;' do
                 %i.fa.fa-search.fa-1-5x
                 = " Search"
-              = link_to reset_inspections_path, :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
+              = link_to reset_inspections_path, :onclick => "reset_inspections_table_cookie()", :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
                 %i.fa.fa-refresh.fa-1-5x
 
 = render 'shared/table_formatters'
@@ -59,6 +59,10 @@
     $('#spinner').hide();
     $("#inspection-table-container").show();
   });
+
+  function reset_inspections_table_cookie() {
+    $('#inspection-table').bootstrapTable('deleteCookie', 'pageNumber');
+  }
 
   $(document).ready(function() {
     // Hide the spinner
