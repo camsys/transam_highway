@@ -1,7 +1,7 @@
 :ruby
   inspectors = []
   current_user.organizations.each do |x|
-    inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
+    inspectors += x.users.with_role(:inspector).distinct.map{|u| [u.name, u.id, x.id]}
   end
 
   inspector_ids_by_team = {}
@@ -96,9 +96,9 @@
     });
 
     function update_inspectors_by_team(team_id) {
-      if(team_id) {
+      group_id = parseInt(team_id);
+      if(group_id > 0) {
         var inspector_ids_by_team = #{inspector_ids_by_team.to_json.html_safe || {}};
-        group_id = parseInt(team_id);
         var inspector_ids = inspector_ids_by_team[group_id];
         $('#inspection_proxy_inspector_id option').hide();
         inspector_ids.forEach(function(inspector_id) {

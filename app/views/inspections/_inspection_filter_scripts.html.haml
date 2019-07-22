@@ -12,11 +12,12 @@
 
 :javascript
   function update_inspection_teams_by_group(group_id, selector) {
+    console.log('apple');
     if(group_id) {
       var inspection_team_ids_by_group = #{inspection_teams.to_json.html_safe || {}};
       group_id = parseInt(group_id);
       var team_ids = inspection_team_ids_by_group[group_id];
-      $('#inspection_proxy_assigned_organization_id option').hide();
+      $('#'+selector+' option').hide();
       team_ids.forEach(function(team_id) {
         $('#' +selector+' option[value=' + team_id + ']').show();
       });
