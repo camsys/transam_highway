@@ -5,17 +5,17 @@
   .col-sm-6{style: 'border-right: 1px solid #17406E;'}
     - roadways = @inspection.highway_structure.roadways
     .col-sm-6
-      = select_tag :roadway_id, options_from_collection_for_select(@inspection.highway_structure.roadways, "object_key", "to_s"), "data-remote" => 'true', "data-url" => roadbeds_path(structure_id: @inspection.highway_structure.object_key), include_blank: "All Roadways", class: 'form-control'
+      = select_tag :roadway_id, options_from_collection_for_select(@inspection.highway_structure.roadways, "object_key", "to_s"), "data-remote" => 'true', "data-url" => roadbeds_path(inspection_id: @inspection.object_key), include_blank: "All Roadways", class: 'form-control'
     - if can?(:update, @inspection.inspection) && @inspection.highway_structure.roadways.any?
       .pull-right
-        = link_to new_roadbed_path(inspection_id: @inspection.object_key), remote: true, id: "new_roadbed_link", class: 'btn btn-primary', title: 'Add Roadbed' do
+        = link_to new_roadbed_path(inspection_id: @inspection.object_key), remote: true, id: "new_roadbed_link", class: 'btn btn-primary add-roadbed', title: 'Add Roadbed', style: 'display: none;' do
           %i.fa.fa-plus
           = " Add Roadbed"
 
     .col-sm-12{style: 'padding-top: 10px;'}
       - roadbeds = Roadbed.where(roadway: roadways).order(:name, :direction)
       .table-responsive#roadbeds_table_container
-        = render 'roadbeds/roadbeds_table', roadbeds: roadbeds
+        = render 'roadbeds/roadbeds_table', roadbeds: roadbeds, inspection: @inspection
   
   .col-sm-6
     - roadway = roadways.first

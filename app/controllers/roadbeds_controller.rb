@@ -2,11 +2,12 @@ class RoadbedsController < TransamController
   before_action :set_roadbed, except: [:new, :create]
 
   def index
+    @inspection = Inspection.find_by(object_key: params[:inspection_id])
+    @highway_structure = @inspection.highway_structure
     @roadway = Roadway.find_by_object_key(params[:roadway_id])
     if @roadway
       @roadbeds = Roadbed.where(roadway: @roadway).order(:name, :direction)
     else
-      @highway_structure = HighwayStructure.find_by(object_key: params[:structure_id])
       @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways).order(:name, :direction)
     end
   end
@@ -34,6 +35,8 @@ class RoadbedsController < TransamController
 
   def destroy
     @roadbed.destroy
+
+    redirect_back(fallback_location: root_path)
   end
 
   def save_vertical_clearance_changes
@@ -45,8 +48,6 @@ class RoadbedsController < TransamController
         end
       end
     end
-
-    redirect_back(fallback_location: root_path)
   end
 
   private

@@ -2,7 +2,7 @@ class Roadbed < ApplicationRecord
   include TransamObjectKey
   
   belongs_to :roadway
-  has_many :roadbed_lines
+  has_many :roadbed_lines, dependent: :destroy
 
   validates :name, presence: true
   validates :direction, presence: true

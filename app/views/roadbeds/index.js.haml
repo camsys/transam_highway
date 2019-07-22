@@ -1,1 +1,3 @@
-$('#roadbeds-table').replaceWith("#{escape_javascript(render 'roadbeds/roadbeds_table', roadbeds: @roadbeds)}");
+$('#roadbeds-table').replaceWith("#{escape_javascript(render 'roadbeds/roadbeds_table', roadbeds: @roadbeds, inspection: @inspection)}");
+$('#roadbed_id').replaceWith("#{escape_javascript(render 'roadbeds/roadbed_dropdown', roadbeds: @roadbeds, selected: @roadbeds.first)}");
+$('#roadbed-lines-table').replaceWith("#{escape_javascript(render 'roadbed_lines/roadbed_lines_table', roadbed: @roadbeds.first)}");

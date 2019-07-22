@@ -36,11 +36,31 @@
     function enable_vc_editing() {
       $('#roadbed-lines-table .number-display').hide();
       $('#roadbed-lines-table .number-edit').show();
+      $('.roadbeds-action-column').show();
+      $('.add-roadbed').show();
     }
 
     function disable_vc_editing() {
       $('#roadbed-lines-table .number-edit').hide();
       $('#roadbed-lines-table .number-display').show();
+      $('.roadbeds-action-column').hide();
+      $('.add-roadbed').hide();
+    }
+
+    function cache_roadbed_line_selection() {
+      localStorage.setItem("selected_roadway_id", $('#roadway_id').val());
+      localStorage.setItem("selected_roadbed_id", $('#roadbed_id').val());
+    }
+
+    function restore_roadbed_line_selection() {
+      var selected_roadway_id = localStorage.getItem("selected_roadway_id");
+      if(selected_roadway_id && selected_roadway_id != $('#roadway_id').val()) {
+        $('#roadway_id').val(selected_roadway_id).change();
+      }
+      var selected_roadbed_id = localStorage.getItem("selected_roadbed_id");
+      if(selected_roadbed_id && selected_roadbed_id != $('#roadbed_id').val()) {
+        $('#roadbed_id').val(selected_roadbed_id).change();
+      }
     }
 
     function is_vc_form_valid() {
@@ -81,8 +101,20 @@
             vertical_clearance_changes: get_vc_changes()
           },
           success: function() {
+            console.log('vercial clearance values save success');
             $("#spinner").hide();
-            window.location.reload();
+            var current_url = window.location.href;
+            if(current_url.includes('restore_roadbed_line_selection')) {
+              window.location.reload();
+            } else {
+              // pass restore_roadbed_line_selection param so to restore current dropdown selections
+              // after saving the values
+              if(current_url.includes('?')) {
+                current_url += '?';
+              }
+              current_url += "restore_roadbed_line_selection=true";
+              window.location.href += current_url;
+            }
           },
           failure: function() {
             $("#spinner").hide();
@@ -95,6 +127,14 @@
     $(function() {
       if(is_vc_editing_enabled()) {
         enable_vc_editing();
+      }
+      
+      $( window ).unload(function() {
+        cache_roadbed_line_selection();
+      });
+
+      if(#{params[:restore_roadbed_line_selection] == 'true' || false}) {
+        restore_roadbed_line_selection();
       }
     });
           
