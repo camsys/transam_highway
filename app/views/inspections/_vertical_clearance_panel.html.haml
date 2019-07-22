@@ -39,15 +39,17 @@
   function enable_vc_editing() {
     $('#roadbed-lines-table .number-display').hide();
     $('#roadbed-lines-table .number-edit').show();
-    $('.roadbeds-action-column').show();
-    $('.add-roadbed').show();
+    $('.roadbeds-action-column').hide();
+    $('.add-roadbed').hide();
+    $('#roadway_id, #roadbed_id').attr('disabled', 'disabled');
   }
 
   function disable_vc_editing() {
     $('#roadbed-lines-table .number-edit').hide();
     $('#roadbed-lines-table .number-display').show();
-    $('.roadbeds-action-column').hide();
-    $('.add-roadbed').hide();
+    $('.roadbeds-action-column').show();
+    $('.add-roadbed').show();
+    $('#roadway_id, #roadbed_id').removeAttr('disabled');
   }
 
   function cache_roadbed_line_selection() {

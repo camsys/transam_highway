@@ -8,7 +8,7 @@
       = select_tag :roadway_id, options_from_collection_for_select(@inspection.highway_structure.roadways, "object_key", "to_s"), "data-remote" => 'true', "data-url" => roadbeds_path(inspection_id: @inspection.object_key), include_blank: "All Roadways", class: 'form-control'
     - if can?(:update, @inspection.inspection) && @inspection.highway_structure.roadways.any?
       .pull-right
-        = link_to new_roadbed_path(inspection_id: @inspection.object_key), remote: true, id: "new_roadbed_link", class: 'btn btn-primary add-roadbed', title: 'Add Roadbed', style: 'display: none;' do
+        = link_to new_roadbed_path(inspection_id: @inspection.object_key), remote: true, id: "new_roadbed_link", class: 'btn btn-primary add-roadbed', title: 'Add Roadbed' do
           %i.fa.fa-plus
           = " Add Roadbed"
 

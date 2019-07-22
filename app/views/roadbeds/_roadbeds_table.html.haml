@@ -9,7 +9,7 @@
       %th.center Minimum
       %th.center Maximum
       - if can_update_inspection
-        %th.center.roadbeds-action-column{style: 'display: none;'}
+        %th.center.roadbeds-action-column
   %tbody
     - roadbeds.each do |rb|
       %tr
@@ -20,7 +20,7 @@
         %td.center= rb.minimum
         %td.center= rb.maximum
         - if can_update_inspection
-          %td.center.roadbeds-action-column{style: 'display: none;'}
+          %td.center.roadbeds-action-column
             = link_to rb, method: :delete, data: { confirm: 'Are you sure?' }, title: 'Delete' do
               %i.fa.fa-remove{style: 'color: red;'}
     
