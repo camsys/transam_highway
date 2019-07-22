@@ -63,6 +63,11 @@
 
 :javascript
 
+  $(document).ready(function() {
+    update_inspection_inspectors_by_team($('#transam_workflow_model_proxy_assigned_organization_id').val());
+  });
+
+
   function enable_disable_assignment_submit() {
     $('#submit_group_team_assignment').attr('disabled', 'disabled');
 
