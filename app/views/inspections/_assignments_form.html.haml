@@ -50,7 +50,7 @@
     .col-sm-6
       = f.input :assigned_organization_id, collection: (orgs & assignable_teams), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
 
-  - if can? :assign, Inspection.new
+  - if can? :assign, Inspection.new(assigned_organization: (orgs & assignable_teams).first)
     .row
       .col-sm-6
         = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: !(can?(:make_ready, Inspection.new))
