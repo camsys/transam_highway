@@ -4,7 +4,10 @@
     %td.center= r.route_signing_prefix
     %td.center= r.service_level_type
     %td.center= suppress_values(r.route_number)
+    %td.center= r.features_intersected
+    %td.center= r.facility_carried
     %td.right= format_as_quantity(r.min_vertical_clearance, 'ft')
+    %td.center= r.milepoint
     %td.center= format_as_yes_no(r.on_base_network)
     %td.center= suppress_values(r.lrs_route)
     %td.center= suppress_values(r.lrs_subroute)
