@@ -8,6 +8,7 @@
 class InspectionSearcher < BaseSearcher
   # search proxy
   attr_accessor :search_proxy
+  attr_accessor :can_view_all
   attr_accessor :organization_ids
 
   # Return the name of the form to display
@@ -56,7 +57,7 @@ class InspectionSearcher < BaseSearcher
       organization_ids = user&.viewable_organization_ids
     end
     if organization_ids.any?
-      if user.has_role? :manager
+      if can_view_all
         inspection_klass.where("transam_assets.organization_id": organization_ids)
       else
         inspection_klass.where("transam_assets.organization_id": organization_ids).where("inspections.assigned_organization_id": user&.organization_ids)

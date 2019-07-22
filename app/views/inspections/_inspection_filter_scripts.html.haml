@@ -1,0 +1,28 @@
+:ruby
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+
+  inspection_teams = {}
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      org_type_id = l.organization_type_id == highway_team_org_type_id ? Organization.find_by(id: l.parent_id).organization_type_id : l.organization_type_id
+      inspection_teams[org_type_id] = [] unless inspection_teams[org_type_id]
+      inspection_teams[org_type_id] << l.id
+    end
+  end
+
+:javascript
+  function update_inspection_teams_by_group(group_id, selector) {
+    if(group_id) {
+      var inspection_team_ids_by_group = #{inspection_teams.to_json.html_safe || {}};
+      group_id = parseInt(group_id);
+      var team_ids = inspection_team_ids_by_group[group_id];
+      $('#inspection_proxy_assigned_organization_id option').hide();
+      team_ids.forEach(function(team_id) {
+        $('#' +selector+' option[value=' + team_id + ']').show();
+      });
+
+      $('#' +selector+' option[value=""]').show();
+    } else {
+      $('#' +selector+' option').show();
+    }
+  }

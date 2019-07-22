@@ -1,0 +1,11 @@
+- filter_scripts_loaded ||= 0
+
+#inspection-assignments-form.collpase
+  .panel.panel-default{:style => 'margin-bottom: 5px;'}
+    .panel-heading{:role => 'tab'}
+      %h4.panel-title
+        = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+    #inspection-assignments-panel-collapse.in
+      .panel-body
+        = render partial: 'inspections/assignments_form', :locals => {filter_scripts_loaded: filter_scripts_loaded}

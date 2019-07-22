@@ -1,11 +1,24 @@
 :ruby
-  inspectors = User.where(id: Inspection.joins(:inspectors).pluck("users.id").uniq).map{|r| [r.name, r.id]} + [['None', -1]]
+  inspectors = []
+  current_user.organizations.each do |x|
+    inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
+  end
 
-  inspection_team_ids_by_group = {}
-  Organization.active.pluck(:id,:organization_type_id).each{|r| 
-    inspection_team_ids_by_group[r[1]] = [] unless inspection_team_ids_by_group[r[1]]
-    inspection_team_ids_by_group[r[1]] << r[0]
-    }
+  inspector_ids_by_team = {}
+  inspectors.each do |i|
+    inspector_ids_by_team[i[2]] = [] unless inspector_ids_by_team[i[2]]
+    inspector_ids_by_team[i[2]] << i[1]
+  end
+
+  inspectors = inspectors.map{|x| x[0..1]} + [['None', -1]]
+
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  assignable_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      assignable_teams << l
+    end
+  end
 
 .col-sm-3
   = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
@@ -31,8 +44,9 @@
   = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), include_blank: 'Select All'
 
 .col-sm-3
-  = f.input :organization_type_id, collection: OrganizationType.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
-  = f.input :assigned_organization_id, collection: Organization.active.pluck(:name, :id) + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
+  - orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+  = f.input :organization_type_id, collection: OrganizationType.where(class_name: ['HighwayAuthority', 'HighwayConsultant'], id: orgs.pluck(:organization_type_id)).map{|o| [o.name, o.id]} + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
+  = f.input :assigned_organization_id, collection: (orgs & assignable_teams).map{|x| [x.name, x.id]} + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 
 .col-sm-3
@@ -63,28 +77,42 @@
       }, 50);
     });
 
-    function show_hide_inspection_team_options(group_id) {
-      if(group_id) {
-        var inspection_team_ids_by_group = #{inspection_team_ids_by_group.to_json.html_safe || {}};
-        group_id = parseInt(group_id);
-        var team_ids = inspection_team_ids_by_group[group_id];
-        $('#inspection_proxy_assigned_organization_id option').hide();
-        team_ids.forEach(function(team_id) {
-          $('#inspection_proxy_assigned_organization_id option[value=' + team_id + ']').show();
-        });
 
-        $('#inspection_proxy_assigned_organization_id option[value=""]').show();
-      } else {
-        $('#inspection_proxy_assigned_organization_id option').show();
-      }
-    }
-    show_hide_inspection_team_options("#{@search_proxy.organization_type_id}");
 
     $('#inspection_proxy_organization_type_id').change(function() {
       var group_id = $(this).val();
-      show_hide_inspection_team_options(group_id);
+      update_inspection_teams_by_group(group_id, 'inspection_proxy_assigned_organization_id');
       if(group_id) {
         $('#inspection_proxy_assigned_organization_id').val('');
       }
     });
+
+    $('#inspection_proxy_assigned_organization_id').change(function() {
+      var team_id = $(this).val();
+      update_inspectors_by_team(team_id);
+      if(team_id) {
+        $('#inspection_proxy_inspector_id').val('');
+      }
+    });
+
+    function update_inspectors_by_team(team_id) {
+      if(team_id) {
+        var inspector_ids_by_team = #{inspector_ids_by_team.to_json.html_safe || {}};
+        group_id = parseInt(team_id);
+        var inspector_ids = inspector_ids_by_team[group_id];
+        $('#inspection_proxy_assigned_inspector_id option').hide();
+        inspector_ids.forEach(function(inspector_id) {
+          $('#inspection_proxy_assigned_inspector_id option[value=' + inspector_id + ']').show();
+        });
+
+        $('#inspection_proxy_assigned_inspector_id option[value=""]').show();
+      } else {
+        $('#inspection_proxy_assigned_inspector_id option').show();
+      }
+    }
+
+    update_inspection_teams_by_group("#{@search_proxy.organization_type_id}", 'inspection_proxy_assigned_organization_id');
+    update_inspectors_by_team("#{@search_proxy.assigned_organization_id}");
+
+
   });

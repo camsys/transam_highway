@@ -26,7 +26,7 @@ class NewUserService
 
     user.update_user_organization_filters unless Rails.application.config.try(:user_organization_filters_ignored).present?
 
-    if user.has_role? :manager
+    unless user.has_role? :inspector
       user.viewable_organizations = Organization.all
     else
       user.viewable_organizations = user.organizations

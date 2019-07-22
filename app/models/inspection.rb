@@ -69,9 +69,12 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
+
+        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'make_ready', from_state: ['open', 'assigned'], to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+        {event_name: 'make_ready', from_state: 'assigned', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
