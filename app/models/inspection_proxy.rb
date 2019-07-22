@@ -18,7 +18,7 @@ class InspectionProxy < Proxy
                   :inspection_program_id, :organization_type_id, :assigned_organization_id,
                   :state, :min_calculated_inspection_due_date, :max_calculated_inspection_due_date, 
                   :min_inspection_date, :max_inspection_date,
-                  :inspection_frequency, :inspector_id, :inspection_zone,
+                  :inspection_frequency, :inspector_id, :inspection_zone_id,
                   :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key
 
   #-----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ class InspectionProxy < Proxy
     :min_calculated_inspection_due_date, :max_calculated_inspection_due_date,
     :min_inspection_date, :max_inspection_date,
     :assigned_organization_id, :inspection_program_id, :organization_type_id, 
-    :inspection_frequency, :inspector_id, :inspection_zone,
+    :inspection_frequency, :inspector_id, :inspection_zone_id,
     :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key
   ]
 

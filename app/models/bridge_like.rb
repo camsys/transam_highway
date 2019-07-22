@@ -511,29 +511,20 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_roadway(hash, bridgelike)
-    # Convert STRAHNET
-    strahnet_code =
-      case hash['DEFHWY']
-      when 1
-        2
-      when 2
-        3
-      when 3
-        4
-      else
-        1
-      end
     # Validate ON_UNDER
     on_under = hash['ON_UNDER']
     return unless (on_under.size == 1) && (/[12A-Z]/ =~ on_under)
     
     Roadway.new(
       highway_structure: bridgelike,
-      on_under_indicator: hash['ON_UNDER'],
+      on_under_indicator: on_under,
       route_signing_prefix: RouteSigningPrefix.find_by(code: hash['KIND_HWY']),
       service_level_type: ServiceLevelType.find_by(code: hash['LEVL_SRVC']),
       route_number: hash['ROUTENUM'],
+      features_intersected: on_under == '1' ? bridgelike.features_intersected : bridgelike.facility_carried,
+      facility_carried: on_under == '1' ? bridgelike.facility_carried : bridgelike.features_intersected,
       min_vertical_clearance: Uom.convert(hash['VCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      milepoint: Uom.convert(hash['KMPOST'].to_f, Uom::KILOMETER, Uom::MILE).round(BridgeLike::NDIGITS),
       on_base_network: hash['ONBASENET'] == '1',
       lrs_route: hash['LRSINVRT'],
       lrs_subroute: hash['SUBRTNUM'],
@@ -548,7 +539,7 @@ class BridgeLike < TransamAssetRecord
       on_truck_network: hash['TRUCKNET'] == '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
       future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
-      strahnet_designation_type: StrahnetDesignationType.find_by(code: strahnet_code)
+      strahnet_designation_type: StrahnetDesignationType.find_by(code: hash['DEFHWY'])
     )
   end
   
@@ -684,7 +675,7 @@ class BridgeLike < TransamAssetRecord
           end
         end
       when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
-        inspection_zone = inspection_trip_parts[0]
+        inspection_zone = InspectionZone.find_by(name: inspection_trip_parts[0].titleize)
         inspection_fiscal_year = inspection_trip_parts[2]
       else # Give up for now
       end
@@ -735,6 +726,7 @@ class BridgeLike < TransamAssetRecord
       remarks: bridge_hash['NOTES'],
       inspection_program: inspection_program,
       inspection_trip: inspection_trip,
+      inspection_zone: inspection_zone,
       inspection_fiscal_year: inspection_fiscal_year,
       inspection_month: inspection_month,
       inspection_quarter: inspection_quarter,

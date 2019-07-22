@@ -152,6 +152,9 @@ class InspectionSearcher < BaseSearcher
     end
   end
 
+  def inspection_zone_id_conditions
+    inspection_klass.where("highway_structures.inspection_zone_id": parse_nil_search_value(search_proxy&.inspection_zone_id)) unless search_proxy&.inspection_zone_id.blank?
+  end    
   def inspection_fiscal_year_conditions
     inspection_klass.where("highway_structures.inspection_fiscal_year": search_proxy&.inspection_fiscal_year) unless search_proxy&.inspection_fiscal_year.blank?
   end
