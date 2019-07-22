@@ -26,7 +26,7 @@ class RoadbedsController < TransamController
     if @roadbed.save
       # instantize lines
       Roadbed.create_lines @roadbed, @inspection
-      @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways).order(:name, :direction)
+      @roadbeds = Roadbed.where(roadway: @roadbed.roadway).order(:name, :direction)
     end
   end
 
