@@ -19,18 +19,15 @@ class RoadbedsController < TransamController
   end
 
   def create
+    @inspection = Inspection.find_by(object_key: params[:inspection_id])
+    @highway_structure = @inspection&.highway_structure
     @roadbed = Roadbed.new(roadbed_params)
 
-    if !@roadbed.save
-      render :new
+    if @roadbed.save
+      # instantize lines
+      Roadbed.create_lines @roadbed, @inspection
+      @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways).order(:name, :direction)
     end
-
-    # instantize lines
-    @inspection = Inspection.find_by(object_key: params[:inspection_id])
-    Roadbed.create_lines @roadbed, @inspection
-
-    @highway_structure = @inspection&.highway_structure
-    @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways).order(:name, :direction)
   end
 
   def destroy
