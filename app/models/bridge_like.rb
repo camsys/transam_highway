@@ -675,7 +675,7 @@ class BridgeLike < TransamAssetRecord
           end
         end
       when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
-        inspection_zone = inspection_trip_parts[0]
+        inspection_zone = InspectionZone.find_by(name: inspection_trip_parts[0].titleize)
         inspection_fiscal_year = inspection_trip_parts[2]
       else # Give up for now
       end
@@ -726,6 +726,7 @@ class BridgeLike < TransamAssetRecord
       remarks: bridge_hash['NOTES'],
       inspection_program: inspection_program,
       inspection_trip: inspection_trip,
+      inspection_zone: inspection_zone,
       inspection_fiscal_year: inspection_fiscal_year,
       inspection_month: inspection_month,
       inspection_quarter: inspection_quarter,
