@@ -45,10 +45,11 @@
 
   .row.group-team-fields
     - orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+    - org_types = OrganizationType.where(class_name: ['HighwayAuthority', 'HighwayConsultant'], id: orgs.pluck(:organization_type_id))
     .col-sm-6
-      = f.input :organization_type_id, collection: OrganizationType.where(class_name: ['HighwayAuthority', 'HighwayConsultant'], id: orgs.pluck(:organization_type_id)), label: 'Inspection Group', include_blank: false
+      = f.input :organization_type_id, collection: org_types, label: 'Inspection Group', include_blank: org_types.count > 1 ? 'Select One' : false, selected: (org_types.count == 1 ? org_types.first.id : nil)
     .col-sm-6
-      = f.input :assigned_organization_id, collection: (orgs & assignable_teams), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
+      = f.input :assigned_organization_id, collection: (orgs & assignable_teams), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: (orgs & assignable_teams).count > 1 ? 'Select One' : false, selected: (orgs & assignable_teams).count == 1 ? (orgs & assignable_teams).first.id : nil
 
   - if can? :assign, Inspection.new(assigned_organization: (orgs & assignable_teams).first)
     .row
@@ -61,10 +62,6 @@
   = render 'inspection_filter_scripts'
 
 :javascript
-  $(document).ready(function() {
-    update_inspection_teams_by_group($('#transam_workflow_model_proxy_organization_type_id').val(), 'transam_workflow_model_proxy_assigned_organization_id');
-    update_inspection_inspectors_by_team($('#transam_workflow_model_proxy_assigned_organization_id').val());
-  });
 
   function enable_disable_assignment_submit() {
     $('#submit_group_team_assignment').attr('disabled', 'disabled');
@@ -107,15 +104,7 @@
 
   $('#transam_workflow_model_proxy_organization_type_id').change(function() {
     var type_id = $(this).val();
-    $('#transam_workflow_model_proxy_assigned_organization_id').val();
-    $('#transam_workflow_model_proxy_assigned_organization_id option').each(function() {
-      if (parseInt($(this).data('organization-type-id')) == parseInt(type_id)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
-
+    $('#transam_workflow_model_proxy_assigned_organization_id').val('');
 
     update_inspection_teams_by_group(type_id, 'transam_workflow_model_proxy_assigned_organization_id');
     update_inspection_inspectors_by_team($('#transam_workflow_model_proxy_assigned_organization_id').val());

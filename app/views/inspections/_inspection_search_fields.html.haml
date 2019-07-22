@@ -100,14 +100,14 @@
         var inspector_ids_by_team = #{inspector_ids_by_team.to_json.html_safe || {}};
         group_id = parseInt(team_id);
         var inspector_ids = inspector_ids_by_team[group_id];
-        $('#inspection_proxy_assigned_inspector_id option').hide();
+        $('#inspection_proxy_inspector_id option').hide();
         inspector_ids.forEach(function(inspector_id) {
-          $('#inspection_proxy_assigned_inspector_id option[value=' + inspector_id + ']').show();
+          $('#inspection_proxy_inspector_id option[value=' + inspector_id + ']').show();
         });
 
-        $('#inspection_proxy_assigned_inspector_id option[value=""]').show();
+        $('#inspection_proxy_inspector_id option[value=""]').show();
       } else {
-        $('#inspection_proxy_assigned_inspector_id option').show();
+        $('#inspection_proxy_inspector_id option').show();
       }
     }
 
