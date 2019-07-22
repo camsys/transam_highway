@@ -109,7 +109,7 @@
             } else {
               // pass restore_roadbed_line_selection param so to restore current dropdown selections
               // after saving the values
-              if(current_url.includes('?')) {
+              if(!current_url.includes('?')) {
                 current_url += '?';
               }
               current_url += "restore_roadbed_line_selection=true";
