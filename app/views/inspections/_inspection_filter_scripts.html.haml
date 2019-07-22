@@ -12,7 +12,6 @@
 
 :javascript
   function update_inspection_teams_by_group(group_id, selector) {
-    console.log('apple');
     if(group_id) {
       var inspection_team_ids_by_group = #{inspection_teams.to_json.html_safe || {}};
       group_id = parseInt(group_id);

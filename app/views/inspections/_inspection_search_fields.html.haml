@@ -1,7 +1,7 @@
 :ruby
   inspectors = []
   current_user.organizations.each do |x|
-    inspectors += x.users.with_role(:inspector).distinct.map{|u| [u.name, u.id, x.id]}
+    inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
   end
 
   inspector_ids_by_team = {}
@@ -10,7 +10,7 @@
     inspector_ids_by_team[i[2]] << i[1]
   end
 
-  inspectors = inspectors.map{|x| x[0..1]} + [['None', -1]]
+  inspectors = inspectors.map{|x| x[0..1]}.uniq + [['None', -1]]
 
   highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
   assignable_teams = []
