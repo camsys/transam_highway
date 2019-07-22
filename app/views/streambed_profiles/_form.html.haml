@@ -12,10 +12,7 @@
 
       = f.input :transam_asset_id, as: :hidden, input_html: {value: @streambed_profile.transam_asset_id}
 
-      = f.input :date, :wrapper => :vertical_append do
-        = f.input_field :date, :as => :string, :class => 'form-control datepicker'
-        %span.input-group-addon
-          %i.fa.fa-calendar
+      = f.input :year
 
       = f.button :submit, 'Save', :class => 'btn btn-primary'
       %button.btn.btn-warning#cancel_streambed_profile_form{type: 'button'}

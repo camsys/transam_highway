@@ -15,6 +15,7 @@ class StreambedProfile < ApplicationRecord
     [
         :transam_asset_id,
         :date,
+        :year,
         :water_level
     ]
   end
@@ -24,6 +25,14 @@ class StreambedProfile < ApplicationRecord
   # on create, it pulls these columns. it doesn't update later if new columns are added later or changed
   def all_possible_distances
     bridge_like ? bridge_like.streambed_profiles.map{|x| x.streambed_profile_points.pluck(:distance)}.flatten.uniq.sort : []
+  end
+
+  def year=(input)
+    self.date = Date.new(input.to_i, 1,1)
+  end
+
+  def year
+    date.try(:year)
   end
 
   protected
