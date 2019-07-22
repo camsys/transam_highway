@@ -36,6 +36,36 @@
     return $('.save-vertical-clearance-buttons').is(":visible");
   }
 
+  function enable_vc_editing() {
+    $('#roadbed-lines-table .number-display').hide();
+    $('#roadbed-lines-table .number-edit').show();
+    $('.roadbeds-action-column').show();
+    $('.add-roadbed').show();
+  }
+
+  function disable_vc_editing() {
+    $('#roadbed-lines-table .number-edit').hide();
+    $('#roadbed-lines-table .number-display').show();
+    $('.roadbeds-action-column').hide();
+    $('.add-roadbed').hide();
+  }
+
+  function cache_roadbed_line_selection() {
+    localStorage.setItem("selected_roadway_id", $('#roadway_id').val());
+    localStorage.setItem("selected_roadbed_id", $('#roadbed_id').val());
+  }
+
+  function restore_roadbed_line_selection() {
+    var selected_roadway_id = localStorage.getItem("selected_roadway_id");
+    if(selected_roadway_id && selected_roadway_id != $('#roadway_id').val()) {
+      $('#roadway_id').val(selected_roadway_id).change();
+    }
+    var selected_roadbed_id = localStorage.getItem("selected_roadbed_id");
+    if(selected_roadbed_id && selected_roadbed_id != $('#roadbed_id').val()) {
+      $('#roadbed_id').val(selected_roadbed_id).change();
+    }
+  }
+
   $(function() {
     $('.edit-vertical-clearance-button').on('click', function() {
       $('.edit-vertical-clearance-button').hide();
