@@ -6,7 +6,7 @@
     = render 'inspections/search_form'
 
   .col-sm-12
-    = render 'inspections/assignments_form'
+    = render partial: 'inspections/assignments_form_panel', :locals => {filter_scripts_loaded: 1}
   
   .col-sm-12
     #spinner{:style => 'padding: 20px;'}
@@ -17,6 +17,8 @@
     #inspection-table-container
       = render 'inspections/inspections_table'
 
+
+= render 'inspection_filter_scripts'
 
 :javascript
 

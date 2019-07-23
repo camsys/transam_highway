@@ -5,5 +5,4 @@ json.(inspection, :object_key, :weather, :temperature, :notes, :inspection_type_
 json.inspection_type inspection.inspection_type&.name
 json.status inspection.status
 json.calculated_inspection_due_date inspection.calculated_inspection_due_date
-json.inspectors inspection.inspectors, :to_s
-json.inspector_emails inspection.inspectors, :email
+json.inspector_ids inspection.inspectors, :id

@@ -1,0 +1,15 @@
+%legend
+  Inspector Assignment
+
+.row
+  .col-sm-4.col-md-2
+    %h4 Inspectors
+    %ul
+      - @inspection.inspectors.map(&:to_s).each do |insp_name|
+        %li= insp_name
+
+  .col-sm-6.col-md-3
+    - inspector_collection = @inspection.inspectors.map{|r| [r.id, r.to_s]}
+    = editable_association_tag(@inspection, :inspection_team_leader, reference_label('inspections', 'inspection_team_leader_id', 'Team Leader'), inspector_collection, model_name: 'Inspection')
+    = editable_association_tag(@inspection, :inspection_team_member, reference_label('inspections', 'inspection_team_member_id', 'Team Member'), inspector_collection, model_name: 'Inspection')
+    = editable_association_tag(@inspection, :inspection_team_member_alt, reference_label('inspections', 'inspection_team_member_alt_id', 'Team Member Alternative'), inspector_collection, model_name: 'Inspection')

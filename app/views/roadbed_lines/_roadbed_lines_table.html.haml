@@ -1,0 +1,111 @@
+:css
+  #roadbed-lines-table .number-input {
+    width: 80px !important;
+  }
+
+%table.table.table-bordered#roadbed-lines-table
+  - if roadbed
+    %thead
+      %tr
+        %th.center Location
+        %th.center L
+        - roadbed.roadbed_lines.lines.each do |l|
+          %th.center= l.number
+        %th.center R
+    %tbody
+      %tr{data: {type: 'entry'}}
+        %td Entry
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'entry'
+        
+
+        - roadbed.roadbed_lines.lines.each do |l|
+          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'entry'
+
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'entry'
+      %tr{data: {type: 'exit'}}
+        %td Exit
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'exit'
+      
+        - roadbed.roadbed_lines.lines.each do |l|
+          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'exit'
+
+        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'exit'
+
+- if roadbed
+  :javascript
+    function is_vc_form_valid() {
+      //TODO: add form validations
+      return true;
+    }
+
+    function get_vc_changes() {
+      if(!is_vc_editing_enabled()) {
+        return null;
+      }
+      
+      var changes = {};
+
+      $('.roadbed-line-cell').each(function(idx, cell) {
+        var line_id = $(cell).attr('data-line-id'); 
+        if(!line_id) {
+          return;
+        } 
+        if(!changes[line_id]) {
+          changes[line_id] = {};
+        }
+
+        var number_type = $(cell).attr('data-number-type');  
+        var val = $(cell).find('.number-input').val();
+        changes[line_id][number_type] = val;
+      });
+      return changes;
+    }
+
+    function submit_vc_changes() {
+      if(is_vc_form_valid()) {
+        $("#spinner").show();
+        $.ajax({
+          url: "#{save_vertical_clearance_changes_roadbed_path(roadbed&.object_key)}",
+          method: 'post',
+          data: {
+            vertical_clearance_changes: get_vc_changes()
+          },
+          success: function() {
+            console.log('vercial clearance values save success');
+            $("#spinner").hide();
+            var current_url = window.location.href;
+            if(current_url.includes('restore_roadbed_line_selection')) {
+              window.location.reload();
+            } else {
+              // pass restore_roadbed_line_selection param so to restore current dropdown selections
+              // after saving the values
+              if(!current_url.includes('?')) {
+                current_url += '?';
+              }
+              current_url += "restore_roadbed_line_selection=true";
+              window.location.href = current_url;
+            }
+          },
+          failure: function() {
+            $("#spinner").hide();
+            alert('An error occurred saving the changes. Please try again.');
+          }
+        });
+      }
+    }
+
+    $(function() {
+      if(is_vc_editing_enabled()) {
+        enable_vc_editing();
+      }
+      
+      $( window ).unload(function() {
+        cache_roadbed_line_selection();
+      });
+
+      if(#{params[:restore_roadbed_line_selection] == 'true' || false}) {
+        restore_roadbed_line_selection();
+      }
+    });
+          
+      

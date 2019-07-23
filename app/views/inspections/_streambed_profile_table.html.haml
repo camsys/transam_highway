@@ -24,7 +24,7 @@
               #streambed_table_actions.btn-toolbar
                 - if @inspection.streambed_profile && @inspection.updatable? && can?(:update, @inspection.inspection)
                   .btn-group
-                    = link_to new_inspection_streambed_profile_streambed_profile_point_path(@inspection.object_key, @inspection.streambed_profile.object_key), remote: true, class: 'btn btn-primary', title: 'New Distance' do
+                    = link_to new_streambed_profile_streambed_profile_point_path(@inspection.streambed_profile), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
                       = " New Distance"
               .table-responsive#streambed_table
@@ -45,7 +45,7 @@
                         :id_field => 'object_key',
                         :export_types => "['csv', 'txt', 'excel']",
                         :cookie => 'true',
-                        :cookie_id_table => "inspections_id",
+                        :cookie_id_table => "streambed_profile_table_id",
                         :cookie_expire => "1y",
                         :maintain_selected => 'true',
                         :single_select => 'false'}}
@@ -62,19 +62,19 @@
                       %tr
                         %td.center= profile.date.year
                         - cols.each do |distance|
-                          - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                          - if profile_point
-                            %td.center
-                              - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                          %td.center
+                            - profile_point = profile.streambed_profile_points.find_by(distance: distance)
+                            - if profile.inspection.try(:object_key) == @inspection.object_key && @inspection.updatable?
+                              - if profile_point
                                 %span.number-display
                                   = format_as_decimal(profile_point.value,1)
                                 %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
                               - else
-                                = format_as_decimal(profile_point.value,1)
-                          - else
-                            %td.center
+                                %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, data: {distance: distance}}
+                            - else
+                              = format_as_decimal(profile_point.value,1) if profile_point
                         %td.center
-                          - if profile.inspection.object_key == @inspection.object_key && @inspection.updatable?
+                          - if profile.inspection.try(:object_key) == @inspection.object_key && @inspection.updatable?
                             %span.number-display
                               = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
@@ -108,12 +108,16 @@
     $("#spinner").show();
 
     var targets = {};
-    $( "#streambed_table :not(.water-level)" ).each(function( index ) {
-      targets[$(this).data('streambed-profile-point')] = $(this).val();
+    $( "#streambed_table input:not(.water-level)" ).each(function( index ) {
+      if (($(this).data('streambed-profile-point')) && ($(this).data('streambed-profile-point').length > 0)) {
+        targets[$(this).data('streambed-profile-point')] = $(this).val();
+      } else if (($(this).data('distance')) && ($(this).data('distance').length > 0)) {
+        targets[$(this).data('distance')] = $(this).val();
+      }
     });
 
     $.ajax({
-      url: "#{inspection_streambed_profile_path(@inspection.object_key, @inspection.streambed_profile || 'xxx')}",
+      url: "#{streambed_profile_path(@inspection.streambed_profile || 'xxx')}",
       method: 'put',
       data: {
         targets: targets,

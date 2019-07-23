@@ -1,0 +1,6 @@
+- val = line&.send(number_type)
+%td.center.roadbed-line-cell{data: {line_id: line&.id, line_type: line_type, number_type: number_type}}
+  %span.number-display
+    = val ? (val == 0 ? 'N/A' : val) : 'No Restrictions'
+  %span.number-edit{style: 'display: none;'}
+    %input.number-input.form-control{type: 'number', min: 0, value: val}

@@ -23,7 +23,7 @@
         %td= number_to_human_size(u.document.file_size)
         %td= u.file_status_type
         %td= u.document.description
-        %td= u.document.creator.name
+        %td= u.document.creator&.name
         %td= format_as_date_time(u.updated_at)
         %td
           = link_to 'Process', process_file_processable_upload_path(u), class: 'process_link'

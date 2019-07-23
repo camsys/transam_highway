@@ -76,7 +76,7 @@
               :id_field => 'object_key',
               :export_types => "['csv', 'txt', 'excel']",
               :cookie => 'true',
-              :cookie_id_table => "inspections_id",
+              :cookie_id_table => "elements_table_id",
               :cookie_expire => "1y",
               :maintain_selected => 'true',
               :single_select => 'false'}}
@@ -109,8 +109,8 @@
   };
 
   function enable_quantity_editing() {
-    $('.number-display').hide();
-    $('.number-input').show();
+    $('#elements_table_container .number-display').hide();
+    $('#elements_table_container .number-input').show();
 
     // local New Element and action buttons
     $('#new_element_link, .element_defect_row_action_button').hide();
@@ -118,13 +118,13 @@
   }
 
   function disable_quantity_editing() {
-    $('.number-input').hide();
-    $('.number-display').show();
+    $('#elements_table_container .number-input').hide();
+    $('#elements_table_container .number-display').show();
     $('#new_element_link, .element_defect_row_action_button').show();
   }
 
   function is_form_valid() {
-    if($('.number-input.error').length == 0) {
+    if($('#elements_table_container .number-input.error').length == 0) {
       $('.save-elements-button').removeAttr('disabled');
       return true;
     } else {

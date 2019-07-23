@@ -1,0 +1,35 @@
+.row
+  .col-sm-12
+    = simple_form_for(@streambed_profile,
+    :url => @streambed_profile.new_record? ? streambed_profiles_path : streambed_profile_path(@streambed_profile),
+    :method => @streambed_profile.new_record? ? 'post' : 'put',
+    :html => {:class => 'form-vertical streambed_profile_form'},
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+      :radio_buttons => :vertical_radio_and_checkboxes,
+      :file => :vertical_file_input,
+      :boolean => :vertical_boolean}) do |f|
+
+      = f.input :transam_asset_id, as: :hidden, input_html: {value: @streambed_profile.transam_asset_id}
+
+      = f.input :year, required: true
+
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_streambed_profile_form{type: 'button'}
+        Cancel
+
+:javascript
+
+    // jquery validations
+    $('.streambed_profile_form').validate({
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+
+    $('#cancel_streambed_profile_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+
+
+

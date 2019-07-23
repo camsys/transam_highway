@@ -1,0 +1,46 @@
+.row
+  = simple_form_for(@roadbed,
+  :url => @roadbed.new_record? ? roadbeds_path : roadbed_path(@roadbed),
+  :method => @roadbed.new_record? ? 'post' : 'put',
+  :authenticity_token => true,
+  :remote => true,
+  :html => {:class => 'form-vertical roadbed_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    = hidden_field_tag :inspection_id, @inspection&.object_key
+    .col-sm-12
+      = f.input :name, required: true
+
+    .col-sm-12
+      = f.association :roadway, collection: @highway_structure&.roadways, required: true, :prompt => 'Select...'
+
+    .col-sm-12
+      = f.input :direction, collection: [['North', 'N'], ['South', 'S'], ['East', 'E'], ['West', 'W']], required: true, :prompt => 'Select...'
+
+    .col-sm-5
+      = f.input :number_of_lines, required: true, input_html: { min: '0' }
+
+    .col-md-12
+      = f.button :submit, 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_roadbed_form{type: 'button'}
+        Cancel
+
+:javascript
+  $(function() {
+    // jquery validations
+    $('.roadbed_form').validate({
+      submitHandler: function(form) {
+        form.ajaxSubmit();
+      }
+    });
+
+    $('#cancel_roadbed_form').click(function() {
+      $('#form-modal').modal('hide');
+    });
+  });
+
+
+

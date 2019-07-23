@@ -2,7 +2,9 @@
   $('#errors').html("#{escape_javascript(render 'inspections/errors')}").show();
 - else
   $('#errors').hide();
-$('#inspection-table').bootstrapTable('refresh', {url: "#{inspections_path(:format => :json)}"});
+$('#inspection-table').bootstrapTable('refresh', {url: "#{inspections_path(:format => :json)}", pageNumber: 1});
+selected_rows = new Set();
+$('#inspection-table').bootstrapTable('uncheckAll');
 
 
 - if @message.present?

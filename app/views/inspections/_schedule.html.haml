@@ -1,0 +1,27 @@
+:css
+  #inspection-schedule-table tr td{
+    vertical-align: middle;
+  }
+
+%legend
+  Inspection Schedule
+
+%table.table.table-bordered#inspection-schedule-table
+  %thead
+    %th Last Inspection Date
+    %th Due Date
+    %th Inspection Date
+    %th Submitted Date
+    %th Frequency (mo)
+    %th Next Due Date
+  %tbody
+    %tr
+      %td=format_as_date(@inspection.highway_structure.inspection_date)
+      %td=@inspection.calculated_inspection_due_date.try(:strftime, "%b %Y")
+      %td=editable_field_tag(@inspection, :event_datetime, "", type: 'date', model_name: 'Inspection')
+      %td=format_as_date(@inspection.routine_report_submitted_at)
+      %td=editable_association_tag(@inspection, :inspection_frequency, "", [12, 24, 48, 72].map{|f| [f, f]}, model_name: 'Inspection', suffix: '')
+      %td
+        - if @inspection.event_datetime && @inspection.inspection_frequency
+          - next_due_date = @inspection.event_datetime + @inspection.inspection_frequency.months
+          = next_due_date.try(:strftime, "%b %Y")

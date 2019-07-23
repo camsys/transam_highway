@@ -21,6 +21,8 @@ class HighwayStructure < TransamAssetRecord
   belongs_to :historical_significance_type
 
   belongs_to :inspection_program
+  belongs_to :inspection_zone
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
 
   has_many :elements, through: :inspections
@@ -163,7 +165,7 @@ class HighwayStructure < TransamAssetRecord
       Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
     elsif inspections.count > 0
       old_insp = Inspection.get_typed_inspection(last_closed_inspection)
-      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:guid, {defects: [:object_key, :guid]}]}]
+      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:guid, {defects: [:object_key, :guid]}]}]
 
       old_insp.elements.where(id: old_insp.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
         new_parent_elem = new_insp.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
@@ -172,6 +174,11 @@ class HighwayStructure < TransamAssetRecord
         end
       end
       new_insp.elements.each do |elem|
+        # set inspection id for defects
+        elem.defects.each do |defect|
+          defect.inspection = new_insp
+        end
+
         elem.object_key = nil
       end
 

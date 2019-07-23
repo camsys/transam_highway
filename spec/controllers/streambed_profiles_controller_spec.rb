@@ -59,7 +59,8 @@ RSpec.describe StreambedProfilesController, type: :controller do
 
   describe "GET #new" do
     it "returns a success response" do
-      get :new, params: {}, session: valid_session
+      allow_any_instance_of(StreambedProfilesController).to receive(:render).and_return ""
+      get :new, params: {format: :js}, session: valid_session
       expect(response).to be_successful
     end
   end

@@ -1,17 +1,17 @@
 .row
-  = simple_form_for(@streambed_profile_point,
-  :url => @streambed_profile_point.new_record? ? inspection_streambed_profile_streambed_profile_points_path(@inspection.object_key, @streambed_profile.object_key) : inspection_streambed_profile_streambed_profile_point_path(@inspection.object_key, @streambed_profile, @streambed_profile_point),
-  :method => @streambed_profile_point.new_record? ? 'post' : 'put',
-  :html => {:class => 'form-vertical streambed_profile_point_form'},
-  :wrapper => :vertical_form,
-  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
-    :radio_buttons => :vertical_radio_and_checkboxes,
-    :file => :vertical_file_input,
-    :boolean => :vertical_boolean}) do |f|
-    .col-sm-12
+  .col-sm-12
+    = simple_form_for(@streambed_profile_point,
+    :url => @streambed_profile_point.new_record? ? streambed_profile_streambed_profile_points_path(@streambed_profile) : streambed_profile_streambed_profile_point_path(@streambed_profile, @streambed_profile_point),
+    :method => @streambed_profile_point.new_record? ? 'post' : 'put',
+    :html => {:class => 'form-vertical streambed_profile_point_form'},
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+      :radio_buttons => :vertical_radio_and_checkboxes,
+      :file => :vertical_file_input,
+      :boolean => :vertical_boolean}) do |f|
+
       = f.input :distance
 
-    .col-md-12
       = f.button :submit, 'Save', :class => 'btn btn-primary'
       %button.btn.btn-warning#cancel_streambed_profile_point_form{type: 'button'}
         Cancel

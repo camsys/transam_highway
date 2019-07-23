@@ -1,0 +1,26 @@
+- can_update_inspection = can?(:update, inspection)
+%table.table.table-bordered#roadbeds-table
+  %thead
+    %tr
+      %th.center Name
+      %th.center Roadway
+      %th.center Direction of Travel
+      %th.center Lines/Lanes
+      %th.center Minimum
+      %th.center Maximum
+      - if can_update_inspection
+        %th.center.roadbeds-action-column
+  %tbody
+    - roadbeds.each do |rb|
+      %tr
+        %td.center= rb.name
+        %td.center= rb.roadway&.to_s
+        %td.center= rb.direction
+        %td.center= rb.number_of_lines
+        %td.center= rb.minimum
+        %td.center= rb.maximum
+        - if can_update_inspection
+          %td.center.roadbeds-action-column
+            = link_to rb, method: :delete, data: { confirm: 'Are you sure?' }, title: 'Delete' do
+              %i.fa.fa-remove{style: 'color: red;'}
+    

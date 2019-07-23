@@ -3,7 +3,17 @@ ImagesController.class_eval do
   def index
     if params[:global_base_imagable]
       @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_base_imagable]))
-      @images = Image.where(base_imagable: @imagable)
+
+      if @imagable.class.to_s == 'TransamAsset'
+        # asset images of course
+        # inspection images not final (ie base_imagable: asset, imagable: inspection.final)
+        # element images base_imagable: inspection.final
+        # defect base_imagable: inspection.final
+        typed_asset = TransamAsset.get_typed_asset(@imagable)
+        @images = (Image.where(base_imagable: @imagable).where.not(imagable: typed_asset.inspections.not_final)).or(Image.where(base_imagable: typed_asset.inspections.final))
+      else
+        @images = Image.where(base_imagable: @imagable)
+      end
     elsif params[:global_any_imagable] # parameter to return images of self as parent and children
       @imagable = GlobalID::Locator.locate(GlobalID.parse(params[:global_any_imagable]))
       @images = Image.where(base_imagable: @imagable).or(Image.where(imagable: @imagable))
@@ -35,12 +45,12 @@ ImagesController.class_eval do
         render :json => {
             :total => @images.count,
             :rows => @images.limit(params[:limit]).offset(params[:offset]).collect{ |u|
-              if u.base_imagable_type == 'Element'
-                element_definition = u.base_imagable.element_definition&.number
+              if u.imagable_type == 'Element'
+                element_definition = u.imagable.element_definition&.number
               end
-              if u.base_imagable_type == 'Defect'
-                element_definition = u.base_imagable.element&.element_definition&.number
-                defect_definition = u.base_imagable.defect_definition&.number
+              if u.imagable_type == 'Defect'
+                element_definition = u.imagable.element&.element_definition&.number
+                defect_definition = u.imagable.defect_definition&.number
               end
 
               u.as_json.merge!({

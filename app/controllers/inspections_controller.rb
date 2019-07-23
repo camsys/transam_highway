@@ -58,7 +58,6 @@ class InspectionsController < TransamController
 
   # PATCH/PUT /inspections/1
   def update
-
     respond_to do |format|
       if @inspection.update!(typed_inspection_params(@inspection))
         notify_user(:notice, "Inspection was successfully updated.")
@@ -148,6 +147,9 @@ class InspectionsController < TransamController
         @search_proxy = InspectionProxy.new
         # Flag this as a new search so the search results will be hidden
         @search_proxy.new_search = '1'
+        # Set default state filters
+        @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
+        @search_proxy.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @search_proxy.structure_status_type_code
 
         cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
       end
@@ -164,13 +166,13 @@ class InspectionsController < TransamController
     end
 
     def run_searcher
-      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy})
+      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy, can_view_all: can?(:view_all, Inspection)})
       @inspections = @searcher.data
       @total_count = @inspections.count
     end
 
     def index_rows_as_json
-      params[:sort] ||= 'transam_assets.asset_tag'
+      params[:sort] ||= 'inspections.object_key'
 
       multi_sort = params[:multiSort]
       unless (multi_sort.nil?)
@@ -183,9 +185,7 @@ class InspectionsController < TransamController
       else
         sorting_string = "#{params[:sort]} #{params[:order]}"
       end
-
       cache_list(@inspections.order(sorting_string), INDEX_KEY_LIST_VAR)
-
       @inspections.order(sorting_string).limit(params[:limit]).offset(params[:offset]).as_json
     end
 end

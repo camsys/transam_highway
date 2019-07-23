@@ -28,35 +28,21 @@
                 %a{:href => '#inspection_search_fields', :data =>{:toggle => 'tab'}}
                   Inspection
               %li
-                %a{:href => '#identification_search_fields', :data =>{:toggle => 'tab'}}
-                  Identification
-              %li
-                %a{:href => '#age_service_search_fields', :data =>{:toggle => 'tab'}}
-                  Age & Service
-              %li
-                %a{:href => '#classification_search_fields', :data =>{:toggle => 'tab'}}
-                  Classification
-              %li
-                %a{:href => '#condition_search_fields', :data =>{:toggle => 'tab'}}
-                  Condition
+                %a{:href => '#structure_search_fields', :data =>{:toggle => 'tab'}}
+                  Structure
+      
             .tab-content.form-section
               .tab-pane.fade.in.active#inspection_search_fields
                 = render 'inspection_search_fields', f: f
-              .tab-pane.fade.in#identification_search_fields
-                = render 'identification_search_fields', f: f
-              .tab-pane.fade.in#age_service_search_fields
-                = render 'age_service_search_fields', f: f
-              .tab-pane.fade.in#classification_search_fields
-                = render 'classification_search_fields', f: f
-              .tab-pane.fade.in#condition_search_fields
-                = render 'condition_search_fields', f: f
+              .tab-pane.fade.in#structure_search_fields
+                = render 'structure_search_fields', f: f
             
           .row  
             .pull-right
               = button_tag :type => 'submit', :id => 'form-submit', :class => 'btn btn-primary btn-sm', :style => 'margin-left: 2px;' do
                 %i.fa.fa-search.fa-1-5x
                 = " Search"
-              = link_to reset_inspections_path, :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
+              = link_to reset_inspections_path, :onclick => "reset_inspections_table_cookie()", :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
                 %i.fa.fa-refresh.fa-1-5x
 
 = render 'shared/table_formatters'
@@ -73,6 +59,10 @@
     $('#spinner').hide();
     $("#inspection-table-container").show();
   });
+
+  function reset_inspections_table_cookie() {
+    $('#inspection-table').bootstrapTable('deleteCookie', 'pageNumber');
+  }
 
   $(document).ready(function() {
     // Hide the spinner

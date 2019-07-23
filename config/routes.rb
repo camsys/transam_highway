@@ -2,10 +2,6 @@ Rails.application.routes.draw do
 
   resources :inspections do
 
-    resources :streambed_profiles do
-      resources :streambed_profile_points
-    end
-
     resources :elements do 
       collection do 
         post :save_quantity_changes
@@ -34,6 +30,21 @@ Rails.application.routes.draw do
       post 'new_search'
     end
   end
+
+  resources :streambed_profiles do
+    resources :streambed_profile_points
+
+    collection do
+      put 'update_many'
+    end
+  end
+
+  resources :roadbeds do 
+    member do 
+      post :save_vertical_clearance_changes
+    end
+  end
+  resources :roadbed_lines, only: [:index]
 
   resources :processable_uploads, only: [:index, :create, :destroy] do
     member do

@@ -18,7 +18,16 @@ organization_types = [
      map_icon_name: "purpleIcon",
      description: "Consultant on highway structures, bridges.",
      roles: nil,
-     active: true}
+     active: true},
+    {
+        name: "Highway Team",
+        class_name: "HighwayTeam",
+        display_icon_name: "fa fa-users",
+        map_icon_name: "blueIcon",
+        description: "Team for highway authority.",
+        roles: nil,
+        active: true
+    }
 ]
 asset_types = [
     {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},
@@ -166,10 +175,10 @@ bridge_appraisal_rating_types = [
   {active: true, code: '0', name:	'Closed', description:	'Bridge closed'}
 ]
 strahnet_designation_types = [
-    {active: true, code: '1', name:	'Not STRAHNET', description:	'The inventory route is not a STRAHNET route.'},
-    {active: true, code: '2', name:	'Interstate STRAHNET', description:	'The inventory route is on a Interstate STRAHNET route.'},
-    {active: true, code: '3', name:	'Non-Interstate STRAHNET', description:	'The inventory route is on a Non-Interstate STRAHNET route.'},
-    {active: true, code: '4', name:	'Connector STRAHNET', description:	'The inventory route is on a STRAHNET connector route.'}
+    {active: true, code: '0', name:	'Not STRAHNET', description:	'The inventory route is not a STRAHNET route.'},
+    {active: true, code: '1', name:	'Interstate STRAHNET', description:	'The inventory route is on a Interstate STRAHNET route.'},
+    {active: true, code: '2', name:	'Non-Interstate STRAHNET', description:	'The inventory route is on a Non-Interstate STRAHNET route.'},
+    {active: true, code: '3', name:	'Connector STRAHNET', description:	'The inventory route is on a STRAHNET connector route.'}
 ]
 deck_structure_types = [
   {active: true, code: '1', name:	'Concrete Cast-in-Place'},

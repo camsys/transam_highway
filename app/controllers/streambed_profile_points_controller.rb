@@ -1,5 +1,5 @@
 class StreambedProfilePointsController < ApplicationController
-  before_action :set_inspection_and_streambed_profile
+  before_action :set_streambed_profile
   before_action :set_streambed_profile_point, only: [:show, :edit, :update, :destroy]
 
   # GET /streambed_profile_points
@@ -27,7 +27,7 @@ class StreambedProfilePointsController < ApplicationController
     @streambed_profile_point.streambed_profile = @streambed_profile
 
     if @streambed_profile_point.save
-      redirect_to inspection_path(@inspection.inspection)
+      redirect_to @streambed_profile.inspection ? inspection_path(@streambed_profile.inspection) : inventory_path(@streambed_profile.bridge_like.object_key)
     else
       render :new
     end
@@ -49,8 +49,7 @@ class StreambedProfilePointsController < ApplicationController
   end
 
   private
-    def set_inspection_and_streambed_profile
-      @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:inspection_id]))
+    def set_streambed_profile
       @streambed_profile = StreambedProfile.find_by(object_key: params[:streambed_profile_id])
     end
 
