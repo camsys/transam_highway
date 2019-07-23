@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_27_120848) do
+ActiveRecord::Schema.define(version: 2019_07_22_170703) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -525,7 +525,9 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.datetime "updated_at", null: false
     t.index ["defect_definition_id"], name: "index_defects_on_defect_definition_id"
     t.index ["element_id"], name: "index_defects_on_element_id"
+    t.index ["guid"], name: "index_defects_on_guid"
     t.index ["inspection_id"], name: "index_defects_on_inspection_id"
+    t.index ["object_key"], name: "index_defects_on_object_key"
   end
 
   create_table "delayed_job_priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -602,6 +604,7 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["documentable_id", "documentable_type"], name: "documents_idx2"
+    t.index ["guid"], name: "index_documents_on_guid"
     t.index ["object_key"], name: "documents_idx1"
   end
 
@@ -655,7 +658,9 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["element_definition_id"], name: "index_elements_on_element_definition_id"
+    t.index ["guid"], name: "index_elements_on_guid"
     t.index ["inspection_id"], name: "index_elements_on_inspection_id"
+    t.index ["object_key"], name: "index_elements_on_object_key"
     t.index ["parent_element_id"], name: "index_elements_on_parent_element_id"
   end
 
@@ -787,10 +792,18 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.bigint "historical_significance_type_id"
     t.bigint "inspection_program_id"
     t.string "inspection_trip"
+    t.bigint "inspection_zone_id"
+    t.string "inspection_fiscal_year"
+    t.string "inspection_month"
+    t.string "inspection_quarter"
+    t.integer "inspection_trip_key"
+    t.string "inspection_second_quarter"
+    t.integer "inspection_second_trip_key"
     t.index ["highway_structure_type_id"], name: "index_highway_structures_on_highway_structure_type_id"
     t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
     t.index ["historical_significance_type_id"], name: "index_highway_structures_on_historical_significance_type_id"
     t.index ["inspection_program_id"], name: "index_highway_structures_on_inspection_program_id"
+    t.index ["inspection_zone_id"], name: "index_highway_structures_on_inspection_zone_id"
     t.index ["main_span_design_construction_type_id"], name: "idx_structures_on_main_span_design_construction_type_id"
     t.index ["main_span_material_type_id"], name: "index_highway_structures_on_main_span_material_type_id"
     t.index ["maintenance_responsibility_id"], name: "index_highway_structures_on_maintenance_responsibility_id"
@@ -830,6 +843,7 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.string "condition_state"
     t.boolean "is_primary"
     t.index ["base_imagable_type", "base_imagable_id"], name: "index_images_on_base_imagable_type_and_base_imagable_id"
+    t.index ["guid"], name: "index_images_on_guid"
     t.index ["imagable_id", "imagable_type"], name: "images_idx2"
     t.index ["object_key"], name: "images_idx1"
   end
@@ -845,6 +859,12 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
   create_table "inspection_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
+  create_table "inspection_zones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
     t.string "description"
     t.boolean "active"
   end
@@ -870,9 +890,17 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.datetime "routine_report_submitted_at"
     t.bigint "organization_type_id"
     t.integer "inspection_frequency"
+    t.bigint "inspection_team_leader_id"
+    t.bigint "inspection_team_member_id"
+    t.bigint "inspection_team_member_alt_id"
     t.index ["assigned_organization_id"], name: "index_inspections_on_assigned_organization_id"
+    t.index ["guid"], name: "index_inspections_on_guid"
+    t.index ["inspection_team_leader_id"], name: "index_inspections_on_inspection_team_leader_id"
+    t.index ["inspection_team_member_alt_id"], name: "index_inspections_on_inspection_team_member_alt_id"
+    t.index ["inspection_team_member_id"], name: "index_inspections_on_inspection_team_member_id"
     t.index ["inspection_type_id"], name: "index_inspections_on_inspection_type_id"
     t.index ["inspectionible_type", "inspectionible_id"], name: "inspectionible_idx"
+    t.index ["object_key"], name: "index_inspections_on_object_key"
     t.index ["organization_type_id"], name: "index_inspections_on_organization_type_id"
     t.index ["qa_inspector_id"], name: "index_inspections_on_qa_inspector_id"
     t.index ["qc_inspector_id"], name: "index_inspections_on_qc_inspector_id"
@@ -1092,6 +1120,7 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
   create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "organization_type_id", null: false
     t.integer "customer_id", null: false
+    t.bigint "parent_id"
     t.string "external_id", limit: 32
     t.string "name", limit: 128, null: false
     t.string "short_name", limit: 16, null: false
@@ -1117,6 +1146,7 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.string "country"
     t.index ["customer_id"], name: "organizations_idx2"
     t.index ["organization_type_id"], name: "organizations_idx1"
+    t.index ["parent_id"], name: "index_organizations_on_parent_id"
     t.index ["short_name"], name: "organizations_idx4"
     t.index ["short_name"], name: "short_name"
   end
@@ -1338,6 +1368,32 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.index ["report_type_id"], name: "reports_idx1"
   end
 
+  create_table "roadbed_lines", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key"
+    t.string "guid", limit: 36
+    t.bigint "roadbed_id"
+    t.bigint "inspection_id"
+    t.string "number"
+    t.float "entry"
+    t.float "exit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inspection_id"], name: "index_roadbed_lines_on_inspection_id"
+    t.index ["roadbed_id"], name: "index_roadbed_lines_on_roadbed_id"
+  end
+
+  create_table "roadbeds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key"
+    t.string "guid", limit: 36
+    t.string "name"
+    t.bigint "roadway_id"
+    t.string "direction"
+    t.integer "number_of_lines"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["roadway_id"], name: "index_roadbeds_on_roadway_id"
+  end
+
   create_table "roadways", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "guid", limit: 36
@@ -1365,7 +1421,12 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.integer "future_average_daily_traffic_year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "milepoint"
+    t.string "facility_carried"
+    t.string "features_intersected"
     t.index ["functional_class_id"], name: "index_roadways_on_functional_class_id"
+    t.index ["guid"], name: "index_roadways_on_guid"
+    t.index ["object_key"], name: "index_roadways_on_object_key"
     t.index ["route_signing_prefix_id"], name: "index_roadways_on_route_signing_prefix_id"
     t.index ["service_level_type_id"], name: "index_roadways_on_service_level_type_id"
     t.index ["strahnet_designation_type_id"], name: "index_roadways_on_strahnet_designation_type_id"
@@ -1507,6 +1568,8 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.decimal "value", precision: 10
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["guid"], name: "index_streambed_profile_points_on_guid"
+    t.index ["object_key"], name: "index_streambed_profile_points_on_object_key"
     t.index ["streambed_profile_id"], name: "index_streambed_profile_points_on_streambed_profile_id"
   end
 
@@ -1519,7 +1582,9 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.decimal "water_level", precision: 10
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["guid"], name: "index_streambed_profiles_on_guid"
     t.index ["inspection_id"], name: "index_streambed_profiles_on_inspection_id"
+    t.index ["object_key"], name: "index_streambed_profiles_on_object_key"
     t.index ["transam_asset_id"], name: "index_streambed_profiles_on_transam_asset_id"
   end
 
@@ -1646,8 +1711,10 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["asset_subtype_id"], name: "index_transam_assets_on_asset_subtype_id"
+    t.index ["guid"], name: "index_transam_assets_on_guid"
     t.index ["manufacturer_id"], name: "index_transam_assets_on_manufacturer_id"
     t.index ["manufacturer_model_id"], name: "index_transam_assets_on_manufacturer_model_id"
+    t.index ["object_key"], name: "index_transam_assets_on_object_key"
     t.index ["organization_id"], name: "index_transam_assets_on_organization_id"
     t.index ["transam_assetible_type", "transam_assetible_id"], name: "transam_assetible_idx"
     t.index ["upload_id"], name: "index_transam_assets_on_upload_id"
@@ -1855,6 +1922,9 @@ ActiveRecord::Schema.define(version: 2019_06_27_120848) do
   add_foreign_key "query_field_asset_classes", "query_asset_classes"
   add_foreign_key "query_field_asset_classes", "query_fields"
   add_foreign_key "query_filters", "query_fields"
+  add_foreign_key "roadbed_lines", "inspections"
+  add_foreign_key "roadbed_lines", "roadbeds"
+  add_foreign_key "roadbeds", "roadways"
   add_foreign_key "saved_query_fields", "query_fields"
   add_foreign_key "saved_query_fields", "saved_queries"
   add_foreign_key "streambed_profile_points", "streambed_profiles"
