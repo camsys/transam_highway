@@ -11,7 +11,7 @@ class Roadway < ApplicationRecord
   belongs_to :strahnet_designation_type
   belongs_to :traffic_direction_type
 
-  has_many :roadbeds
+  has_many :roadbeds, dependent: :destroy
 
   scope :on, -> { where(on_under_indicator: '1') }
   scope :under, -> { where.not(on_under_indicator: '1').order(:on_under_indicator) }
