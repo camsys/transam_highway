@@ -102,6 +102,11 @@
       // disable fields if don't have permissions to submit
       $('.group-team-fields input').prop('disabled', "#{(can? :make_ready, Inspection.new) ? '' : 'true'}");
 
+      // if inspectors set the event has to be assign
+      if ($('input[name="transam_workflow_model_proxy[inspector_ids][]"]:checked').length > 0) {
+        $('#transam_workflow_model_proxy_event_name').val('assign');
+      }
+
       $('#open_assignments_form #transam_workflow_model_proxy_global_ids').val(Array.from(selected_rows));
       form.submit();
     }
