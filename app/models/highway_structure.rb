@@ -165,7 +165,7 @@ class HighwayStructure < TransamAssetRecord
       Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
     elsif inspections.count > 0
       old_insp = Inspection.get_typed_inspection(last_closed_inspection)
-      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, {elements: [:guid, {defects: [:object_key, :guid]}]}]
+      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, {elements: [:guid, {defects: [:object_key, :guid]}]}]
 
       old_insp.elements.where(id: old_insp.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
         new_parent_elem = new_insp.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
