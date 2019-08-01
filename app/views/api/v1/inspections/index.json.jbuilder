@@ -46,3 +46,11 @@ end
 json.documents do 
   json.partial! 'api/v1/documents/document', collection: @documents, as: :document
 end
+
+json.streambed_profiles do
+  json.partial! 'api/v1/streambed_profiles/listing', collection: @profiles, as: :streambed_profile
+end
+
+json.streambed_profile_points do
+  json.partial! 'api/v1/streambed_profile_points/listing', collection: @profile_points, as: :streambed_profile_point
+end

@@ -41,8 +41,8 @@ class Api::V1::InspectionsController < Api::ApiController
               el_parent = Element.find_by_guid(el_params[:parent_id])
             end
 
-            next unless ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
-            if change_type == 'ADD'
+            case change_type
+            when 'ADD'
               if el_guid.blank?
                 @el_guid_required_to_add = true
                 raise ActiveRecord::Rollback
@@ -51,10 +51,10 @@ class Api::V1::InspectionsController < Api::ApiController
               clean_params["guid"] = el_guid
               clean_params.parent = el_parent if el_parent
               Element.create!(clean_params)
-            elsif change_type == 'REMOVE'
+            when 'REMOVE'
               el = Element.find_by_guid(el_guid)
               el.destroy! if el
-            else
+            when 'UPDATE'
               el = Element.find_by_guid(el_guid)
               clean_params.parent = el_parent if el_parent
               el.update!(clean_params) if el
@@ -72,8 +72,8 @@ class Api::V1::InspectionsController < Api::ApiController
               el_parent = Element.find_by_guid(df_params[:element_id])
             end
             
-            next if ['ADD', 'REMOVE', 'UPDATE'].include?(change_type) 
-            if change_type == 'ADD'
+            case change_type
+            when 'ADD'
               if df_guid.blank?
                 @df_guid_required_to_add = true
                 raise ActiveRecord::Rollback
@@ -82,13 +82,75 @@ class Api::V1::InspectionsController < Api::ApiController
               clean_params["guid"] = df_guid
               clean_params.element = el_parent if el_parent
               Defect.create!(clean_params)
-            elsif change_type == 'REMOVE'
+            when 'REMOVE'
               el = Defect.find_by_guid(df_guid)
               el.destroy! if el
-            else
+            when 'UPDATE'
               el = Defect.find_by_guid(df_guid)
               clean_params.element = el_parent if el_parent
               el.update!(clean_params) if el
+            end
+          end
+        end
+
+        if params[:streambed_profiles] && params[:streambed_profiles].any?
+          params[:streambed_profiles].each do |sp_params|
+            change_type = sp_params[:change_type]&.upcase
+
+            clean_params = sp_params.permit(sp_params.keys).except(:id, :highway_structure_id, :inspection_id, :change_type).to_h
+            sp_guid = sp_params[:id]
+            if sp_params[:highway_structure_id]
+              sp_parent = HighwayStructure.find_by_guid(sp_params[:highway_structure_id])
+            end
+
+            case change_type
+            when 'ADD'
+              if sp_guid.blank?
+                @sp_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = sp_guid
+              clean_params.highway_structure = sp_parent if sp_parent
+              StreambedProfile.create!(clean_params)
+            when 'REMOVE'
+              sp = StreambedProfile.find_by_guid(sp_guid)
+              sp.destroy! if sp
+            when 'UPDATE'
+              sp = StreambedProfile.find_by_guid(sp_guid)
+              clean_params.highway_structure = sp_parent if sp_parent
+              sp.update!(clean_params) if sp
+            end
+          end
+        end
+
+        if params[:streambed_profile_points] && params[:streambed_profile_points].any?
+          params[:streambed_profile_points].each do |spp_params|
+            change_type = spp_params[:change_type]&.upcase
+
+            clean_params = spp_params.permit(spp_params.keys).except(:id, :profile_id, :change_type).to_h
+            spp_guid = spp_params[:id]
+            if spp_params[:profile_id]
+              spp_parent = StreambedProfile.find_by_guid(spp_params[:profile_id])
+            end
+
+            case change_type
+            when 'ADD'
+              if spp_guid.blank?
+                @spp_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = spp_guid
+              clean_params.profile = spp_parent if spp_parent
+              StreambedProfilePoint.create!(clean_params)
+            when 'REMOVE'
+              spp = StreambedProfilePoint.find_by_guid(spp_guid)
+              spp.destroy! if spp
+            when 'UPDATE'
+              spp = StreambedProfilePoint.find_by_guid(spp_guid)
+              clean_params.profile = spp_parent if spp_parent
+              spp.update!(clean_params) if spp
             end
           end
         end
@@ -116,6 +178,20 @@ class Api::V1::InspectionsController < Api::ApiController
       @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
       render status: 400, json: json_response(:fail, message: @message)
     end
+
+    # streambed profile guid is required to add a new streambed profile
+    if @sp_guid_required_to_add
+      @status = :fail
+      @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile data"
+      render status: 400, json: json_response(:fail, message: @message)
+    end
+
+    # streambed profile point guid is required to add a new streambed profile point
+    if @spp_guid_required_to_add
+      @status = :fail
+      @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile point data"
+      render status: 400, json: json_response(:fail, message: @message)
+    end
   end
 
   private
@@ -133,6 +209,8 @@ class Api::V1::InspectionsController < Api::ApiController
     query_roadways
     query_images
     query_documents
+    query_streambed_profiles
+    query_streambed_profile_points
   end
 
   def query_highway_structures
@@ -196,5 +274,12 @@ class Api::V1::InspectionsController < Api::ApiController
     @documents = Document.where(documentable_type: 'TransamAsset', documentable_id: @transam_asset_ids)
   end
 
+  def query_streambed_profiles
+    @profiles = StreambedProfile.where(transam_asset_id: @transam_asset_ids)
+  end
+
+  def query_streambed_profile_points
+    @profile_points = StreambedProfilePoint.where(streambed_profile: @profiles)
+  end
 
 end
