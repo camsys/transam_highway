@@ -524,7 +524,6 @@ class BridgeLike < TransamAssetRecord
       features_intersected: on_under == '1' ? bridgelike.features_intersected : bridgelike.facility_carried,
       facility_carried: on_under == '1' ? bridgelike.facility_carried : bridgelike.features_intersected,
       min_vertical_clearance: Uom.convert(hash['VCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
-      milepoint: Uom.convert(hash['KMPOST'].to_f, Uom::KILOMETER, Uom::MILE).round(BridgeLike::NDIGITS),
       on_base_network: hash['ONBASENET'] == '1',
       lrs_route: hash['LRSINVRT'],
       lrs_subroute: hash['SUBRTNUM'],
