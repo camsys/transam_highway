@@ -1,0 +1,119 @@
+:ruby
+  maintenance_activity_type = @maintenance_service_order.maintenance_events.first.try(:maintenance_activity_type) if @maintenance_service_order
+
+  activity_category_subtypes_by_type = Hash.new
+  MaintenanceActivityCategoryType.all.each do |type|
+    activity_category_subtypes_by_type[type.id] = MaintenanceActivityCategorySubtype.where(maintenance_activity_category_type_id: type.id).ids
+  end
+
+  activity_types_by_category_subtype = Hash.new
+  MaintenanceActivityCategorySubtype.all.each do |subtype|
+    activity_types_by_category_subtype[subtype.id] = MaintenanceActivityType.where(maintenance_activity_category_subtype_id: subtype.id).ids
+  end
+
+= simple_form_for(@maintenance_service_order || MaintenanceServiceOrder.new,
+              :html => {:class => 'form-vertical maintenance_service_order_form' },
+              :wrapper => :vertical_form,
+              :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+  = f.hidden_field Rails.application.config.asset_base_class_name.foreign_key.to_sym, :value => @asset.try(:transam_asset).try(:id) || @asset.id
+
+  .row
+    .col-xs-6
+      .row
+        .col-xs-6
+          .form-group
+            %label.control-label.string.required
+              * Candidate Category
+            = select_tag :maintenance_activity_category_type_id, options_from_collection_for_select(MaintenanceActivityCategoryType.active, :id, :name, maintenance_activity_type.try(:maintenance_activity_category_subtype).try(:maintenance_activity_category_type_id)), include_blank: true, class: 'form-control', required: true
+        .col-xs-6
+          .form-group
+            %label.control-label.string.required
+              * Candidate Subcategory
+            = select_tag :maintenance_activity_category_subtype_id, options_from_collection_for_select(MaintenanceActivityCategorySubtype.active, :id, :name, maintenance_activity_type.try(:maintenance_activity_category_subtype_id)), include_blank: true, class: 'form-control', required: true, disabled: true
+
+      .row
+        .col-xs-12
+          .form-group
+            %label.control-label.string.required
+              * Maintenance Candidiate
+            = select_tag :maintenance_activity_types, options_from_collection_for_select(MaintenanceActivityType.active, :id, :name, maintenance_activity_type.try(:id)), include_blank: true, class: 'form-control', required: true, disabled: true
+
+    .col-xs-6
+      .row
+        .col-xs-4
+          = f.association :priority_type, collection: PriorityType.active, label: 'Priority'
+        .col-xs-8
+          .form-group
+            %label.control-label.string.required
+              * Recommended Timeline
+            .row
+              .col-xs-6= select_tag :month, options_for_select(Date::MONTHNAMES[1..12].each_with_index.map { |x,i| [x, i+1] }, @maintenance_service_order.order_date.try(:month)), class: 'form-control'
+              .col-xs-6= text_field_tag :year, @maintenance_service_order.order_date.try(:year), {class: 'form-control'}
+      .row
+        .col-xs-12
+          = f.input :notes
+  .row
+    .col-xs-12
+      = f.submit 'Save', :class => 'btn btn-primary', :id => 'submit'
+
+:javascript
+
+  $('.maintenance_service_order_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#maintenance_activity_category_type_id').change(function() {
+    var type_id = $(this).val();
+    $('#maintenance_activity_category_subtype_id').val('');
+
+    $('#maintenance_activity_types').val('');
+    $('#maintenance_activity_types').attr('disabled', 'disabled');
+
+    if(type_id) {
+
+      $('#maintenance_activity_category_subtype_id').attr('disabled', false);
+
+      var activity_category_subtypes_by_type = #{activity_category_subtypes_by_type.to_json.html_safe || {}};
+      type_id = parseInt(type_id);
+      var subtype_ids = activity_category_subtypes_by_type[type_id];
+      $('#maintenance_activity_category_subtype_id option').hide();
+      subtype_ids.forEach(function(subtype_id) {
+        $('#maintenance_activity_category_subtype_id option[value=' + subtype_id + ']').show();
+      });
+
+      $('#maintenance_activity_category_subtype_id option[value=""]').show();
+    } else {
+
+      $('#maintenance_activity_category_subtype_id').attr('disabled', 'disabled');
+
+      $('#maintenance_activity_category_subtype_id option').show();
+    }
+  });
+
+  $('#maintenance_activity_category_subtype_id').change(function() {
+    var subtype_id = $(this).val();
+    $('#maintenance_activity_types').val('');
+
+
+    if(subtype_id) {
+
+      $('#maintenance_activity_types').attr('disabled', false);
+
+      var activity_types_by_category_subtype = #{activity_types_by_category_subtype.to_json.html_safe || {}};
+      subtype_id = parseInt(subtype_id);
+      var type_ids = activity_types_by_category_subtype[subtype_id];
+      $('#maintenance_activity_types option').hide();
+      type_ids.forEach(function(type_id) {
+        $('#maintenance_activity_types option[value=' + type_id + ']').show();
+      });
+
+      $('#maintenance_activity_types option[value=""]').show();
+    } else {
+
+      $('#maintenance_activity_types').attr('disabled', 'disabled');
+
+      $('#maintenance_activity_types option').show();
+    }
+  });
