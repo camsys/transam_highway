@@ -155,25 +155,29 @@ class Inspection < InspectionRecord
   def allowed_to_assign
     inspectors.count > 0
   end
+
+  def can_all
+    user.has_role?(:super_manager)
+  end
   
   def can_assign(user)
-    user.has_role?(:inspector) && (assigned_organization.users || []).include?(user)
+    can_all || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
   end
 
   def can_sync(user)
-    true
+    can_all || user.has_role?(:inspector)
   end
 
   def can_start(user)
-    inspectors.include? user
+    can_all || inspectors.include?(user)
   end
 
   def can_submit(user)
-    true # TEMP
+    can_all || user.has_role?(:manager)
   end
   
   def can_finalize(user)
-    inspection_team_leader == user
+    can_all || inspection_team_leader == user
   end # TEMP
 
   # called as callback after `finalize` event
@@ -188,7 +192,7 @@ class Inspection < InspectionRecord
   end
 
   def updatable?
-    state != 'final'
+    (['draft_report', 'qc_review'].include? state)
   end
 
   protected

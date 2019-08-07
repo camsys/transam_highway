@@ -1,5 +1,5 @@
 module Abilities
-  class Inspector
+  class SuperManagerHighwayAbility
     include CanCan::Ability
 
     def initialize(user, organization_ids=[])
@@ -9,7 +9,7 @@ module Abilities
       end
 
       can :update, [Inspection, BridgeCondition, CulvertCondition] do |inspection|
-        (inspection.inspector_ids.include? user.id) && inspection.updatable?
+        inspection.updatable?
       end
 
     end

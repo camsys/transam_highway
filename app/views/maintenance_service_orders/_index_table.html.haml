@@ -32,10 +32,11 @@
       %th.center{:data => {:field => "workorder_number", :align => 'left', :sortable => 'true'}} Number
       %th.center{:data => {:field => "maintenance_activity_type", :align => 'left', :sortable => 'false'}} Maintenance Candidate
       %th.center{:data => {:field => "state", :align => 'left', :sortable => 'true', :formatter => 'status_formatter'}} Status
-      %th.center{:data => {:field => "created_at", :align => 'right', :formatter => 'date_formatter', :sortable => 'true'}} Date First Recommended
-      %th.center{:data => {:field => "order_month", :align => 'left', :sortable => 'false'}} Timeline
+      %th.center{:data => {:field => "order_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'true'}} Date First Recommended
+      %th.center{:data => {:field => "due_month", :align => 'left', :sortable => 'false'}} Timeline
+      %th.center{:data => {:field => "completed_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'true'}} Completed Date
       %th.center{:data => {:field => "priority_type", :align => 'left', :sortable => 'false'}} Priority
-      %th.center{:data => {:field => "x", :align => 'left', :sortable => 'false'}} ERF Color
+      %th.center{:data => {:field => "priority_type", :align => 'left', :sortable => 'false', :formatter => 'erf_formatter'}} ERF Color
       %th.center{:data => {:field => "notes", :align => 'left', :sortable => 'true'}} Notes
       - unless @asset
         %th.center{:data => {:field => "asset", :align => 'left', :sortable => 'true'}} Asset
@@ -54,12 +55,18 @@
   function status_formatter(value, row) {
     d = new Date()
     d.setMonth(d.getMonth()-1)
-    if (moment(d) > moment(row['order_date'])) {
+    if ((moment(d) > moment(row['order_date'])) && (row['state'] != 'completed')) {
       return 'Overdue'
     } else {
       return value.charAt(0).toUpperCase() + value.slice(1)
     }
 
+  }
+
+  function erf_formatter(value, row) {
+    if (value.includes('ERF')) {
+      return $.trim(value.split('-')[1]);
+    }
   }
 
   function workflow_link_formatter(value, row) {

@@ -1,9 +1,10 @@
 .row
-  .col-sm-12
-    .btn-group
-      = link_to new_maintenance_service_order_path(asset: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Maintenance Item' do
-        %i.fa.fa-plus
-        = " New Maintenance Item"
+  - if can?(:update, @inspection.inspection)
+    .col-sm-12
+      .btn-group
+        = link_to new_maintenance_service_order_path(asset: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Maintenance Item' do
+          %i.fa.fa-plus
+          = " New Maintenance Item"
   .row
     .col-sm-12
       - if @asset.maintenance_service_orders.empty?
