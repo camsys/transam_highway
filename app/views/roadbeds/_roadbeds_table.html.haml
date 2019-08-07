@@ -5,9 +5,8 @@
       %th.center Name
       %th.center Roadway
       %th.center Direction of Travel
-      %th.center Lines/Lanes
-      %th.center Minimum
-      %th.center Maximum
+      %th.center Lines
+      %th.center= reference_label('roadways', 'min_vertical_clearance', 'Minimum Vertical Clearance')
       - if can_update_inspection
         %th.center.roadbeds-action-column
   %tbody
@@ -17,8 +16,7 @@
         %td.center= rb.roadway&.to_s
         %td.center= rb.direction
         %td.center= rb.number_of_lines
-        %td.center= rb.minimum
-        %td.center= rb.maximum
+        %td.center= format_as_quantity(rb.roadway.min_vertical_clearance, 'ft')
         - if can_update_inspection
           %td.center.roadbeds-action-column
             = link_to rb, method: :delete, data: { confirm: 'Are you sure?' }, title: 'Delete' do
