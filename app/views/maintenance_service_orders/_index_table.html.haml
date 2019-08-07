@@ -63,5 +63,10 @@
   }
 
   function workflow_link_formatter(value, row) {
-    return '<a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+    if (row['state'] == 'completed') {
+      return '';
+    } else {
+      return '<a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+    }
+
   }
