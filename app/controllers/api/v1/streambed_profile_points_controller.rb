@@ -15,7 +15,7 @@ class Api::V1::StreambedProfilePointsController < Api::ApiController
       render status: :not_found, json: json_response(:fail, data: @data)
     end
 
-    @profile_points = StreambedProfilePoint.where(streambed_profile_id: profile)
+    @profile_points = StreambedProfilePoint.where(streambed_profile: profile)
   end
 
 end
