@@ -156,28 +156,28 @@ class Inspection < InspectionRecord
     inspectors.count > 0
   end
 
-  def can_all
+  def can_all(user)
     user.has_role?(:super_manager)
   end
   
   def can_assign(user)
-    can_all || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
+    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
   end
 
   def can_sync(user)
-    can_all || user.has_role?(:inspector)
+    can_all(user) || user.has_role?(:inspector)
   end
 
   def can_start(user)
-    can_all || inspectors.include?(user)
+    can_all(user) || inspectors.include?(user)
   end
 
   def can_submit(user)
-    can_all || user.has_role?(:manager)
+    can_all(user) || user.has_role?(:manager)
   end
   
   def can_finalize(user)
-    can_all || inspection_team_leader == user
+    can_all(user) || inspection_team_leader == user
   end # TEMP
 
   # called as callback after `finalize` event
