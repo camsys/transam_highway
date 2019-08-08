@@ -56,14 +56,14 @@ class Api::V1::InspectionsController < Api::ApiController
               end
 
               clean_params["guid"] = el_guid
-              clean_params.parent = el_parent if el_parent
+              clean_params[:parent] = el_parent if el_parent
               Element.create!(clean_params)
             when 'REMOVE'
               el = Element.find_by_guid(el_guid)
               el.destroy! if el
             when 'UPDATE'
               el = Element.find_by_guid(el_guid)
-              clean_params.parent = el_parent if el_parent
+              clean_params[:parent] = el_parent if el_parent
               el.update!(clean_params) if el
             end
           end
@@ -87,14 +87,14 @@ class Api::V1::InspectionsController < Api::ApiController
               end
 
               clean_params["guid"] = df_guid
-              clean_params.element = el_parent if el_parent
+              clean_params[:element] = el_parent if el_parent
               Defect.create!(clean_params)
             when 'REMOVE'
               el = Defect.find_by_guid(df_guid)
               el.destroy! if el
             when 'UPDATE'
               el = Defect.find_by_guid(df_guid)
-              clean_params.element = el_parent if el_parent
+              clean_params[:element] = el_parent if el_parent
               el.update!(clean_params) if el
             end
           end
@@ -118,14 +118,14 @@ class Api::V1::InspectionsController < Api::ApiController
               end
 
               clean_params["guid"] = sp_guid
-              clean_params.highway_structure = sp_parent if sp_parent
+              clean_params[:highway_structure] = sp_parent if sp_parent
               StreambedProfile.create!(clean_params)
             when 'REMOVE'
               sp = StreambedProfile.find_by_guid(sp_guid)
               sp.destroy! if sp
             when 'UPDATE'
               sp = StreambedProfile.find_by_guid(sp_guid)
-              clean_params.highway_structure = sp_parent if sp_parent
+              clean_params[:highway_structure] = sp_parent if sp_parent
               sp.update!(clean_params) if sp
             end
           end
@@ -149,14 +149,14 @@ class Api::V1::InspectionsController < Api::ApiController
               end
 
               clean_params["guid"] = spp_guid
-              clean_params.profile = spp_parent if spp_parent
+              clean_params[:profile] = spp_parent if spp_parent
               StreambedProfilePoint.create!(clean_params)
             when 'REMOVE'
               spp = StreambedProfilePoint.find_by_guid(spp_guid)
               spp.destroy! if spp
             when 'UPDATE'
               spp = StreambedProfilePoint.find_by_guid(spp_guid)
-              clean_params.profile = spp_parent if spp_parent
+              clean_params[:profile] = spp_parent if spp_parent
               spp.update!(clean_params) if spp
             end
           end
