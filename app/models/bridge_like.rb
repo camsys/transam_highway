@@ -514,7 +514,11 @@ class BridgeLike < TransamAssetRecord
     # Validate ON_UNDER
     on_under = hash['ON_UNDER']
     return unless (on_under.size == 1) && (/[12A-Z]/ =~ on_under)
-    
+
+    vclrinv = hash['VCLRINV']&.to_f
+    # It appears that 99.9 feet is also entered to indicate no restrictions
+    min_vertical_clearance = (vclrinv.nil? || vclrinv > 30.0) ? nil :
+                               Uom.convert(vclrinv, Uom::METER, Uom::FEET).round(NDIGITS)
     Roadway.new(
       highway_structure: bridgelike,
       on_under_indicator: on_under,
@@ -523,7 +527,7 @@ class BridgeLike < TransamAssetRecord
       route_number: hash['ROUTENUM'],
       features_intersected: on_under == '1' ? bridgelike.features_intersected : bridgelike.facility_carried,
       facility_carried: on_under == '1' ? bridgelike.facility_carried : bridgelike.features_intersected,
-      min_vertical_clearance: Uom.convert(hash['VCLRINV'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
+      min_vertical_clearance: min_vertical_clearance,
       on_base_network: hash['ONBASENET'] == '1',
       lrs_route: hash['LRSINVRT'],
       lrs_subroute: hash['SUBRTNUM'],
