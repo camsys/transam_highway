@@ -36,20 +36,49 @@ class Roadbed < ApplicationRecord
     roadbed_lines.where(number: ['R']).first
   end
 
-  def minimum
-    (get_adjacent_line_minimums || []).reject{|r| r.nil? || r == 0}.min
+  # Minimum clearance over whole roadbed for give inspection
+  def minimum(inspection)
+    list = []
+    roadbed_lines.by_inspection(inspection).each do |l|
+      list << l.entry unless l.entry.nil? || l.entry.zero?
+      list << l.exit unless l.exit.nil? || l.exit.zero?
+    end
+    list.min
   end
 
-  def maximum
-    (get_adjacent_line_minimums || []).reject{|r| r.nil? || r == 0}.max
-
-    [
-      roadbed_lines.where.not(entry: [nil, 0]).maximum(:entry),
-      roadbed_lines.where.not(exit: [nil, 0]).maximum(:exit)
-      ].reject{|r| r.nil? || r == 0}.max
+  # Maximum of the minimum clearance for each lane not counting shoulders
+  # for give inspection
+  def maximum(inspection)
+    # Assume at least one lane
+    max = 0
+    get_lane_minimums(inspection).each do |min|
+      # nil == no restriction automatically max
+      return nil if min.nil?
+      max = min if min > max
+    end
+    max
   end
 
   private 
+
+  # min of entry/exit, form pairs, min of each pair
+  def get_lane_minimums(inspection)
+    line_mins = 
+      roadbed_lines.by_inspection(inspection).lines.pluck(:entry, :exit).map do |l|
+        [l[0], l[1]].reject{|v| v.nil? || v.zero?}.min
+    end
+    lane_pairs = line_mins.reduce([]) do |p, i|
+      if p.size == 0
+        p << [i]
+      elsif p.last.size == 1
+        p.last << i
+      else
+        p << [p[-1][1], i]
+      end
+      p
+    end
+    lane_pairs.map{|p| p.compact.min}
+  end
 
   def get_adjacent_line_minimums
     @adjacent_line_minimums if defined? @adjacent_line_minimums
