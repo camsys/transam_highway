@@ -10,24 +10,31 @@ class Api::V1::InspectionsController < Api::ApiController
   # PUT/PATCH /inspections/:id
   def update
     @inspection = Inspection.find_by_object_key(params[:id])
+    unless @inspection
+      @status = :fail
+      @message  = "Inspection #{params[:id]} not found"
+      render status: 400, json: json_response(:error, message: @message)
+      return
+    end
+    
     begin 
       ActiveRecord::Base.transaction do 
 
         if params[:inspection]
-          inspection_hash = params[:inspection].permit(params[:inspection].keys).except(:id, :high_structure_id).to_h
+          inspection_hash = params[:inspection].permit(@inspection.allowable_params).to_h
           inspection_hash[:status] = 'in_progress' if @inspection.status == 'in_field' # special case
           @inspection.update!(inspection_hash) if @inspection
         end
 
         if params[:bridge_condition]
           @bridge_condition = Inspection.get_typed_inspection(@inspection)
-          bc_hash = params[:bridge_condition].permit(params[:bridge_condition].keys).except(:id).to_h
+          bc_hash = params[:bridge_condition].permit(@bridge_condition.allowable_params).to_h
           @bridge_condition.update!(bc_hash) if @bridge_condition
         end
 
         if params[:culvert_condition]
           @culvert_condition = Inspection.get_typed_inspection(@inspection)
-          cc_hash = params[:culvert_condition].permit(params[:culvert_condition].keys).except(:id).to_h
+          cc_hash = params[:culvert_condition].permit(@culvert_condition.allowable_params).to_h
           @culvert_condition.update!(cc_hash) if @culvert_condition
         end
         
@@ -162,35 +169,35 @@ class Api::V1::InspectionsController < Api::ApiController
       # generic errors
       @status = :fail
       @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
-      render status: 400, json: json_response(:fail, message: @message)
+      render status: 400, json: json_response(:error, message: @message)
     end
 
     # element guid is required to add a new element
     if @el_guid_required_to_add
       @status = :fail
       @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data" 
-      render status: 400, json: json_response(:fail, message: @message)
+      render status: 400, json: json_response(:error, message: @message)
     end
 
     # defect guid is required to add a new defect
     if @df_guid_required_to_add
       @status = :fail
       @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
-      render status: 400, json: json_response(:fail, message: @message)
+      render status: 400, json: json_response(:error, message: @message)
     end
 
     # streambed profile guid is required to add a new streambed profile
     if @sp_guid_required_to_add
       @status = :fail
       @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile data"
-      render status: 400, json: json_response(:fail, message: @message)
+      render status: 400, json: json_response(:error, message: @message)
     end
 
     # streambed profile point guid is required to add a new streambed profile point
     if @spp_guid_required_to_add
       @status = :fail
       @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile point data"
-      render status: 400, json: json_response(:fail, message: @message)
+      render status: 400, json: json_response(:error, message: @message)
     end
   end
 
