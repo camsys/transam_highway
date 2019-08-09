@@ -42,7 +42,7 @@ class Api::V1::InspectionsController < Api::ApiController
           params[:elements].each do |el_params|
             change_type = el_params[:change_type]&.upcase
 
-            clean_params = el_params.permit(el_params.keys).except(:id, :parent_id, :inspection_id, :change_type).to_h
+            clean_params = el_params.permit(Element.allowable_params).to_h
             el_guid = el_params[:id]
             if el_params[:parent_id]
               el_parent = Element.find_by_guid(el_params[:parent_id])
@@ -57,6 +57,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
               clean_params["guid"] = el_guid
               clean_params[:parent] = el_parent if el_parent
+              clean_params[:inspection] = @inspection
               Element.create!(clean_params)
             when 'REMOVE'
               el = Element.find_by_guid(el_guid)
@@ -73,7 +74,7 @@ class Api::V1::InspectionsController < Api::ApiController
           params[:defects].each do |df_params|
             change_type = df_params[:change_type]&.upcase
 
-            clean_params = df_params.permit(df_params.keys).except(:id, :element_id, :inspection_id, :change_type).to_h
+            clean_params = df_params.permit(Defect.allowable_params).to_h
             df_guid = df_params[:id]
             if df_params[:element_id]
               el_parent = Element.find_by_guid(df_params[:element_id])
@@ -88,6 +89,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
               clean_params["guid"] = df_guid
               clean_params[:element] = el_parent if el_parent
+              clean_params[:inspection] = @inspection
               Defect.create!(clean_params)
             when 'REMOVE'
               el = Defect.find_by_guid(df_guid)
