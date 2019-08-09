@@ -49,23 +49,23 @@ class Api::V1::InspectionsController < Api::ApiController
             end
 
             case change_type
-            when 'ADD'
-              if el_guid.blank?
-                @el_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = el_guid
+            when 'ADD', 'UPDATE'
+              el = Element.find_by_guid(el_guid)
               clean_params[:parent] = el_parent if el_parent
               clean_params[:inspection] = @inspection
-              Element.create!(clean_params)
+              if el 
+                el.update!(clean_params)
+              else
+                if el_guid.blank?
+                  @el_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = el_guid
+                Element.create!(clean_params)
+              end
             when 'REMOVE'
               el = Element.find_by_guid(el_guid)
               el.destroy! if el
-            when 'UPDATE'
-              el = Element.find_by_guid(el_guid)
-              clean_params[:parent] = el_parent if el_parent
-              el.update!(clean_params) if el
             end
           end
         end
@@ -81,23 +81,23 @@ class Api::V1::InspectionsController < Api::ApiController
             end
             
             case change_type
-            when 'ADD'
-              if df_guid.blank?
-                @df_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = df_guid
+            when 'ADD', 'UPDATE'
+              el = Defect.find_by_guid(df_guid)
               clean_params[:element] = el_parent if el_parent
               clean_params[:inspection] = @inspection
-              Defect.create!(clean_params)
+              if el
+                el.update!(clean_params)
+              else
+                if df_guid.blank?
+                  @df_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = df_guid
+                Defect.create!(clean_params)
+              end
             when 'REMOVE'
               el = Defect.find_by_guid(df_guid)
               el.destroy! if el
-            when 'UPDATE'
-              el = Defect.find_by_guid(df_guid)
-              clean_params[:element] = el_parent if el_parent
-              el.update!(clean_params) if el
             end
           end
         end
@@ -113,22 +113,22 @@ class Api::V1::InspectionsController < Api::ApiController
             end
 
             case change_type
-            when 'ADD'
-              if sp_guid.blank?
-                @sp_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = sp_guid
+            when 'ADD', 'UPDATE'
+              sp = StreambedProfile.find_by_guid(sp_guid)
               clean_params[:highway_structure] = sp_parent if sp_parent
-              StreambedProfile.create!(clean_params)
+              if sp
+                sp.update!(clean_params)
+              else
+                if sp_guid.blank?
+                  @sp_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = sp_guid
+                StreambedProfile.create!(clean_params)
+              end
             when 'REMOVE'
               sp = StreambedProfile.find_by_guid(sp_guid)
               sp.destroy! if sp
-            when 'UPDATE'
-              sp = StreambedProfile.find_by_guid(sp_guid)
-              clean_params[:highway_structure] = sp_parent if sp_parent
-              sp.update!(clean_params) if sp
             end
           end
         end
@@ -144,22 +144,22 @@ class Api::V1::InspectionsController < Api::ApiController
             end
 
             case change_type
-            when 'ADD'
-              if spp_guid.blank?
-                @spp_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = spp_guid
+            when 'ADD', 'UPDATE'
+              spp = StreambedProfilePoint.find_by_guid(spp_guid)
               clean_params[:profile] = spp_parent if spp_parent
-              StreambedProfilePoint.create!(clean_params)
+              if spp
+                spp.update!(clean_params)
+              else
+                if spp_guid.blank?
+                  @spp_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = spp_guid
+                StreambedProfilePoint.create!(clean_params)
+              end
             when 'REMOVE'
               spp = StreambedProfilePoint.find_by_guid(spp_guid)
               spp.destroy! if spp
-            when 'UPDATE'
-              spp = StreambedProfilePoint.find_by_guid(spp_guid)
-              clean_params[:profile] = spp_parent if spp_parent
-              spp.update!(clean_params) if spp
             end
           end
         end
@@ -175,22 +175,23 @@ class Api::V1::InspectionsController < Api::ApiController
             end
 
             case change_type
-            when 'ADD'
-              if rb_guid.blank?
-                @rb_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = rb_guid
+            when 'ADD', 'UPDATE'
+              rb = Roadbed.find_by_guid(rb_guid)
               clean_params[:roadway] = rb_parent if rb_parent
-              Roadbed.create!(clean_params)
+              if rb
+                rb.update!(clean_params)
+              else
+                if rb_guid.blank?
+                  @rb_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+
+                clean_params["guid"] = rb_guid
+                Roadbed.create!(clean_params)
+              end
             when 'REMOVE'
               rb = Roadbed.find_by_guid(rb_guid)
               rb.destroy! if rb
-            when 'UPDATE'
-              rb = Roadbed.find_by_guid(rb_guid)
-              clean_params[:roadway] = rb_parent if rb_parent
-              rb.update!(clean_params) if rb
             end
           end
         end
@@ -219,26 +220,25 @@ class Api::V1::InspectionsController < Api::ApiController
             end
 
             case change_type
-            when 'ADD'
-              if rbl_guid.blank?
-                @rbl_guid_required_to_add = true
-                raise ActiveRecord::Rollback
-              end
-
-              clean_params["guid"] = rbl_guid
+            when 'ADD', 'UPDATE'
+              rbl = RoadbedLine.find_by_guid(rbl_guid)
               clean_params[:inspection] = rbl_parent if rbl_parent
               clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
               clean_params[:number] = rbl_number if rbl_number
-              RoadbedLine.create!(clean_params)
+              if rbl
+                rbl.update!(clean_params)
+              else
+                if rbl_guid.blank?
+                  @rbl_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+
+                clean_params["guid"] = rbl_guid
+                RoadbedLine.create!(clean_params)
+              end
             when 'REMOVE'
               rbl = RoadbedLine.find_by_guid(rbl_guid)
               rbl.destroy! if rbl
-            when 'UPDATE'
-              rbl = RoadbedLine.find_by_guid(rbl_guid)
-              clean_params[:inspection] = rbl_parent if rbl_parent
-              clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
-              clean_params[:number] = rbl_number if rbl_number
-              rbl.update!(clean_params) if rbl
             end
           end
         end
@@ -246,8 +246,6 @@ class Api::V1::InspectionsController < Api::ApiController
         @is_valid = true
       end
     rescue ActiveRecord::RecordInvalid => invalid
-      raise ActiveRecord::Rollback
-
       # generic errors
       @status = :fail
       @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
