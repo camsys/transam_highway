@@ -29,10 +29,18 @@ json.documents do
   json.partial! 'api/v1/documents/document', collection: @documents, as: :document
 end
 
-json.streambed_profiles do
-  json.partial! 'api/v1/streambed_profiles/listing', collection: @profiles, as: :streambed_profile
+json.streambed_profile do
+  json.partial! 'api/v1/streambed_profiles/listing', streambed_profile: @inspection.streambed_profile
 end
 
 json.streambed_profile_points do
-  json.partial! 'api/v1/streambed_profile_points/listing', collection: @profile_points, as: :streambed_profile_point
+  json.partial! 'api/v1/streambed_profile_points/listing', collection: @inspection.streambed_profile.streambed_profile_points, as: :streambed_profile_point
+end
+
+json.roadbeds do
+  json.partial! 'api/v1/roadbeds/listing', collection: @inspection.highway_structure.roadways.collect(&:roadbeds).flatten, as: :roadbed
+end
+
+json.roadbed_lines do
+  json.partial! 'api/v1/roadbed_lines/listing', collection: RoadbedLine.where(inspection: @inspection), as: :roadbed_line
 end

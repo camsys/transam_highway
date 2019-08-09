@@ -163,6 +163,86 @@ class Api::V1::InspectionsController < Api::ApiController
             end
           end
         end
+
+        if params[:roadbeds] && params[:roadbeds].any?
+          params[:roadbeds].each do |rb_params|
+            change_type = rb_params[:change_type]&.upcase
+
+            clean_params = rb_params.permit(rb_params.keys).except(:id, :roadway_id, :change_type).to_h
+            rb_guid = rb_params[:id]
+            if rb_params[:roadway_id]
+              rb_parent = Roadway.find_by_guid(rb_params[:roadway_id])
+            end
+
+            case change_type
+            when 'ADD'
+              if rb_guid.blank?
+                @rb_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = rb_guid
+              clean_params[:roadway] = rb_parent if rb_parent
+              Roadbed.create!(clean_params)
+            when 'REMOVE'
+              rb = Roadbed.find_by_guid(rb_guid)
+              rb.destroy! if rb
+            when 'UPDATE'
+              rb = Roadbed.find_by_guid(rb_guid)
+              clean_params[:roadway] = rb_parent if rb_parent
+              rb.update!(clean_params) if rb
+            end
+          end
+        end
+
+        if params[:roadbed_lines] && params[:roadbed_lines].any?
+          params[:roadbed_lines].each do |rbl_params|
+            change_type = rbl_params[:change_type]&.upcase
+
+            clean_params = rbl_params.permit(rbl_params.keys).except(:id, :roadbed_id, :inspection_id, :number, :change_type).to_h
+            rbl_guid = rbl_params[:id]
+            if rbl_params[:inspection_id]
+              rbl_parent = Inspection.find_by_guid(rbl_params[:inspection_id])
+            end
+            if rbl_params[:roadbed_id]
+              rbl_roadbed = Roadbed.find_by_guid(rbl_params[:roadbed_id])
+            end
+            if rbl_params[:number]
+              case rbl_params[:number]
+              when 0
+                rbl_number = "L"
+              when rbl_roadbed&.number_of_lines + 2
+                rbl_number = "R"
+              else
+                rbl_number = rbl_params[:number]&.to_s
+              end
+            end
+
+            case change_type
+            when 'ADD'
+              if rbl_guid.blank?
+                @rbl_guid_required_to_add = true
+                raise ActiveRecord::Rollback
+              end
+
+              clean_params["guid"] = rbl_guid
+              clean_params[:inspection] = rbl_parent if rbl_parent
+              clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
+              clean_params[:number] = rbl_number if rbl_number
+              RoadbedLine.create!(clean_params)
+            when 'REMOVE'
+              rbl = RoadbedLine.find_by_guid(rbl_guid)
+              rbl.destroy! if rbl
+            when 'UPDATE'
+              rbl = RoadbedLine.find_by_guid(rbl_guid)
+              clean_params[:inspection] = rbl_parent if rbl_parent
+              clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
+              clean_params[:number] = rbl_number if rbl_number
+              rbl.update!(clean_params) if rbl
+            end
+          end
+        end
+
         @is_valid = true
       end
     rescue ActiveRecord::RecordInvalid => invalid
@@ -201,6 +281,20 @@ class Api::V1::InspectionsController < Api::ApiController
       @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile point data"
       render status: 400, json: json_response(:error, message: @message)
     end
+
+    # roadbed guid is required to add a new roadbed
+    if @rb_guid_required_to_add
+      @status = :fail
+      @message = "Unable to update inspection #{params[:id]} due to empty id in new roadbed data"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+
+    # roadbed line guid is required to add a new roadbed line
+    if @rbl_guid_required_to_add
+      @status = :fail
+      @message = "Unable to update inspection #{params[:id]} due to empty id in new roadbed line data"
+      render status: 400, json: json_response(:error, message: @message)
+    end
   end
 
   private
@@ -220,6 +314,8 @@ class Api::V1::InspectionsController < Api::ApiController
     query_documents
     query_streambed_profiles
     query_streambed_profile_points
+    query_roadbeds
+    query_roadbed_lines
   end
 
   def query_highway_structures
@@ -289,6 +385,14 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_streambed_profile_points
     @profile_points = StreambedProfilePoint.where(streambed_profile: @profiles)
+  end
+
+  def query_roadbeds
+    @roadbeds = Roadbed.where(roadway: @roadways)
+  end
+
+  def query_roadbed_lines
+    @roadbed_lines = RoadbedLine.where(inspection: @inspections)
   end
 
 end
