@@ -34,7 +34,7 @@ json.streambed_profile do
 end
 
 json.streambed_profile_points do
-  json.partial! 'api/v1/streambed_profile_points/listing', collection: @inspection.streambed_profile.streambed_profile_points, as: :streambed_profile_point
+  json.partial! 'api/v1/streambed_profile_points/listing', collection: @inspection.streambed_profile&.streambed_profile_points, as: :streambed_profile_point
 end
 
 json.roadbeds do
