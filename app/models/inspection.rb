@@ -84,7 +84,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'complete', from_state: ['in_field', 'draft_report'], to_state: 'field_work_complete', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To Field Work Complete'},
 
-        {event_name: 'edit', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start, qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Draft Report'},
+        {event_name: 'draft', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start, qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Draft Report'},
 
         {event_name: 'qc', from_state: ['draft_report', 'submitted'], to_state: 'qc_review', can: :can_start, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
