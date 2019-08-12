@@ -19,8 +19,8 @@
         %td.center= rb.roadway&.to_s
         %td.center= rb.direction
         %td.center= rb.number_of_lines
-        %td.center= min ? "#{format_as_decimal(min, 1)} ft" : 'No Restrictions'
-        %td.center= max ? "#{format_as_decimal(max, 1)} ft" : 'No Restrictions'
+        %td.center= min ? "#{format_as_decimal(min, 2)} ft" : 'No Restrictions'
+        %td.center= max ? "#{format_as_decimal(max, 2)} ft" : 'No Restrictions'
         - if can_update_inspection
           %td.center.roadbeds-action-column
             = link_to rb, method: :delete, data: { confirm: 'Are you sure?' }, title: 'Delete' do
