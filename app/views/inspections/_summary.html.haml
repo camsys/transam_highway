@@ -15,6 +15,11 @@
       .display-value
         = @inspection.calculated_inspection_due_date.try(:strftime, "%b %Y")
     .form-group
+      %label.control-label
+        = reference_label('inspections', 'event_datetime', 'Inspection Date')
+      .display-value
+        = format_as_date(@inspection.event_datetime)
+    .form-group
       %label.control-label= reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
       .display-value= format_as_date(@inspection.highway_structure.inspection_date)
     .form-group
@@ -58,8 +63,14 @@
       %label.control-label= reference_label('inspections', 'routine_report_submitted_at', 'Routine Inspection Submitted')
       .display-value= format_as_date(@inspection.routine_report_submitted_at)
     .form-group
-      %label.control-label Inspector (83)
-      .display-value PENDING
+      %label.control-label= reference_label('inspections', 'inspection_team_leader_id', 'Team Leader (83)')
+      .display-value= @inspection.inspection_team_leader
+    .form-group
+      %label.control-label= reference_label('inspections', 'inspection_team_member_id', 'Team Member (84)')
+      .display-value= @inspection.inspection_team_member
+    .form-group
+      %label.control-label= reference_label('inspections', 'inspection_team_member_alt_id', 'Team Member Alternative (85)')
+      .display-value= @inspection.inspection_team_member_alt
   .col-sm-3
     .form-group
       %label.control-label
