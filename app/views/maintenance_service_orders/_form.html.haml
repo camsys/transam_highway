@@ -51,6 +51,8 @@
   .row
     .col-xs-12
       = f.submit 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_maintenance_service_order_form{type: 'button'}
+        Cancel
 
 :javascript
 
@@ -60,7 +62,9 @@
     }
   });
 
-  ;
+  $('#cancel_maintenance_service_order_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
 
   $('#maintenance_activity_category_subtype_id').change(function() {
     var subtype_id = $(this).val();

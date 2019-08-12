@@ -143,10 +143,6 @@ class Inspection < InspectionRecord
   def allowed_to_make_ready
     assigned_organization.present?
   end
-  
-  def can_make_ready(user)
-    user.has_role? :manager
-  end
 
   def allowed_to_unassign
     inspectors.count == 0
@@ -156,8 +152,12 @@ class Inspection < InspectionRecord
     inspectors.count > 0
   end
 
+  def can_make_ready(user)
+    can_all(user) || user.has_role?(:manager)
+  end
+
   def can_all(user)
-    user.has_role?(:super_manager)
+    user.has_role?(:super_manager) || user.has_role?(:admin)
   end
   
   def can_assign(user)
