@@ -44,7 +44,7 @@
               * Recommended Timeline
             .row
               .col-xs-6= select_tag :month, options_for_select(Date::MONTHNAMES[1..12].each_with_index.map { |x,i| [x, i+1] }, @maintenance_service_order.maintenance_events.first.try(:due_date).try(:month)), class: 'form-control'
-              .col-xs-6= text_field_tag :year, @maintenance_service_order.maintenance_events.first.try(:due_date).try(:year), {class: 'form-control'}
+              .col-xs-6= number_field_tag :year, @maintenance_service_order.maintenance_events.first.try(:due_date).try(:year), {class: 'form-control', min: SystemConfig.instance.epoch.year}
       .row
         .col-xs-12
           = f.input :notes
