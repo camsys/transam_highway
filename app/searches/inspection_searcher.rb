@@ -208,6 +208,11 @@ class InspectionSearcher < BaseSearcher
     inspection_klass.where(Inspection.arel_table[:event_datetime].lteq(parse_date(search_proxy&.max_inspection_date))) unless search_proxy&.max_inspection_date.blank?
   end
 
+  def inspection_type__id_conditions
+    clean_inspection_types = remove_blanks(search_proxy&.inspection_type_id)
+    inspection_klass.where("inspections.inspection_type_id": clean_inspection_types) unless clean_inspection_types.empty?
+  end
+
   #TODO:inspection_zone, etc
 
   def parse_date(mm_dd_yyyy_str)

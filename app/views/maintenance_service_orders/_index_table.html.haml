@@ -1,0 +1,78 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+
+%table.table.table-hover{:id => table_dom_id,
+    :data => {:toggle => 'table',
+    :url => @asset.present? ? maintenance_service_orders_path(:asset_id => @asset.try(:transam_asset).try(:id) || @asset.id, :format => :json) : maintenance_service_orders_path(:format => :json),
+    :card_view => "false",
+    :pagination => 'true',
+    :sort_order => 'asc',
+    :sortable => 'true',
+    :side_pagination => 'server',
+    :show_pagination_switch => 'true',
+    :page_number => '1',
+    :page_list => "[5, 10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
+    :search => 'false',
+    :show_columns => 'true',
+    :show_export => 'true',
+    :row_style => 'row_style',
+    :click_to_select => 'true',
+    :show_export => 'true',
+    :id_field => 'object_key',
+    :export_types => "['csv', 'txt', 'excel']",
+    :state_save => 'true',
+    :state_save_id_table => "work_orders_id",
+    :state_save_expire => "1y",
+    :single_select => 'true'}}
+
+  %thead
+    %tr
+      %th.center.nowrap{:data => {:field => "object_key", :align => 'left', :visible => 'false'}} Object Key
+      %th.center{:data => {:field => "priority_type", :align => 'left', :sortable => 'false'}} Priority
+      %th.center{:data => {:field => "state", :align => 'left', :sortable => 'false', :formatter => 'status_formatter'}} Status
+      %th.center{:data => {:field => "maintenance_activity_category_subtype", :align => 'left', :sortable => 'false'}} General Location
+      %th.center{:data => {:field => "maintenance_activity_type", :align => 'left', :sortable => 'false'}} Recommendation
+      %th.center{:data => {:field => "notes", :align => 'left', :sortable => 'true'}} Inspection Notes
+      %th.center{:data => {:field => "order_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'true'}} Date First Recommended
+      %th.center{:data => {:field => "due_month", :align => 'left', :sortable => 'false'}} Timeline
+      %th.center{:data => {:field => "completed_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'false'}} Date Completed
+      - unless @asset
+        %th.center{:data => {:field => "asset", :align => 'left', :sortable => 'true'}} Asset
+      %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'workflow_link_formatter'}}
+
+= render 'shared/table_formatters'
+
+:javascript
+
+  var path = '#{maintenance_service_order_path("x")}';
+
+  $(window).resize(function() {
+    $("##{table_dom_id}").bootstrapTable('resetView');
+  });
+
+  function status_formatter(value, row) {
+    d = new Date()
+    d.setMonth(d.getMonth()-1)
+    if ((moment(d) > moment(row['due_date'])) && (row['state'] != 'completed')) {
+      return 'Overdue'
+    } else {
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+
+  }
+
+  function erf_formatter(value, row) {
+    if (value.includes('ERF')) {
+      return $.trim(value.split('-')[1]);
+    }
+  }
+
+  function workflow_link_formatter(value, row) {
+    if (row['state'] == 'completed') {
+      return '';
+    } else {
+      return '<a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+    }
+
+  }

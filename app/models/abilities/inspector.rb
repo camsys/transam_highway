@@ -9,7 +9,7 @@ module Abilities
       end
 
       can :update, [Inspection, BridgeCondition, CulvertCondition] do |inspection|
-        (inspection.inspector_ids.include? user.id) && (['draft_report', 'qc_review'].include? inspection.state)
+        (inspection.inspector_ids.include? user.id) && inspection.updatable?
       end
 
     end

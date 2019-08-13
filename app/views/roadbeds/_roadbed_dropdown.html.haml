@@ -1,1 +1,1 @@
-= select_tag :roadbed_id, options_from_collection_for_select(roadbeds&.order(:name, :direction) || [], "object_key", "name", selected&.object_key), "data-remote" => 'true', "data-url" => roadbed_lines_path, include_blank: false, class: 'form-control'
+= select_tag :roadbed_id, options_from_collection_for_select(roadbeds&.order(:name, :direction) || [], "object_key", "name", selected&.object_key), "data-remote" => 'true', "data-url" => roadbed_lines_path(inspection_id: @inspection.object_key), include_blank: false, class: 'form-control'

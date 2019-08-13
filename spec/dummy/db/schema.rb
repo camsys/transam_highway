@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_22_170703) do
+ActiveRecord::Schema.define(version: 2019_07_25_162632) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -822,6 +822,14 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.boolean "active"
   end
 
+  create_table "image_classifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "category"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "guid", limit: 36
@@ -830,7 +838,6 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.integer "imagable_id", null: false
     t.string "imagable_type", limit: 64, null: false
     t.string "image", limit: 128, null: false
-    t.string "classification"
     t.string "name"
     t.string "description", limit: 254, null: false
     t.boolean "exportable"
@@ -840,11 +847,17 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.integer "created_by_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float "latitude"
+    t.float "longitude"
+    t.float "bearing"
+    t.bigint "image_classification_id"
     t.string "condition_state"
     t.boolean "is_primary"
+    t.string "compass_point"
     t.index ["base_imagable_type", "base_imagable_id"], name: "index_images_on_base_imagable_type_and_base_imagable_id"
     t.index ["guid"], name: "index_images_on_guid"
     t.index ["imagable_id", "imagable_type"], name: "images_idx2"
+    t.index ["image_classification_id"], name: "index_images_on_image_classification_id"
     t.index ["object_key"], name: "images_idx1"
   end
 
@@ -1039,6 +1052,24 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.index ["user_id"], name: "message_tags_idx2"
   end
 
+  create_table "message_templates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "priority_type_id"
+    t.string "object_key"
+    t.string "name"
+    t.string "subject"
+    t.text "description"
+    t.text "delivery_rules"
+    t.text "body"
+    t.boolean "active"
+    t.boolean "message_enabled"
+    t.boolean "email_enabled"
+    t.boolean "is_system_template"
+    t.boolean "is_implemented"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["priority_type_id"], name: "index_message_templates_on_priority_type_id"
+  end
+
   create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
@@ -1051,6 +1082,9 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.boolean "active"
     t.datetime "opened_at"
     t.datetime "created_at", null: false
+    t.bigint "message_template_id"
+    t.string "email_status"
+    t.index ["message_template_id"], name: "index_messages_on_message_template_id"
     t.index ["object_key"], name: "messages_idx1"
     t.index ["organization_id"], name: "messages_idx2"
     t.index ["thread_message_id"], name: "messages_idx5"
@@ -1144,6 +1178,7 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "country"
+    t.string "legal_name"
     t.index ["customer_id"], name: "organizations_idx2"
     t.index ["organization_type_id"], name: "organizations_idx1"
     t.index ["parent_id"], name: "index_organizations_on_parent_id"
@@ -1570,6 +1605,7 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.datetime "updated_at", null: false
     t.index ["guid"], name: "index_streambed_profile_points_on_guid"
     t.index ["object_key"], name: "index_streambed_profile_points_on_object_key"
+    t.index ["streambed_profile_id", "distance"], name: "streambed_profile_id_distance_uniq_idx", unique: true
     t.index ["streambed_profile_id"], name: "index_streambed_profile_points_on_streambed_profile_id"
   end
 
@@ -1809,6 +1845,7 @@ ActiveRecord::Schema.define(version: 2019_07_22_170703) do
     t.integer "failed_attempts", null: false
     t.string "unlock_token", limit: 128
     t.datetime "locked_at"
+    t.datetime "password_changed_at"
     t.boolean "notify_via_email", null: false
     t.integer "weather_code_id"
     t.boolean "active", null: false

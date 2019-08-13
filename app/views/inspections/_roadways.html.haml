@@ -1,5 +1,6 @@
 :ruby
-    highway_structure = @inspection.highway_structure
+    highway_structure = highway_structure || @inspection.highway_structure
+    skip_legend = skip_legend || false
 
 :css
     #roadways-table td, #roadways-table th {
@@ -15,8 +16,9 @@
       word-break: break-all;
     }
 
-%legend 
-    Roadways
+- unless skip_legend
+    %legend 
+        Roadways
 
 .table-responsive
     %table.table#roadways-table

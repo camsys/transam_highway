@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       resources :bridges
       resources :culverts
       resources :highway_structures
+      resources :streambed_profiles
     end
   end
 

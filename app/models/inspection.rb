@@ -84,7 +84,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'complete', from_state: ['in_field', 'draft_report'], to_state: 'field_work_complete', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To Field Work Complete'},
 
-        {event_name: 'edit', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start, qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Draft Report'},
+        {event_name: 'draft', from_state: ['in_progress', 'field_work_complete', 'qc_review', 'qa_review'], to_state: 'draft_report', can: {in_progress: :can_start, field_work_complete: :can_start, qc_review: :can_start, qa_review: :can_submit}, human_name: 'To Draft Report'},
 
         {event_name: 'qc', from_state: ['draft_report', 'submitted'], to_state: 'qc_review', can: :can_start, human_name: 'To QC Review', to_state_human_name: 'QC Review'},
 
@@ -143,10 +143,6 @@ class Inspection < InspectionRecord
   def allowed_to_make_ready
     assigned_organization.present?
   end
-  
-  def can_make_ready(user)
-    user.has_role? :manager
-  end
 
   def allowed_to_unassign
     inspectors.count == 0
@@ -155,25 +151,33 @@ class Inspection < InspectionRecord
   def allowed_to_assign
     inspectors.count > 0
   end
+
+  def can_make_ready(user)
+    can_all(user) || user.has_role?(:manager)
+  end
+
+  def can_all(user)
+    user.has_role?(:super_manager) || user.has_role?(:admin)
+  end
   
   def can_assign(user)
-    user.has_role?(:inspector) && (assigned_organization.users || []).include?(user)
+    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
   end
 
   def can_sync(user)
-    true
+    can_all(user) || user.has_role?(:inspector)
   end
 
   def can_start(user)
-    inspectors.include? user
+    can_all(user) || inspectors.include?(user)
   end
 
   def can_submit(user)
-    true # TEMP
+    can_all(user) || user.has_role?(:manager)
   end
   
   def can_finalize(user)
-    inspection_team_leader == user
+    can_all(user) || inspection_team_leader == user
   end # TEMP
 
   # called as callback after `finalize` event
@@ -188,7 +192,7 @@ class Inspection < InspectionRecord
   end
 
   def updatable?
-    state != 'final'
+    (['draft_report', 'qc_review'].include? state)
   end
 
   protected

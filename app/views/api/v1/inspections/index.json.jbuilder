@@ -1,8 +1,4 @@
-if @user&.organization
-  json.organization @user.organization, :id, :name, :short_name
-
-  json.users @user.organization.users, :id, :name, :email, :organization_id
-end
+json.users User.all, :id, :name, :email, :organization_id
 
 json.inspections do
   json.partial! 'api/v1/inspections/listing', collection: @inspections, as: :inspection
@@ -49,4 +45,20 @@ end
 
 json.documents do 
   json.partial! 'api/v1/documents/document', collection: @documents, as: :document
+end
+
+json.streambed_profiles do
+  json.partial! 'api/v1/streambed_profiles/listing', collection: @profiles, as: :streambed_profile
+end
+
+json.streambed_profile_points do
+  json.partial! 'api/v1/streambed_profile_points/listing', collection: @profile_points, as: :streambed_profile_point
+end
+
+json.roadbeds do
+  json.partial! 'api/v1/roadbeds/listing', collection: @roadbeds, as: :roadbed
+end
+
+json.roadbed_lines do
+  json.partial! 'api/v1/roadbed_lines/listing', collection: @roadbed_lines, as: :roadbed_line
 end
