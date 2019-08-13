@@ -19,7 +19,7 @@ class InspectionProxy < Proxy
                   :state, :min_calculated_inspection_due_date, :max_calculated_inspection_due_date, 
                   :min_inspection_date, :max_inspection_date,
                   :inspection_frequency, :inspector_id, :inspection_zone_id,
-                  :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key
+                  :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key, :inspection_type_id
 
   #-----------------------------------------------------------------------------
   # Validations
@@ -49,7 +49,8 @@ class InspectionProxy < Proxy
     { :owner_id => [] }, 
     { :structure_status_type_code => [] }, 
     { :calculated_condition => [] },
-    { :state => [] }
+    { :state => [] },
+    { :inspection_type_id => [] }
   ]
 
   #-----------------------------------------------------------------------------

@@ -53,6 +53,9 @@
 .col-sm-3
   = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
 
+.col-sm-3
+  = f.input :inspection_type_id, as: :check_boxes, collection: InspectionType.active, label: reference_label('inspections', 'inspection_type_id', 'Inspection Type')
+
 
 :javascript
   $(function() {
