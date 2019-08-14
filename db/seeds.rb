@@ -17,7 +17,7 @@ organization_types = [
      display_icon_name: "fa fa-user-circle",
      map_icon_name: "purpleIcon",
      description: "Consultant on highway structures, bridges.",
-     roles: nil,
+     roles: 'manager,inspector',
      active: true},
     {
         name: "Highway Team",
@@ -25,7 +25,7 @@ organization_types = [
         display_icon_name: "fa fa-users",
         map_icon_name: "blueIcon",
         description: "Team for highway authority.",
-        roles: nil,
+        roles: 'inspector',
         active: true
     }
 ]
@@ -48,17 +48,31 @@ roles = [
     {name: 'inspector', show_in_user_mgmt: true, privilege: false, weight: 5}
 ]
 
+maintenance_priority_types = [
+    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'Low',     :description => 'Lowest priority.'},
+    {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Normal',  :description => 'Normal priority.'},
+    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'High',    :description => 'Highest priority.'},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Blue',    :description => 'ERF - Blue.'},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Green',    :description => 'ERF - Green.'},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Yellow',    :description => 'ERF - Yellow.'},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Red',    :description => 'ERF - Red.'},
+]
+
 system_config_extensions = [
     {class_name: 'HighwayStructure', extension_name: 'TransamCoordinateLocatable', engine_name: 'highway', active: true},
     {class_name: 'AssetMapSearcher', extension_name: 'HighwayAssetMapSearchable', engine_name: 'highway', active: true},
     {class_name: 'TransamAsset', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
-    {class_name: 'TransamAsset', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'BridgeCondition', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Inspection', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Element', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Defect', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Image', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Document', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'Roadway', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'Roadbed', extension_name: 'TransamGuid',engine_name: 'highway', active: true},
+    {class_name: 'RoadbedLine', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'StreambedProfile', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'StreambedProfilePoint', extension_name: 'TransamGuid', engine_name: 'highway', active: true}
 ]
 
 route_signing_prefixes = [
@@ -665,7 +679,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types inspection_programs
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types inspection_programs maintenance_priority_types
 }
 
 replace_tables.each do |table_name|
