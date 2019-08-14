@@ -1,8 +1,5 @@
 :ruby
-  inspectors = []
-  current_user.organizations.each do |x|
-    inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
-  end
+  inspectors = User.active.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
 
   inspector_ids_by_team = {}
   inspectors.each do |i|
