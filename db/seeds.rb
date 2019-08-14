@@ -612,7 +612,12 @@ inspection_programs = [
   {name: 'Off-System', active: true, description: ''},
   {name: 'On-System', active: true, description: ''},
   {name: 'Tunnel', active: true, description: ''},
-  {name: 'Wall', active: true, description: ''}
+  {name: 'Wall', active: true, description: ''},
+  {name: 'Central70', active: true, description: ''},
+  {name: 'E470', active: true, description: ''},
+  {name: 'NWP', active: true, description: ''},
+  {name: 'BOR', active: true, description: ''},
+  {name: 'RTD', active: true, description: ''}
 ]
 
 # These mappings are based solely on Materials in Appendix D of DefectMapping.pdf
