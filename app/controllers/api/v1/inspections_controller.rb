@@ -314,6 +314,7 @@ class Api::V1::InspectionsController < Api::ApiController
     query_streambed_profile_points
     query_roadbeds
     query_roadbed_lines
+    query_maintenance_items
   end
 
   def query_highway_structures
@@ -391,6 +392,10 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_roadbed_lines
     @roadbed_lines = RoadbedLine.where(inspection: @inspections)
+  end
+
+  def query_maintenance_items
+    @maintenance_items = MaintenanceServiceOrder.where(transam_asset_id: @transam_asset_ids)
   end
 
 end
