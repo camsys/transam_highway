@@ -314,7 +314,7 @@ class Api::V1::InspectionsController < Api::ApiController
     query_streambed_profile_points
     query_roadbeds
     query_roadbed_lines
-    if @highway_structures&.first.respond_to? :maintenance_service_orders
+    if @highway_structures&.first.respond_to? :maintenance_history
       query_maintenance_items
     end
   end
