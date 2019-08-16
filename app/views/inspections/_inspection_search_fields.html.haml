@@ -1,3 +1,9 @@
+:css
+  hr {
+    margin-top: -10px;
+    margin-bottom: 0;
+  }
+
 :ruby
   inspectors = []
   Organization.all.each do |x|
@@ -51,7 +57,18 @@
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 
 .col-sm-3
-  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
+  %legend= reference_label('inspections', 'state', 'Inspection Status')
+  = f.input :state, as: :check_boxes, input_html: {id: 'pre', class: 'all_state'}, collection: [['All', 'all_pre']], label: 'Pre-Inspection'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'pre_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["Open", "Ready", "Assigned"].include? r[0]}, label: false
+  = f.input :state, as: :check_boxes, input_html: {id: 'field', class: 'all_state'}, collection: [['All', 'all_field']], label: 'In Field'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'field_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["In Field", "In Progress", "Field Work Complete"].include? r[0]}, label: false
+  = f.input :state, as: :check_boxes, input_html: {id: 'office', class: 'all_state'}, collection: [['All', 'all_office']], label: 'In Office'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'office_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["Draft Report", "QC Review", "Submitted", "QA Review", "Signature Ready"].include? r[0]}, label: false
+  = f.input :state, as: :check_boxes, input_html: {class: 'historical_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| r[0] == "Final"}, label: "Historical"
+
 
 .col-sm-3
   = f.input :inspection_type_id, as: :check_boxes, collection: InspectionType.active, label: reference_label('inspections', 'inspection_type_id', 'Inspection Type')
@@ -118,5 +135,16 @@
     update_inspection_teams_by_group("#{@search_proxy.organization_type_id}", 'inspection_proxy_assigned_organization_id');
     update_inspectors_by_team("#{@search_proxy.assigned_organization_id}");
 
+    $('.all_state').on("click", function(event) {
+      var state_type = this.id;
+      var section_class = '.'.concat(state_type, '_state_selection')
+      var boxes = $(section_class);
+      if($(this).prop("checked")){
+        boxes.prop("checked", true);
+      } else {
+        boxes.prop("checked", false);
+      }
+    });
 
+    $('.state_select').parent().css("margin-left", "20px");
   });
