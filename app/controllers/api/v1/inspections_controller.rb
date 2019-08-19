@@ -243,6 +243,66 @@ class Api::V1::InspectionsController < Api::ApiController
           end
         end
 
+        if (@inspection.highway_structure&.respond_to? :maintenance_history) && params[:maintenance_items] && params[:maintenance_items].any?
+          params[:maintenance_items].each do |mi_params|
+            change_type = mi_params[:change_type]&.upcase
+
+            clean_params = mi_params.permit(:notes, :order_date).to_h
+            event_params = {}
+            mi_guid = mi_params[:id]
+            if mi_params[:highway_structure_id]
+              mi_parent = HighwayStructure.find_by(guid: mi_params[:highway_structure_id])
+            end
+            if mi_params[:priority_type]
+              mi_priority = MaintenancePriorityType.find_by(name: mi_params[:priority_type])
+            end
+            if mi_params[:status]
+              mi_state = mi_params[:status] if MaintenanceServiceOrder.state_machine.states[mi_params[:status]]
+            end
+            if mi_params[:recommendation]
+              mi_recommendation = MaintenanceActivityType.find_by(name: mi_params[:recommendation])
+            end
+            if mi_params[:timeline]
+              mi_due_date = mi_params[:timeline]
+            end
+            if mi_params[:date_completed]
+              mi_date_completed = mi_params[:date_completed]
+            end
+
+            case change_type
+            when 'ADD', 'UPDATE'
+              mi = MaintenanceServiceOrder.find_by_guid(mi_guid)
+              clean_params[:transam_asset] = mi_parent if mi_parent
+              clean_params[:priority_type] = mi_priority if mi_priority
+              clean_params[:state] = mi_state if mi_state
+
+              # TODO: Event parameters are only valid for the first maintenance event under the service order for now
+              event_params[:maintenance_activity_type] = mi_recommendation if mi_recommendation
+              event_params[:due_date] = mi_due_date if mi_due_date
+              event_params[:event_date] = mi_date_completed if mi_date_completed
+
+              if mi
+                mi.update!(clean_params)
+                mi.maintenance_events.first.update!(event_params)
+              else
+                if mi_guid.blank?
+                  @mi_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = mi_guid
+                clean_params[:organization] = @user.organization
+                order = MaintenanceServiceOrder.create!(clean_params)
+                event_params[:maintenance_service_order] = order if order
+                event_params[:transam_asset] = order&.transam_asset
+                MaintenanceEvent.create!(event_params)
+              end
+            when 'REMOVE'
+              mi = MaintenanceServiceOrder.find_by_guid(mi_guid)
+              mi.destroy! if mi
+            end
+          end
+        end
+
         @is_valid = true
       end
     rescue ActiveRecord::RecordInvalid => invalid
@@ -291,6 +351,13 @@ class Api::V1::InspectionsController < Api::ApiController
     if @rbl_guid_required_to_add
       @status = :fail
       @message = "Unable to update inspection #{params[:id]} due to empty id in new roadbed line data"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+
+    # maintenance item guid is required to add a new maintenance item
+    if @mi_guid_required_to_add
+      @status = :fail
+      @message = "Unable to update inspection #{params[:id]} due to empty id in new maintenance item data"
       render status: 400, json: json_response(:error, message: @message)
     end
   end
