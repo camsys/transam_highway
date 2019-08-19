@@ -298,6 +298,7 @@ class Api::V1::InspectionsController < Api::ApiController
               end
             when 'REMOVE'
               mi = MaintenanceServiceOrder.find_by_guid(mi_guid)
+              MaintenanceEvent.where(maintenance_service_order: mi).destroy_all if mi
               mi.destroy! if mi
             end
           end
