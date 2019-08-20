@@ -1,5 +1,2 @@
 - if @asset.respond_to? :maintenance_history
-  %li
-    %a{:href => "#odrs", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @asset.maintenance_service_orders.count
-      Maintenance Items
+  = nav_tab_count_tag("#odrs", "Maintenance Items", @asset.maintenance_service_orders.count)

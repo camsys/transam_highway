@@ -1,3 +1,5 @@
-= nav_tab_count_tag("#imag", "Photos", Image.where(base_imagable: @asset.transam_asset).count)
+%li
+  %a{:href => "#imag", :data =>{:toggle => 'tab'}}
+    Photos
 = nav_tab_count_tag("#docs", "Documents", @asset.documents.count)
 = nav_tab_count_tag("#hist", "Events", @asset.asset_events.count)
