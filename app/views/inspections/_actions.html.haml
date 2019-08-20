@@ -14,3 +14,7 @@
             = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
               %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
               = evt.human_name
+        - elsif evt.name.to_s == 'finalize'
+          = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
+            %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
+            = evt.human_name

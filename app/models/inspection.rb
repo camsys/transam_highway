@@ -56,7 +56,13 @@ class Inspection < InspectionRecord
         inspection = inspection.specific
 
         typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
-        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if eval("defined?(#{typed_asset.class}Condition)")
+        class_exists = begin
+          klass = Module.const_get("#{typed_asset.class}Condition")
+          klass.is_a?(Class)
+        rescue NameError
+          false
+        end
+        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if class_exists
       end
 
       inspection
@@ -94,7 +100,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'sign', from_state: ['submitted', 'qa_review'], to_state: 'signature_ready', can: :can_submit, human_name: 'To Ready for Signature'},
 
-        {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
+        {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', guard: :allowed_to_finalize, can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]
   end
 
@@ -150,6 +156,12 @@ class Inspection < InspectionRecord
 
   def allowed_to_assign
     inspectors.count > 0
+  end
+
+  def allowed_to_finalize
+    typed_inspection = Inspection.get_typed_inspection(self)
+    inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
+
   end
 
   def can_make_ready(user)

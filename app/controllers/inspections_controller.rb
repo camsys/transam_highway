@@ -1,7 +1,7 @@
 class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
-  before_action :set_inspection, only: [:show, :edit, :update, :destroy]
+  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
 
   INDEX_KEY_LIST_VAR    = "inspection_key_list_cache_var"
   INSPECTION_SEARCH_PROXY_CACHE_VAR    = "inspection_proxy_cache_var"
@@ -43,6 +43,10 @@ class InspectionsController < TransamController
 
   # GET /inspections/1/edit
   def edit
+  end
+
+  def allowed_to_finalize
+
   end
 
   # POST /inspections

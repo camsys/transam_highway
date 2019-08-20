@@ -1,0 +1,17 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title
+        = "#{@asset} Inspection Checklist to Finalize"
+    .modal-body
+      .alert{class: @inspection.inspection_team_leader.present? ? 'alert-success' : 'alert-danger'}
+        = "#{reference_label('inspections', 'inspection_team_leader_id', 'Team Leader (83)')} is #{@inspection.inspection_team_leader.present? ? '' : 'NOT'} set."
+      .alert{class: @inspection.event_datetime.present? ? 'alert-success' : 'alert-danger'}
+        = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{@inspection.event_datetime.present? ? '' : 'NOT'} set."
+      - if @inspection.event_datetime
+        .alert{class: @inspection.event_datetime > @asset.inspection_date ? 'alert-success' : 'alert-danger'}
+          = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{@inspection.event_datetime > @asset.inspection_date ? '' : 'NOT'} after #{reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')}."
+      .alert{class: @inspection.has_required_photos? ? 'alert-success' : 'alert-danger'}
+        = "Inspection does #{@inspection.has_required_photos? ? '' : 'NOT'} have the required photos."

@@ -29,6 +29,10 @@ Rails.application.routes.draw do
       get 'reset'
       post 'new_search'
     end
+
+    member do
+      get 'allowed_to_finalize'
+    end
   end
 
   resources :streambed_profiles do
