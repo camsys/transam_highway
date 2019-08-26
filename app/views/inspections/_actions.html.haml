@@ -17,5 +17,5 @@
       - if @inspection.state == 'signature_ready'
         %li
           = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
-            %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
-            = evt.human_name
+            %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('finalize')}
+            To Final
