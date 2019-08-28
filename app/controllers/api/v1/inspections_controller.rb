@@ -442,6 +442,9 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_images
     @images = Image.where(imagable_type: 'TransamAsset', imagable_id: @transam_asset_ids)
+              .or(Image.where(imagable_type: 'Inspection', imagable_id: @inspection_ids))
+              .or(Image.where(imagable_type: 'Element', imagable_id: @elements))
+              .or(Image.where(imagable_type: 'Defect', imagable_id: @defects))
   end
 
   def query_documents
