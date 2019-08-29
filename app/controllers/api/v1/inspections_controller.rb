@@ -407,7 +407,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_culverts
     @culverts = Culvert.where("highway_structures.id": @highway_structure_ids)
-    @culvert_asset_ids = @bridges.pluck("transam_assetible_id")
+    @culvert_asset_ids = @culverts.pluck("transam_assetible_id")
   end
 
   def query_inspections
