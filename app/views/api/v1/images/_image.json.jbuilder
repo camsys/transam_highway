@@ -17,5 +17,8 @@ else
 end
 
 json.(image, :object_key, :description, :latitude, :longitude, :condition_state, :is_primary)
-json.file_name image.original_filename
+json.file_name image.image.file.filename
+json.original_file_name image.original_filename
 json.url image.image.try(:url)
+json.category image.image_classification.name
+json.direction image.compass_point
