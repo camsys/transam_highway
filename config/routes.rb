@@ -67,12 +67,22 @@ Rails.application.routes.draw do
       get 'defect_definitions' => 'defect_definitions#index'
       get 'element_definitions' => 'element_definitions#index'
 
-      resources :inspections, only: [:index, :update]
+      resources :inspections, only: [:index, :update] do
+        resources :images
+        resources :documents
+      end
 
       resources :bridges
       resources :culverts
       resources :highway_structures
       resources :streambed_profiles
+
+      resources :elements, only: [:index, :update] do
+        resources :images
+      end
+      resources :defects, only: [:index, :update] do
+        resources :images
+      end
     end
   end
 
