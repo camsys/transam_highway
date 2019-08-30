@@ -74,6 +74,7 @@ Rails.application.routes.draw do
 
       resources :bridges
       resources :culverts
+      resources :highway_structures, except: [:index, :update]
       resources :highway_structures, only: [:index, :update] do
         resources :images
         resources :documents
