@@ -20,6 +20,13 @@ json.(image, :object_key, :description, :latitude, :longitude, :condition_state,
 json.file_name image.image.file.filename
 json.original_file_name image.original_filename
 json.url image.image.try(:url)
+if defined? image.image.constrained
+  if image.image.constrained.file.exists?
+    json.constrained_url image.image.constrained.url
+  else
+    json.constrained_url image.image&.url
+  end
+end
 json.category image.image_classification&.name
 json.direction image.compass_point
 json.datetime image.created_at
