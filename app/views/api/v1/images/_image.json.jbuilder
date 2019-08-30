@@ -20,6 +20,6 @@ json.(image, :object_key, :description, :latitude, :longitude, :condition_state,
 json.file_name image.image.file.filename
 json.original_file_name image.original_filename
 json.url image.image.try(:url)
-json.category image.image_classification.name
+json.category image.image_classification&.name
 json.direction image.compass_point
 json.datetime image.created_at
