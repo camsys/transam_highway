@@ -789,6 +789,7 @@ class BridgeLike < TransamAssetRecord
   def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class)
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
+    grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
 
     if parent_key == 0
       elem_def = ElementDefinition.find_by(number: key)
@@ -805,11 +806,17 @@ class BridgeLike < TransamAssetRecord
       end        
     else # Has parent, must be BME or defect
       elem_parent_def = ElementDefinition.find_by(number: parent_key)
+      units = elem_parent_def.quantity_unit
+
       if elem_parent_def
         # Find parent element
-        parent_elem = parent_elements[parent_key]
-        units = elem_parent_def.quantity_unit
-        
+        if grandparent_key == 0
+          parent_elem = parent_elements[parent_key]
+        else # must be a defect of a BME
+          parent_elem = parent_elements[grandparent_key].children
+                        .find_by(element_definition: elem_parent_def)
+          
+        end
         
         # Assume defect or BME
         defect_def = DefectDefinition.find_by(number: key)
