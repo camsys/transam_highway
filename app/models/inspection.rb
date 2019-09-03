@@ -76,11 +76,11 @@ class Inspection < InspectionRecord
   def self.transam_workflow_transitions
     [
 
-        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'make_ready', from_state: 'assigned', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', guard: :allowed_to_unassign, can: :can_assign, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
@@ -102,6 +102,11 @@ class Inspection < InspectionRecord
 
         {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', guard: :allowed_to_finalize, can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]
+  end
+
+  # transitions that should happen automatically when you update an inspection (through the detail page) as long as all the conditions are meh
+  def self.automatic_transam_workflow_transitions
+    ['reopen', 'unassign']
   end
 
   def as_json(options={})
