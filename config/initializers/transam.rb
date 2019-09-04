@@ -5,6 +5,7 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'BridgePostingType',
   'BridgeTollType',
   'ChannelConditionType',
+  'CulvertConditionType',
   'DeckProtectionType',
   'DeckStructureType',
   'DesignConstructionType',
