@@ -26,7 +26,8 @@ class Inspection < InspectionRecord
   has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
   has_one :streambed_profile, dependent: :destroy
-
+  has_many :roadbed_lines, dependent: :destroy
+  
   # Each asset has zero or more images. Images are deleted when the asset is deleted
   has_many    :images,      :as => :imagable,       :dependent => :destroy
 

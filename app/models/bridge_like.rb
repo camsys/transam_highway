@@ -786,15 +786,17 @@ class BridgeLike < TransamAssetRecord
     return bridgelike, msg
   end
 
-  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class)
+  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class, ade_mapping={}, add_mapping={})
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
     grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
+    # puts "key: #{key}, parent: #{parent_key}, g-parent: #{grandparent_key}"
 
     if parent_key == 0
-      elem_def = ElementDefinition.find_by(number: key)
+      # Fallback to ADE
+      elem_def = ElementDefinition.find_by(number: key) || ade_mapping[key]
 
-      # If not found, then probably ADE
+      # If not found, then should be ADE that should be deleted
       if elem_def
         # Process element
         element = inspection.elements.build(element_definition: elem_def,
@@ -802,24 +804,35 @@ class BridgeLike < TransamAssetRecord
                                                                          elem_def.quantity_unit),
                                             notes: hash['ELEM_NOTES'])
         element.save!
+        # Save to original key so that child can be attached to mapped element
         parent_elements[key] = element
       end        
     else # Has parent, must be BME or defect
-      elem_parent_def = ElementDefinition.find_by(number: parent_key)
-      units = elem_parent_def.quantity_unit
+      elem_parent_def = ElementDefinition.find_by(number: parent_key) || ade_mapping[parent_key]
 
       if elem_parent_def
+        units = elem_parent_def.quantity_unit
+
         # Find parent element
         if grandparent_key == 0
           parent_elem = parent_elements[parent_key]
         else # must be a defect of a BME
+          # puts "parent: #{parent_elements[grandparent_key].inspect}"
+          # puts "children: #{parent_elements[grandparent_key].children.collect(&:inspect)}"
           parent_elem = parent_elements[grandparent_key].children
                         .find_by(element_definition: elem_parent_def)
           
         end
         
         # Assume defect or BME
-        defect_def = DefectDefinition.find_by(number: key)
+        defect_def = DefectDefinition.find_by(number: key) || add_mapping[key]
+        if defect_def.is_a? Array
+          # Disambiguate
+          defect_defs = defect_def
+          defect_def = defect_defs.find do |d|
+            d.element_definitions.include? parent_elem.element_definition
+          end
+        end
 
         if defect_def
           # set quantities
@@ -841,6 +854,7 @@ class BridgeLike < TransamAssetRecord
                                              element_definition: bme_def,
                                              quantity: process_quantities(hash['ELEM_QUANTITY'], bme_def.quantity_unit),
                                              notes: hash['ELEM_NOTES'])
+            bme.save!
             parent_elements[key] = bme
           end
         end
