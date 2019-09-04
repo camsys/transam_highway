@@ -14,6 +14,8 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'FunctionalClass',
   'HistoricalSignificanceType',
   'LoadRatingMethodType',
+  'MaintenanceActivityType',
+  'MaintenancePriorityType',
   'MaintenanceSection',
   'MembraneType',
   'OperationalStatusType',
