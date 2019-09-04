@@ -3,7 +3,7 @@
 
 .row
   .col-sm-4.col-md-2
-    - available_inspectors = @inspection.assigned_organization.users.active.with_role(:inspector).map{|r| [r.id, r.to_s]}
+    - available_inspectors = @inspection.assigned_organization ? @inspection.assigned_organization.users.active.with_role(:inspector).map{|r| [r.id, r.to_s]} : []
     = editable_asset_association_tag(@inspection, :inspectors, 'Inspectors', available_inspectors, type: 'checklist', suffix: '_ids')
     %h4 Inspectors
     %ul

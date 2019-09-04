@@ -1,27 +1,24 @@
 - allowable_events = @inspection.allowable_event_objects
 
-- if allowable_events.count > 0
-  .btn-group.pull-right.panel-action
-    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      %i.fa.fa-cog
-      = " Actions"
-      %span.caret
-    %ul.dropdown-menu{:role => 'menu'}
-      - allowable_events.each do |evt|
-        - if evt.name == 'reopen' && (can? evt.name.to_sym, @inspection.inspection)
-          %li
-            = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: evt.name, global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil}) do
-              %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
-              = evt.human_name
-        - else
-          - method = "allowed_to_#{evt.name}"
-          - if (!@inspection.respond_to?(method) || @inspection.send(method)) && (can? evt.name.to_sym, @inspection.inspection)
-            %li
-              = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
-                %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
-                = evt.human_name
-        - if @inspection.state == 'signature_ready' && !@inspection.allowed_to_finalize
-          %li
-            = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
-              %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('finalize')}
-              To Final
+.btn-group.pull-right.panel-action
+  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    %i.fa.fa-cog
+    = " Actions"
+    %span.caret
+  %ul.dropdown-menu{:role => 'menu'}
+    - allowable_events.each do |evt|
+      - if (can? evt.name.to_sym, @inspection.inspection)
+        %li
+          = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
+            %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
+            = evt.human_name
+    - if @inspection.state == 'ready' && (can? :reopen, @inspection.inspection) && !(allowable_events.map{|x| x.name}.include? 'reopen')
+      %li
+        = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: 'reopen', global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil}) do
+          %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('reopen')}
+          To Open
+    - elsif @inspection.state == 'signature_ready' && !(allowable_events.map{|x| x.name}.include? 'finalize')
+      %li
+        = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
+          %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('finalize')}
+          To Final
