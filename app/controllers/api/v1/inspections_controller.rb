@@ -11,7 +11,7 @@ class Api::V1::InspectionsController < Api::ApiController
   def update
     @inspection = Inspection.find_by_object_key(params[:id])
     unless @inspection
-      @status = :fail
+      @status = :error
       @message  = "Inspection #{params[:id]} not found"
       render status: 400, json: json_response(:error, message: @message)
       return
@@ -202,25 +202,30 @@ class Api::V1::InspectionsController < Api::ApiController
 
             clean_params = rbl_params.permit(rbl_params.keys).except(:id, :roadbed_id, :inspection_id, :number, :change_type, :does_not_exist, :no_restriction).to_h
             rbl_guid = rbl_params[:id]
-            if rbl_params[:inspection_id]
-              rbl_parent = Inspection.find_by_guid(rbl_params[:inspection_id])
-            end
-            if rbl_params[:roadbed_id]
-              rbl_roadbed = Roadbed.find_by_guid(rbl_params[:roadbed_id])
-            end
-            if rbl_params[:number]
-              case rbl_params[:number]
-              when 0
-                rbl_number = "L"
-              when rbl_roadbed&.number_of_lines + 1
-                rbl_number = "R"
-              else
-                rbl_number = rbl_params[:number]&.to_s
-              end
-            end
 
             case change_type
             when 'ADD', 'UPDATE'
+              if rbl_params[:inspection_id]
+                rbl_parent = Inspection.find_by_guid(rbl_params[:inspection_id])
+              end
+              if rbl_params[:roadbed_id]
+                rbl_roadbed = Roadbed.find_by_guid(rbl_params[:roadbed_id])
+              end
+              unless rbl_roadbed
+                @roadbed_required_to_add_update = true
+                raise ActiveRecord::Rollback
+              end
+              if rbl_params[:number]
+                case rbl_params[:number]
+                when 0
+                  rbl_number = "L"
+                when rbl_roadbed&.number_of_lines + 1
+                  rbl_number = "R"
+                else
+                  rbl_number = rbl_params[:number]&.to_s
+                end
+              end
+
               rbl = RoadbedLine.find_by_guid(rbl_guid)
               clean_params[:inspection] = rbl_parent if rbl_parent
               clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
@@ -313,56 +318,63 @@ class Api::V1::InspectionsController < Api::ApiController
       end
     rescue ActiveRecord::RecordInvalid => invalid
       # generic errors
-      @status = :fail
+      @status = :error
       @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # element guid is required to add a new element
     if @el_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data" 
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # defect guid is required to add a new defect
     if @df_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # streambed profile guid is required to add a new streambed profile
     if @sp_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # streambed profile point guid is required to add a new streambed profile point
     if @spp_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message = "Unable to update inspection #{params[:id]} due to empty id in new streambed profile point data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # roadbed guid is required to add a new roadbed
     if @rb_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message = "Unable to update inspection #{params[:id]} due to empty id in new roadbed data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
+    # roadbed is required to add/update a new roadbed line
+    if @roadbed_required_to_add_update
+      @status = :error
+      @message = "Unable to update inspection #{params[:id]} due to missing roadbed"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+    
     # roadbed line guid is required to add a new roadbed line
     if @rbl_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message = "Unable to update inspection #{params[:id]} due to empty id in new roadbed line data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # maintenance item guid is required to add a new maintenance item
     if @mi_guid_required_to_add
-      @status = :fail
+      @status = :error
       @message = "Unable to update inspection #{params[:id]} due to empty id in new maintenance item data"
       render status: 400, json: json_response(:error, message: @message)
     end
