@@ -200,7 +200,7 @@ class Api::V1::InspectionsController < Api::ApiController
           params[:roadbed_lines].each do |rbl_params|
             change_type = rbl_params[:change_type]&.upcase
 
-            clean_params = rbl_params.permit(rbl_params.keys).except(:id, :roadbed_id, :inspection_id, :number, :change_type, :does_not_exist, :no_restrictions).to_h
+            clean_params = rbl_params.permit(rbl_params.keys).except(:id, :roadbed_id, :inspection_id, :number, :change_type, :does_not_exist, :no_restriction).to_h
             rbl_guid = rbl_params[:id]
             if rbl_params[:inspection_id]
               rbl_parent = Inspection.find_by_guid(rbl_params[:inspection_id])
@@ -225,7 +225,7 @@ class Api::V1::InspectionsController < Api::ApiController
               clean_params[:inspection] = rbl_parent if rbl_parent
               clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
               clean_params[:number] = rbl_number if rbl_number
-              if rbl_params[:no_restrictions]
+              if rbl_params[:no_restriction]
                 clean_params[:entry] = clean_params[:exit] = null
               elsif rbl_params[:does_not_exist]
                 clean_params[:entry] = clean_params[:exit] = 0.0
