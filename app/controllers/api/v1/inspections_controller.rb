@@ -109,13 +109,17 @@ class Api::V1::InspectionsController < Api::ApiController
             clean_params = sp_params.permit(sp_params.keys).except(:id, :highway_structure_id, :inspection_id, :change_type).to_h
             sp_guid = sp_params[:id]
             if sp_params[:highway_structure_id]
-              sp_parent = HighwayStructure.find_by_guid(sp_params[:highway_structure_id])
+              sp_parent = HighwayStructure.find_by(guid: sp_params[:highway_structure_id])
+            end
+            if sp_params[:inspection_id]
+              sp_inspection = Inspection.find_by(guid: sp_params[:inspection_id])
             end
 
             case change_type
             when 'ADD', 'UPDATE'
               sp = StreambedProfile.find_by_guid(sp_guid)
               clean_params[:highway_structure] = sp_parent if sp_parent
+              clean_params[:inspection] = sp_inspection if sp_inspection
               if sp
                 sp.update!(clean_params)
               else
