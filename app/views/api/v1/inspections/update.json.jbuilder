@@ -22,11 +22,11 @@ when "Culvert"
 end
 
 json.images do 
-  json.partial! 'api/v1/images/image', collection: @images, as: :image
+  json.partial! 'api/v1/images/image', collection: @inspection.images, as: :image
 end
 
 json.documents do 
-  json.partial! 'api/v1/documents/document', collection: @documents, as: :document
+  json.partial! 'api/v1/documents/document', collection: @inspection.documents, as: :document
 end
 
 json.streambed_profile do
