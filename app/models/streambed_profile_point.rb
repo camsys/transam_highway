@@ -9,6 +9,6 @@ class StreambedProfilePoint < ApplicationRecord
   default_scope { order(:distance) }
 
   def self.allowable_params
-    [:distance, :value]
+    [:streambed_profile, :distance, :value]
   end
 end

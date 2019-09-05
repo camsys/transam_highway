@@ -150,7 +150,7 @@ class Api::V1::InspectionsController < Api::ApiController
             case change_type
             when 'ADD', 'UPDATE'
               spp = StreambedProfilePoint.find_by_guid(spp_guid)
-              clean_params[:profile] = spp_parent if spp_parent
+              clean_params[:streambed_profile] = spp_parent if spp_parent
               if spp
                 spp.update!(clean_params)
               else
