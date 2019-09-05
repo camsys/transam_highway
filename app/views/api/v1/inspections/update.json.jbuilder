@@ -25,10 +25,6 @@ json.images do
   json.partial! 'api/v1/images/image', collection: @inspection.images, as: :image
 end
 
-json.documents do 
-  json.partial! 'api/v1/documents/document', collection: @inspection.documents, as: :document
-end
-
 json.streambed_profile do
   json.partial! 'api/v1/streambed_profiles/listing', streambed_profile: @inspection.streambed_profile
 end
