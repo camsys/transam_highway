@@ -118,8 +118,8 @@ class Api::V1::InspectionsController < Api::ApiController
             case change_type
             when 'ADD', 'UPDATE'
               sp = StreambedProfile.find_by_guid(sp_guid)
-              clean_params[:highway_structure] = sp_parent if sp_parent
-              clean_params[:inspection] = sp_inspection if sp_inspection
+              clean_params[:transam_asset_id] = sp_parent.id if sp_parent
+              clean_params[:inspection_id] = sp_inspection.id if sp_inspection
               if sp
                 sp.update!(clean_params)
               else

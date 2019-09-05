@@ -13,10 +13,11 @@ class StreambedProfile < ApplicationRecord
 
   def self.allowable_params
     [
-        :transam_asset_id,
-        :date,
-        :year,
-        :water_level
+      :transam_asset_id,
+      :inspection_id,
+      :date,
+      :year,
+      :water_level
     ]
   end
 
