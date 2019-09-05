@@ -66,7 +66,7 @@ class InspectionsController < TransamController
       if @inspection.update!(typed_inspection_params(@inspection))
 
         # do any automatic workflow transitions that are allowed
-        (@inspection.class.automatic_transam_workflow_transitions && @inspection.allowable_events).each do |transition|
+        (Inspection.automatic_transam_workflow_transitions && @inspection.allowable_events).each do |transition|
           if @inspection.machine.fire_state_event(transition)
             WorkflowEvent.create(creator: current_user, accountable: @inspection, event_type: transition)
           end
