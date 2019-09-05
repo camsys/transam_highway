@@ -16,3 +16,13 @@
   .tab-pane.fade.in#schedule
     = render 'inspections/schedule'
 
+:javascript
+
+  $(document).ready(function() {
+    disabled = "#{(cannot? :update, @inspection.inspection) ? 'disable' : ''}";
+    if (disabled.length > 0) {
+      $('#notes .editable-field').editable(disabled);
+      $('#schedule .editable-field').editable(disabled);
+    }
+  });
+

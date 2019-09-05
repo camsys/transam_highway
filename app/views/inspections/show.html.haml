@@ -83,7 +83,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-details'}Inspection Details
-          = render partial: 'xeditable_edit_actions', locals: {obj: @inspection, allowed_to_edit: (can? :update, @inspection.inspection)}
+          = render partial: 'xeditable_edit_actions', locals: {obj: @inspection, allowed_to_edit: ((can? :update, @inspection.inspection) || (['ready', 'assigned'].include? @inspection.state))}
       #collapse-details.panel-collapse.collapse.in
         .panel-body
           = render 'details'
