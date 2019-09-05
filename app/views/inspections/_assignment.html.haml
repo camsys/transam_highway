@@ -1,18 +1,7 @@
-%legend
-  Inspector Assignment
-
 .row
   .col-sm-4.col-md-2
-    - if ['ready', 'assigned'].include? @inspection.state
-      - available_inspectors = @inspection.assigned_organization ? @inspection.assigned_organization.users.active.with_role(:inspector).map{|r| [r.id, r.to_s]} : []
-      = editable_asset_association_tag(@inspection, :inspectors, 'Inspectors', available_inspectors, type: 'checklist', suffix: '_ids')
-    - else
-      %label.control-label Inspectors
-      .display-value
-        - @inspection.inspectors.map(&:to_s).each_with_index do |insp_name, idx|
-          - unless idx == 0
-            %br
-          = insp_name
+    - available_inspectors = @inspection.assigned_organization ? @inspection.assigned_organization.users.active.with_role(:inspector).map{|r| [r.id, r.to_s]} : []
+    = editable_association_tag(@inspection, :inspectors, 'Inspectors', available_inspectors, type: 'checklist', model_name: 'Inspection', suffix: '_ids')
 
   .col-sm-6.col-md-3
     - inspector_collection = @inspection.inspectors.map{|r| [r.id, r.to_s]}
