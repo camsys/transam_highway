@@ -128,6 +128,7 @@ class Api::V1::InspectionsController < Api::ApiController
                   raise ActiveRecord::Rollback
                 end
                 clean_params["guid"] = sp_guid
+                clean_params[:is_from_api] = true
                 StreambedProfile.create!(clean_params)
               end
             when 'REMOVE'

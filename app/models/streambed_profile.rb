@@ -2,8 +2,10 @@ class StreambedProfile < ApplicationRecord
 
   include TransamObjectKey
 
+  attr_accessor :is_from_api
+  
   before_create :set_defaults
-  after_create :create_streambed_profile_points
+  after_create :create_streambed_profile_points, unless: :is_from_api
 
   belongs_to :bridge_like, foreign_key: :transam_asset_id
   belongs_to :inspection
