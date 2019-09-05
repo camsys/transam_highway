@@ -5,7 +5,7 @@
   .col-sm-4.col-md-2
     - if ['ready', 'assigned'].include? @inspection.state
       - available_inspectors = @inspection.assigned_organization ? @inspection.assigned_organization.users.active.with_role(:inspector).map{|r| [r.id, r.to_s]} : []
-      = editable_asset_association_tag(@inspection, :inspectors, 'Inspectors', available_inspectors, type: 'checklist', suffix: '_ids')
+      = editable_association_tag(@inspection, :inspectors, 'Inspectors', available_inspectors, type: 'checklist', suffix: '_ids')
     - else
       %label.control-label Inspectors
       .display-value
