@@ -267,8 +267,8 @@ class Api::V1::InspectionsController < Api::ApiController
             if mi_params[:highway_structure_id]
               mi_parent = HighwayStructure.find_by(guid: mi_params[:highway_structure_id])
             end
-            if mi_params[:priority_type]
-              mi_priority = MaintenancePriorityType.find_by(name: mi_params[:priority_type])
+            if mi_params[:priority]
+              mi_priority = MaintenancePriorityType.find_by(name: mi_params[:priority])
             end
             if mi_params[:status]
               mi_state = mi_params[:status] if MaintenanceServiceOrder.state_machine.states[mi_params[:status]]
