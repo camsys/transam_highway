@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_25_162632) do
+ActiveRecord::Schema.define(version: 2019_08_22_101327) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(version: 2019_07_25_162632) do
     t.string "document", limit: 128
     t.string "original_filename", limit: 128
     t.integer "created_by_id"
+    t.bigint "updated_by_id"
     t.integer "total_cost"
     t.index ["asset_event_type_id"], name: "asset_events_idx3"
     t.index ["asset_id"], name: "asset_events_idx2"
@@ -124,6 +125,7 @@ ActiveRecord::Schema.define(version: 2019_07_25_162632) do
     t.index ["created_by_id"], name: "asset_events_creator_idx"
     t.index ["event_date"], name: "asset_events_idx4"
     t.index ["object_key"], name: "asset_events_idx1"
+    t.index ["updated_by_id"], name: "index_asset_events_on_updated_by_id"
     t.index ["upload_id"], name: "asset_events_idx5"
   end
 
@@ -1459,6 +1461,7 @@ ActiveRecord::Schema.define(version: 2019_07_25_162632) do
     t.float "milepoint"
     t.string "facility_carried"
     t.string "features_intersected"
+    t.float "lrs_reference_point"
     t.index ["functional_class_id"], name: "index_roadways_on_functional_class_id"
     t.index ["guid"], name: "index_roadways_on_guid"
     t.index ["object_key"], name: "index_roadways_on_object_key"
