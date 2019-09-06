@@ -1,7 +1,7 @@
 class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
-  before_action :set_inspection, only: [:show, :edit, :update, :destroy]
+  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
 
   INDEX_KEY_LIST_VAR    = "inspection_key_list_cache_var"
   INSPECTION_SEARCH_PROXY_CACHE_VAR    = "inspection_proxy_cache_var"
@@ -45,6 +45,10 @@ class InspectionsController < TransamController
   def edit
   end
 
+  def allowed_to_finalize
+
+  end
+
   # POST /inspections
   def create
     @inspection = Inspection.new(inspection_params)
@@ -60,6 +64,13 @@ class InspectionsController < TransamController
   def update
     respond_to do |format|
       if @inspection.update!(typed_inspection_params(@inspection))
+
+        # do any automatic workflow transitions that are allowed
+        (Inspection.automatic_transam_workflow_transitions & @inspection.allowable_events).each do |transition|
+          if @inspection.machine.fire_state_event(transition)
+            WorkflowEvent.create(creator: current_user, accountable: @inspection, event_type: transition)
+          end
+        end
         notify_user(:notice, "Inspection was successfully updated.")
         format.html { redirect_to inspection_path(@inspection.object_key) }
         format.json { head :no_content }

@@ -62,3 +62,9 @@ end
 json.roadbed_lines do
   json.partial! 'api/v1/roadbed_lines/listing', collection: @roadbed_lines, as: :roadbed_line
 end
+
+if @highway_structures&.first.respond_to? :maintenance_history
+  json.maintenance_items do
+    json.partial! 'api/v1/maintenance_items/listing', collection: @maintenance_items, as: :maintenance_item
+  end
+end

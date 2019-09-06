@@ -12,7 +12,7 @@
 
       = f.input :transam_asset_id, as: :hidden, input_html: {value: @streambed_profile.transam_asset_id}
 
-      = f.input :year, required: true
+      = f.input :year, as: :select, collection: @years, required: true
 
       = f.button :submit, 'Save', :class => 'btn btn-primary'
       %button.btn.btn-warning#cancel_streambed_profile_form{type: 'button'}

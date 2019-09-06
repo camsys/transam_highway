@@ -5,7 +5,7 @@ class Roadbed < ApplicationRecord
   has_many :roadbed_lines, dependent: :destroy
 
   validates :name, presence: true
-  validates :direction, presence: true
+  # validates :direction, presence: true
   validates :number_of_lines, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :roadway, presence: true
 

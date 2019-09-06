@@ -1,0 +1,75 @@
+# coding: utf-8
+class Add6XxElementDefs < ActiveRecord::DataMigration
+  def up
+    AssemblyType.find_or_create_by!({name: 'Ancillary', active: true})
+
+    element_definitions = [
+      # Misc "new" elements
+      {number: 14, is_nbe: 'Y', mat_key: '7', short_name: 'PrecastDkPnl',
+       long_name: 'Precast Deck Panel with CIP Topping',
+       quantity_unit: 'each', assembly_type: 'Deck'},
+      {number: 59, is_nbe: 'Y', mat_key: '7', long_name: 'Soffit',
+       quantity_unit: 'each', assembly_type: 'Deck'},
+      {number: 260, mat_key: '6', short_name: 'Slope Prot Berm',
+       long_name: 'Slope Protection or Berm', quantity_unit: 'each'},
+      {number: 326, mat_key: '0', long_name: 'Wingwall', quantity_unit: 'each'},
+      {number: 335, mat_key: '6', long_name: 'Headwall', quantity_unit: 'each'},
+      {number: 342, mat_key: '6', long_name: 'Sign Attachment', quantity_unit: 'each'},
+      {number: 343, mat_key: '6', long_name: 'Pole Attachment', quantity_unit: 'each'},
+      {number: 372, mat_key: '9', long_name: 'FalseBent SmFlag', quantity_unit: 'each'},
+      
+      # 6XX elements
+{number: 600, is_nbe: 'Y', is_protective: false, mat_key: '0', long_name: 'General Remarks', quantity_unit: 'each', description: 'This element is used for general remarks about the bridge, conditions in the general area of the bridge, history of the bridge from local property owners, etc. as well as to be used as a continuation of narratives of condition elements.', assembly_type: 'Ancillary'},
+{number: 601, is_nbe: 'Y', is_protective: false, mat_key: '4', long_name: 'Foundation', quantity_unit: 'each', description: 'This element defines the condition of concrete foundations.  These may be concrete caissons, concrete traffic barriers, and rectangular or other formed concrete.  Assign condition ratings on the overall condition of the foundation(s) and ability to function properly.  The condition of grout pads, if present, shall be in-cluded in this element.', assembly_type: 'Ancillary'},
+{number: 602, is_nbe: 'Y', is_protective: false, mat_key: '2', short_name: 'Painted Monotubes', long_name: 'Steel - Painted Monotubes', quantity_unit: 'each', assembly_type: 'Ancillary'},
+{number: 603, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Unpainted Truss', long_name: 'Steel - Unpainted Horizontal Trusses', description: '', assembly_type: 'Ancillary'},
+{number: 604, is_nbe: 'Y', is_protective: false, mat_key: '2', short_name: 'Painted Trusses', long_name: 'Steel - Painted Horizontal Trusses', description: '', assembly_type: 'Ancillary'},
+{number: 605, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Unpainted Column', long_name: 'Steel - Unpainted Column', description: '', assembly_type: 'Ancillary'},
+{number: 606, is_nbe: 'Y', is_protective: false, mat_key: '2', short_name: 'Painted Column', long_name: 'Steel - Painted Column', description: '', assembly_type: 'Ancillary'},
+{number: 607, is_nbe: 'Y', is_protective: false, mat_key: '3', short_name: 'P/S Conc. Column', long_name: 'P/S Concrete Column', description: '', assembly_type: 'Ancillary'},
+{number: 608, is_nbe: 'Y', is_protective: false, mat_key: '4', long_name: 'Concrete Column', description: '', assembly_type: 'Ancillary'},
+{number: 609, is_nbe: 'Y', is_protective: false, mat_key: '4', long_name: 'Concrete Caison', description: '', assembly_type: 'Ancillary'},
+{number: 610, is_nbe: 'Y', is_protective: false, mat_key: '1', long_name: 'Anchor Bolts', description: 'This element defines the condition of anchor bolts, top nuts, leveling nuts, and washers that secure the base plate to the foundation. The nuts and bolts may be painted or unpainted.   Mention of the condition of the protective coating, such as paint, in the condition states below is for guidance only.  The protective coating of the structure is rated in the coating elements 650-652.', assembly_type: 'Ancillary'},
+{number: 611, is_nbe: 'Y', is_protective: false, mat_key: '1', long_name: 'Base Plate', description: 'This element defines the base plates supporting the structure.  The anchor bolts connecting the base plate to the foundation are evaluated in Element 601-Anchor Bolts.  The welds attaching the pole to the base plate and the gusset plate welds are evaluated in the Element (612) - Base Weld/Gusset Weld.', assembly_type: 'Ancillary'},
+{number: 612, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Base/Gusset Welds', long_name: 'Base Weld, Gusset Welds', description: 'This element defines the welds at the base of the pole connecting the pole to the base plate and the gusset plates to the pole and base plate.  Evaluate all of the welds as a unit.  Fatigue cracks, if present, are eva-luated in Smart Flag Element 693 – Fatigue.  The condition of the protective system, if any, is eva-luated in Elements 650-652.', assembly_type: 'Ancillary'},
+{number: 613, is_nbe: 'Y', is_protective: false, mat_key: '2', short_name: 'Conc.GuardRail Prot.', long_name: 'Concrete Guard Railing Protection', description: '', assembly_type: 'Ancillary'},
+{number: 614, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'MetalGuardRail Prot.', long_name: 'Metal Guard Railing Protection', description: '', assembly_type: 'Ancillary'},
+{number: 615, is_nbe: 'Y', is_protective: false, mat_key: '2', long_name: 'Steel - Fatigue', description: '', assembly_type: 'Ancillary'},
+{number: 616, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Sgn/Sig BoltSplicePa', long_name: 'Steel Sign and Signal Str.-Bolted Splice Conn.-Pai', description: '', assembly_type: 'Ancillary'},
+{number: 617, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Sgn/Sig BoltSpliceUn', long_name: 'Steel Sign and Signal Str.-Bolted Splice Conn.-Unp', description: '', assembly_type: 'Ancillary'},
+{number: 618, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Sgn/Sig WeldedConnPa', long_name: 'Steel Sign and Signal Str.-Welded. Conn.-Painted', description: '', assembly_type: 'Ancillary'},
+{number: 619, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Sgn/Sig WeldedConnUn', long_name: 'Steel Sign and Signal Str.-Welded. Conn.-Unpainted', description: '', assembly_type: 'Ancillary'},
+{number: 620, is_nbe: 'Y', is_protective: false, mat_key: '1', long_name: 'Column - Steel', description: 'This element includes the vertical posts/columns, handhole covers, and caps for the column supports of the structure.  The element components may be painted/unpainted/galvanized/weathering steel or aluminum.  Any mention of the condition of protective coatings is for guidance only.  Protective coatings are evaluated in Elements 650-651.', assembly_type: 'Ancillary'},
+{number: 621, is_nbe: 'Y', is_protective: false, mat_key: '3', short_name: 'Column P/S Conc', long_name: 'Column - Prestressed Concrete', description: 'This element defines the condition states of prestressed concrete columns.', assembly_type: 'Ancillary'},
+{number: 622, is_nbe: 'Y', is_protective: false, mat_key: '4', short_name: 'Column R/C', long_name: 'Column - Reinforced Concrete', description: 'This element defines the condition states of mildly reinforced concrete columns.', assembly_type: 'Ancillary'},
+{number: 630, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Bolt Upr Conn/Splice', long_name: 'Bolted Upper Connection and Splice', description: 'This element defines those bolted connections that connect portions of the sign, signal, or high-mast light structure together, e.g. the connection of the horizontal members to the pole and horizontal splices in frame members.  Reference to the coating system is for guidance only; the condition of the coating system is ad-dressed in Elements 650, 651, and 652.  Refer to Appendix F for additional guidelines for coding this item with regard to loose bolts, not fully engaged nuts, and gaps between connecting flange plates.', assembly_type: 'Ancillary'},
+{number: 631, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Weld Upr Conn/Splice', long_name: 'Welded Upper Connection and Splice', description: 'This element defines those welded connections, including gusset plates, which connect portions of the sign, signal, or high-mast light structure together.  These include welds attaching flange plates at bolted connec-tions to horizontal members of frame and signal mast arms; the welded assembly connecting horizontal members to the pole. Welds at the base are evaluated in Element 612.', assembly_type: 'Ancillary'},
+{number: 640, is_nbe: 'Y', is_protective: false, mat_key: '1', long_name: 'Frame/Mast Arm', description: 'This element defines the general condition of the horizontal frame (sometimes referred to as the frame, mast arm,  span arm, truss, etc.) supporting signal heads, sign panels or VMS message boards.  Reference to coatings in the condition state descriptions is for guidance purposes only.  The condition of coating is addressed in Elements 650, 651, and 652.', assembly_type: 'Ancillary'},
+{number: 650, is_nbe: 'Y', is_protective: false, mat_key: '6', short_name: 'Paint', long_name: 'Protective System - Paint', description: 'This element defines the condition of the paint protecting the metal on a structure.', assembly_type: 'Ancillary'},
+{number: 651, is_nbe: 'Y', is_protective: false, mat_key: '6', short_name: 'Galvanizing', long_name: 'Protective System - Galvanizing', description: 'This element defines the condition of the galvanized coating protecting the structure.', assembly_type: 'Ancillary'},
+{number: 652, is_nbe: 'Y', is_protective: false, mat_key: '6', short_name: 'Patina', long_name: 'Protective System - Weathering Steel Patina', description: 'This element defines the condition of protective patina on a weathering steel structure.', assembly_type: 'Ancillary'},
+{number: 660, is_nbe: 'Y', is_protective: false, mat_key: '4', short_name: 'Gdrail Prot - Conc', long_name: 'Guardrail Protection - Concrete', description: 'This element defines the reinforced concrete railing that is specifically installed to protect the structure being inspected.  All elements of the rail must be concrete. Do not include this element if the rail is installed to separate traffic lanes such as along a median, to protect traffic from a nearby steep side slope, or other reason that is not specifically for protection of the sign, signal, or high-mast light. Concrete components mounted on concrete rails such as noise barriers, shall be considered part of this element.', assembly_type: 'Ancillary'},
+{number: 661, is_nbe: 'Y', is_protective: false, mat_key: '1', short_name: 'Gdrail Prot - Steel', long_name: 'Guardrail Protection - Steel', description: 'This element defines all types and shapes of metal railing.  Steel, aluminum, metal beam, rolled shapes, etc., will all be considered part of this element.  Rail posts may be either timber or steel. Do not include this element if the rail is installed to separate traffic lanes such as along a median, to protect traffic from a nearby steep side slope, or other reason that is not specifically for protection of the sign, signal, or high-mast light.', assembly_type: 'Ancillary'},
+{number: 662, is_nbe: 'Y', is_protective: false, mat_key: '6', long_name: 'Sign Lighting', description: 'This element defines lighting fixtures attached to sign structures for the purpose of illuminating the sign panels.  The lighting may be of any configuration or type.  This element does not address whether the light-ing fixtures are operational, or not, but only documents if they are present and their physical condition.  Do not count the numbers of fixtures.', assembly_type: 'Ancillary'},
+{number: 663, is_nbe: 'Y', is_protective: false, mat_key: '1', long_name: 'Steel Catwalk', description: 'This element defines the walkway structure intended to provide access to the sign for maintenance and repair.  Painted, galvanized and weathering steel catwalks are all included in this element.  Report the linear feet of catwalk in each of Condition States 2 through 4.  The number of units in Condition State 1 will be the remainder of the units after deducting from the total quantity those linear feet reported in Condition States 2 through 4.', assembly_type: 'Ancillary'},
+{number: 690, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Arm/Frame', long_name: 'Traffic Impact - Signal Mast Arm or Sign Frame', description: 'This smart flag addresses damage to signal mast arm or sign frame elements caused by traffic impact.', assembly_type: 'Ancillary'},
+{number: 691, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Pole/Col', long_name: 'Traffic Impact - Poles/Columns', description: 'This smart flag addresses damage to signal poles or sign poles caused by traffic impact.', assembly_type: 'Ancillary'},
+{number: 692, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Guardrail', long_name: 'Traffic Impact - Guardrail', description: 'This smart flag addresses traffic impact damage to the guardrail system that protects signal poles and sign poles.', assembly_type: 'Ancillary'},
+{number: 693, is_nbe: 'Y', is_protective: false, mat_key: '9', long_name: 'Fatigue', description: 'This element is used to record fatigue damage discovered on any of the steel structural elements of a sign, signal, or high-mast light.   Once recorded, do not exclude this element from future inspections but continue to record the Condition State using the definitions below. Use this element only on those signs, signals, and high-mast lights with steel elements that are indicating fatigue damage.   Fatigue damage may be determined either through visual or non-destructive testing methods.  Indicate the method used to discover the fatigue in the notes section of this element. Do not use this element on steel signs or signals prior to fatigue damage becoming apparent.', assembly_type: 'Ancillary'},
+{number: 694, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Critical Finding', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.', assembly_type: 'Ancillary'}
+    ]
+    table_name = 'element_definitions'
+    data = eval(table_name)
+    klass = table_name.classify.constantize
+    data.each do |row|
+      x = klass.new(row.except(:is_nbe, :cat_key, :type_key, :mat_key, :assembly_type))
+      x.short_name = row[:long_name] unless row[:short_name].present?
+      x.element_material = ElementMaterial.find_by(code: row[:mat_key])
+      x.element_classification = 
+        ElementClassification.find_by(name: row[:is_nbe] == 'Y' ? 'NBE' : 'BME')
+      x.assembly_type = row[:assembly_type] ? AssemblyType.find_by(name: row[:assembly_type]) : AssemblyType.find_by(name: 'Other')
+      x.save!
+    end
+
+  end
+end

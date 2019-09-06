@@ -29,6 +29,10 @@ Rails.application.routes.draw do
       get 'reset'
       post 'new_search'
     end
+
+    member do
+      get 'allowed_to_finalize'
+    end
   end
 
   resources :streambed_profiles do
@@ -63,12 +67,26 @@ Rails.application.routes.draw do
       get 'defect_definitions' => 'defect_definitions#index'
       get 'element_definitions' => 'element_definitions#index'
 
-      resources :inspections, only: [:index, :update]
+      resources :inspections, only: [:index, :update] do
+        resources :images
+        resources :documents
+      end
 
       resources :bridges
       resources :culverts
-      resources :highway_structures
+      resources :highway_structures, except: [:index, :update]
+      resources :highway_structures, only: [:index, :update] do
+        resources :images
+        resources :documents
+      end
       resources :streambed_profiles
+
+      resources :elements, only: [:index, :update] do
+        resources :images
+      end
+      resources :defects, only: [:index, :update] do
+        resources :images
+      end
     end
   end
 

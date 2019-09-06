@@ -26,7 +26,8 @@ class Inspection < InspectionRecord
   has_many :parent_elements,  -> { where(parent_element_id: nil) }, class_name: 'Element'
 
   has_one :streambed_profile, dependent: :destroy
-
+  has_many :roadbed_lines, dependent: :destroy
+  
   # Each asset has zero or more images. Images are deleted when the asset is deleted
   has_many    :images,      :as => :imagable,       :dependent => :destroy
 
@@ -56,7 +57,13 @@ class Inspection < InspectionRecord
         inspection = inspection.specific
 
         typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
-        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if eval("defined?(#{typed_asset.class}Condition)")
+        class_exists = begin
+          klass = Module.const_get("#{typed_asset.class}Condition")
+          klass.is_a?(Class)
+        rescue NameError
+          false
+        end
+        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if class_exists
       end
 
       inspection
@@ -70,13 +77,13 @@ class Inspection < InspectionRecord
   def self.transam_workflow_transitions
     [
 
-        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+        {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'make_ready', from_state: 'assigned', to_state: 'ready', guard: {open: :allowed_to_make_ready, assigned: :allowed_to_unassign}, can: {open: :can_make_ready, assigned: :can_assign}, human_name: 'To Ready'},
+        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', guard: :allowed_to_unassign, can: :can_assign, human_name: 'To Ready'},
 
-        {event_name: 'assign', from_state: 'ready', to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
+        {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
@@ -94,8 +101,13 @@ class Inspection < InspectionRecord
 
         {event_name: 'sign', from_state: ['submitted', 'qa_review'], to_state: 'signature_ready', can: :can_submit, human_name: 'To Ready for Signature'},
 
-        {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
+        {event_name: 'finalize', from_state: 'signature_ready', to_state: 'final', guard: :allowed_to_finalize, can: :can_finalize, after: :open_new_inspection, human_name: 'To Final'},
     ]
+  end
+
+  # transitions that should happen automatically when you update an inspection (through the detail page) as long as all the conditions are meh
+  def self.automatic_transam_workflow_transitions
+    ['reopen', 'unassign']
   end
 
   def as_json(options={})
@@ -152,6 +164,12 @@ class Inspection < InspectionRecord
     inspectors.count > 0
   end
 
+  def allowed_to_finalize
+    typed_inspection = Inspection.get_typed_inspection(self)
+    inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
+
+  end
+
   def can_make_ready(user)
     can_all(user) || user.has_role?(:manager)
   end
@@ -161,7 +179,7 @@ class Inspection < InspectionRecord
   end
   
   def can_assign(user)
-    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
+    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
   end
 
   def can_sync(user)

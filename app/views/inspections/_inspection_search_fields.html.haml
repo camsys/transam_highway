@@ -1,6 +1,12 @@
+:css
+  hr {
+    margin-top: -10px;
+    margin-bottom: 0;
+  }
+
 :ruby
   inspectors = []
-  current_user.organizations.each do |x|
+  Organization.all.each do |x|
     inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
   end
 
@@ -51,7 +57,33 @@
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 
 .col-sm-3
-  = f.input :state, as: :check_boxes, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}, label: reference_label('inspections', 'state', 'Inspection Status')
+  %label.control-label
+    = reference_label('inspections', 'state', 'Inspection Status')
+  %span.checkbox
+    %label
+      = check_box_tag 'pre', 'all_pre', @search_proxy.state && ["open", "ready", "assigned"].all?{|s| @search_proxy.state.include?(s)}, class: 'all_state'
+      %strong= 'Pre-Inspection'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'pre_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["Open", "Ready", "Assigned"].include? r[0]}, label: false
+  %span.checkbox
+    %label
+      = check_box_tag 'field', 'all_field', @search_proxy.state && ["in_field", "in_progress", "field_work_complete"].all?{|s| @search_proxy.state.include?(s)}, class: 'all_state'
+      %strong= 'In Field'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'field_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["In Field", "In Progress", "Field Work Complete"].include? r[0]}, label: false
+  %span.checkbox
+    %label
+      = check_box_tag 'office', 'all_office', @search_proxy.state && ["draft_report", "qc_review", "submitted", "qa_review", "signature_ready"].all?{|s| @search_proxy.state.include?(s)}, class: 'all_state'
+      %strong= 'In Office'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'office_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| ["Draft Report", "QC Review", "Submitted", "QA Review", "Signature Ready"].include? r[0]}, label: false
+  %span.checkbox
+    %label
+      = check_box_tag 'historical', 'all_historical', @search_proxy.state && ["final"].all?{|s| @search_proxy.state.include?(s)}, class: 'all_state'
+      %strong= 'Historical'
+  %hr
+  = f.input :state, as: :check_boxes, input_html: {class: 'historical_state_selection state_select'}, collection: Inspection.new.machine.definition.states.map{|r| [r.human_name[0] == r.human_name[0].downcase ? r.human_name.titleize : r.human_name, r.value]}.select{|r| r[0] == "Final"}, label: false
+
 
 .col-sm-3
   = f.input :inspection_type_id, as: :check_boxes, collection: InspectionType.active, label: reference_label('inspections', 'inspection_type_id', 'Inspection Type')
@@ -118,5 +150,32 @@
     update_inspection_teams_by_group("#{@search_proxy.organization_type_id}", 'inspection_proxy_assigned_organization_id');
     update_inspectors_by_team("#{@search_proxy.assigned_organization_id}");
 
+    $('.all_state').on("click", function(event) {
+      var state_type = this.id;
+      var section_class = '.'.concat(state_type, '_state_selection')
+      var boxes = $(section_class);
+      if($(this).prop("checked")){
+        boxes.prop("checked", true);
+      } else {
+        boxes.prop("checked", false);
+      }
+    });
 
+    $('.state_select').on('click', function(){
+      var section_class = $(this).attr("class").split(" ").find(function(c){return c.includes("state_selection");});
+
+      var AllCategoryChecked = function(){
+        return $(".".concat(section_class)).toArray().every(function(box){
+          return $(box).prop("checked");
+        });
+      };
+
+      if(AllCategoryChecked()) {
+        $("#".concat(section_class.split("_")[0])).prop("checked", true);
+      } else {
+        $("#".concat(section_class.split("_")[0])).prop("checked", false);
+      }
+    });
+
+    $('.state_select').parent().css("margin-left", "20px");
   });

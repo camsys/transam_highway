@@ -82,8 +82,26 @@
     .panel.panel-default.editable-fields-container
       .panel-heading
         %h3.panel-title
+          %a{data: {toggle: 'collapse'}, href: '#collapse-assignment'}Inspector Assignment
+          - allowed_to_assign = ((['ready', 'assigned'].include? @inspection.state) || @inspection.updatable?) || (can? :assign, @inspection.inspection)
+          = render partial: 'xeditable_edit_actions', locals: {obj: @inspection, allowed_to_edit: allowed_to_assign}
+      #collapse-assignment.panel-collapse.collapse.in
+        .panel-body
+          %ul.nav.nav-tabs
+            %li.active
+              %a{:href => '#assignment', :data =>{:toggle => 'tab'}}
+                Assignment
+          .tab-content{style: 'min-height: 100px;'}
+            .tab-pane.fade.in.active#assignment
+              = render 'inspections/assignment'
+
+.row
+  .col-sm-12
+    .panel.panel-default.editable-fields-container
+      .panel-heading
+        %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-details'}Inspection Details
-          = render partial: 'xeditable_edit_actions', locals: {obj: @inspection, allowed_to_edit: (can? :update, @inspection.inspection)}
+          = render partial: 'xeditable_edit_actions', locals: {obj: @inspection, allowed_to_edit: (can? :update, @inspection.inspection) }
       #collapse-details.panel-collapse.collapse.in
         .panel-body
           = render 'details'

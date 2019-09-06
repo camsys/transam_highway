@@ -1,17 +1,12 @@
 %ul.nav.nav-tabs
   %li.active
-    %a{:href => '#assignment', :data =>{:toggle => 'tab'}}
-      Assignment
-  %li
     %a{:href => '#notes', :data =>{:toggle => 'tab'}}
       Notes
   %li
     %a{:href => '#schedule', :data =>{:toggle => 'tab'}}
       Schedule
 .tab-content{style: 'min-height: 100px;'}
-  .tab-pane.fade.in.active#assignment
-    = render 'inspections/assignment'
-  .tab-pane.fade.in#notes
+  .tab-pane.fade.in.active#notes
     = render 'inspections/notes'
   .tab-pane.fade.in#schedule
     = render 'inspections/schedule'

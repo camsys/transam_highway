@@ -10,6 +10,10 @@ class StreambedProfilesController < ApplicationController
     @streambed_profile = StreambedProfile.new
 
     @streambed_profile.transam_asset_id = BridgeLike.find_by(object_key: params[:transam_asset_id]).id if params[:transam_asset_id]
+
+    existing_profile_years = @streambed_profile.bridge_like&.streambed_profiles&.map{|p| p.year}
+
+    @years = @streambed_profile.bridge_like&.inspections&.select{|i| i.state == "final"}&.map{|i| i.calculated_inspection_due_date.year}&.select{|y| !existing_profile_years.include?(y)}&.sort&.reverse
   end
 
   # GET /streambed_profiles/1/edit
