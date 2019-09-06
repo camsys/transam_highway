@@ -179,7 +179,7 @@ class Inspection < InspectionRecord
   end
   
   def can_assign(user)
-    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.users || []).include?(user))
+    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
   end
 
   def can_sync(user)
