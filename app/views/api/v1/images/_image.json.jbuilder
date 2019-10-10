@@ -16,7 +16,8 @@ else
   json.inspection_id nil
 end
 
-json.(image, :object_key, :description, :latitude, :longitude, :condition_state, :is_primary)
+json.(image, :object_key, :description, :latitude, :longitude, :condition_state, :is_primary,
+      :image_classification_id)
 json.file_name image.image.file.filename
 json.original_file_name image.original_filename
 json.url image.image.try(:url)
@@ -27,6 +28,5 @@ if defined? image.image.constrained
     json.constrained_url image.image&.url
   end
 end
-json.category image.image_classification&.name
 json.direction image.compass_point
 json.datetime image.created_at

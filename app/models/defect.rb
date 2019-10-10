@@ -22,4 +22,11 @@ class Defect < ApplicationRecord
       :notes
     ]
   end
+
+  def as_json
+    super.merge!({
+                   "defect_number" => defect_definition.number,
+                   "element_number" => element.element_definition.number
+                 })
+  end
 end
