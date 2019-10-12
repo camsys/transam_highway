@@ -7,6 +7,7 @@ class Defect < ApplicationRecord
   belongs_to :inspection
   has_one :highway_structure, through: :inspection
   has_many :images, as: :imagable, dependent: :destroy
+  has_many :defect_locations, dependent: :destroy
 
   scope :ordered, -> { joins(:defect_definition).merge(DefectDefinition.order(:number)) }
 
