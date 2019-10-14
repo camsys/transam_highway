@@ -6,7 +6,6 @@ class DefectLocation < ApplicationRecord
 
   def self.allowable_params
     [
-        :defect_id,
         :quantity,
         :location_description,
         :location_distance,

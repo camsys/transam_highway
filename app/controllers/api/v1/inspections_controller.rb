@@ -102,6 +102,37 @@ class Api::V1::InspectionsController < Api::ApiController
           end
         end
 
+        if params[:defect_locations] && params[:defect_locations].any?
+          params[:defect_locations].each do |dl_params|
+            change_type = dl_params[:sync_change_type]&.upcase
+
+            clean_params = dl_params.permit(DefectLocation.allowable_params).to_h
+            dl_guid = dl_params[:id]
+            if dl_params[:defect_id]
+              dl_parent = Defect.find_by_guid(dl_params[:defect_id])
+            end
+
+            case change_type
+            when 'ADD', 'UPDATE'
+              dl = DefectLocation.find_by_guid(dl_guid)
+              clean_params[:defect] = dl_parent if dl_parent
+              if dl
+                dl.update!(clean_params)
+              else
+                if dl_guid.blank?
+                  @dl_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = dl_guid
+                DefectLocation.create!(clean_params)
+              end
+            when 'REMOVE'
+              dl = DefectLocation.find_by_guid(dl_guid)
+              dl.destroy! if dl
+            end
+          end
+        end
+
         if params[:streambed_profiles] && params[:streambed_profiles].any?
           params[:streambed_profiles].each do |sp_params|
             change_type = sp_params[:change_type]&.upcase
@@ -342,6 +373,13 @@ class Api::V1::InspectionsController < Api::ApiController
       render status: 400, json: json_response(:error, message: @message)
     end
 
+    # defect location guid is required to add a new defect location
+    if @dl_guid_required_to_add
+      @status = :error
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect location data"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+
     # streambed profile guid is required to add a new streambed profile
     if @sp_guid_required_to_add
       @status = :error
@@ -397,6 +435,7 @@ class Api::V1::InspectionsController < Api::ApiController
     query_culvert_conditions
     query_elements
     query_defects
+    query_defect_locations
     query_roadways
     query_images
     query_documents
@@ -456,6 +495,10 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_defects
     @defects = Defect.where(inspection_id: @inspection_ids)
+  end
+
+  def query_defect_locations
+    @defect_locations = DefectLocation.where(defect: @defects)
   end
 
   def query_roadways

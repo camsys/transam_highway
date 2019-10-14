@@ -12,6 +12,10 @@ json.defects do
   json.partial! 'api/v1/defects/listing', collection: @defects, as: :defect
 end
 
+json.defect_locations do
+  json.partial! 'api/v1/defect_locations/listing', collection: @defect_locations, as: :defect_location
+end
+
 if @highway_structures
   json.structures do
     if @bridges

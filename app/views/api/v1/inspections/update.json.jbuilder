@@ -10,6 +10,10 @@ json.defects do
   json.partial! 'api/v1/defects/listing', collection: @inspection.elements.collect(&:defects).sum, as: :defect
 end
 
+json.defect_locations do
+  json.partial! 'api/v1/defect_locations/listing', collection: DefectLocation.where(defect: @inspection.elements.collect(&:defects).sum), as: :defect_location
+end
+
 case @inspection.highway_structure.asset_subtype.asset_type.name
 when "Bridge"
   json.bridge_conditions do
