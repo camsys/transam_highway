@@ -1,0 +1,2 @@
+class AncillaryStructure < BridgeLike
+end

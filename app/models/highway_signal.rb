@@ -1,0 +1,2 @@
+class HighwaySignal < AncillaryStructure
+end
