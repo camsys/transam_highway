@@ -719,6 +719,40 @@ defect_definitions_element_definitions = {
       7000 => nil
     }
 
+mast_arm_frame_types = [
+    {name: 'Single arm', code: 'SNGL ARM', active: true},
+    {name: 'Double-arm', code: 'DBL ARM', active: true},
+    {name: 'Double-arm truss', code: 'DBL ARM TRUSS', active: true},
+    {name: 'Box beam truss', code: 'BOX BEAM TRUSS', active: true},
+    {name: 'Triple arm', code: 'TRI ARM', active: true},
+    {name: 'Monotube', code: 'MONOTUBE', active: true},
+    {name: 'High-mast light', code: 'HML', active: true},
+    {name: 'Span wire', code: 'SPAN WIRE', active: true},
+    {name: 'Nonstandard', code: 'OTHER', active: true}
+]
+
+column_types = [
+    {name: 'Single tapered column', code: 'SNGTC', active: true},
+    {name: 'Single uniform column', code: 'SNGUC', active: true},
+    {name: 'Monotube column', code: 'MTUBE', active: true},
+    {name: 'Split monotube column', code: 'SPTBE', active: true},
+    {name: 'Double uniform column', code: 'DBLUC', active: true},
+    {name: 'Built-up column', code: 'BLTUC', active: true}
+]
+
+foundation_types = [
+    {name: 'Buried, not visible, or otherwise not accessible', code: '0', active: true},
+    {name: 'Caisson', code: '1', active: true},
+    {name: 'Median barrier wall', code: '2', active: true},
+    {name: 'Formed concrete, rectangle', code: '3', active: true},
+    {name: 'Formed concrete, round', code: '4', active: true},
+    {name: 'Other', code: '5', active: true}
+]
+
+upper_connection_types = [
+
+]
+
 merge_tables = %w{ organization_types asset_types asset_subtypes roles system_config_extensions }
 
 merge_tables.each do |table_name|
@@ -734,7 +768,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types inspection_programs maintenance_priority_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types inspection_programs maintenance_priority_types mast_arm_frame_types column_types foundation_types upper_connection_types
 }
 
 replace_tables.each do |table_name|

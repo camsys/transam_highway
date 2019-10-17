@@ -17,6 +17,10 @@ class BridgeLike < TransamAssetRecord
   belongs_to :bridge_posting_type
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
+  belongs_to :mast_arm_frame_type
+  belongs_to :column_type
+  belongs_to :foundation_type
+  belongs_to :upper_connection_type
 
   has_many :streambed_profiles, foreign_key: :transam_asset_id
 
@@ -57,7 +61,12 @@ class BridgeLike < TransamAssetRecord
     :operating_rating,
     :inventory_rating_method_type_id,
     :inventory_rating,
-    :bridge_posting_type_id
+    :bridge_posting_type_id,
+    :mast_arm_frame_type_id,
+    :column_type_id,
+    :foundation_type_id,
+    :upper_connection_type_id,
+    :maintenance_patrol
   ]
 
   CLEANSABLE_FIELDS = [
