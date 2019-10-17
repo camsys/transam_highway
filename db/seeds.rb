@@ -651,7 +651,21 @@ element_definitions = [
 {number: 691, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Pole/Col', long_name: 'Traffic Impact - Poles/Columns', description: 'This smart flag addresses damage to signal poles or sign poles caused by traffic impact.', assembly_type: 'Ancillary'},
 {number: 692, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Guardrail', long_name: 'Traffic Impact - Guardrail', description: 'This smart flag addresses traffic impact damage to the guardrail system that protects signal poles and sign poles.', assembly_type: 'Ancillary'},
 {number: 693, is_nbe: 'Y', is_protective: false, mat_key: '9', long_name: 'Fatigue', description: 'This element is used to record fatigue damage discovered on any of the steel structural elements of a sign, signal, or high-mast light.   Once recorded, do not exclude this element from future inspections but continue to record the Condition State using the definitions below. Use this element only on those signs, signals, and high-mast lights with steel elements that are indicating fatigue damage.   Fatigue damage may be determined either through visual or non-destructive testing methods.  Indicate the method used to discover the fatigue in the notes section of this element. Do not use this element on steel signs or signals prior to fatigue damage becoming apparent.', assembly_type: 'Ancillary'},
-{number: 694, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Critical Finding', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.', assembly_type: 'Ancillary'}
+{number: 694, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Critical Finding', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.', assembly_type: 'Ancillary'},
+# Misc "new" elements
+{number: 14, is_nbe: 'Y', mat_key: '7', short_name: 'PrecastDkPnl',
+ long_name: 'Precast Deck Panel with CIP Topping',
+ quantity_unit: 'each', assembly_type: 'Deck'},
+ {number: 59, is_nbe: 'Y', mat_key: '7', long_name: 'Soffit', short_name: 'Soffit',
+  quantity_unit: 'each', assembly_type: 'Deck'},
+ {number: 260, mat_key: '6', short_name: 'Slope Prot Berm',
+  long_name: 'Slope Protection or Berm', quantity_unit: 'each'},
+ {number: 326, mat_key: '0', long_name: 'Wingwall', short_name: 'Wingwall', quantity_unit: 'each'},
+ {number: 335, mat_key: '6', long_name: 'Headwall', short_name: 'Headwall', quantity_unit: 'each'},
+ {number: 342, mat_key: '6', long_name: 'Sign Attachment', short_name: 'Sign Attachment', quantity_unit: 'each'},
+ {number: 343, mat_key: '6', long_name: 'Pole Attachment', short_name: 'Pole Attachment', quantity_unit: 'each'},
+ {number: 372, mat_key: '9', long_name: 'FalseBent SmFlag', short_name: 'FalseBent SmFlag', quantity_unit: 'each'},
+
 ]
 
 inspection_programs = [
