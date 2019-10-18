@@ -1,6 +1,13 @@
 class AncillaryStructure < BridgeLike
 
-  has_many :ancillary_conditions, through: :inspections, source: :inspectionible, source_type: 'StructureCondition', class_name: 'AncillaryCondition'
+  belongs_to :mast_arm_frame_type
+  belongs_to :column_type
+  belongs_to :foundation_type
+  belongs_to :upper_connection_type
+
+  has_many :ancillary_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'AncillaryCondition'
+
+  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['HighMastLight', 'HigwaySign', 'HighwaySignal']})) }
 
   #-----------------------------------------------------------------------------
   # Instance Methods
@@ -14,6 +21,10 @@ class AncillaryStructure < BridgeLike
     self.save
   end
 
+  def inspection_class
+    AncillaryCondition
+  end
+  
   #-----------------------------------------------------------------------------
   # Class Methods
   #-----------------------------------------------------------------------------
@@ -28,6 +39,9 @@ class AncillaryStructure < BridgeLike
     inspection = AncillaryCondition.new(event_datetime: date, calculated_inspection_due_date: date,
                                         inspection_frequency: inspection_frequency, inspection_type: type,
                                         notes: hash['NOTES'], state: 'final')
+
+    inspection.ancillary_condition_type_id = AncillaryConditionType.where(code: hash['CULVRATING']).pluck(:id).first
+
     inspection.save!
     inspection
   end

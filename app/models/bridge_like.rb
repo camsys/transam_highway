@@ -17,10 +17,6 @@ class BridgeLike < TransamAssetRecord
   belongs_to :bridge_posting_type
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
-  belongs_to :mast_arm_frame_type
-  belongs_to :column_type
-  belongs_to :foundation_type
-  belongs_to :upper_connection_type
 
   has_many :streambed_profiles, foreign_key: :transam_asset_id
 
@@ -62,6 +58,7 @@ class BridgeLike < TransamAssetRecord
     :inventory_rating_method_type_id,
     :inventory_rating,
     :bridge_posting_type_id,
+    # AncillaryStructure, because not acts_as
     :mast_arm_frame_type_id,
     :column_type_id,
     :foundation_type_id,
@@ -901,4 +898,16 @@ class BridgeLike < TransamAssetRecord
       json
     end
   end
+
+  def inspection_class
+    typed_asset = TransamAsset.get_typed_asset(self)
+    begin
+      klass = Module.const_get("#{typed_asset.class}Condition")
+      return klass if klass.is_a?(Class)
+    rescue NameError
+      return nil
+    end
+    nil
+  end
+  
 end
