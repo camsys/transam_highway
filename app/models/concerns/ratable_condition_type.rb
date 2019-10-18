@@ -24,7 +24,11 @@ module RatableConditionType
   #-----------------------------------------------------------------------------
 
   def to_s
-    "#{code} - #{name}"
+    name
+  end
+
+  def name
+    "#{code} - #{self[:name]}"
   end
 
   # Return code as integer or nil
