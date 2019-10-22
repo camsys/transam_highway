@@ -28,6 +28,16 @@ module HighwayAssetMapSearchable
   private
 
   def highway_klass
+
+    bridge_like_classes = []
+    AssetType.all.each do |type|
+       temp = type.class_name.constantize
+       while temp.superclass.to_s != 'BridgeLike' && temp.superclass.to_s != 'TransamAsset'
+          temp = temp.superclass
+       end
+       bridge_like_classes << type.class_name if temp.superclass.to_s == 'BridgeLike'
+    end
+
     if asset_type_class_name == 'TransamAsset'
       # table alias being used to avoid the case when this table is being joined in another place
       join_sql = <<-SQL 
@@ -44,7 +54,7 @@ module HighwayAssetMapSearchable
       SQL
 
       @highway_klass ||= @klass.joins(join_sql)
-    elsif BridgeLike.subclasses.map{|klass| klass.to_s}.include? asset_type_class_name
+    elsif bridge_like_classes.include? asset_type_class_name
       @highway_klass = @klass.left_outer_joins(:service_on_type, :service_under_type, :highway_structure => [:region, :structure_status_type, :roadways])
     elsif asset_type_class_name == 'HighwayStructure'
       join_sql = <<-SQL 
