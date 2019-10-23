@@ -510,6 +510,7 @@ class Api::V1::InspectionsController < Api::ApiController
               .or(Image.where(imagable_type: 'Inspection', imagable_id: @inspection_ids))
               .or(Image.where(imagable_type: 'Element', imagable_id: @elements))
               .or(Image.where(imagable_type: 'Defect', imagable_id: @defects))
+              .or(Image.where(imagable_type: 'DefectLocation', imagable_id: @defect_locations))
   end
 
   def query_documents
