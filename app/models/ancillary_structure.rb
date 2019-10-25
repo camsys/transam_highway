@@ -7,7 +7,7 @@ class AncillaryStructure < BridgeLike
 
   has_many :ancillary_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'AncillaryCondition'
 
-  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['HighMastLight', 'HigwaySign', 'HighwaySignal']})) }
+  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['HighMastLight', 'HighwaySign', 'HighwaySignal']})) }
 
   #-----------------------------------------------------------------------------
   # Instance Methods
@@ -55,8 +55,12 @@ class AncillaryStructure < BridgeLike
     case struct_class_code
     when 'MASTARM SIGNAL'
       structure = HighwaySignal.find_or_initialize_by(asset_tag: asset_tag)
+    when 'SIGN'
+      structure = HighwaySign.find_or_initialize_by(asset_tag: asset_tag)
+    when 'HIGHMAST LIGHT'
+      structure = HighMastLight.find_or_initialize_by(asset_tag: asset_tag)
     else
-      # TODO: Try to determin based on struct_class_code
+      # TODO: Try to determine based on struct_class_code
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
     end
@@ -113,6 +117,7 @@ class AncillaryStructure < BridgeLike
       min_vertical_clearance_below: Uom.convert(hash['VCLRUNDER'].to_f, Uom::METER, Uom::FEET).round(NDIGITS),
 
       remarks: hash['NOTES'],
+      maintenance_patrol: '99',
       inspection_program: inspection_program,
       inspection_trip: inspection_trip,
       inspection_zone: inspection_zone,
@@ -162,5 +167,21 @@ class AncillaryStructure < BridgeLike
     structure.attributes = optional
 
     return structure, msg
+  end
+
+  def self.process_userbrdg_record(record, structure, upper_conn_mapping,
+                                   upper_conn_default, mast_arm_frame_default, foundation_default)
+    upper_conn_code = record['SIGNUPRCONNTYPE']
+    upper_conn_code = upper_conn_mapping[upper_conn_code] || upper_conn_code
+    upper_connection_type = UpperConnectionType.find_by(code: upper_conn_code)
+    structure.upper_connection_type = upper_connection_type || upper_conn_default
+    
+    foundation_type = FoundationType.find_by(code: record['SIGNFOUNDATIONTYPE'])
+    structure.foundation_type = foundation_type || foundation_default
+    
+    mast_arm_frame_type = MastArmFrameType.find_by(code: record['SIGNFRAMETYPE'])
+    structure.mast_arm_frame_type = mast_arm_frame_type || mast_arm_frame_default
+    
+    structure.column_type = ColumnType.find_by(code: record['SIGNPOLETYPE'])
   end
 end
