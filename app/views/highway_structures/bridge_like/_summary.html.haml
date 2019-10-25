@@ -40,12 +40,13 @@
   .form-group
     %label.control-label= reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
     .display-value= @asset.calculated_condition ? (@asset.inspections.any? ? link_to(@asset.calculated_condition&.titleize, inspection_path(@asset.inspections.ordered.first)) : @asset.calculated_condition) : ''
-  .form-group
-    %label.control-label= reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
-    .display-value= @latest_condition.try(:scour_critical_bridge_type)
-  .form-group
-    %label.control-label= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
-    .display-value= @asset.asset_subtype
+  - unless @sshml
+    .form-group
+      %label.control-label= reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
+      .display-value= @latest_condition.try(:scour_critical_bridge_type)
+    .form-group
+      %label.control-label= reference_label('bridges', 'transam_assets.asset_subtype_id', 'Bridge Type')
+      .display-value= @asset.asset_subtype
 
   .form-group
     %label.control-label= reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type')

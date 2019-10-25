@@ -19,7 +19,8 @@
           .form-group
             %label.control-label.string.required
               * General Location
-            = select_tag :maintenance_activity_category_subtype_id, options_from_collection_for_select(MaintenanceActivityCategorySubtype.active, :id, :name, maintenance_activity_type.try(:maintenance_activity_category_subtype_id)), include_blank: true, class: 'form-control', required: true
+            - maintenance_categories = AncillaryStructure.subclasses.map(&:to_s).include?(@asset.asset_type.class_name) ? MaintenanceActivityCategorySubtype.active.where(name: 'Ancillary') : MaintenanceActivityCategorySubtype.active.where.not(name: 'Ancillary')
+            = select_tag :maintenance_activity_category_subtype_id, options_from_collection_for_select(maintenance_categories, :id, :name, maintenance_activity_type.try(:maintenance_activity_category_subtype_id)), include_blank: true, class: 'form-control', required: true
 
       .row
         .col-xs-12
