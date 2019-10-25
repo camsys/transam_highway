@@ -46,24 +46,33 @@ class AncillaryStructure < BridgeLike
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
                                  highway_authority, inspection_program, inspection_trip)
     asset_tag = hash['BRKEY']
-    
+
     # Structure Class, NBI 24 is 
-    structure = nil
     case struct_class_code
-    when 'MASTARM SIGNAL'
-      structure = HighwaySignal.find_or_initialize_by(asset_tag: asset_tag)
-    when 'SIGN'
-      structure = HighwaySign.find_or_initialize_by(asset_tag: asset_tag)
     when 'HIGHMAST LIGHT'
-      structure = HighMastLight.find_or_initialize_by(asset_tag: asset_tag)
+      structure_klass = HighMastLight
+    when 'MASTARM SIGNAL'
+      structure_klass = HighwaySignal
+    when 'SIGN'
+      structure_klass = HighwaySign
     else
-      # TODO: Try to determine based on struct_class_code
-      msg = "Skipping processing of Structure Class: #{struct_class_code}"
-      return false, msg
+      # Try to determine based on other info
+      case hash['USERKEY1']
+      when 'HIGHMAST'
+        structure_klass = HighMastLight
+      when 'MASTARM'
+        structure_klass = HighwaySignal
+      when 'SIGN'
+        structure_klass = HighwaySign
+      else
+        msg = "Skipping processing of Structure Class: #{struct_class_code}"
+        return false, msg
+      end
     end
+    structure = structure_klass.find_or_initialize_by(asset_tag: asset_tag)
     
     if structure.new_record?
-      msg = "Created #{inspection_program} #{struct_class_code} #{asset_tag}"
+      msg = "Created #{inspection_program} #{structure_klass} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
       asset_subtype = AssetSubtype.find_by(asset_type: AssetType.find_by(class_name: structure.class.name))
@@ -77,7 +86,7 @@ class AncillaryStructure < BridgeLike
       }
       structure.attributes = required
     else
-      msg = "Updated #{inspection_program} #{struct_class_code} #{asset_tag}"
+      msg = "Updated #{inspection_program} #{structure_klass} #{asset_tag}"
     end
 
     unless inspection_trip.blank?
