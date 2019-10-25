@@ -1,6 +1,6 @@
 class RoadbedLine < ApplicationRecord
   include TransamObjectKey
-  
+
   belongs_to :roadbed
   belongs_to :inspection
 
@@ -10,7 +10,8 @@ class RoadbedLine < ApplicationRecord
   def self.allowable_params
     [
       :entry,
-      :exit
+      :exit,
+      :minimum_clearance
     ]
   end
 end

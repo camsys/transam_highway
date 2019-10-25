@@ -267,9 +267,13 @@ class Api::V1::InspectionsController < Api::ApiController
               clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
               clean_params[:number] = rbl_number if rbl_number
               if rbl_params[:no_restriction]
-                clean_params[:entry] = clean_params[:exit] = nil
+                clean_params[:entry] = clean_params[:exit] = clean_params[:minimum_clearance] = nil
               elsif rbl_params[:does_not_exist]
-                clean_params[:entry] = clean_params[:exit] = 0.0
+                if rbl_roadbed.try(:use_minimum_clearance?)
+                  clean_params[:minimum_clearance] = 0.0
+                else
+                  clean_params[:entry] = clean_params[:exit] = 0.0
+                end
               end
               if rbl
                 rbl.update!(clean_params)
