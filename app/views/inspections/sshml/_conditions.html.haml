@@ -1,0 +1,10 @@
+.col-md-6
+  = editable_association_tag(@inspection, :ancillary_condition_type, reference_label('ancillary_conditions', 'ancillary_condition_type_id', 'SSHML Rating'), model_name: 'Inspection')
+
+.col-md-6
+  = editable_association_tag(@inspection, :operational_status_type, reference_label('bridge_conditions', 'operational_status_type_id', 'Operational Status'), model_name: 'Inspection')
+
+  %hr
+  = editable_association_tag(@inspection, :approach_rail_safety_type, reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Rail Safety'), model_name: 'Inspection')
+  = editable_association_tag(@inspection, :approach_rail_end_safety_type, reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'Approach Rail End Safety'), model_name: 'Inspection')
+

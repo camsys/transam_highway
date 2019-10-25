@@ -52,7 +52,7 @@
         .panel-body
           = render 'conditions'
 
-= render 'streambed_profile_table'
+= render 'streambed_profile_table' unless ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @inspection.highway_structure.asset_type&.class_name
 
 = render 'vertical_clearance_panel'
 
