@@ -29,9 +29,6 @@ class AncillaryStructure < BridgeLike
   # Class Methods
   #-----------------------------------------------------------------------------
 
-  def self.process_roadway(hash, structure)
-  end
-
   def self.process_inspection(hash, struct_class_code, date)
     inspection_frequency = hash['BRINSPFREQ']
     type = InspectionType.find_by(code: hash['INSPTYPE'])
