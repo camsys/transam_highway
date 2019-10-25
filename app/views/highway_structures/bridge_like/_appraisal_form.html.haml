@@ -1,51 +1,54 @@
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'railings_safety_type_id', 'Bridge Rail')
-  .display-value
-    = @latest_condition&.railings_safety_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions')
-  .display-value
-    = @latest_condition&.transitions_safety_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Guardrail')
-  .display-value
-    = @latest_condition&.approach_rail_safety_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'End Treatments')
-  .display-value
-    = @latest_condition&.approach_rail_end_safety_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Evaluation')
-  .display-value
-    = @latest_condition&.structural_appraisal_rating_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry')
-  .display-value
-    = @latest_condition&.deck_geometry_appraisal_rating_type
-- if @asset_class_name == 'Bridge'
+- if @sshml
+  = render 'highway_structures/bridge_like/sshml/appraisal_form'
+- else
   .form-group
     %label.control-label
-      = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearances Appraisal')
+      = reference_label('bridge_conditions', 'railings_safety_type_id', 'Bridge Rail')
     .display-value
-      = @latest_condition&.underclearance_appraisal_rating_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Adequacy')
-  .display-value
-    = @latest_condition&.waterway_appraisal_rating_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Roadway Alignment')
-  .display-value
-    = @latest_condition&.approach_alignment_appraisal_rating_type
-.form-group
-  %label.control-label
-    = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical')
-  .display-value
-    = @latest_condition&.scour_critical_bridge_type
+      = @latest_condition&.railings_safety_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'transitions_safety_type_id', 'Transitions')
+    .display-value
+      = @latest_condition&.transitions_safety_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Guardrail')
+    .display-value
+      = @latest_condition&.approach_rail_safety_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'End Treatments')
+    .display-value
+      = @latest_condition&.approach_rail_end_safety_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Evaluation')
+    .display-value
+      = @latest_condition&.structural_appraisal_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry')
+    .display-value
+      = @latest_condition&.deck_geometry_appraisal_rating_type
+  - if @asset_class_name == 'Bridge'
+    .form-group
+      %label.control-label
+        = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearances Appraisal')
+      .display-value
+        = @latest_condition&.underclearance_appraisal_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'waterway_appraisal_rating_type_id', 'Waterway Adequacy')
+    .display-value
+      = @latest_condition&.waterway_appraisal_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'approach_alignment_appraisal_rating_type_id', 'Approach Roadway Alignment')
+    .display-value
+      = @latest_condition&.approach_alignment_appraisal_rating_type
+  .form-group
+    %label.control-label
+      = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical')
+    .display-value
+      = @latest_condition&.scour_critical_bridge_type

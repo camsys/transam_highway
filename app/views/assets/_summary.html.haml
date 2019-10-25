@@ -1,5 +1,6 @@
 :ruby 
   asset_dir = @asset_class_name.underscore
-  asset_dir = 'bridge_like' if ['bridge', 'culvert'].include?(asset_dir)
+  @sshml = ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+  asset_dir = 'bridge_like' if ['bridge', 'culvert'].include?(asset_dir) || @sshml
   
 = render "highway_structures/#{asset_dir}/summary"

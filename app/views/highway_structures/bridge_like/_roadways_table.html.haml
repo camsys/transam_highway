@@ -5,7 +5,8 @@
     %td.center= r.service_level_type
     %td.center= suppress_values(r.route_number)
     %td.center= r.features_intersected
-    %td.center= r.facility_carried
+    - unless @sshml
+      %td.center= r.facility_carried
     %td.right= r.min_vertical_clearance ? "#{format_as_decimal(r.min_vertical_clearance, 1)} ft" : 'No Restrictions'
     %td.center= r.milepoint
     %td.center= format_as_yes_no(r.on_base_network)

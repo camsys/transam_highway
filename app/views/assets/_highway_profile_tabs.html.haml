@@ -14,6 +14,10 @@
     navigation_data: 'Navigation Data'
   }
 
+  if @sshml
+    tabs.except!(:load_rating_posting, :navigation_data)
+  end
+
 - tabs.each do |key, label|
   %li
     %a{href: "##{key}", data: {toggle: 'tab'}}

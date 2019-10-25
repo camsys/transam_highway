@@ -15,7 +15,7 @@
   }
 
   asset_dir = @asset.class.name.underscore
-  asset_dir = 'bridge_like' if ['bridge', 'culvert'].include?(asset_dir)
+  asset_dir = 'bridge_like' if ['bridge', 'culvert'].include?(asset_dir) || @sshml
 
   prefix = "highway_structures/#{asset_dir}"
 
