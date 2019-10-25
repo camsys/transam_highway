@@ -1,5 +1,5 @@
 :ruby
-  table_title = AssetType.find_by(id: @asset_type).to_s
+  table_title = AssetType.find_by(id: @asset_type).to_s.pluralize
 
 :css
   .flag-column {
