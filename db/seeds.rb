@@ -748,15 +748,15 @@ defect_definitions_element_definitions = {
     }
 
 mast_arm_frame_types = [
-    {name: 'Single arm', code: 'SNGL ARM', active: true},
-    {name: 'Double-arm', code: 'DBL ARM', active: true},
-    {name: 'Double-arm truss', code: 'DBL ARM TRUSS', active: true},
-    {name: 'Box beam truss', code: 'BOX BEAM TRUSS', active: true},
-    {name: 'Triple arm', code: 'TRI ARM', active: true},
-    {name: 'Monotube', code: 'MONOTUBE', active: true},
+    {name: 'Single arm', code: 'SA', active: true},
+    {name: 'Double-arm', code: 'DA', active: true},
+    {name: 'Double-arm truss', code: 'DAT', active: true},
+    {name: 'Box beam truss', code: 'BBT', active: true},
+    {name: 'Triple arm', code: 'TA', active: true},
+    {name: 'Monotube', code: 'M', active: true},
     {name: 'High-mast light', code: 'HML', active: true},
-    {name: 'Span wire', code: 'SPAN WIRE', active: true},
-    {name: 'Nonstandard', code: 'OTHER', active: true}
+    {name: 'Span wire', code: 'SW', active: true},
+    {name: 'Non-Standard', code: 'NS', active: true}
 ]
 
 column_types = [
@@ -765,7 +765,9 @@ column_types = [
     {name: 'Monotube column', code: 'MTUBE', active: true},
     {name: 'Split monotube column', code: 'SPTBE', active: true},
     {name: 'Double uniform column', code: 'DBLUC', active: true},
-    {name: 'Built-up column', code: 'BLTUC', active: true}
+    {name: 'Built-up column', code: 'BLTUC', active: true},
+    {name: 'Unknown', code: 'U', active: true},
+    {name: 'Non-Standard', code: 'NS', active: true}
 ]
 
 foundation_types = [
