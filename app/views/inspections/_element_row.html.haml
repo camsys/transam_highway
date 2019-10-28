@@ -5,7 +5,7 @@
 
 %tr{class: "#{html_class}", data: {element_id: element.id, parent_element_id: parent&.id}}
   %td.left!= "#{indent_str}#{html_rjust(element.element_definition.number, 4)}"
-  %td.left!= "#{indent_str}#{element.element_definition.short_name}"
+  %td.left!= "#{indent_str}#{element.element_definition.short_name}#{' (' + element.guid + ')' if @show_debug}"
   %td.right.total_quantity
     %span.number-display
       = format_as_integer(element.quantity)

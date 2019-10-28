@@ -34,6 +34,8 @@ class InspectionsController < TransamController
                    inventory_index_path(:asset_type => @asset.asset_type, :asset_subtype => 0)
     add_breadcrumb @asset, inventory_path(@asset)
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
+
+    @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
   end
 
   # GET /inspections/new

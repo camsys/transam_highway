@@ -9,7 +9,10 @@
   }
 
 .subheader-label
-  %h2 #{@inspection.highway_structure.asset_type.name.singularize} #{@inspection.highway_structure.asset_tag} Inspection
+  %h2 #{@inspection.highway_structure.asset_type.name.singularize} |
+      #{@inspection.highway_structure.asset_tag} |
+      #{"(" + @inspection.highway_structure.guid + ")" if @show_debug} |
+      Inspection #{"(" + @inspection.guid + ")" if @show_debug} |
 
 %legend
   .row
