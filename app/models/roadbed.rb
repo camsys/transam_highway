@@ -75,7 +75,7 @@ class Roadbed < ApplicationRecord
   # min of minimum clearances, form pairs, min of each pair
   def get_lane_minimums(inspection)
     if use_minimum_clearance?
-      line_mins = roadbed_lines.by_inspection(inspection).lines.pluck(:minimum_clearance).map{|x| x.zero? ? nil : x}
+      line_mins = roadbed_lines.by_inspection(inspection).lines.pluck(:minimum_clearance).map{|x| x.try(:zero?) ? nil : x}
     else
       line_mins =
           roadbed_lines.by_inspection(inspection).lines.pluck(:entry, :exit).map do |l|
@@ -99,7 +99,7 @@ class Roadbed < ApplicationRecord
     @adjacent_line_minimums if defined? @adjacent_line_minimums
 
     if use_minimum_clearance?
-      line_mins = roadbed_lines.pluck(:number, :minimum_clearance).map{|x| x[1].zero? ? [x[0], nil] : x}
+      line_mins = roadbed_lines.pluck(:number, :minimum_clearance).map{|x| x[1].try(:zero?) ? [x[0], nil] : x}
     else
       line_nums = roadbed_lines.pluck(:number, :entry, :exit)
       # get the min of [entry, exit] in each line, exclude nil or 0
