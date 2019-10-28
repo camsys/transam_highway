@@ -75,7 +75,12 @@ class AncillaryStructure < BridgeLike
       msg = "Created #{inspection_program} #{structure_klass} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
-      asset_subtype = AssetSubtype.find_by(asset_type: AssetType.find_by(class_name: structure.class.name))
+      # This is currently a bit of a kludge
+      if structure_klass == HighwaySign
+        asset_subtype = AssetSubtype.find_by(name: HighwayStructureType.find_by(code: struct_type_code).name)
+      else
+        asset_subtype = AssetSubtype.find_by(asset_type: AssetType.find_by(class_name: structure.class.name))
+      end
       required = {
         asset_subtype: asset_subtype,
         organization: highway_authority,
