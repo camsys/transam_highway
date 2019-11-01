@@ -37,6 +37,12 @@ class Api::V1::InspectionsController < Api::ApiController
           cc_hash = params[:culvert_condition].permit(@culvert_condition.allowable_params).to_h
           @culvert_condition.update!(cc_hash) if @culvert_condition
         end
+
+        if params[:ancillary_condition]
+          @ancillary_condition = Inspection.get_typed_inspection(@inspection)
+          ac_hash = params[:ancillary_condition].permit(@ancillary_condition.allowable_params).to_h
+          @ancillary_condition.update!(ac_hash) if @ancillary_condition
+        end
         
         if params[:elements] && params[:elements].any?
           params[:elements].each do |el_params|
@@ -434,9 +440,11 @@ class Api::V1::InspectionsController < Api::ApiController
     query_highway_structures
     query_bridges
     query_culverts
+    query_ancillary_structures
     query_inspections
     query_bridge_conditions
     query_culvert_conditions
+    query_ancillary_conditions
     query_elements
     query_defects
     query_defect_locations
@@ -475,6 +483,13 @@ class Api::V1::InspectionsController < Api::ApiController
     @culvert_asset_ids = @culverts.pluck("transam_assetible_id")
   end
 
+  def query_ancillary_structures
+    @highway_signs = HighwaySign.where("highway_structures.id": @highway_structure_ids)
+    @highway_signals = HighwaySignal.where("highway_structures.id": @highway_structure_ids)
+    @high_mast_lights = HighMastLight.where("highway_structures.id": @highway_structure_ids)
+    @ancillary_asset_ids = @highway_signs.or(@highway_signals).or(@high_mast_lights).pluck("transam_assetible_id")
+  end
+
   def query_inspections
     @inspection_ids = []
     # return open inspection and last two finished ones
@@ -491,6 +506,10 @@ class Api::V1::InspectionsController < Api::ApiController
 
   def query_culvert_conditions
     @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @culvert_asset_ids)
+  end
+
+  def query_ancillary_conditions
+    @ancillary_conditions = AncillaryCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @ancillary_asset_ids)
   end
 
   def query_elements

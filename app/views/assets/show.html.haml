@@ -5,6 +5,8 @@
     @latest_condition = @asset.latest_bridge_condition
   elsif @asset_class_name == 'Culvert'
     @latest_condition = @asset.latest_culvert_condition
+  elsif @asset_class_name == 'HighwaySign' || 'HighwaySignal' || 'HighMastLight'
+    @latest_condition = @asset.latest_ancillary_condition
   end
 
 :css

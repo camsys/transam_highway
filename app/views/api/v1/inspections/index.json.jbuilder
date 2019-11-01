@@ -28,6 +28,21 @@ if @highway_structures
         json.partial! 'api/v1/culverts/listing', collection: @culverts, as: :culvert
       end
     end
+    if @highway_signs
+      json.highway_signs do
+        json.partial! 'api/v1/ancillary_structures/listing', collection: @highway_signs, as: :ancillary_structure
+      end
+    end
+    if @highway_signals
+      json.highway_signals do
+        json.partial! 'api/v1/ancillary_structures/listing', collection: @highway_signals, as: :ancillary_structure
+      end
+    end
+    if @high_mast_lights
+      json.high_mast_lights do
+        json.partial! 'api/v1/ancillary_structures/listing', collection: @high_mast_lights, as: :ancillary_structure
+      end
+    end
   end
 end
 
@@ -41,6 +56,10 @@ end
 
 json.culvert_conditions do
   json.partial! 'api/v1/culvert_conditions/listing', collection: @culvert_conditions, as: :culvert_condition
+end
+
+json.ancillary_conditions do
+  json.partial! 'api/v1/ancillary_conditions/listing', collection: @ancillary_conditions, as: :ancillary_condition
 end
 
 json.images do 

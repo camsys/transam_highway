@@ -23,6 +23,10 @@ when "Culvert"
   json.culvert_conditions do
     json.partial! 'api/v1/culvert_conditions/listing', culvert_condition: @inspection.becomes(CulvertCondition).reload
   end
+when "HighwaySign" || "HighwaySignal" || "HighMastLight"
+  json.ancillary_conditions do
+    json.partial! 'api/v1/ancillary_conditions/listing', ancillary_condition: @inspection.becomes(AncillaryCondition).reload
+  end
 end
 
 json.images do 
