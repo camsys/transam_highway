@@ -16,7 +16,7 @@ class AddAssetTypesSshml < ActiveRecord::DataMigration
 
         {belongs_to: 'asset_type', type: 'HighwaySignal', name: 'Mast Arm Signal', description: 'Mast Arm Signal', active: true},
 
-        {belongs_to: 'asset_type', type: 'HighMastLight', name: 'High Mast Light”', description: 'High mast light”', active: true},
+        {belongs_to: 'asset_type', type: 'HighMastLight', name: 'High Mast Light', description: 'High mast light”', active: true},
     ].each do |subtype|
       a = AssetSubtype.new(subtype.except(:belongs_to, :type))
       a.asset_type = AssetType.find_by(class_name: subtype[:type])
