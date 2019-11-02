@@ -32,8 +32,15 @@ class InspectionsController < TransamController
     @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
 
     if @asset
-      @asset.class.inspection_types.active.can_be_recurring.each do |type|
-        @asset.inspection_type_settings.find_or_initialize_by(inspection_type: type)
+      @not_special_settings = []
+
+      @asset.class.inspection_types.active.can_be_recurring.not_special.each do |type|
+        @not_special_settings << @asset.inspection_type_settings.find_or_initialize_by(inspection_type: type)
+      end
+
+      @special_settings = @asset.inspection_type_settings.where(inspection_type: @asset.class.inspection_types.active.special)
+      if @special_settings.empty?
+        @special_settings = [@asset.inspection_type_settings.build(inspection_type: InspectionType.find_by(name: 'Special'))]
       end
     end
   end

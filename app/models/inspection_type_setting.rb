@@ -7,11 +7,15 @@ class InspectionTypeSetting < ApplicationRecord
 
   def self.allowable_params
     [
+        :inspection_type_id,
         :frequency_months,
         :description,
         :is_required
     ]
   end
+
+  validates :inspection_type_id, presence: true
+  validates :frequency_months, presence: true
 
   protected
   def set_defaults

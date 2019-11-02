@@ -16,7 +16,7 @@
             .form-group
               %label.control-label
                 Inspection Type
-          .col-sm-3
+          .col-sm-2
             .form-group
               %label.control-label.required
                 * Required
@@ -28,15 +28,23 @@
             .form-group
               %label.control-label.string
                 Description
-        = f.simple_fields_for :inspection_type_settings do |setting|
-          - if f.object.inspection_type.is_recurring
+        = f.simple_fields_for :inspection_type_settings, @not_special_settings do |setting|
           .row
-            .col-sm-3= setting.object.inspection_type
+            .col-sm-3
+              = setting.object.inspection_type
+              = setting.input :inspection_type_id, as: :hidden
 
-            .col-sm-3= setting.input :is_required, as: :select, label: false
+            .col-sm-2= setting.input :is_required, as: :select, label: false
             .col-sm-3= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
             - if setting.object.inspection_type.name == 'Special'
               .col-sm-3= setting.input :description, label: false
+
+        #inspection_type_settings
+          = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|
+            = render 'inspection_type_setting_fields', f: setting
+          .links.pull-right
+            = link_to_add_association f, :inspection_type_settings do
+              %i.fa.fa-2x.fa-plus-circle
         .row
           .col-xs-12
             = f.submit 'Save', :class => 'btn btn-primary'
