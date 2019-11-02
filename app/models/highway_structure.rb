@@ -26,7 +26,7 @@ class HighwayStructure < TransamAssetRecord
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
   has_many :inspection_type_settings, foreign_key: :transam_asset_id, dependent: :destroy
 
-  accepts_nested_attributes_for :inspection_type_settings, :reject_if => lambda { |a| a[:frequency_months].blank? }
+  accepts_nested_attributes_for :inspection_type_settings, :reject_if => lambda { |a| a[:frequency_months].blank? && a[:is_required] }
 
   has_many :elements, through: :inspections
   has_many :defects, through: :elements

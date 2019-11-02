@@ -114,19 +114,6 @@
           = f.input_field :inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.inspection_date)
           %span.input-group-addon
             %i.fa.fa-calendar
-
-        = f.input :fracture_critical_inspection_date, :wrapper => :vertical_append, :label => "Last Fracture Critical Inspection Date" do
-          = f.input_field :fracture_critical_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.fracture_critical_inspection_date)
-          %span.input-group-addon
-            %i.fa.fa-calendar
-        = f.input :underwater_inspection_date, :wrapper => :vertical_append, :label => "Last Underwater Inspection Date" do
-          = f.input_field :underwater_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.underwater_inspection_date)
-          %span.input-group-addon
-            %i.fa.fa-calendar
-        = f.input :other_special_inspection_date, :wrapper => :vertical_append, :label => "Last Other Special Inspection Date" do
-          = f.input_field :other_special_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.other_special_inspection_date)
-          %span.input-group-addon
-            %i.fa.fa-calendar
       
   .form-actions.form-section
     = f.button :submit, '+ Add Structure & Go to New Record', :class => 'btn btn-primary'

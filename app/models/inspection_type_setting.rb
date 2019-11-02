@@ -1,5 +1,7 @@
 class InspectionTypeSetting < ApplicationRecord
 
+  include TransamObjectKey
+
   after_initialize :set_defaults
 
   belongs_to :inspection_type
@@ -10,12 +12,13 @@ class InspectionTypeSetting < ApplicationRecord
         :inspection_type_id,
         :frequency_months,
         :description,
-        :is_required
+        :is_required,
+        :_destroy
     ]
   end
 
   validates :inspection_type_id, presence: true
-  validates :frequency_months, presence: true
+  validates :frequency_months, presence: true, if: :is_required
 
   protected
   def set_defaults

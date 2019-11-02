@@ -6,6 +6,7 @@
       %h3.modal-title Inspection Schedule
     .modal-body
       = simple_form_for(@asset,
+                    :as => :asset,
                     :html => {:class => 'form-vertical inspection_schedule_form' },
                     :url => inventory_path(@asset),
                     :wrapper => :vertical_form,
@@ -34,7 +35,7 @@
               = setting.object.inspection_type
               = setting.input :inspection_type_id, as: :hidden
 
-            .col-sm-2= setting.input :is_required, as: :select, label: false
+            .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false
             .col-sm-3= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
             - if setting.object.inspection_type.name == 'Special'
               .col-sm-3= setting.input :description, label: false
