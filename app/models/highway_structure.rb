@@ -24,6 +24,9 @@ class HighwayStructure < TransamAssetRecord
   belongs_to :inspection_zone
 
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
+  has_many :inspection_type_settings, foreign_key: :transam_asset_id, dependent: :destroy
+
+  accepts_nested_attributes_for :inspection_type_settings, :reject_if => :all_blank
 
   has_many :elements, through: :inspections
   has_many :defects, through: :elements
@@ -52,15 +55,6 @@ class HighwayStructure < TransamAssetRecord
       :location_description,
       :length,
       :inspection_date,
-      :fracture_critical_inspection_required,
-      :fracture_critical_inspection_frequency,
-      :underwater_inspection_required,
-      :underwater_inspection_frequency,
-      :other_special_inspection_required,
-      :other_special_inspection_frequency,
-      :fracture_critical_inspection_date,
-      :underwater_inspection_date,
-      :other_special_inspection_date,
       :is_temporary,
       :structure_status_type_id,
       :region,
@@ -74,7 +68,8 @@ class HighwayStructure < TransamAssetRecord
       :lanes_on,
       :lanes_under,
       :historical_significance_type_id,
-      :highway_structure_type_id
+      :highway_structure_type_id,
+      :inspection_type_settings_attributes => [InspectionTypeSetting.allowable_params]
   ]
 
   CLEANSABLE_FIELDS = [
@@ -90,10 +85,6 @@ class HighwayStructure < TransamAssetRecord
   # Class Methods
   #
   #-----------------------------------------------------------------------------
-
-  def self.allowable_params
-    FORM_PARAMS
-  end
 
   def self.default_map_renderer_attr
     :calculated_condition

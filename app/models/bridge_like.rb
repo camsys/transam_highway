@@ -82,8 +82,8 @@ class BridgeLike < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
-  def self.allowable_params
-    FORM_PARAMS
+  def self.inspection_types
+    InspectionType.all
   end
 
   def self.default_map_renderer_attr

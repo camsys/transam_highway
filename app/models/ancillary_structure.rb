@@ -29,6 +29,10 @@ class AncillaryStructure < BridgeLike
   # Class Methods
   #-----------------------------------------------------------------------------
 
+  def self.inspection_types
+    InspectionType.where(name: ['Routine', 'Special', 'Initial', 'Damage'])
+  end
+
   def self.process_inspection(hash, struct_class_code, date)
     inspection_frequency = hash['BRINSPFREQ']
     type = InspectionType.find_by(code: hash['INSPTYPE'])

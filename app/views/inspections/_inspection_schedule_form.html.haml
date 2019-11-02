@@ -1,0 +1,56 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Inspection Schedule
+    .modal-body
+      = simple_form_for(@asset,
+                    :html => {:class => 'form-vertical inspection_schedule_form' },
+                    :url => inventory_path(@asset),
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        .row
+          .col-sm-3
+            .form-group
+              %label.control-label
+                Inspection Type
+          .col-sm-3
+            .form-group
+              %label.control-label.required
+                * Required
+          .col-sm-3
+            .form-group
+              %label.control-label.required
+                * Frequency
+          .col-sm-3
+            .form-group
+              %label.control-label.string
+                Description
+        = f.simple_fields_for :inspection_type_settings do |setting|
+          - if f.object.inspection_type.is_recurring
+          .row
+            .col-sm-3= setting.object.inspection_type
+
+            .col-sm-3= setting.input :is_required, as: :select, label: false
+            .col-sm-3= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
+            - if setting.object.inspection_type.name == 'Special'
+              .col-sm-3= setting.input :description, label: false
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_schedule_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $('.inspection_schedule_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#cancel_inspection_schedule_form').click(function() {
+    $('#form-modal').modal('hide');
+  });

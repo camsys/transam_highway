@@ -13,7 +13,7 @@ class Api::V1::HighwayStructuresController < Api::ApiController
 
   # POST /highway_structures.json
   def create
-    @highway_structure = HighwayStructure.new(new_form_params)
+    @highway_structure = HighwayStructure.new(form_params)
     unless @highway_structure.save
       @status = :fail
       @message  = "Unable to upload highway structure due to the following error: #{@highway_structure.errors.messages}" 
@@ -59,11 +59,7 @@ class Api::V1::HighwayStructuresController < Api::ApiController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:highway_structure).permit(HighwayStructure.allowable_params)
-  end
-
-  def new_form_params
-    params.require(:highway_structure).permit(Asset.allowable_params)
+    params.require(:highway_structure).permit(HighwayStructure.new.allowable_params)
   end
 
 end

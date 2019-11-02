@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     collection do 
       get 'reset'
       post 'new_search'
+      get 'inspection_type_settings'
     end
 
     member do

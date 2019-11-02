@@ -13,7 +13,7 @@ class Api::V1::CulvertsController < Api::ApiController
 
   # POST /culverts.json
   def create
-    @culvert = culvert.new(new_form_params)
+    @culvert = culvert.new(form_params)
     unless @culvert.save
       @status = :fail
       @message  = "Unable to upload culvert due to the following error: #{@culvert.errors.messages}" 
@@ -59,11 +59,7 @@ class Api::V1::CulvertsController < Api::ApiController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:culvert).permit(HighwayStructure.allowable_params + culvert.allowable_params)
-  end
-
-  def new_form_params
-    params.require(:culvert).permit(Asset.allowable_params)
+    params.require(:culvert).permit(Culvert.new.allowable_params)
   end
 
 end

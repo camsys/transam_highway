@@ -114,23 +114,6 @@
           = f.input_field :inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.inspection_date)
           %span.input-group-addon
             %i.fa.fa-calendar
-        /= f.input :inspection_frequency, collection: [12, 24, 48, 72]
-
-        .row
-          .col-sm-6
-            = f.input :fracture_critical_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
-          .col-sm-6
-            = f.input :fracture_critical_inspection_frequency, collection: [12, 24, 48, 72]
-        .row
-          .col-sm-6
-            = f.input :underwater_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
-          .col-sm-6
-            = f.input :underwater_inspection_frequency, collection: [12, 24, 48, 72]
-        .row
-          .col-sm-6
-            = f.input :other_special_inspection_required, as: :radio_buttons, :wrapper_class => 'form-group radio-buttons-inline'
-          .col-sm-6
-            = f.input :other_special_inspection_frequency, collection: [12, 24, 48, 72]
 
         = f.input :fracture_critical_inspection_date, :wrapper => :vertical_append, :label => "Last Fracture Critical Inspection Date" do
           = f.input_field :fracture_critical_inspection_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.asset_inspection_date'}, :value => format_as_date(f.object.fracture_critical_inspection_date)

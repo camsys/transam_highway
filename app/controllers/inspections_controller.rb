@@ -28,6 +28,16 @@ class InspectionsController < TransamController
     end
   end
 
+  def inspection_type_settings
+    @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
+
+    if @asset
+      @asset.class.inspection_types.active.can_be_recurring.each do |type|
+        @asset.inspection_type_settings.find_or_initialize_by(inspection_type: type)
+      end
+    end
+  end
+
   # GET /inspections/1
   def show
     add_breadcrumb "#{@asset.asset_type.name}".pluralize,
@@ -40,7 +50,8 @@ class InspectionsController < TransamController
 
   # GET /inspections/new
   def new
-    @inspection = Inspection.new
+    @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key])) if params[:asset_object_key]
+    @inspection = Inspection.new(highway_structure: @asset.highway_structure)
   end
 
   # GET /inspections/1/edit
@@ -85,8 +96,9 @@ class InspectionsController < TransamController
 
   # DELETE /inspections/1
   def destroy
+    highway_structure = @inspection.highway_structure
     @inspection.destroy
-    redirect_to inspections_url, notice: 'Inspection was successfully destroyed.'
+    redirect_to inventory_url(highway_structure.object_key), notice: 'Inspection was successfully destroyed.'
   end
 
   #-----------------------------------------------------------------------------

@@ -36,6 +36,8 @@ class Inspection < InspectionRecord
   scope :not_final, -> { where.not(state: 'final') }
 
   FORM_PARAMS = [
+      :transam_asset_id,
+      :inspection_type_id,
       :name,
       :event_datetime,
       :temperature,
@@ -48,6 +50,7 @@ class Inspection < InspectionRecord
       :inspection_team_member_alt_id,
       :event_datetime,
       :inspection_frequency,
+      :description,
       :inspector_ids => []
   ]
 
@@ -70,6 +73,7 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
+        {event_name: 'open', from_state: 'created', to_state: 'open', guard: :allowed_to_create, can: :can_create, human_name: 'To Open'},
 
         {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
@@ -142,6 +146,10 @@ class Inspection < InspectionRecord
   #
   # -------------------------------------------------------------------
 
+  def allowed_to_open
+    try(:is_scheduled) #temp
+  end
+
   def allowed_to_reopen
     assigned_organization.nil?
   end
@@ -162,6 +170,10 @@ class Inspection < InspectionRecord
     typed_inspection = Inspection.get_typed_inspection(self)
     inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
 
+  end
+
+  def can_open?
+    true # temp
   end
 
   def can_make_ready(user)
@@ -203,6 +215,9 @@ class Inspection < InspectionRecord
 
   end
 
+  def schedule_updatable?
+    'created' == state
+  end
   def updatable?
     (['draft_report', 'qc_review'].include? state)
   end
