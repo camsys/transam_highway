@@ -70,8 +70,8 @@
           %td.left
             - if can? :update, inspection
               - if inspection.schedule_updatable?
-                = link_to edit_inspection_path(inspection), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
+                = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
                   %i.fa.fa-edit.fa-1-5x.text-success
                 - if (can? :destroy, inspection)
-                  = link_to inspection_path(inspection), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                  = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
                     %i.fa.fa-trash-o.fa-fw.text-danger

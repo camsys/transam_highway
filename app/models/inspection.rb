@@ -73,7 +73,7 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
-        {event_name: 'open', from_state: 'created', to_state: 'open', guard: :allowed_to_create, can: :can_create, human_name: 'To Open'},
+        {event_name: 'make_open', from_state: 'created', to_state: 'open', guard: :allowed_to_open, can: :can_open, human_name: 'To Open'},
 
         {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
@@ -172,7 +172,7 @@ class Inspection < InspectionRecord
 
   end
 
-  def can_open?
+  def can_open
     true # temp
   end
 

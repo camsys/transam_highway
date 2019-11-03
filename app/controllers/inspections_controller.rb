@@ -71,12 +71,16 @@ class InspectionsController < TransamController
 
   # POST /inspections
   def create
-    @inspection = Inspection.new(inspection_params)
+    @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
+    if @asset
+      @inspection = @asset.inspection_class.new(inspection_params)
 
-    if @inspection.save
-      redirect_to @inspection, notice: 'Inspection was successfully created.'
-    else
-      render :new
+      if @inspection.save
+        @inspection.reload
+        redirect_to inventory_path(@asset.object_key), notice: 'Inspection was successfully created.'
+      else
+        render :new
+      end
     end
   end
 

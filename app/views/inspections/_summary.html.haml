@@ -26,7 +26,7 @@
       %label.control-label
         = reference_label('inspections', 'inspection_frequency', 'Routine Inspection Frequency')
       .display-value
-        = @inspection.highway_structure.inspection_type_settings.find_by(name: 'Routine').try(:frequency_months)
+        = @inspection.highway_structure.inspection_type_settings.find_by(inspection_type: InspectionType.find_by(name: 'Routine')).try(:frequency_months)
 
   .col-sm-3
     .form-group
