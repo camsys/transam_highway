@@ -518,8 +518,6 @@ inspection_types = [
     {code: '6', name: 'In-depth', active: true, can_be_unscheduled: true},
 ]
 
-[['Routine (1)',], ['Underwater (U)',], ['Fracture Critical (G)', ], ['Special Pin (P)', ], ['Special (4)', ], ['Initial (2)'], ['Damage (3)'], ['In-depth (6)']]
-
 feature_safety_types = [
     {code: '0', name:	'Not acceptable', description:	'Inspected feature does not meet currently acceptable stds. or a safety feature is required and none is provided.', active: true},
     {code: '1', name:	'Acceptable',	description: 'Inspected feature meets currently acceptable standards.', active: true},
