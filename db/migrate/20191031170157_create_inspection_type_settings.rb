@@ -24,8 +24,6 @@ class CreateInspectionTypeSettings < ActiveRecord::Migration[5.2]
     add_column :inspections, :inspection_second_trip_key, :integer, after: :inspection_second_quarter
     add_reference :inspections, :inspection_zone, after: :inspection_second_trip_key
 
-
-    remove_column :highway_structures, :inspection_frequency
     remove_column :highway_structures, :fracture_critical_inspection_required
     remove_column :highway_structures, :fracture_critical_inspection_frequency
     remove_column :highway_structures, :fracture_critical_inspection_date

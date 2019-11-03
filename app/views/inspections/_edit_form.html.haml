@@ -54,7 +54,7 @@
 
             .col-sm-6
               = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
-              = f.input :inspector_ids, collection: User.none, as: :check_boxes
+              = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors'
 
         .row
           .col-xs-12

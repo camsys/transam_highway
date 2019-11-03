@@ -5,7 +5,7 @@
     %label.control-label
       = reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
     .display-value
-      = @asset.inspection_program
+      = @asset.active_inspection.inspection_program
   .form-group
     %label.control-label
       = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')
@@ -15,7 +15,7 @@
     %label.control-label
       = reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
     .display-value
-      = @asset.inspections.where(inspection_type: InspectionType.find_by(name: 'Routine')).last.inspection_trip
+      = @asset.active_inspection.inspection_trip
 
   - @asset.class.inspection_types.active.can_be_recurring.each do |inspection_type|
     .form-group

@@ -23,5 +23,5 @@
       %td=format_as_integer(@inspection.inspection_type.inspection_frequency)
       %td
         - if @inspection.event_datetime && @inspection.inspection_frequency
-          - next_due_date = @inspection.event_datetime + @inspection.inspection_type.inspection_frequency.months
+          - next_due_date = @inspection.event_datetime + @inspection.inspection_frequency.months
           = next_due_date.try(:strftime, "%b %Y")
