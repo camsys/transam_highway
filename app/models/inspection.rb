@@ -15,6 +15,9 @@ class Inspection < InspectionRecord
 
   belongs_to :inspection_type
 
+  belongs_to :inspection_program
+  belongs_to :inspection_zone
+
   belongs_to :qc_inspector, class_name: 'User'
   belongs_to :qa_inspector, class_name: 'User'
   belongs_to :inspection_team_leader, class_name: 'User'

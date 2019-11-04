@@ -1,3 +1,13 @@
+:css
+  .inspector-assignment-label {
+    display: block;
+  }
+
+  .inspector-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
+
 :ruby
   inspectors = []
   User.active.with_role(:inspector).each do |user|
@@ -54,7 +64,7 @@
 
             .col-sm-6
               = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
-              = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors'
+              = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}
 
         .row
           .col-xs-12
