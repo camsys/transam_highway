@@ -25,6 +25,12 @@
       = reference_label('culvert_conditions', 'culvert_condition_type_id', 'Culvert Condition')
     .display-value
       = @latest_condition&.culvert_condition_type
+- elsif @sshml
+  .form-group
+    %label.control-label
+      = reference_label('ancillary_conditions', 'ancillary_condition_type_id', 'SSHML Rating')
+    .display-value
+      = @latest_condition&.ancillary_condition_type
 .form-group
   %label.control-label
     = reference_label('highway_structures', 'calculated_condition', 'Overall Condition')

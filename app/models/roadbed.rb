@@ -28,6 +28,13 @@ class Roadbed < ApplicationRecord
     end
   end
 
+  def asset_type
+    roadway.highway_structure.asset_type
+  end
+  def use_minimum_clearance?
+    AncillaryStructure.subclasses.map(&:to_s).include? asset_type.class_name
+  end
+
   def left_edge
     roadbed_lines.where(number: ['L']).first
   end
@@ -40,8 +47,12 @@ class Roadbed < ApplicationRecord
   def minimum(inspection)
     list = []
     roadbed_lines.by_inspection(inspection).each do |l|
-      list << l.entry unless l.entry.nil? || l.entry.zero?
-      list << l.exit unless l.exit.nil? || l.exit.zero?
+      if use_minimum_clearance?
+        list << l.minimum_clearance unless l.minimum_clearance.nil? || l.minimum_clearance.zero?
+      else
+        list << l.entry unless l.entry.nil? || l.entry.zero?
+        list << l.exit unless l.exit.nil? || l.exit.zero?
+      end
     end
     list.min
   end
@@ -61,11 +72,15 @@ class Roadbed < ApplicationRecord
 
   private 
 
-  # min of entry/exit, form pairs, min of each pair
+  # min of minimum clearances, form pairs, min of each pair
   def get_lane_minimums(inspection)
-    line_mins = 
-      roadbed_lines.by_inspection(inspection).lines.pluck(:entry, :exit).map do |l|
-        [l[0], l[1]].reject{|v| v.nil? || v.zero?}.min
+    if use_minimum_clearance?
+      line_mins = roadbed_lines.by_inspection(inspection).lines.pluck(:minimum_clearance).map{|x| x.try(:zero?) ? nil : x}
+    else
+      line_mins =
+          roadbed_lines.by_inspection(inspection).lines.pluck(:entry, :exit).map do |l|
+            l.reject{|v| v.nil? || v.zero?}.min
+          end
     end
     lane_pairs = line_mins.reduce([]) do |p, i|
       if p.size == 0
@@ -83,9 +98,13 @@ class Roadbed < ApplicationRecord
   def get_adjacent_line_minimums
     @adjacent_line_minimums if defined? @adjacent_line_minimums
 
-    line_nums = roadbed_lines.pluck(:number, :entry, :exit)
-    # get the min of [entry, exit] in each line, exclude nil or 0
-    line_mins = line_nums.map{|l| [l[0], [l[1], l[2]].reject{|r| r.nil? || r == 0}.min]}
+    if use_minimum_clearance?
+      line_mins = roadbed_lines.pluck(:number, :minimum_clearance).map{|x| x[1].try(:zero?) ? [x[0], nil] : x}
+    else
+      line_nums = roadbed_lines.pluck(:number, :entry, :exit)
+      # get the min of [entry, exit] in each line, exclude nil or 0
+      line_mins = line_nums.map{|l| [l[0], [l[1], l[2]].reject{|r| r.nil? || r == 0}.min]}
+    end
     # sort lines in order of L, 1..., R
     sorted_line_mins = line_mins.sort_by{|l| 
       if l[0] == 'L'

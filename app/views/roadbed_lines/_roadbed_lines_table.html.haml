@@ -13,23 +13,34 @@
           %th.center= l.number
         %th.center R
     %tbody
-      %tr{data: {type: 'entry'}}
-        %td Entry
-        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'entry'
-        
+      - if roadbed.use_minimum_clearance?
+        %tr{data: {type: 'minimum_clearance'}}
+          %td Minimum Clearance
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'minimum_clearance'
 
-        - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
-          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'entry'
 
-        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'entry'
-      %tr{data: {type: 'exit'}}
-        %td Exit
-        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'exit'
-      
-        - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
-          = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'exit'
+          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+            = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'minimum_clearance'
 
-        = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'exit'
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'minimum_clearance'
+      - else
+        %tr{data: {type: 'entry'}}
+          %td Entry
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'entry'
+
+
+          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+            = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'entry'
+
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'entry'
+        %tr{data: {type: 'exit'}}
+          %td Exit
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'exit'
+
+          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+            = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'exit'
+
+          = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'exit'
 
 - if roadbed
   :javascript

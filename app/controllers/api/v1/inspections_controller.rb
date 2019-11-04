@@ -37,6 +37,12 @@ class Api::V1::InspectionsController < Api::ApiController
           cc_hash = params[:culvert_condition].permit(@culvert_condition.allowable_params).to_h
           @culvert_condition.update!(cc_hash) if @culvert_condition
         end
+
+        if params[:ancillary_condition]
+          @ancillary_condition = Inspection.get_typed_inspection(@inspection)
+          ac_hash = params[:ancillary_condition].permit(@ancillary_condition.allowable_params).to_h
+          @ancillary_condition.update!(ac_hash) if @ancillary_condition
+        end
         
         if params[:elements] && params[:elements].any?
           params[:elements].each do |el_params|
@@ -98,6 +104,37 @@ class Api::V1::InspectionsController < Api::ApiController
             when 'REMOVE'
               el = Defect.find_by_guid(df_guid)
               el.destroy! if el
+            end
+          end
+        end
+
+        if params[:defect_locations] && params[:defect_locations].any?
+          params[:defect_locations].each do |dl_params|
+            change_type = dl_params[:sync_change_type]&.upcase
+
+            clean_params = dl_params.permit(DefectLocation.allowable_params).to_h
+            dl_guid = dl_params[:id]
+            if dl_params[:defect_id]
+              dl_parent = Defect.find_by_guid(dl_params[:defect_id])
+            end
+
+            case change_type
+            when 'ADD', 'UPDATE'
+              dl = DefectLocation.find_by_guid(dl_guid)
+              clean_params[:defect] = dl_parent if dl_parent
+              if dl
+                dl.update!(clean_params)
+              else
+                if dl_guid.blank?
+                  @dl_guid_required_to_add = true
+                  raise ActiveRecord::Rollback
+                end
+                clean_params["guid"] = dl_guid
+                DefectLocation.create!(clean_params)
+              end
+            when 'REMOVE'
+              dl = DefectLocation.find_by_guid(dl_guid)
+              dl.destroy! if dl
             end
           end
         end
@@ -236,9 +273,13 @@ class Api::V1::InspectionsController < Api::ApiController
               clean_params[:roadbed] = rbl_roadbed if rbl_roadbed
               clean_params[:number] = rbl_number if rbl_number
               if rbl_params[:no_restriction]
-                clean_params[:entry] = clean_params[:exit] = nil
+                clean_params[:entry] = clean_params[:exit] = clean_params[:minimum_clearance] = nil
               elsif rbl_params[:does_not_exist]
-                clean_params[:entry] = clean_params[:exit] = 0.0
+                if rbl_roadbed.try(:use_minimum_clearance?)
+                  clean_params[:minimum_clearance] = 0.0
+                else
+                  clean_params[:entry] = clean_params[:exit] = 0.0
+                end
               end
               if rbl
                 rbl.update!(clean_params)
@@ -342,6 +383,13 @@ class Api::V1::InspectionsController < Api::ApiController
       render status: 400, json: json_response(:error, message: @message)
     end
 
+    # defect location guid is required to add a new defect location
+    if @dl_guid_required_to_add
+      @status = :error
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect location data"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+
     # streambed profile guid is required to add a new streambed profile
     if @sp_guid_required_to_add
       @status = :error
@@ -392,11 +440,14 @@ class Api::V1::InspectionsController < Api::ApiController
     query_highway_structures
     query_bridges
     query_culverts
+    query_ancillary_structures
     query_inspections
     query_bridge_conditions
     query_culvert_conditions
+    query_ancillary_conditions
     query_elements
     query_defects
+    query_defect_locations
     query_roadways
     query_images
     query_documents
@@ -432,6 +483,13 @@ class Api::V1::InspectionsController < Api::ApiController
     @culvert_asset_ids = @culverts.pluck("transam_assetible_id")
   end
 
+  def query_ancillary_structures
+    @highway_signs = HighwaySign.where("highway_structures.id": @highway_structure_ids)
+    @highway_signals = HighwaySignal.where("highway_structures.id": @highway_structure_ids)
+    @high_mast_lights = HighMastLight.where("highway_structures.id": @highway_structure_ids)
+    @ancillary_asset_ids = @highway_signs.or(@highway_signals).or(@high_mast_lights).pluck("transam_assetible_id")
+  end
+
   def query_inspections
     @inspection_ids = []
     # return open inspection and last two finished ones
@@ -450,12 +508,20 @@ class Api::V1::InspectionsController < Api::ApiController
     @culvert_conditions = CulvertCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @culvert_asset_ids)
   end
 
+  def query_ancillary_conditions
+    @ancillary_conditions = AncillaryCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @ancillary_asset_ids)
+  end
+
   def query_elements
     @elements = Element.where(inspection_id: @inspection_ids)
   end
 
   def query_defects
     @defects = Defect.where(inspection_id: @inspection_ids)
+  end
+
+  def query_defect_locations
+    @defect_locations = DefectLocation.where(defect: @defects)
   end
 
   def query_roadways
@@ -467,6 +533,7 @@ class Api::V1::InspectionsController < Api::ApiController
               .or(Image.where(imagable_type: 'Inspection', imagable_id: @inspection_ids))
               .or(Image.where(imagable_type: 'Element', imagable_id: @elements))
               .or(Image.where(imagable_type: 'Defect', imagable_id: @defects))
+              .or(Image.where(imagable_type: 'DefectLocation', imagable_id: @defect_locations))
   end
 
   def query_documents

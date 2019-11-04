@@ -31,7 +31,10 @@ organization_types = [
 ]
 asset_types = [
     {name: 'Bridge', description: 'Bridge', class_name: 'Bridge', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},
-    {name: 'Culvert', description: 'Culvert', class_name: 'Culvert', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true}
+    {name: 'Culvert', description: 'Culvert', class_name: 'Culvert', display_icon_name: 'fa fa-road', map_icon_name: 'blueIcon', active: true},
+    {name: 'Highway Sign', description: 'Highway Sign', class_name: 'HighwaySign', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
+    {name: 'Highway Signal', description: 'Highway Signal', class_name: 'HighwaySignal', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
+    {name: 'High Mast Light', description: 'High Mast Light', class_name: 'HighMastLight', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
 
 ]
 asset_subtypes = [
@@ -41,7 +44,15 @@ asset_subtypes = [
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Suspension', description: 'Suspension Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Truss', description: 'Truss Bridge', active: true},
   {belongs_to: 'asset_type', type: 'Bridge', name: 'Other', description: 'Other Bridge', active: true},
-  {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true}
+  {belongs_to: 'asset_type', type: 'Culvert', name: 'Culvert', description: 'Culvert', active: true},
+  {belongs_to: 'asset_type', type: 'Highway Sign', name: 'Overhead Sign', description: 'Overhead sign', active: true},
+  {belongs_to: 'asset_type', type: 'Highway Sign', name: 'Overhead Sign, Butterfly', description: 'Overhead Sign, Butterfly', active: true},
+  {belongs_to: 'asset_type', type: 'Highway Sign', name: 'Overhead Sign, Cantilever', description: 'Overhead Sign, Cantilever', active: true},
+  {belongs_to: 'asset_type', type: 'Highway Sign', name: 'Overhead Sign with Cantilever Sign', description: 'Overhead Sign with Cantilever Sign', active: true},
+
+  {belongs_to: 'asset_type', type: 'Highway Signal', name: 'Mast Arm Signal', description: 'Mast Arm Signal', active: true},
+
+  {belongs_to: 'asset_type', type: 'High Mast Light', name: 'High Mast Light”', description: 'High mast light”', active: true},
 ]
 
 roles = [
@@ -173,6 +184,20 @@ culvert_condition_types = [
     {active: true, code: '1', name: 'Imminent failure', description: 'Bridge closed. Corrective action may put back in light service.'},
     {active: true, code: '0', name: 'Failed', description: 'Bridge closed. Replacement necessary.'}
 
+]
+
+ancillary_condition_types = [
+        {active: true, code: 'N', name: 'Not applicable', description: 'Used if structure is not an ancillary.'},
+        {active: true, code: '9', name: 'Excellent', description: 'Newly completed construction.'},
+        {active: true, code: '8', name: 'Very good', description: 'Near new construction. No damage or deterioration.'},
+        {active: true, code: '7', name: 'Good', description: 'Minor problems. Shrinkage cracking in concrete and/or staining of surfaces. All connections are sound and hardware is tight. Coating system is functioning as designed with minor peeling or damage in isolated areas with no active corrosion.'},
+        {active: true, code: '6', name: 'Satisfactory', description: 'Structural elements show minor deterioration. Hairline cracking in concrete greater than 0.012 inches wide with minor efflorescence, scaling, or pop-outs. Connections are functioning as intended. Coating system may be chalking, peeling, curling, or showing other early evidence of distress with isolated minor surface rust with no section loss.'},
+        {active: true, code: '5', name: 'Fair', description: 'All primary structural elements are sound. Cracking in concrete less than 0.05 inches wide with moderate efflorescence, scaling, delamination, and/or spalls. Exposed rebar may have active corrosion with minor section loss. A few upper connection or splice fasteners may be loose and minor fabrication gaps may exist between mating flange surfaces. Coating system has evidence of distress with active corrosion and/or minor section loss to primary steel elements.'},
+        {active: true, code: '4', name: 'Poor', description: 'Primary structural elements show advanced deterioration. Structural analysis is not yet warranted. Cracking in concrete greater than 0.05 inches wide with heavy efflorescence, scaling, delamination, and/or spalls. Exposed rebar has moderate section loss. Up to 25% of the fasteners are loose and mating flange surfaces may have moderate gaps not due to fabrication. Impact damage may be present. Coating has failed and moderate section loss to primary steel elements may be present. No cracking to steel elements exists. An increased inspection frequency is required. An Essential Repair Finding notification may be warranted.'},
+        {active: true, code: '3', name: 'Serious', description: 'Deterioration or damage has seriously affected primary structural elements. Structural analysis may be warranted. Major repairs may be necessary. Concrete elements have significant cracking, spalling, and/or exposed rebar with advanced section loss. More than 25% of the fasteners are loose and/or some nuts and bolts may be missing, mating flange surfaces may have significant gaps not due to fabrication. Significant impact damage has occurred. Coating has failed with advanced section loss to primary steel members. Fatigue cracks in steel may be present. An increased inspection frequency and Essential Repair Finding notification is required.'},
+        {active: true, code: '2', name: 'Critical', description: 'Advanced deterioration or damage to primary structural elements. Structural elements no longer functioning as designed. Structural analysis is warranted. Emergency repairs or shoring devices may be necessary for structure to remain in-service. Consideration should be given to removing or replacing the structure. Immediate notification and Essential Repair Finding is required.'},
+        {active: true, code: '1', name: 'Imminent failure', description: 'Major deterioration or damage to primary structural elements. Structural stability has been compromised. Through-wall section loss in critical components, fatigue cracking, or damage that could cause structural failure is present. Traffic should be diverted from under the structure and it should immediately be removed from service. Immediate notification and Essential Repair Finding is required.'},
+        {active: true, code: '0', name: 'Failed', description: 'One or more primary structural elements has failed. Structure is beyond repair and has been removed from service.'}
 ]
 
 bridge_appraisal_rating_types = [
@@ -640,7 +665,21 @@ element_definitions = [
 {number: 691, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Pole/Col', long_name: 'Traffic Impact - Poles/Columns', description: 'This smart flag addresses damage to signal poles or sign poles caused by traffic impact.', assembly_type: 'Ancillary'},
 {number: 692, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'TrImpact - Guardrail', long_name: 'Traffic Impact - Guardrail', description: 'This smart flag addresses traffic impact damage to the guardrail system that protects signal poles and sign poles.', assembly_type: 'Ancillary'},
 {number: 693, is_nbe: 'Y', is_protective: false, mat_key: '9', long_name: 'Fatigue', description: 'This element is used to record fatigue damage discovered on any of the steel structural elements of a sign, signal, or high-mast light.   Once recorded, do not exclude this element from future inspections but continue to record the Condition State using the definitions below. Use this element only on those signs, signals, and high-mast lights with steel elements that are indicating fatigue damage.   Fatigue damage may be determined either through visual or non-destructive testing methods.  Indicate the method used to discover the fatigue in the notes section of this element. Do not use this element on steel signs or signals prior to fatigue damage becoming apparent.', assembly_type: 'Ancillary'},
-{number: 694, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Critical Finding', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.', assembly_type: 'Ancillary'}
+{number: 694, is_nbe: 'Y', is_protective: false, mat_key: '9', short_name: 'Critical Finding', long_name: 'Critical Inspection Finding', description: 'This element is used to record critical inspection finding reports.', assembly_type: 'Ancillary'},
+# Misc "new" elements
+{number: 14, is_nbe: 'Y', mat_key: '7', short_name: 'PrecastDkPnl',
+ long_name: 'Precast Deck Panel with CIP Topping',
+ quantity_unit: 'each', assembly_type: 'Deck'},
+ {number: 59, is_nbe: 'Y', mat_key: '7', long_name: 'Soffit', short_name: 'Soffit',
+  quantity_unit: 'each', assembly_type: 'Deck'},
+ {number: 260, mat_key: '6', short_name: 'Slope Prot Berm',
+  long_name: 'Slope Protection or Berm', quantity_unit: 'each'},
+ {number: 326, mat_key: '0', long_name: 'Wingwall', short_name: 'Wingwall', quantity_unit: 'each'},
+ {number: 335, mat_key: '6', long_name: 'Headwall', short_name: 'Headwall', quantity_unit: 'each'},
+ {number: 342, mat_key: '6', long_name: 'Sign Attachment', short_name: 'Sign Attachment', quantity_unit: 'each'},
+ {number: 343, mat_key: '6', long_name: 'Pole Attachment', short_name: 'Pole Attachment', quantity_unit: 'each'},
+ {number: 372, mat_key: '9', long_name: 'FalseBent SmFlag', short_name: 'FalseBent SmFlag', quantity_unit: 'each'},
+
 ]
 
 inspection_programs = [
@@ -660,28 +699,29 @@ inspection_programs = [
 ]
 
 # These mappings are based solely on Materials in Appendix D of DefectMapping.pdf
+# and on defect matrixes in the SSHML Inventory & Inspection Manual.
 defect_definitions_element_definitions = {
-      1000 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333],
-      1010 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333],
-      1020 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333],
-      1080 => [12, 13, 15, 16, 38, 39, 60, 65, 104, 105, 106, 109, 110, 112, 115, 116, 142, 143, 144, 145, 154, 155, 157, 203, 204, 205, 210, 211, 213, 215, 217, 218, 220, 226, 227, 229, 233, 234, 236, 241, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 320, 321, 331, 333, 334],
-      1090 => [12, 13, 15, 16, 38, 39, 104, 105, 109, 110, 115, 116, 143, 144, 154, 155, 204, 205, 210, 215, 220, 226, 227, 233, 234, 241, 245, 320, 321, 331],
+      1000 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333, 610, 611, 612, 620, 630, 631, 640, 650, 651, 661, 662, 663],
+      1010 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333, 610, 611, 612, 620, 630, 631, 640, 661, 662, 663],
+      1020 => [28, 29, 30, 60, 65, 102, 106, 107, 112, 113, 118, 120, 136, 141, 142, 147, 148, 149, 152, 157, 161, 162, 202, 203,  207, 210, 211, 218, 219, 225, 229, 231, 236, 240, 243, 300, 304, 310, 311, 313, 314, 316, 330, 333, 610, 630, 640, 661, 662, 663],
+      1080 => [12, 13, 15, 16, 38, 39, 60, 65, 104, 105, 106, 109, 110, 112, 115, 116, 142, 143, 144, 145, 154, 155, 157, 203, 204, 205, 210, 211, 213, 215, 217, 218, 220, 226, 227, 229, 233, 234, 236, 241, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 320, 321, 331, 333, 334, 601, 621, 660],
+      1090 => [12, 13, 15, 16, 38, 39, 104, 105, 109, 110, 115, 116, 143, 144, 154, 155, 204, 205, 210, 215, 220, 226, 227, 233, 234, 241, 245, 320, 321, 331, 601, 660],
       1100 => [13, 15, 39, 104, 109, 115, 143, 154, 204, 226, 233, 245, 320],
-      1110 => [13, 15, 39, 104, 109, 115, 143, 154, 204, 226, 233, 245, 320],
-      1120 => [12, 13, 15, 16, 38, 39, 60, 65, 104, 105, 106, 109, 110, 112, 115, 116, 142, 143, 144, 145, 154, 155, 157, 203, 204, 205, 210, 211, 213, 215, 217, 218, 220, 226, 227, 229, 233, 234, 236, 241, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 320, 321, 331, 333, 334],
-      1130 => [12, 16, 38, 60, 65, 110, 112, 116, 118, 142, 144, 155, 157, 203, 205, 210, 211, 215, 218, 220, 227, 229, 234, 236, 241, 243, 321, 331, 333],
+      1110 => [13, 15, 39, 104, 109, 115, 143, 154, 204, 226, 233, 245, 320, 601, 621],
+      1120 => [12, 13, 15, 16, 38, 39, 60, 65, 104, 105, 106, 109, 110, 112, 115, 116, 142, 143, 144, 145, 154, 155, 157, 203, 204, 205, 210, 211, 213, 215, 217, 218, 220, 226, 227, 229, 233, 234, 236, 241, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 320, 321, 331, 333, 334, 601, 621, 660],
+      1130 => [12, 16, 38, 60, 65, 110, 112, 116, 118, 142, 144, 155, 157, 203, 205, 210, 211, 215, 218, 220, 227, 229, 234, 236, 241, 243, 321, 331, 333, 601, 621, 660],
       1140 => [31, 54, 111, 117, 135, 146, 156, 206, 208, 212, 216, 228, 235, 242, 332],
       1150 => [31, 54, 111, 117, 135, 146, 156, 206, 208, 212, 216, 228, 235, 242, 332],
       1160 => [31, 54, 111, 117, 135, 146, 156, 206, 208, 212, 216, 228, 235, 242, 332],
       1170 => [31, 54, 111, 117, 135, 146, 156, 206, 208, 212, 216, 228, 235, 242, 332],
       1180 => [31, 54, 111, 117, 135, 146, 156, 206, 208, 212, 216, 228, 235, 242, 332],
-      1190 => [12, 13, 15, 16, 38, 39, 104, 105, 109, 110, 115, 116, 143, 144, 154, 155, 204, 205, 210, 215, 220, 226, 227, 233, 234, 241, 245, 320, 321, 331],
+      1190 => [12, 13, 15, 16, 38, 39, 104, 105, 109, 110, 115, 116, 143, 144, 154, 155, 204, 205, 210, 215, 220, 226, 227, 233, 234, 241, 245, 320, 321, 331, 601, 621, 660],
       1220 => [60, 65, 106, 112, 118, 136, 142, 149, 157, 203, 211, 218, 229, 236, 243, 306, 316, 333],
       1610 => [145, 213, 217, 244, 334],
       1620 => [145, 213, 217, 244, 334],
       1630 => [145, 213, 217, 244, 334],
       1640 => [145, 213, 217, 244, 334],
-      1900 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334],
+      1900 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334, 610, 630, 640, 661],
       2210 => [310, 311, 312, 313, 314, 315, 316],
       2220 => [310, 311, 312, 313, 314, 315, 316],
       2230 => [310],
@@ -705,8 +745,103 @@ defect_definitions_element_definitions = {
       3600 => [520],
       4000 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334],
       6000 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334],
-      7000 => nil
+      7000 => [610, 611, 612, 620, 630, 631, 640, 661, 662, 663]
     }
+
+mast_arm_frame_types = [
+    {name: 'Single arm', code: 'SA', active: true},
+    {name: 'Double-arm', code: 'DA', active: true},
+    {name: 'Double-arm truss', code: 'DAT', active: true},
+    {name: 'Box beam truss', code: 'BBT', active: true},
+    {name: 'Triple arm', code: 'TA', active: true},
+    {name: 'Monotube', code: 'M', active: true},
+    {name: 'High-mast light', code: 'HML', active: true},
+    {name: 'Span wire', code: 'SW', active: true},
+    {name: 'Non-Standard', code: 'NS', active: true}
+]
+
+column_types = [
+    {name: 'Single tapered column', code: 'SNGTC', active: true},
+    {name: 'Single uniform column', code: 'SNGUC', active: true},
+    {name: 'Monotube column', code: 'MTUBE', active: true},
+    {name: 'Split monotube column', code: 'SPTBE', active: true},
+    {name: 'Double uniform column', code: 'DBLUC', active: true},
+    {name: 'Built-up column', code: 'BLTUC', active: true},
+    {name: 'Unknown', code: 'U', active: true},
+    {name: 'Non-Standard', code: 'NS', active: true}
+]
+
+foundation_types = [
+    {name: 'Buried, not visible, or otherwise not accessible', code: '0', active: true},
+    {name: 'Caisson', code: '1', active: true},
+    {name: 'Median barrier wall', code: '2', active: true},
+    {name: 'Formed concrete, rectangle', code: '3', active: true},
+    {name: 'Formed concrete, round', code: '4', active: true},
+    {name: 'Other', code: '5', active: true}
+]
+
+upper_connection_types = [
+    {name: 'Double arm frame, vertical bolted connection, welded to vertical pole', code: '001', active: true},
+    {name: 'Monotube, horizontal bolted connection, stiffened flanges', code: '002', active: true},
+    {name: 'Double arm, horizontal bolted connection to simplex plate', code: '003', active: true},
+    {name: 'Single face, single arm, double horizontal bolted connection to simplex plate (butterfly signs)', code: '004', active: true},
+    {name: 'Double arm, square column, vertical bolted connection (butterfly signs)', code: '005', active: true},
+    {name: 'Monotube, horizontal bolted connection, no gussets', code: '006', active: true},
+    {name: 'Single face sign, single arm, cap-T horizontal bolted connection (butterfly signs)', code: '007', active: true},
+    {name: 'Double face sign, single arm, cap-T horizontal bolted connection (butterfly signs)', code: '008', active: true},
+    {name: 'Double arm (angle) truss, cap connection', code: '009', active: true},
+    {name: 'Double face sign, single arm, double horizontal bolted connection to simplex plate (butterfly signs)', code: '010', active: true},
+    {name: 'Three arm truss, U-bolt fitted connection on bearing plate', code: '011', active: true},
+    {name: 'Double arm truss, bolted connection to top of pole and lower bearing plate', code: '012', active: true},
+    {name: 'Double arm truss, bolted connection on bearing plates', code: '013', active: true},
+    {name: 'Double arm, 3 finger collar connection', code: '014', active: true},
+    {name: 'Double arm truss, U-bolt fitted connection on bearing plates on front of pole', code: '015', active: true},
+    {name: 'Double arm (pipe) truss, cap connection', code: '016', active: true},
+    {name: 'Double arm box truss, collar connection', code: '018', active: true},
+    {name: 'Double arm box truss, cap connection (butterfly signs)', code: '019', active: true},
+    {name: 'Double arm, 5 finger collar connection, or 5 finger U-bolt clamp connection', code: '020', active: true},
+    {name: 'Double arm welded through vertical, vertical bolted cap connection', code: '021', active: true},
+    {name: 'Double arm, 6 finger collar connection, or 6 finger U-bolt clamp connection', code: '024', active: true},
+    {name: 'Double arm, welded collar to vertical, vertical bolted cap connection', code: '026', active: true},
+    {name: 'Double arm frame, horizontal bolted connection to simplex plate with welded stiffener', code: '027', active: true},
+    {name: 'Single arm, double collar connection, or double U-bolt connection', code: '028', active: true},
+    {name: 'Double arm, bracket welded to vertical, vertical bolted connection', code: '030', active: true},
+    {name: 'Double face sign, double arm, double horizontal bolted connection to simplex plate (butterfly signs)', code: '032', active: true},
+    {name: 'Double arm, round column, vertical bolted cap connection (butterfly signs)', code: '033', active: true},
+    {name: 'Double arm (angle) truss bolted cap connection to plates welded to vertical', code: '034', active: true},
+    {name: 'Ornamental connection', code: '035', active: true},
+    {name: 'Single face sign, double arm, double horizontal bolted connection to simplex plate (butterfly signs)', code: '036', active: true},
+    {name: 'Double arm, double horizontal bolted connection to simplex plate with welded stiffeners (butterfly signs)', code: '038', active: true},
+    {name: 'Monotube, vertical bolted connection, no gussets', code: '039', active: true},
+    {name: 'Double arm truss, bolted connection to top of pole and lower bearing plate', code: '041', active: true},
+    {name: 'Double arm, pipe fitted through vertical (butterfly signs)', code: '042', active: true},
+    {name: 'Double arm, horizontal bolted connection to plate', code: '045', active: true},
+    {name: 'Single arm, 3 finger collar connection', code: '046', active: true},
+    {name: 'Single arm, horizontal bolted connection to simplex plate on front of pole', code: '047', active: true},
+    {name: 'Double arm, horizontal bolted connection to stiffener reinforced plates', code: '048', active: true},
+    {name: 'Double arm, horizontal bolted connection to simplex plate on front of pole (butterfly signs)', code: '049', active: true},
+    {name: 'Double arm (angle) truss, top cap connection, truss bearing on bottom', code: '053', active: true},
+    {name: 'Double arm, pipe fitted through vertical, welded', code: '058', active: true},
+    {name: 'Double arm, horizontal bolted connection, stiffened flanges', code: '060', active: true},
+    {name: 'Single arm, 4 bolt connection to simplex plate', code: '100', active: true},
+    {name: 'Single arm, 6 bolt connection to simplex plate', code: '101', active: true},
+    {name: 'Single arm, 4 bolt connection to simplex plate with welded stiffener', code: '102', active: true},
+    {name: 'Single arm, 3 U-bolt connection', code: '103', active: true},
+    {name: 'Single arm, box connection', code: '104', active: true},
+    {name: 'Single arm, welded-clamped connection', code: '105', active: true},
+    {name: 'Single arm, 3 bolt connection', code: '106', active: true},
+    {name: 'Single arm, 4 bolt connection to wide simplex plate', code: '107', active: true},
+    {name: 'Single arm, angled weld directly to column, with or without vertical pole on top', code: '108', active: true},
+    {name: 'Quad arm, clamped connection', code: '109', active: true},
+    {name: 'Double arm, clamped connection', code: '110', active: true},
+    {name: 'Single arm, 4 bolt connection to simplex plate with welded bracket stiffener', code: '111', active: true},
+    {name: 'Single arm, butterfly clamped connection', code: '112', active: true},
+    {name: 'Single arm, circular welded connection', code: '113', active: true},
+    {name: 'Double arm, 4 bolt connection to simplex plate', code: '114', active: true},
+    {name: 'Double arm frame', code: '115', active: true},
+    {name: 'Single arm, welded-clamped connection, with stiffeners', code: '117', active: true},
+    {name: 'Unknown', code: '999', active: true}
+]
 
 merge_tables = %w{ organization_types asset_types asset_subtypes roles system_config_extensions }
 
@@ -723,7 +858,7 @@ merge_tables.each do |table_name|
   end
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types inspection_programs maintenance_priority_types
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types ancillary_condition_types inspection_programs maintenance_priority_types mast_arm_frame_types column_types foundation_types upper_connection_types
 }
 
 replace_tables.each do |table_name|

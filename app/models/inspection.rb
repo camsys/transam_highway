@@ -57,13 +57,7 @@ class Inspection < InspectionRecord
         inspection = inspection.specific
 
         typed_asset = TransamAsset.get_typed_asset(inspection.highway_structure)
-        class_exists = begin
-          klass = Module.const_get("#{typed_asset.class}Condition")
-          klass.is_a?(Class)
-        rescue NameError
-          false
-        end
-        inspection = inspection.becomes((typed_asset.class.to_s + 'Condition').constantize) if class_exists
+        inspection = inspection.becomes(typed_asset.inspection_class)
       end
 
       inspection

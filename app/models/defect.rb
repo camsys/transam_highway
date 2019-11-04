@@ -7,6 +7,7 @@ class Defect < ApplicationRecord
   belongs_to :inspection
   has_one :highway_structure, through: :inspection
   has_many :images, as: :imagable, dependent: :destroy
+  has_many :defect_locations, dependent: :destroy
 
   scope :ordered, -> { joins(:defect_definition).merge(DefectDefinition.order(:number)) }
 
@@ -21,5 +22,12 @@ class Defect < ApplicationRecord
       :total_quantity,
       :notes
     ]
+  end
+
+  def as_json
+    super.merge!({
+                   "defect_number" => defect_definition.number,
+                   "element_number" => element.element_definition.number
+                 })
   end
 end

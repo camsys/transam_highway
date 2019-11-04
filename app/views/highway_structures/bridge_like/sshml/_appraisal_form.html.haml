@@ -1,0 +1,10 @@
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'approach_rail_safety_type_id', 'Approach Guardrail')
+  .display-value
+    = @latest_condition&.approach_rail_safety_type
+.form-group
+  %label.control-label
+    = reference_label('bridge_conditions', 'approach_rail_end_safety_type_id', 'End Treatments')
+  .display-value
+    = @latest_condition&.approach_rail_end_safety_type

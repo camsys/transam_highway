@@ -1,5 +1,5 @@
 :ruby
-  table_title = @asset_class_name.pluralize
+  table_title = AssetType.find_by(id: @asset_type).to_s.pluralize
 
 :css
   .flag-column {
@@ -48,7 +48,8 @@
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_like_type'}}= reference_label(table_title.underscore, 'transam_assets.asset_subtype_id', 'Type')
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+          - unless AssetType.where(class_name: ['HighwaySign', 'HighwaySignal', 'HighMastLight']).pluck(:id).include? @asset_type.to_i
+            %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= reference_label('highway_structures', 'facility_carried', 'Facility Carried')
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'features_intersected'}}= reference_label('highway_structures', 'features_intersected', 'Feature Intersected')
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'location_description'}}= reference_label('highway_structures', 'location_description', 'Location Description')
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')

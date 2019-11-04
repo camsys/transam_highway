@@ -21,4 +21,10 @@ class Element < ApplicationRecord
       :notes
     ]
   end
+
+  def as_json
+    super.merge!({
+                   "element_number" => element_definition.number
+                 })
+  end
 end

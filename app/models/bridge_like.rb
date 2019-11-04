@@ -57,7 +57,13 @@ class BridgeLike < TransamAssetRecord
     :operating_rating,
     :inventory_rating_method_type_id,
     :inventory_rating,
-    :bridge_posting_type_id
+    :bridge_posting_type_id,
+    # AncillaryStructure, because not acts_as
+    :mast_arm_frame_type_id,
+    :column_type_id,
+    :foundation_type_id,
+    :upper_connection_type_id,
+    :maintenance_patrol
   ]
 
   CLEANSABLE_FIELDS = [
@@ -786,7 +792,9 @@ class BridgeLike < TransamAssetRecord
     return bridgelike, msg
   end
 
-  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class, ade_mapping={}, add_mapping={})
+  def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class,
+                                  ade_mapping={}, add_mapping={}, ade_515_mapping={},
+                                  steel_coating=nil)
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
     grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
@@ -794,8 +802,12 @@ class BridgeLike < TransamAssetRecord
 
     if parent_key == 0
       # Fallback to ADE
-      elem_def = ElementDefinition.find_by(number: key) || ade_mapping[key]
-
+      if ade_515_mapping[key]
+        use_coating = true
+        elem_def = ade_515_mapping[key]
+      else
+        elem_def = ElementDefinition.find_by(number: key) || ade_mapping[key]
+      end
       # If not found, then should be ADE that should be deleted
       if elem_def
         # Process element
@@ -803,6 +815,14 @@ class BridgeLike < TransamAssetRecord
                                             quantity: process_quantities(hash['ELEM_QUANTITY'],
                                                                          elem_def.quantity_unit),
                                             notes: hash['ELEM_NOTES'])
+        if use_coating
+          bme = element.children.build(inspection: inspection,
+                                       element_definition: steel_coating,
+                                       quantity: process_quantities(hash['ELEM_QUANTITY'],
+                                                                    steel_coating.quantity_unit),
+                                       notes: hash['ELEM_NOTES'])
+        end
+          
         element.save!
         # Save to original key so that child can be attached to mapped element
         parent_elements[key] = element
@@ -892,4 +912,16 @@ class BridgeLike < TransamAssetRecord
       json
     end
   end
+
+  def inspection_class
+    typed_asset = TransamAsset.get_typed_asset(self)
+    begin
+      klass = Module.const_get("#{typed_asset.class}Condition")
+      return klass if klass.is_a?(Class)
+    rescue NameError
+      return nil
+    end
+    nil
+  end
+  
 end

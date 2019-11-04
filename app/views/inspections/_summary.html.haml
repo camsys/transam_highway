@@ -74,7 +74,7 @@
   .col-sm-3
     .form-group
       %label.control-label
-        = "#{@inspection.highway_structure.asset_type&.class_name} Notes"
+        = "#{@inspection.highway_structure.asset_type&.class_name.titleize} Notes"
       .display-value
         = format_as_text(@inspection.highway_structure.remarks)
     .form-group

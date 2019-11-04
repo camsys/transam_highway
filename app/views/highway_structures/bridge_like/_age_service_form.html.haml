@@ -1,5 +1,5 @@
 = editable_asset_field_tag(@asset, :manufacture_year, reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built'), required: true, type: 'number', min: get_system_asset_starting_year, max: Date.today.year)
-= editable_asset_field_tag(@asset, :lanes_on, reference_label('highway_structures', 'lanes_on', 'Lanes On'), required: false)
+= editable_asset_field_tag(@asset, :lanes_on, reference_label('highway_structures', 'lanes_on', 'Lanes On'), required: false) unless @sshml
 = editable_asset_field_tag(@asset, :lanes_under, reference_label('highway_structures', 'lanes_under', 'Lanes Under'), required: false)
-= editable_asset_association_tag(@asset, :service_on_type, reference_label('bridges', 'service_on_type_id', 'Service Type On'), include_blank: true)
+= editable_asset_association_tag(@asset, :service_on_type, reference_label('bridges', 'service_on_type_id', 'Service Type On'), include_blank: true) unless @sshml
 = editable_asset_association_tag(@asset, :service_under_type, reference_label('bridges', 'service_under_type_id', 'Service Type Under'), include_blank: true)

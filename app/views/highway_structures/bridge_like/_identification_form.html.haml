@@ -13,7 +13,7 @@
 .profile-city
   = editable_asset_field_tag(@asset, :city, reference_label('highway_structures', 'city', '* City'))
 = editable_asset_field_tag(@asset, :features_intersected, reference_label('highway_structures', 'features_intersected', 'Feature Intersected'))
-= editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried'))
+= editable_asset_field_tag(@asset, :facility_carried, reference_label('highway_structures', 'facility_carried', 'Facility Carried')) unless @sshml
 = editable_asset_field_tag(@asset, :structure_number, reference_label('highway_structures', 'structure_number', 'Structure Number'))
 = editable_asset_field_tag(@asset, :asset_tag, reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'))
 /= editable_asset_field_tag(@asset, :structure_alias, reference_label('highway_structures', 'structure_alias', 'Structure Alias'), required: false)
@@ -30,13 +30,14 @@
     = reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude')
   .display-value
     = @asset.geometry.try(:x)
-.row
-  .col-sm-2
-    = editable_asset_association_tag(@asset, :border_bridge_state, reference_label('bridges', 'border_bridge_state', 'State (border)'), [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
-  .col-sm-3
-    = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
-  .col-sm-3
-    = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
+- unless @sshml
+  .row
+    .col-sm-2
+      = editable_asset_association_tag(@asset, :border_bridge_state, reference_label('bridges', 'border_bridge_state', 'State (border)'), [['KS', 'KS'], ['NE', 'NE'], ['NM', 'NM'], ['OK', 'OK'], ['UT', 'UT'], ['WY', 'WY']], suffix: '')
+    .col-sm-3
+      = editable_asset_field_tag(@asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
+    .col-sm-3
+      = editable_asset_field_tag(@asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
 .profile-location-remarks
   = editable_asset_field_tag(@asset, :remarks, type: 'textarea')
 
