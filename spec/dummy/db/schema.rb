@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_22_101327) do
+ActiveRecord::Schema.define(version: 2019_10_25_155252) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -40,6 +40,13 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.datetime "activity_time"
     t.index ["organization_id", "activity_time"], name: "activity_logs_idx1"
     t.index ["user_id", "activity_time"], name: "activity_logs_idx2"
+  end
+
+  create_table "ancillary_condition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.string "description"
+    t.boolean "active"
   end
 
   create_table "archived_fiscal_years", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -334,6 +341,8 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.bigint "approach_rail_safety_type_id"
     t.bigint "approach_rail_end_safety_type_id"
     t.bigint "culvert_condition_type_id"
+    t.bigint "ancillary_condition_type_id"
+    t.index ["ancillary_condition_type_id"], name: "index_bridge_like_conditions_on_ancillary_condition_type_id"
     t.index ["culvert_condition_type_id"], name: "index_bridge_like_conditions_on_culvert_condition_type_id"
   end
 
@@ -372,22 +381,31 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.bigint "lateral_reference_feature_below_id"
     t.decimal "min_lateral_clearance_below_right", precision: 9, scale: 2
     t.decimal "min_lateral_clearance_below_left", precision: 9, scale: 2
+    t.string "maintenance_patrol"
+    t.bigint "mast_arm_frame_type_id"
+    t.bigint "column_type_id"
+    t.bigint "foundation_type_id"
+    t.bigint "upper_connection_type_id"
     t.index ["approach_spans_design_construction_type_id"], name: "idx_bridge_likes_on_approach_spans_design_construction_type_id"
     t.index ["approach_spans_material_type_id"], name: "index_bridge_likes_on_approach_spans_material_type_id"
     t.index ["bridge_posting_type_id"], name: "index_bridge_likes_on_bridge_posting_type_id"
     t.index ["bridge_toll_type_id"], name: "index_bridge_likes_on_bridge_toll_type_id"
+    t.index ["column_type_id"], name: "index_bridge_likes_on_column_type_id"
     t.index ["deck_protection_type_id"], name: "index_bridge_likes_on_deck_protection_type_id"
     t.index ["deck_structure_type_id"], name: "index_bridge_likes_on_deck_structure_type_id"
     t.index ["design_load_type_id"], name: "index_bridge_likes_on_design_load_type_id"
+    t.index ["foundation_type_id"], name: "index_bridge_likes_on_foundation_type_id"
     t.index ["inventory_rating_method_type_id"], name: "index_bridge_likes_on_inventory_rating_method_type_id"
     t.index ["lateral_reference_feature_below_id"], name: "index_bridge_likes_on_lateral_reference_feature_below_id"
     t.index ["main_span_design_construction_type_id"], name: "index_bridge_likes_on_main_span_design_construction_type_id"
     t.index ["main_span_material_type_id"], name: "index_bridge_likes_on_main_span_material_type_id"
+    t.index ["mast_arm_frame_type_id"], name: "index_bridge_likes_on_mast_arm_frame_type_id"
     t.index ["membrane_type_id"], name: "index_bridge_likes_on_membrane_type_id"
     t.index ["operating_rating_method_type_id"], name: "index_bridge_likes_on_operating_rating_method_type_id"
     t.index ["service_on_type_id"], name: "index_bridge_likes_on_service_on_type_id"
     t.index ["service_under_type_id"], name: "index_bridge_likes_on_service_under_type_id"
     t.index ["strahnet_designation_type_id"], name: "index_bridge_likes_on_strahnet_designation_type_id"
+    t.index ["upper_connection_type_id"], name: "index_bridge_likes_on_upper_connection_type_id"
     t.index ["vertical_reference_feature_below_id"], name: "index_bridge_likes_on_vertical_reference_feature_below_id"
     t.index ["wearing_surface_type_id"], name: "index_bridge_likes_on_wearing_surface_type_id"
   end
@@ -410,6 +428,14 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.string "code"
     t.string "description"
     t.boolean "active"
+  end
+
+  create_table "column_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -509,6 +535,20 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.bigint "defect_definition_id", null: false
     t.bigint "element_definition_id", null: false
     t.index ["element_definition_id", "defect_definition_id"], name: "idx_defect_defintions_element_definitions"
+  end
+
+  create_table "defect_locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key"
+    t.string "guid", limit: 36
+    t.bigint "defect_id"
+    t.float "quantity"
+    t.string "location_description"
+    t.integer "location_distance"
+    t.string "condition_state"
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["defect_id"], name: "index_defect_locations_on_defect_id"
   end
 
   create_table "defects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -714,6 +754,14 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["object_key"], name: "forms_idx1"
+  end
+
+  create_table "foundation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "frequency_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1039,6 +1087,14 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.index ["id"], name: "id", unique: true
     t.index ["map_overlay_service_type_id"], name: "index_map_overlay_services_on_map_overlay_service_type_id"
     t.index ["organization_id"], name: "index_map_overlay_services_on_organization_id"
+  end
+
+  create_table "mast_arm_frame_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "membrane_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1413,6 +1469,7 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.string "number"
     t.float "entry"
     t.float "exit"
+    t.float "minimum_clearance"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["inspection_id"], name: "index_roadbed_lines_on_inspection_id"
@@ -1786,6 +1843,14 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.index ["user_id"], name: "uploads_idx3"
   end
 
+  create_table "upper_connection_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "notification_id", null: false
@@ -1959,6 +2024,7 @@ ActiveRecord::Schema.define(version: 2019_08_22_101327) do
     t.index ["object_key"], name: "workflow_events_idx1"
   end
 
+  add_foreign_key "defect_locations", "defects"
   add_foreign_key "query_field_asset_classes", "query_asset_classes"
   add_foreign_key "query_field_asset_classes", "query_fields"
   add_foreign_key "query_filters", "query_fields"
