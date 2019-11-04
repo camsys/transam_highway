@@ -29,4 +29,8 @@ class AncillaryCondition < BridgeLikeCondition
       ta.try(:set_calculated_condition!) if ta
     end
   end
+
+  def has_required_photos?
+    true
+  end
 end
