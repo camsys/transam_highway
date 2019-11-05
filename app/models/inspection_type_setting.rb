@@ -2,10 +2,13 @@ class InspectionTypeSetting < ApplicationRecord
 
   include TransamObjectKey
 
-  after_initialize :set_defaults
+  after_initialize  :set_defaults
+  after_save        :update_inspection
 
   belongs_to :inspection_type
   belongs_to :highway_structure, foreign_key: :transam_asset_id
+
+  attr_accessor :calculated_inspection_due_date
 
   def self.allowable_params
     [
@@ -23,5 +26,11 @@ class InspectionTypeSetting < ApplicationRecord
   protected
   def set_defaults
     self.is_required = self.is_required.nil? ? false : true
+  end
+
+  def update_inspection
+    generator = InspectionGenerator.new(self)
+    generator.create
+    generator.update
   end
 end

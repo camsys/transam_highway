@@ -14,7 +14,10 @@
         .row
           .col-sm-4
             = f.association :inspection_type, collection: InspectionType.can_be_unscheduled, required: true
+          .col-sm-4
+            = f.input :calculated_inspection_due_date, label: 'Due Date', required: true
         = f.input :description, required: true
+
 
         .row
           .col-xs-12

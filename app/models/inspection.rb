@@ -76,8 +76,6 @@ class Inspection < InspectionRecord
 
   def self.transam_workflow_transitions
     [
-        {event_name: 'make_open', from_state: 'created', to_state: 'open', guard: :allowed_to_open, can: :can_open, human_name: 'To Open'},
-
         {event_name: 'make_ready', from_state: 'open', to_state: 'ready', guard: :allowed_to_make_ready, can: :can_make_ready, human_name: 'To Ready'},
 
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
@@ -149,10 +147,6 @@ class Inspection < InspectionRecord
   #
   # -------------------------------------------------------------------
 
-  def allowed_to_open
-    try(:is_scheduled) #temp
-  end
-
   def allowed_to_reopen
     assigned_organization.nil?
   end
@@ -173,10 +167,6 @@ class Inspection < InspectionRecord
     typed_inspection = Inspection.get_typed_inspection(self)
     inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
 
-  end
-
-  def can_open
-    true # temp
   end
 
   def can_make_ready(user)
@@ -210,16 +200,12 @@ class Inspection < InspectionRecord
   # called as callback after `finalize` event
   # to open a new inspection
   def open_new_inspection
-    new_insp = self.highway_structure.open_inspection
+    new_insp = InspectionGenerator.new(InspectionTypeSetting.find_by(inspection_type: self.inspection_type, highway_structure: self.highway_structure)).create
 
     new_insp.create_streambed_profile if new_insp.streambed_profile.nil?
 
     new_insp
 
-  end
-
-  def schedule_updatable?
-    'created' == state
   end
   def updatable?
     (['draft_report', 'qc_review'].include? state)

@@ -115,6 +115,10 @@ class HighwayStructure < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
+  def inspection_class
+    Inspection
+  end
+
   def reset_lanes(roadway)
     update_attributes(lanes_on: roadways.on.sum(:lanes),
                       lanes_under: roadways.under.sum(:lanes))
@@ -146,49 +150,6 @@ class HighwayStructure < TransamAssetRecord
 
   def last_closed_inspection
     inspections.where(state: 'final').ordered.first
-  end
-
-  def open_inspection
-    if inspections.where.not(state: 'final').count > 0
-      Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
-    elsif inspections.count > 0
-      old_insp = Inspection.get_typed_inspection(last_closed_inspection)
-      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, {elements: [:guid, {defects: [:object_key, :guid]}]}]
-
-      old_insp.elements.where(id: old_insp.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
-        new_parent_elem = new_insp.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
-        new_insp.elements.select{|e| e.parent_element_id == old_parent_elem.id}.each do |kopy_element|
-          kopy_element.parent = new_parent_elem
-        end
-      end
-      new_insp.elements.each do |elem|
-        # set inspection id for defects
-        elem.defects.each do |defect|
-          defect.inspection = new_insp
-        end
-
-        elem.object_key = nil
-      end
-
-      new_insp.state = 'open'
-      
-      new_insp.inspection_frequency = old_insp.inspection_frequency
-      if new_insp.inspection_frequency && old_insp.calculated_inspection_due_date
-        new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
-      end
-
-      new_insp.save!
-
-      new_insp
-    else
-      typed_asset = TransamAsset.get_typed_asset(self)
-      if eval("defined?(#{typed_asset.class}Condition)")
-        (typed_asset.class.to_s + 'Condition').constantize.new(highway_structure: self)
-      else
-        self.inspections.build
-      end
-    end
-
   end
 
   protected
