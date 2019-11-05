@@ -38,15 +38,23 @@
       = simple_form_for(@inspection,
                     :html => {:class => 'form-vertical inspection_form' },
                     :as => :inspection,
-                    :url => inspection_path(@inspection.object_key),
+                    :url => fire_workflow_events_transam_workflow_index_path,
                     :wrapper => :vertical_form,
                     :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
         = f.input :transam_asset_id, as: :hidden, input_html: {value: @asset.highway_structure.id}
 
+        = f.input :global_ids, as: :hidden, input_html: {value: @inspection.to_global_id}
+        = f.input :event_name, as: :hidden, input_html: {value: 'schedule'}
+        = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
+
         .row
           .col-sm-6
-            = f.input :calculated_inspection_due_date, label: 'Due Date', required: true
+            = f.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => "Due Date", required: true do
+              = f.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.calculated_inspection_due_date)
+              %span.input-group-addon
+                %i.fa.fa-calendar
+
             = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year')
             = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month')
             .row

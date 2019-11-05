@@ -8,8 +8,6 @@ class InspectionTypeSetting < ApplicationRecord
   belongs_to :inspection_type
   belongs_to :highway_structure, foreign_key: :transam_asset_id
 
-  attr_accessor :calculated_inspection_due_date
-
   def self.allowable_params
     [
         :inspection_type_id,

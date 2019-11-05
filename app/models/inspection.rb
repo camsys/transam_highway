@@ -84,6 +84,8 @@ class Inspection < InspectionRecord
 
         {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
+        {event_name: 'schedule', from_state: 'open', to_state: 'assigned', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
+
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
         {event_name: 'start', from_state: ['in_field', 'draft_report'], to_state: 'in_progress', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To In Progress'},
@@ -147,6 +149,10 @@ class Inspection < InspectionRecord
   #
   # -------------------------------------------------------------------
 
+  def allowed_to_schedule
+    allowed_to_make_ready && allowed_to_assign && calculated_inspection_due_date.present?
+  end
+
   def allowed_to_reopen
     assigned_organization.nil?
   end
@@ -167,6 +173,10 @@ class Inspection < InspectionRecord
     typed_inspection = Inspection.get_typed_inspection(self)
     inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
 
+  end
+
+  def can_schedule
+    true
   end
 
   def can_make_ready(user)

@@ -21,15 +21,11 @@
             .form-group
               %label.control-label.required
                 * Required
-          .col-sm-2
+          .col-sm-3
             .form-group
               %label.control-label.required
                 * Frequency
-          .col-sm-2
-            .form-group
-              %label.control-label.required
-                Due Date
-          .col-sm-2
+          .col-sm-3
             .form-group
               %label.control-label.string
                 Description
@@ -40,10 +36,9 @@
               = setting.input :inspection_type_id, as: :hidden
 
             .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false
-            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
-            .col-sm-2= setting.input :calculated_inspection_due_date, label: false, required: true
+            .col-sm-3= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
             - if setting.object.inspection_type.name == 'Special'
-              .col-sm-2= setting.input :description, label: false
+              .col-sm-3= setting.input :description, label: false
 
         #inspection_type_settings
           = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|

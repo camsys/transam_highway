@@ -153,6 +153,17 @@ class InspectionsController < TransamController
       params.require(:inspection_proxy).permit(InspectionProxy.allowable_params)
     end
 
+    def reformat_date_fields
+      params[:inspection][:calculated_inspection_due_date] = reformat_date(params[:asset][:calculated_inspection_due_date]) unless params[:asset][:calculated_inspection_due_date].blank?
+    end
+
+    def reformat_date(date_str)
+      # See if it's already in iso8601 format first
+      return date_str if date_str.match(/\A\d{4}-\d{2}-\d{2}\z/)
+
+      Date.strptime(date_str, '%m/%d/%Y').strftime('%Y-%m-%d')
+    end
+
     #-----------------------------------------------------------------------------
     # Perform a new search for inspections
     #-----------------------------------------------------------------------------
