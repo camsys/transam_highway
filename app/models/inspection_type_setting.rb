@@ -29,6 +29,5 @@ class InspectionTypeSetting < ApplicationRecord
   def update_inspection
     generator = InspectionGenerator.new(self)
     generator.create
-    generator.update
   end
 end

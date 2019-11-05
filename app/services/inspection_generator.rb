@@ -16,7 +16,7 @@ class InspectionGenerator
 
   def create
     if inspections.where.not(state: 'final').count > 0
-      active.update!(calculated_inspection_due_date: active - active.inspection_frequency + @inspection_type_setting.frequency_months, inspection_frequency: @inspection_type_setting.frequency_months)
+      active.update!(calculated_inspection_due_date: active.calculated_inspection_due_date - active.inspection_frequency + @inspection_type_setting.frequency_months, inspection_frequency: @inspection_type_setting.frequency_months)
       active
     elsif inspections.count > 0
       from_last
