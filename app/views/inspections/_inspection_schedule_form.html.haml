@@ -34,16 +34,17 @@
               %label.control-label.string
                 Description
         = f.simple_fields_for :inspection_type_settings, @not_special_settings do |setting|
-          .row
+          .row{id: "#{setting.object.inspection_type_id}_inspection_type_setting_row"}
             .col-sm-3
               = setting.object.inspection_type
               = setting.input :inspection_type_id, as: :hidden
 
-            .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false
-            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
+            .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false, input_html: {class: 'is_required_field'}
+            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required
             .col-sm-2
-              = setting.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => "Due Date", required: true do
-                = setting.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.calculated_inspection_due_date)
+              - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.calculated_inspection_due_date if setting.object.is_required
+              = setting.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => false, required: true do
+                = setting.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker schedule_field', :value => format_as_date(due_date), disabled: !setting.object.is_required
                 %span.input-group-addon
                   %i.fa.fa-calendar
             - if setting.object.inspection_type.name == 'Special'
@@ -71,4 +72,18 @@
 
   $('#cancel_inspection_schedule_form').click(function() {
     $('#form-modal').modal('hide');
+  });
+
+  $('body').on('change', '.is_required_field', function() {
+     var required = $(this).val();
+
+    $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').val('');
+
+    if (required == 'false') {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', true);
+    } else {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', false);
+    }
+
+
   });
