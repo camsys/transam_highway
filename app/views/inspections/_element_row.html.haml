@@ -11,7 +11,7 @@
       = format_as_integer(element.quantity)
     %input.number-input.form-control.required.positive-num{style: 'display: none;', type: 'number', required: 'required', min: 0, value: element.quantity}
   %td.left= element.element_definition.quantity_unit
-  %td.right.cs1= format_as_integer(element.quantity - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity'))
+  %td.right.cs1= format_as_integer(element.quantity.to_f - element.defects.sum('condition_state_2_quantity + condition_state_3_quantity + condition_state_4_quantity'))
   %td.right.cs2= format_as_integer(element.defects.sum(:condition_state_2_quantity))
   %td.right.cs3= format_as_integer(element.defects.sum(:condition_state_3_quantity))
   %td.right.cs4= format_as_integer(element.defects.sum(:condition_state_4_quantity))

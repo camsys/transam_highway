@@ -32,6 +32,12 @@ class AncillaryStructure < BridgeLike
   def self.inspection_types
     InspectionType.where(name: ['Routine', 'Special', 'Initial', 'Damage'])
   end
+  
+  def self.process_roadway(hash, bridgelike)
+    roadway = super
+    roadway.update_attributes(features_intersected: bridgelike.features_intersected)
+    roadway
+  end
 
   def self.process_inspection(hash, struct_class_code, date)
     inspection_frequency = hash['BRINSPFREQ']
@@ -42,6 +48,12 @@ class AncillaryStructure < BridgeLike
                                         notes: hash['NOTES'], state: 'final')
 
     inspection.ancillary_condition_type_id = AncillaryConditionType.where(code: hash['CULVRATING']).pluck(:id).first
+
+    # safety ratings
+    {approach_rail_safety_type_id: 'ARAILRATIN',
+     approach_rail_end_safety_type_id: 'AENDRATING'}.each do |attribute, key|
+      inspection[attribute] = FeatureSafetyType.where(code: hash[key]).pluck(:id).first
+    end
 
     inspection.save!
     inspection

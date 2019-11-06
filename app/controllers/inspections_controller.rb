@@ -53,6 +53,7 @@ class InspectionsController < TransamController
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
 
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
+    @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
   end
 
   # GET /inspections/new
