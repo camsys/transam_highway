@@ -64,6 +64,11 @@
 
 :javascript
 
+  $('body .datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
+  });
+
   $('.inspection_schedule_form').validate({
     submitHandler: function(form) {
       form.submit();

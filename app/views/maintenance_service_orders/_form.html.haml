@@ -40,12 +40,10 @@
         .col-xs-4
           = f.association :priority_type, collection: MaintenancePriorityType.active, label: 'Priority'
         .col-xs-8
-          .form-group
-            %label.control-label.string.required
-              * Recommended Timeline
-            .row
-              .col-xs-6= select_tag :month, options_for_select(Date::MONTHNAMES[1..12].each_with_index.map { |x,i| [x, i+1] }, @maintenance_service_order.maintenance_events.first.try(:due_date).try(:month)), class: 'form-control'
-              .col-xs-6= number_field_tag :year, @maintenance_service_order.maintenance_events.first.try(:due_date).try(:year), {class: 'form-control', min: SystemConfig.instance.epoch.year}
+          = f.input :order_date, :wrapper => :vertical_append, :label => "Recommended Timeline" do
+            = f.input_field :order_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.order_date)
+            %span.input-group-addon
+              %i.fa.fa-calendar
       .row
         .col-xs-12
           = f.input :notes
@@ -91,4 +89,9 @@
 
       $('#maintenance_activity_types option').show();
     }
+  });
+
+  $('.datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
   });
