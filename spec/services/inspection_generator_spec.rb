@@ -56,7 +56,7 @@ RSpec.describe InspectionGenerator, type: :service do
 
     it 'resets state' do
       generator = InspectionGenerator.new(test_inspection_type_setting)
-      expect(generator.create).to eq('open')
+      expect(generator.create.state).to eq('open')
     end
 
     it 'resets some fields' do

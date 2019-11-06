@@ -59,7 +59,7 @@ class InspectionsController < TransamController
   # GET /inspections/new
   def new
     @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key])) if params[:asset_object_key]
-    @inspection = Inspection.new(highway_structure: @asset.highway_structure)
+    @inspection = Inspection.new(highway_structure: @asset.try(:highway_structure))
   end
 
   # GET /inspections/1/edit
