@@ -1,0 +1,89 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Inspection Schedule
+    .modal-body
+      = simple_form_for(@asset,
+                    :as => :asset,
+                    :html => {:class => 'form-vertical inspection_schedule_form' },
+                    :url => inventory_path(@asset),
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        .row
+          .col-sm-3
+            .form-group
+              %label.control-label
+                Inspection Type
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                * Required
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                * Frequency
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                Due Date
+          .col-sm-2
+            .form-group
+              %label.control-label.string
+                Description
+        = f.simple_fields_for :inspection_type_settings, @not_special_settings do |setting|
+          .row{id: "#{setting.object.inspection_type_id}_inspection_type_setting_row"}
+            .col-sm-3
+              = setting.object.inspection_type
+              = setting.input :inspection_type_id, as: :hidden
+
+            .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false, input_html: {class: 'is_required_field'}
+            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required
+            .col-sm-2
+              - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.calculated_inspection_due_date if setting.object.is_required
+              = setting.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => false, required: true do
+                = setting.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker schedule_field', :value => format_as_date(due_date), disabled: !setting.object.is_required
+                %span.input-group-addon
+                  %i.fa.fa-calendar
+            - if setting.object.inspection_type.name == 'Special'
+              .col-sm-2= setting.input :description, label: false
+
+        #inspection_type_settings
+          = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|
+            = render 'inspection_type_setting_fields', f: setting
+          .links.pull-right
+            = link_to_add_association f, :inspection_type_settings do
+              %i.fa.fa-2x.fa-plus-circle
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_schedule_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $('.inspection_schedule_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#cancel_inspection_schedule_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
+
+  $('body').on('change', '.is_required_field', function() {
+     var required = $(this).val();
+
+    $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').val('');
+
+    if (required == 'false') {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', true);
+    } else {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', false);
+    }
+
+
+  });

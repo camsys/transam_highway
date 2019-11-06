@@ -508,12 +508,14 @@ defect_definitions = [
 ]
 
 inspection_types = [
-    {code: '1', name: 'Regular NBI inspection', active: true},
-    {code: '4', name: 'Special', active: true},
-    {code: 'D', name: 'Underwater - Contract SCUBA', active: true},
-    {code: 'L', name: 'Special - Accident Damage (traffic)', active: true},
-    {code: 'M', name: 'Special - Natural Disaster Damage', description: 'Special - Natural Disaster Damage (flood, fire, wind, earthquake, etc.)', active: true},
-    {code: 'O', name: 'Special - Other', active: true}
+    {code: '1', name: 'Routine', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'U', name: 'Underwater', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'G', name: 'Fracture Critical', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'P', name: 'Special Pin', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: '4', name: 'Special', active: true, can_be_recurring: true, can_be_unscheduled: true},
+    {code: '2', name: 'Initial', active: true, can_be_unscheduled: true},
+    {code: '3', name: 'Damage', active: true, can_be_unscheduled: true},
+    {code: '6', name: 'In-depth', active: true, can_be_unscheduled: true},
 ]
 
 feature_safety_types = [

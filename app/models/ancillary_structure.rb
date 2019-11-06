@@ -29,6 +29,10 @@ class AncillaryStructure < BridgeLike
   # Class Methods
   #-----------------------------------------------------------------------------
 
+  def self.inspection_types
+    InspectionType.where(name: ['Routine', 'Special', 'Initial', 'Damage'])
+  end
+  
   def self.process_roadway(hash, bridgelike)
     roadway = super
     roadway.update_attributes(features_intersected: bridgelike.features_intersected)

@@ -82,8 +82,8 @@ class BridgeLike < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
-  def self.allowable_params
-    FORM_PARAMS
+  def self.inspection_types
+    InspectionType.all
   end
 
   def self.default_map_renderer_attr
@@ -511,7 +511,8 @@ class BridgeLike < TransamAssetRecord
     bridgelike.set_calculated_condition!
 
     # Add the open inspection
-    bridgelike.open_inspection
+    # TO DO / WIP Replace with InspectionGenerator
+    InspectionGenerator.new(bridgelike.inspection_type_settings.find_by(name: 'Routine')).create
     
     return true, msg, bridgelike.class.name
   end

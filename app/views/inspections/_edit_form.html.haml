@@ -1,0 +1,115 @@
+:css
+  .inspector-assignment-label {
+    display: block;
+  }
+
+  .inspector-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
+
+:ruby
+  inspectors = []
+  User.active.with_role(:inspector).each do |user|
+    user.organizations.each do |l|
+      inspectors << {
+        name: user.to_s,
+        id: user.id,
+        organization_id: l.id
+      }
+    end
+  end
+
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  assignable_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      assignable_teams << l
+    end
+  end
+
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Set Schedule
+    .modal-body
+      = simple_form_for(@inspection,
+                    :html => {:class => 'form-vertical inspection_form' },
+                    :as => :inspection,
+                    :url => fire_workflow_events_transam_workflow_index_path,
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        = f.input :transam_asset_id, as: :hidden, input_html: {value: @asset.highway_structure.id}
+
+        = f.input :global_ids, as: :hidden, input_html: {value: @inspection.to_global_id}
+        = f.input :event_name, as: :hidden, input_html: {value: 'schedule'}
+        = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
+
+        .row
+          .col-sm-6
+            = f.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => "Due Date", required: true do
+              = f.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.calculated_inspection_due_date)
+              %span.input-group-addon
+                %i.fa.fa-calendar
+
+            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year')
+            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month')
+            .row
+              .col-sm-6
+                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter')
+              .col-sm-6
+                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip')
+            .row
+              .col-sm-6
+                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter')
+              .col-sm-6
+                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip')
+            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone')
+          - if @inspection.inspection_type.name == 'Special' && @inspection.description.present?
+
+            .col-sm-6
+              = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
+              = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}
+
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $('.inspection_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#cancel_inspection_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
+
+  function new_inspector_checkbox(inspector) {
+    return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="inspection_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="inspection[inspector_ids][]" id="inspection_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+  }
+
+  function update_inspection_inspectors_by_team(team_id) {
+    if(team_id) {
+      team_id = parseInt(team_id);
+    }
+    $('.inspector-checkboxes').remove();
+    $('input[name="inspection[inspector_ids][]"]').val('');
+
+    var inspectors = #{inspectors.to_json.html_safe || {}};
+    inspectors.filter(function(l){return l.organization_id == team_id;}).forEach(function(l) {
+      $('.inspection_inspector_ids').append(new_inspector_checkbox(l));
+    });
+  }
+
+  $('#inspection_assigned_organization_id').change(function() {
+    var team_id = $(this).val();
+    update_inspection_inspectors_by_team(team_id);
+  });

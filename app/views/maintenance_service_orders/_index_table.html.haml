@@ -39,7 +39,7 @@
       %th.center{:data => {:field => "completed_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'false'}} Date Completed
       - unless @asset
         %th.center{:data => {:field => "asset", :align => 'left', :sortable => 'true'}} Asset
-      %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'workflow_link_formatter'}}
+      %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
 
 = render 'shared/table_formatters'
 
@@ -68,11 +68,11 @@
     }
   }
 
-  function workflow_link_formatter(value, row) {
+  function link_formatter(value, row) {
     if (row['state'] == 'completed') {
       return '';
     } else {
-      return '<a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+      return '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
     }
 
   }

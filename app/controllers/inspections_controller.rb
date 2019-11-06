@@ -28,6 +28,23 @@ class InspectionsController < TransamController
     end
   end
 
+  def inspection_type_settings
+    @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
+
+    if @asset
+      @not_special_settings = []
+
+      @asset.class.inspection_types.active.can_be_recurring.not_special.each do |type|
+        @not_special_settings << @asset.inspection_type_settings.find_or_initialize_by(inspection_type: type)
+      end
+
+      @special_settings = @asset.inspection_type_settings.where(inspection_type: @asset.class.inspection_types.active.special)
+      if @special_settings.empty?
+        @special_settings = [@asset.inspection_type_settings.build(inspection_type: InspectionType.find_by(name: 'Special'))]
+      end
+    end
+  end
+
   # GET /inspections/1
   def show
     add_breadcrumb "#{@asset.asset_type.name}".pluralize,
@@ -41,7 +58,8 @@ class InspectionsController < TransamController
 
   # GET /inspections/new
   def new
-    @inspection = Inspection.new
+    @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key])) if params[:asset_object_key]
+    @inspection = Inspection.new(highway_structure: @asset.highway_structure)
   end
 
   # GET /inspections/1/edit
@@ -54,12 +72,16 @@ class InspectionsController < TransamController
 
   # POST /inspections
   def create
-    @inspection = Inspection.new(inspection_params)
+    @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
+    if @asset
+      @inspection = @asset.inspection_class.new(inspection_params)
 
-    if @inspection.save
-      redirect_to @inspection, notice: 'Inspection was successfully created.'
-    else
-      render :new
+      if @inspection.save
+        @inspection.reload
+        redirect_to inventory_path(@asset.object_key), notice: 'Inspection was successfully created.'
+      else
+        render :new
+      end
     end
   end
 
@@ -86,8 +108,9 @@ class InspectionsController < TransamController
 
   # DELETE /inspections/1
   def destroy
+    highway_structure = @inspection.highway_structure
     @inspection.destroy
-    redirect_to inspections_url, notice: 'Inspection was successfully destroyed.'
+    redirect_to inventory_url(highway_structure.object_key), notice: 'Inspection was successfully destroyed.'
   end
 
   #-----------------------------------------------------------------------------
@@ -129,6 +152,17 @@ class InspectionsController < TransamController
 
     def inspection_proxy_form_params
       params.require(:inspection_proxy).permit(InspectionProxy.allowable_params)
+    end
+
+    def reformat_date_fields
+      params[:inspection][:calculated_inspection_due_date] = reformat_date(params[:asset][:calculated_inspection_due_date]) unless params[:asset][:calculated_inspection_due_date].blank?
+    end
+
+    def reformat_date(date_str)
+      # See if it's already in iso8601 format first
+      return date_str if date_str.match(/\A\d{4}-\d{2}-\d{2}\z/)
+
+      Date.strptime(date_str, '%m/%d/%Y').strftime('%Y-%m-%d')
     end
 
     #-----------------------------------------------------------------------------

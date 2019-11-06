@@ -1,6 +1,14 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+#table_actions.btn-toolbar
+  .btn-group
+    = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+      = "Manage Schedule";
+    = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+      %i.fa.fa-plus
+      = "Plan Unscheduled";
+
 .table-responsive
   %table.table.table-hover{:id => table_dom_id,
           :data => {:toggle => 'table',
@@ -27,6 +35,7 @@
           :single_select => 'false'}}
     %thead
       %tr
+        %th.center
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'organization_type_id', 'Inspection Group')
         %th.center{:data => {:sortable => 'true'}}
@@ -46,6 +55,10 @@
     %tbody
       - @asset.inspections.ordered.each do |inspection|
         %tr
+          %td.left
+            = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do
+              %i.fa.fa-play
+              View
           %td.left= inspection.organization_type
           %td.left= inspection.assigned_organization
           %td.left= inspection.inspection_type
@@ -54,6 +67,6 @@
           %td.left= format_as_list(inspection.inspectors)
           %td.left= inspection.state&.titleize
           %td.left
-            = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do
-              %i.fa.fa-play
-              View
+            - if can? :update, inspection
+              = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
+                %i.fa.fa-edit.fa-1-5x.text-success
