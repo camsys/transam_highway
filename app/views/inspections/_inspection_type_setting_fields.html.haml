@@ -5,9 +5,13 @@
       = f.input :inspection_type_id, as: :hidden, input_html: {value: InspectionType.find_by(name: 'Special').id}
 
     .col-sm-2= f.input :is_required, as: :select, label: false
-    .col-sm-3= f.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
-
-    .col-sm-3= f.input :description, label: false
+    .col-sm-2= f.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false
+    .col-sm-2
+      = f.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => "Due Date", required: true do
+        = f.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.calculated_inspection_due_date)
+        %span.input-group-addon
+          %i.fa.fa-calendar
+    .col-sm-2= f.input :description, label: false
     .col-sm-1
       = link_to_remove_association f, class: 'pull-right' do
         %i.fa.fa-2x.fa-minus-circle
