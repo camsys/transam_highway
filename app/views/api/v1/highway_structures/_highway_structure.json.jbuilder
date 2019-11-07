@@ -14,13 +14,10 @@ json.address address.join(', ')
 json.(highway_structure, :city, :county, :state, :zip)
 
 # NBI
-json.(highway_structure, :route_number, :features_intersected, :location_description, :length, :inspection_frequency, :fracture_critical_inspection_required, :fracture_critical_inspection_frequency, :underwater_inspection_required, :underwater_inspection_frequency, :other_special_inspection_required, :other_special_inspection_frequency, :is_temporary)
+json.(highway_structure, :route_number, :features_intersected, :location_description, :length, :is_temporary)
 
 # NBI Dates
 json.inspection_date highway_structure.inspection_date.try(:strftime, "%m/%d/%Y")
-json.fracture_critical_inspection_date highway_structure.fracture_critical_inspection_date.try(:strftime, "%m/%d/%Y")
-json.underwater_inspection_date highway_structure.underwater_inspection_date.try(:strftime, "%m/%d/%Y")
-json.other_special_inspection_date highway_structure.other_special_inspection_date.try(:strftime, "%m/%d/%Y")
 
 # NBI Associations
 associations = [:route_signing_prefix]
