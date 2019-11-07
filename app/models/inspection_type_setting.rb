@@ -12,6 +12,7 @@ class InspectionTypeSetting < ApplicationRecord
 
   def self.allowable_params
     [
+        :id,
         :inspection_type_id,
         :frequency_months,
         :description,
@@ -30,7 +31,15 @@ class InspectionTypeSetting < ApplicationRecord
   end
 
   def update_inspection
+    Rails.logger.debug "generating inspection"
+
     generator = InspectionGenerator.new(self)
-    generator.create
+
+    if self.is_required
+      generator.create
+    else
+      generator.cancel
+    end
   end
+
 end

@@ -43,7 +43,7 @@ class InspectionGenerator
 
   def initial
     typed_asset = TransamAsset.get_typed_asset(@inspection_type_setting.highway_structure)
-    typed_asset.inspection_class.new(highway_structure: @inspection_type_setting.highway_structure, inspection_type: @inspection_type_setting.inspection_type, calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date)
+    typed_asset.inspection_class.create(highway_structure: @inspection_type_setting.highway_structure, inspection_type: @inspection_type_setting.inspection_type, calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date)
   end
 
   def active
