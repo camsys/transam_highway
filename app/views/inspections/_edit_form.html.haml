@@ -55,19 +55,19 @@
               %span.input-group-addon
                 %i.fa.fa-calendar
 
-            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year')
-            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month')
+            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('inspections', 'inspection_fiscal_year', 'Fiscal Year')
+            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('inspections', 'inspection_month', 'Inspection Month')
             .row
               .col-sm-6
-                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter')
+                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('inspections', 'inspection_quarter', 'Inspection Quarter')
               .col-sm-6
-                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip')
+                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('inspections', 'inspection_trip_key', 'Inspection Trip')
             .row
               .col-sm-6
-                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter')
+                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('inspections', 'inspection_quarter', 'Inspection Quarter')
               .col-sm-6
-                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip')
-            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone')
+                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('inspections', 'inspection_trip_key', 'Inspection Trip')
+            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('inspections', 'inspection_zone_id', 'Inspection Zone')
           - if @inspection.inspection_type.name == 'Special' && @inspection.description.present?
 
             .col-sm-6
