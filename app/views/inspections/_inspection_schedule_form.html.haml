@@ -39,7 +39,7 @@
               = setting.object.inspection_type
               = setting.input :inspection_type_id, as: :hidden
 
-            .col-sm-2= setting.input :is_required, collection: [['No',false], ['Yes',true]], label: false, include_blank: false, input_html: {class: 'is_required_field'}
+            .col-sm-2= setting.input :is_required, as: :select, label: false, include_blank: false, input_html: {class: 'is_required_field'}
             .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required
             .col-sm-2
               - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if setting.object.is_required
@@ -69,8 +69,20 @@
     autoclose: true
   });
 
+  $('body .datepicker').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
+  });
+
   $('.inspection_schedule_form').validate({
     submitHandler: function(form) {
+      $( ".inspection_schedule_form .schedule_field" ).prop( "disabled", false );
       form.submit();
     }
   });

@@ -8,7 +8,7 @@ class InspectionTypeSetting < ApplicationRecord
   belongs_to :inspection_type
   belongs_to :highway_structure, foreign_key: :transam_asset_id
 
-  attr_accessor :calculated_inspection_due_date
+  attribute :calculated_inspection_due_date, :date
 
   def self.allowable_params
     [
@@ -25,9 +25,16 @@ class InspectionTypeSetting < ApplicationRecord
   validates :inspection_type_id, presence: true
   validates :frequency_months, presence: true, if: :is_required
 
+
+
+  def calculated_inspection_due_date=(value)
+    attribute_will_change!(:calculated_inspection_due_date)
+    self[:calculated_inspection_due_date] = Chronic.parse(value)
+  end
+
   protected
   def set_defaults
-    self.is_required = self.is_required.nil? ? false : true
+    self.is_required = self.is_required.nil? ? false : self.is_required
   end
 
   def update_inspection

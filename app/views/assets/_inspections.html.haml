@@ -70,3 +70,6 @@
             - if can? :update, inspection
               = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
                 %i.fa.fa-edit.fa-1-5x.text-success
+              - if inspection.inspection_type.name == 'Special' && inspection.description.present?
+                = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                  %i.fa.fa-trash-o.fa-fw.text-danger

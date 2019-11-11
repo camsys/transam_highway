@@ -39,3 +39,19 @@
   $('#cancel_inspection_form').click(function() {
     $('#form-modal').modal('hide');
   });
+
+  $('.datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
+  });
+
+  $('.datepicker').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
+  });

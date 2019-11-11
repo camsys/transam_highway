@@ -23,22 +23,28 @@ class InspectionGenerator
   end
 
   def inspections
-    @inspection_type_setting.highway_structure.inspections.where(inspection_type: @inspection_type_setting.inspection_type)
+    @inspection_type_setting.highway_structure.inspections
+  end
+
+  def specific_inspections
+    inspections.where(inspection_type: @inspection_type_setting.inspection_type)
   end
 
   def cancel
-    inspections.where.not(state: 'final').first.destroy
+    specific_inspections.where.not(state: 'final').first.destroy if specific_inspections.where.not(state: 'final').first
   end
 
   def create
-    if inspections.where.not(state: 'final').count > 0
+    insp = if specific_inspections.where.not(state: 'final').count > 0
       active.update!(calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date) if @inspection_type_setting.calculated_inspection_due_date
       active
-    elsif inspections.count > 0
+    elsif specific_inspections.count > 0
       from_last
     else
       initial
-    end
+           end
+
+    insp
   end
 
   def initial
@@ -47,7 +53,7 @@ class InspectionGenerator
   end
 
   def active
-    Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
+    Inspection.get_typed_inspection(specific_inspections.where.not(state: 'final').first)
   end
 
   def from_last
@@ -75,8 +81,8 @@ class InspectionGenerator
     if new_insp.inspection_frequency
       if @inspection_type_setting.calculated_inspection_due_date
         new_insp.calculated_inspection_due_date = @inspection_type_setting.calculated_inspection_due_date
-      elsif old_insp.calculated_inspection_due_date
-        new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
+      elsif specific_inspections.where(state: 'final').ordered.first.try(:calculated_inspection_due_date)
+        new_insp.calculated_inspection_due_date = (specific_inspections.where(state: 'final').ordered.first.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
       end
     end
 
