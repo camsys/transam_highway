@@ -11,7 +11,7 @@ FactoryBot.define do
     purchase_date { 1.year.ago }
     purchase_cost { 250000 }
     manufacture_year { "2000" }
-    in_service_date { Date.new(2001,1,1) }
+    in_service_date { 1.year.ago }
   end
 
   trait :highway_structure_attributes do

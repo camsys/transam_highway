@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :inspection do
-    association :inspection_type
+    inspection_type_id { 1 }
     association :highway_structure
   end
 end
