@@ -42,7 +42,7 @@ class InspectionGenerator
       from_last
     else
       initial
-           end
+    end
 
     insp
   end

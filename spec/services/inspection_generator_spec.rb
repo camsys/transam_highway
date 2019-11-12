@@ -6,7 +6,7 @@ RSpec.describe InspectionGenerator, type: :service do
   describe ".create" do
 
     let!(:test_bridge) { create(:bridge) }
-    let(:test_inspection_type_setting) { create(:inspection_type_setting, highway_structure: test_bridge.highway_structure) }
+    let(:test_inspection_type_setting) { create(:inspection_type_setting, highway_structure: test_bridge.highway_structure, inspection_type: test_inspection.inspection.inspection_type) }
     let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure, state: 'final', notes: 'we want to copy this') }
     let!(:test_element) { create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this element') }
     let!(:test_defect) { create(:defect, inspection: test_inspection.inspection, element: test_element, notes: 'we want to copy this defect') }
@@ -15,14 +15,12 @@ RSpec.describe InspectionGenerator, type: :service do
     it 'returns not final one if already exists' do
       generator = InspectionGenerator.new(test_inspection_type_setting)
 
-      new_insp = generator.create
-      expect(new_insp).not_to eq(test_inspection)
+      expect(generator.create).not_to eq(test_inspection)
 
-      new_insp.destroy!
-      test_inspection.update(state: 'open')
+      test_inspection.update!(state: 'open')
       expect(generator.create).to eq(test_inspection)
 
-      test_inspection.update(state: 'assigned')
+      test_inspection.update!(state: 'assigned')
       expect(generator.create).to eq(test_inspection)
 
     end
