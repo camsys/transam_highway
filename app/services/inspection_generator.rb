@@ -77,6 +77,7 @@ class InspectionGenerator
 
     new_insp.state = 'open'
 
+    new_insp.inspection_type = @inspection_type_setting.inspection_type
     new_insp.inspection_frequency = @inspection_type_setting.frequency_months
     if new_insp.inspection_frequency
       if @inspection_type_setting.calculated_inspection_due_date
