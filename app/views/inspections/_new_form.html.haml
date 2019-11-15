@@ -15,11 +15,8 @@
           .col-sm-4
             = f.association :inspection_type, collection: InspectionType.can_be_unscheduled, required: true
           .col-sm-4
-            = f.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => "Due Date", required: true do
-              = f.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.calculated_inspection_due_date)
-              %span.input-group-addon
-                %i.fa.fa-calendar
-        = f.input :description, required: true
+            = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
+        = f.input :description, required: @inspection.inspection_type.try(:name) == 'Special'
 
 
         .row
@@ -33,6 +30,20 @@
   $('.inspection_form').validate({
     submitHandler: function(form) {
       form.submit();
+    }
+  });
+
+  $('#inspection_inspection_type_id').change(function() {
+    if (parseInt($(this).val()) == parseInt('#{InspectionType.find_by(name: 'Special').id}')){
+      $('#inspection_description').rules("add", {
+        required: true
+      });
+      $('label[for="inspection_description"]').html('<abbr title="required">*</abbr> Description');
+    } else {
+      $('#inspection_description').rules("add", {
+        required: false
+      });
+      $('label[for="inspection_description"]').html('Description');
     }
   });
 

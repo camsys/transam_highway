@@ -38,11 +38,11 @@ class InspectionGenerator
     insp = if specific_inspections.where.not(state: 'final').count > 0
       active.update!(calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date) if @inspection_type_setting.calculated_inspection_due_date
       active
-    elsif specific_inspections.count > 0
+    elsif inspections.count > 0
       from_last
     else
       initial
-           end
+    end
 
     insp
   end

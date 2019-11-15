@@ -51,6 +51,7 @@ class Inspection < InspectionRecord
       :inspection_team_leader_id,
       :inspection_team_member_id,
       :inspection_team_member_alt_id,
+      :calculated_inspection_due_date,
       :event_datetime,
       :inspection_frequency,
       :description,
