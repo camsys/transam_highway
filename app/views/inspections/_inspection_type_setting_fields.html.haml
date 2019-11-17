@@ -9,7 +9,7 @@
     .col-sm-2
       - due_date = f.object.highway_structure.inspections.where(inspection_type_id: f.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if f.object.is_required
 
-      = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, required: true, :value => format_as_date(due_date), disabled: !f.object.is_required
+      = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, required: true, input_html: {:value => format_as_date(due_date)}, disabled: !f.object.is_required
     .col-sm-2= f.input :description, label: false, disabled: !f.object.is_required
     .col-sm-1
       = link_to_remove_association f, class: 'pull-right' do

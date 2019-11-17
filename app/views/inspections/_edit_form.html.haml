@@ -49,24 +49,24 @@
 
         .row
           .col-sm-6
-            = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
+            = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, input_html: {:value => format_as_date(@inspection.calculated_inspection_due_date)}
 
-            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), required: false
-            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), required: false
+            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), required: false, selected: @inspection.inspection_fiscal_year
+            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), required: false, selected: @inspection.inspection_month
             .row
               .col-sm-6
-                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false
+                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false, selected: @inspection.inspection_quarter
               .col-sm-6
-                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false
+                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false, selected: @inspection.inspection_trip_key
             .row
               .col-sm-6
-                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false
+                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false, selected: @inspection.inspection_second_quarter
               .col-sm-6
-                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false
-            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone'), required: false
+                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false, selected: @inspection.inspection_second_trip_key
+            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone'), required: false, selected: @inspection.inspection_zone_id
           .col-sm-6
-            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: true
-            = f.input :inspector_ids, collection: User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: true
+            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: true, selected: @inspection.assigned_organization_id
+            = f.input :inspector_ids, collection: @inspection.assigned_organization_id ? User.active.with_role(:inspector).where(organization_id: @inspection.assigned_organization_id) : User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: true, checked: @inspection.inspector_ids
 
         .row
           .col-xs-12
@@ -107,3 +107,4 @@
     var team_id = $(this).val();
     update_inspection_inspectors_by_team(team_id);
   });
+
