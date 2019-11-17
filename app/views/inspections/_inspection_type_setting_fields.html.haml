@@ -8,11 +8,9 @@
     .col-sm-2= f.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !f.object.is_required
     .col-sm-2
       - due_date = f.object.highway_structure.inspections.where(inspection_type_id: f.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if f.object.is_required
-      = f.input :calculated_inspection_due_date, :wrapper => :vertical_append, :label => false, required: true do
-        = f.input_field :calculated_inspection_due_date, :as => :string, :class => 'form-control datepicker schedule_field', :value => format_as_date(due_date), disabled: !f.object.is_required
-        %span.input-group-addon
-          %i.fa.fa-calendar
-    .col-sm-2= f.input :description, label: false
+
+      = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, required: true, :value => format_as_date(due_date), disabled: !f.object.is_required
+    .col-sm-2= f.input :description, label: false, disabled: !f.object.is_required
     .col-sm-1
       = link_to_remove_association f, class: 'pull-right' do
         %i.fa.fa-2x.fa-minus-circle

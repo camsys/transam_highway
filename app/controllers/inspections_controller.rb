@@ -156,7 +156,7 @@ class InspectionsController < TransamController
     end
 
     def reformat_date_fields
-      params[:inspection][:calculated_inspection_due_date] = reformat_date(params[:asset][:calculated_inspection_due_date]) unless params[:asset][:calculated_inspection_due_date].blank?
+      params[:inspection][:calculated_inspection_due_date] = reformat_date(params[:inspection][:calculated_inspection_due_date]) unless params[:inspection][:calculated_inspection_due_date].blank?
     end
 
     def reformat_date(date_str)
