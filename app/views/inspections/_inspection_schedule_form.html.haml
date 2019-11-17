@@ -40,12 +40,12 @@
               = setting.input :inspection_type_id, as: :hidden
 
             .col-sm-2= setting.input :is_required, as: :select, label: false, include_blank: false, input_html: {class: 'is_required_field'}
-            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required
+            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
             .col-sm-2
               - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if setting.object.is_required
-              = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, required: true, input_html: {:value => format_as_date(due_date)}, disabled: !setting.object.is_required
+              = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date)}, disabled: !setting.object.is_required, required: setting.object.is_required, class: 'schedule_field'
             - if setting.object.inspection_type.name == 'Special'
-              .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required
+              .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required, required: setting.object.is_required, class: 'schedule_field'
 
         #inspection_type_settings
           = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|
@@ -91,16 +91,21 @@
   $('body').on('change', '.is_required_field', function() {
      var required = $(this).val();
 
-    $('#'+$(this).parents('.row').attr('id') + ' input').val('');
-    $('#'+$(this).parents('.row').attr('id') + ' select.schedule_field').val('');
+    $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').val('');
 
     if (required == 'false') {
-      $('#'+$(this).parents('.row').attr('id') + ' input').attr('disabled', true);
-      $('#'+$(this).parents('.row').attr('id') + ' select.schedule_field').attr('disabled', true);
-    } else {
-      $('#'+$(this).parents('.row').attr('id') + ' input').attr('disabled', false);
-      $('#'+$(this).parents('.row').attr('id') + ' select.schedule_field').attr('disabled', false);
-    }
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', true);
 
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').rules( "add", {
+        required: galse
+      });
+    } else {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', false);
+
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').rules( "add", {
+        required: true
+      });
+    }
+    $('.inspection_schedule_form').valid();
 
   });
