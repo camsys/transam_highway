@@ -35,7 +35,7 @@ class InspectionSearcher < BaseSearcher
       LEFT OUTER JOIN regions 
         ON highway_structures.region_id = regions.id
       LEFT OUTER JOIN inspection_programs 
-        ON inspections.inspection_program_id = inspection_programs.id
+        ON highway_structures.inspection_program_id = inspection_programs.id
       LEFT OUTER JOIN organizations as assigned_organizations
         ON inspections.assigned_organization_id = assigned_organizations.id
       LEFT OUTER JOIN structure_agent_types as owners 
@@ -129,7 +129,7 @@ class InspectionSearcher < BaseSearcher
   end
 
   def inspection_program_id_conditions
-    inspection_klass.where("inspections.inspection_program_id": parse_nil_search_value(search_proxy&.inspection_program_id)) unless search_proxy&.inspection_program_id.blank?
+    inspection_klass.where("highway_structures.inspection_program_id": parse_nil_search_value(search_proxy&.inspection_program_id)) unless search_proxy&.inspection_program_id.blank?
   end
 
   def organization_type_id_conditions

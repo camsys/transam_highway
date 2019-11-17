@@ -15,7 +15,7 @@ class Inspection < InspectionRecord
 
   belongs_to :inspection_type
 
-  belongs_to :inspection_program
+
   belongs_to :inspection_zone
 
   belongs_to :qc_inspector, class_name: 'User'
@@ -126,7 +126,7 @@ class Inspection < InspectionRecord
       transam_assets_asset_tag: structure.asset_tag,
       location_description: structure.location_description,
       owner: structure.owner&.to_s,
-      inspection_program: inspection_program&.to_s,
+      inspection_program: structure.inspection_program&.to_s,
       inspection_trip: inspection_trip,
 
       object_key: object_key,

@@ -6,9 +6,9 @@
         = link_to(@inspection.highway_structure, inventory_path(@inspection.highway_structure))
     .form-group
       %label.control-label
-        = reference_label('inspections', 'inspection_program_id', 'Inspection Program')
+        = reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
       .display-value
-        = @inspection.inspection_program
+        = @inspection.highway_structure.inspection_program
     .form-group
       %label.control-label
         = reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')

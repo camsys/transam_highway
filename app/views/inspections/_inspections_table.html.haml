@@ -62,7 +62,7 @@
         %th.center{:data => {:field => 'location_description', :sortable => 'true'}}= reference_label('highway_structures', 'location_description', 'Location Description')
         %th.center{:data => {:field => 'owner', :sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
         %th.center{:data => {:field => 'calculated_condition', :sortable => 'false'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
-        %th.center{:data => {:field => 'inspection_program', :sortable => 'true'}}= reference_label('inspections', 'inspection_program_id', 'Inspection Program')
+        %th.center{:data => {:field => 'inspection_program', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
         /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone_id', 'Inspection Zone')
         %th.center{:data => {:field => 'routine_report_submitted_at', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'routine_report_submitted_at', 'Routine Inspection Submitted')
 

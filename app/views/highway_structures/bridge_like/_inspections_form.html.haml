@@ -3,9 +3,9 @@
 - else
   .form-group
     %label.control-label
-      = reference_label('inspections', 'inspection_program_id', 'Inspection Program')
+      = reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
     .display-value
-      = @asset.active_inspection.inspection_program
+      = @asset.inspection_program
   .form-group
     %label.control-label
       = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')
