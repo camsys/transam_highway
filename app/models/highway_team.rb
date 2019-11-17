@@ -45,7 +45,7 @@ class HighwayTeam < Organization
 
   def updates_after_create
     User.with_role(:manager).where(organization_id: HighwayAuthority.first.id).each do |user|
-      user.viewable_organization_ids << self.id
+      user.viewable_organizations << self
     end
   end
 
