@@ -42,6 +42,8 @@
     $('.roadbeds-action-column').hide();
     $('.add-roadbed').hide();
     $('#roadway_id, #roadbed_id').attr('disabled', 'disabled');
+    $('.roadbed_line_toggle').removeAttr('disabled');
+    $(".roadbed_line_toggle").change();
   }
 
   function disable_vc_editing() {
@@ -50,6 +52,8 @@
     $('.roadbeds-action-column').show();
     $('.add-roadbed').show();
     $('#roadway_id, #roadbed_id').removeAttr('disabled');
+    $('.roadbed_line_toggle').attr('disabled', 'disabled');
+    $(".roadbed_line_toggle").change();
   }
 
   function cache_roadbed_line_selection() {

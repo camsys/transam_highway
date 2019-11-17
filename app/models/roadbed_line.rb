@@ -14,4 +14,12 @@ class RoadbedLine < ApplicationRecord
       :minimum_clearance
     ]
   end
+
+  def has_no_restrictions?
+    entry.nil? && exit.nil?
+  end
+
+  def not_applicable?
+    entry.zero? && exit.zero?
+  end
 end
