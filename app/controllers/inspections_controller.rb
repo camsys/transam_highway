@@ -75,10 +75,8 @@ class InspectionsController < TransamController
   def create
     @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
     if @asset
-      @inspection = @asset.inspection_class.new(inspection_params)
-
-      if @inspection.save
-        @inspection.reload
+      generator = InspectionGenerator.new(InspectionTypeSetting.new(inspection_params.except(:description)))
+      if generator.create
         redirect_to inventory_path(@asset.object_key), notice: 'Inspection was successfully created.'
       else
         render :new

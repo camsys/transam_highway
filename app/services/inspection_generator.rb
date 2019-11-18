@@ -35,7 +35,10 @@ class InspectionGenerator
   end
 
   def create
-    insp = if specific_inspections.where.not(state: 'final').count > 0
+
+    is_recurring = (@inspection_type_setting.inspection_type.can_be_recurring && @inspection_type_setting.inspection_type.name != 'Special') || (@inspection_type_setting.inspection_type.name == 'Special' && @inspection_type_setting.description.present?)
+
+    insp = if is_recurring && specific_inspections.where.not(state: 'final').count > 0
       active.update!(calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date) if @inspection_type_setting.calculated_inspection_due_date
       active
     elsif inspections.count > 0
@@ -79,7 +82,7 @@ class InspectionGenerator
 
     new_insp.inspection_type = @inspection_type_setting.inspection_type
     new_insp.inspection_frequency = @inspection_type_setting.frequency_months
-    if new_insp.inspection_frequency
+    if new_insp.inspection_frequency || @inspection_type_setting.inspection_type.can_be_unscheduled
       if @inspection_type_setting.calculated_inspection_due_date
         new_insp.calculated_inspection_due_date = @inspection_type_setting.calculated_inspection_due_date
       elsif specific_inspections.where(state: 'final').ordered.first.try(:calculated_inspection_due_date)
