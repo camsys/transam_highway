@@ -45,7 +45,7 @@
               - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if setting.object.is_required
               = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date), class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
             - if setting.object.inspection_type.name == 'Special'
-              .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required, required: setting.object.is_required, class: 'schedule_field'
+              .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required, required: setting.object.is_required, input_html: {class: 'schedule_field'}
 
         #inspection_type_settings
           = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|
