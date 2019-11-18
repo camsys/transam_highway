@@ -76,6 +76,17 @@
 
 :javascript
 
+  $('body .datepicker').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
+  });
+
   $('.inspection_form').validate({
     submitHandler: function(form) {
       form.submit();

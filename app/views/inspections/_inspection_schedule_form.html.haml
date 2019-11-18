@@ -43,7 +43,7 @@
             .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
             .col-sm-2
               - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if setting.object.is_required
-              = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date)}, disabled: !setting.object.is_required, required: setting.object.is_required, class: 'schedule_field'
+              = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date), class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
             - if setting.object.inspection_type.name == 'Special'
               .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required, required: setting.object.is_required, class: 'schedule_field'
 
@@ -97,7 +97,7 @@
       $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', true);
 
       $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').rules( "add", {
-        required: galse
+        required: false
       });
     } else {
       $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', false);
