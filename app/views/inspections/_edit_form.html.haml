@@ -44,7 +44,7 @@
         = f.input :transam_asset_id, as: :hidden, input_html: {value: @asset.highway_structure.id}
 
         = f.input :global_ids, as: :hidden, input_html: {value: @inspection.inspection.to_global_id}
-        = f.input :event_name, as: :hidden, input_html: {value: 'schedule'}
+        = f.input :to_state, as: :hidden
         = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
 
         .row
@@ -65,8 +65,8 @@
                 = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false, include_blank: true, selected: @inspection.inspection_second_trip_key
             = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone'), required: false, include_blank: true, selected: @inspection.inspection_zone_id
           .col-sm-6
-            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: true, include_blank: true, selected: @inspection.assigned_organization_id
-            = f.input :inspector_ids, collection: @inspection.assigned_organization_id ? User.active.with_role(:inspector).joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: true, checked: @inspection.inspector_ids
+            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id
+            = f.input :inspector_ids, collection: @inspection.assigned_organization_id ? User.active.with_role(:inspector).joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
         .row
           .col-xs-12
@@ -75,6 +75,11 @@
               Cancel
 
 :javascript
+
+  $('.datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
+  });
 
   $('body .datepicker').datepicker().on("changeMonth", function(e) {
     // change to end of month date
@@ -89,6 +94,14 @@
 
   $('.inspection_form').validate({
     submitHandler: function(form) {
+      if ($('.transam_workflow_model_proxy_inspector_ids input[type="checkbox"]:checked').length > 0) {
+        $('#transam_workflow_model_proxy_to_state').val('assigned');
+      } else if (parseInt($('#transam_workflow_model_proxy_assigned_organization_id').val()) > 0) {
+        $('#transam_workflow_model_proxy_to_state').val('ready');
+      } else {
+       $('#transam_workflow_model_proxy_to_state').val('open');
+      }
+
       form.submit();
     }
   });

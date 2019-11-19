@@ -55,6 +55,14 @@ class Inspection < InspectionRecord
       :event_datetime,
       :inspection_frequency,
       :description,
+      :inspection_trip,
+      :inspection_fiscal_year,
+      :inspection_month,
+      :inspection_quarter,
+      :inspection_trip_key,
+      :inspection_second_quarter,
+      :inspection_second_trip_key,
+      :inspection_zone_id,
       :inspector_ids => []
   ]
 
@@ -86,6 +94,9 @@ class Inspection < InspectionRecord
         {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
         {event_name: 'schedule', from_state: 'open', to_state: 'assigned', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
+
+        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
+
 
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
@@ -237,7 +248,7 @@ class Inspection < InspectionRecord
         elem.notes = new_insp_elements[elem.element_definition_id][1]
         elem.save
 
-        elem.defect.each do |defect|
+        elem.defects.each do |defect|
           defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
           defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
           defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
