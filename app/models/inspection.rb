@@ -238,7 +238,7 @@ class Inspection < InspectionRecord
 
     # update all other open inspections
     self.highway_structure.inspections.where.not(state: 'final', id: new_insp.id).each do |insp|
-      (Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id]).each do |field_name|
+      (Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
         insp.send("#{field_name}=", new_insp.send(field_name))
       end
       insp.save
