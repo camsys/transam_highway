@@ -77,7 +77,7 @@ class InspectionsController < TransamController
     if @asset
       generator = InspectionGenerator.new(InspectionTypeSetting.new(inspection_params.except(:description)))
       @inspection = generator.create
-      if @inspection.update_columns(description: params[:inspection][:description])
+      if @inspection.update(description: params[:inspection][:description])
         redirect_to inventory_path(@asset.object_key), notice: 'Inspection was successfully created.'
       else
         render :new
