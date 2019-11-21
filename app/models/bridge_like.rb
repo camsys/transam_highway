@@ -555,10 +555,9 @@ class BridgeLike < TransamAssetRecord
   
 
   def self.process_inspection(hash, struct_class_code, date)
-    inspection_frequency = hash['BRINSPFREQ']
+    type, desc, inspection_frequency = get_inspection_type(hash['INSPTYPE'], hash)
 
-    # inspection type
-    type = InspectionType.find_by(code: hash['INSPTYPE'])
+    raise StandardError.new "No inspection type found." unless type
     
     inspection_klass = case struct_class_code
     when 'BRIDGE'
@@ -568,7 +567,8 @@ class BridgeLike < TransamAssetRecord
     end
 
     inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
-                                      inspection_frequency: inspection_frequency, inspection_type: type,
+                                      inspection_frequency: inspection_frequency,
+                                      inspection_type: type, description: desc,
                                       notes: hash['NOTES'], state: 'final')
     # safety ratings
     {railings_safety_type_id: 'RAILRATING',
@@ -606,7 +606,36 @@ class BridgeLike < TransamAssetRecord
     inspection.save!
     inspection
   end
-      
+
+  def self.get_inspection_type(type_code, hash)
+    frequency = hash['BRINSPFREQ']
+
+    # Map from BrM inspection types to SIMSA type
+    case type_code
+    # special
+    when 'L', 'M', 'O'
+      type = InspectionType.find_by(name: 'Special')
+      case type_code
+      when 'L'
+        desc = 'Accident Damage (traffic)'
+      when 'M'
+        desc = 'Natural Disaster Damage'
+      when 'O'
+        desc = 'Other'
+      end
+      frequency = hash['OSINSPFREQ']
+    when 'D'
+      type = InspectionType.find_by(name: 'Underwater')
+      frequency = hash['UWINSPFREQ']
+    when 'G'
+      type = InspectionType.find_by(name: 'Fracture Critical')
+      frequency = hash['FCINSPFREQ']
+    else
+      type = InspectionType.find_by(code: type_code)
+    end
+    return type, desc, frequency
+  end
+  
   # Convert units if needed and round values
   def self.process_quantities(value, target_units)
     case target_units
@@ -620,7 +649,7 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, inspection_trip)
+                                 highway_authority, inspection_program)
     asset_tag = bridge_hash['BRKEY']
     
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -667,30 +696,6 @@ class BridgeLike < TransamAssetRecord
       msg = "Updated #{inspection_program} #{struct_class_code} #{asset_tag}"
     end
     
-    unless inspection_trip.blank?
-      # break down 
-      inspection_trip_parts = inspection_trip.split(" ")
-      case inspection_program.name
-      when 'On-System' # 'FYY MON QTT' 
-        inspection_fiscal_year = inspection_trip_parts[0]
-        inspection_month = inspection_trip_parts[1]
-        if inspection_trip_parts[2]
-          inspection_quarter = inspection_trip_parts[2][0]
-          inspection_trip_key = inspection_trip_parts[2][1..-1]
-          inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
-          if inspection_trip_parts[3]
-            inspection_second_quarter = inspection_trip_parts[3][0]
-            inspection_second_trip_key = inspection_trip_parts[3][1..-1]
-            inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
-          end
-        end
-      when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
-        inspection_zone = InspectionZone.find_by(name: inspection_trip_parts[0].titleize)
-        inspection_fiscal_year = inspection_trip_parts[2]
-      else # Give up for now
-      end
-    end
-
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: bridgelike.organization.state,
@@ -734,15 +739,7 @@ class BridgeLike < TransamAssetRecord
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
-      inspection_program: inspection_program,
-      inspection_trip: inspection_trip,
-      inspection_zone: inspection_zone,
-      inspection_fiscal_year: inspection_fiscal_year,
-      inspection_month: inspection_month,
-      inspection_quarter: inspection_quarter,
-      inspection_trip_key: inspection_trip_key&.to_i,
-      inspection_second_quarter: inspection_second_quarter,
-      inspection_second_trip_key: inspection_second_trip_key&.to_i
+      inspection_program: inspection_program
     }
 
     # Validate Owner and maintenance responsibility. 
