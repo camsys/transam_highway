@@ -11,7 +11,7 @@
   %label.control-label
     = reference_label('inspections', 'inspection_trip', 'Inspection Trip')
   .display-value
-    = @asset.active_inspection.inspection_trip
+    = @asset.active_inspection&.inspection_trip
 
 - @asset.class.inspection_types.active.can_be_recurring.each do |inspection_type|
   .form-group
