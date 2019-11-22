@@ -7,7 +7,7 @@ class AncillaryStructure < BridgeLike
 
   has_many :ancillary_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'AncillaryCondition'
 
-  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['HighMastLight', 'HighwaySign', 'HighwaySignal']})) }
+  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['HighMastLight', 'HighwaySign', 'HighwaySignal', 'MiscStructure']})) }
 
   #-----------------------------------------------------------------------------
   # Instance Methods

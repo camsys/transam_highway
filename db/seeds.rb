@@ -35,6 +35,7 @@ asset_types = [
     {name: 'Highway Sign', description: 'Highway Sign', class_name: 'HighwaySign', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
     {name: 'Highway Signal', description: 'Highway Signal', class_name: 'HighwaySignal', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
     {name: 'High Mast Light', description: 'High Mast Light', class_name: 'HighMastLight', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
+    {name: 'Miscellaneous Structure', description: 'Miscellaneous Structure', class_name: 'MiscStructure', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
 
 ]
 asset_subtypes = [
@@ -52,7 +53,8 @@ asset_subtypes = [
 
   {belongs_to: 'asset_type', type: 'Highway Signal', name: 'Mast Arm Signal', description: 'Mast Arm Signal', active: true},
 
-  {belongs_to: 'asset_type', type: 'High Mast Light', name: 'High Mast Light”', description: 'High mast light”', active: true},
+  {belongs_to: 'asset_type', type: 'High Mast Light', name: 'High Mast Light', description: 'High mast light', active: true},
+  {belongs_to: 'asset_type', type: 'Miscellaneous Structure', name: 'Miscellaneous Structure', description: 'Miscellaneous Structure', active: true},
 ]
 
 roles = [

@@ -28,7 +28,7 @@
 - elsif @sshml
   .form-group
     %label.control-label
-      = reference_label('ancillary_conditions', 'ancillary_condition_type_id', 'SSHML Rating')
+      = reference_label((@asset_class_name == 'MiscStructure' ? 'misc_conditions' : 'ancillary_conditions'), 'ancillary_condition_type_id', 'SSHML Rating')
     .display-value
       = @latest_condition&.ancillary_condition_type
 .form-group
