@@ -515,7 +515,7 @@ class BridgeLike < TransamAssetRecord
     InspectionGenerator.new(bridgelike.inspection_type_settings.find_by(name: 'Routine')).create
     
     return true, msg, bridgelike.class.name
-  end
+  end # create_or_update_from_xml
 
   def self.process_roadway(hash, bridgelike)
     # Validate ON_UNDER
@@ -560,7 +560,7 @@ class BridgeLike < TransamAssetRecord
     raise StandardError.new "No inspection type found." unless type
     
     inspection_klass = case struct_class_code
-    when 'BRIDGE'
+    when 'BRIDGE', 'MISCELLANEOUS'
       BridgeCondition
     when 'CULVERT'
       CulvertCondition
@@ -582,7 +582,7 @@ class BridgeLike < TransamAssetRecord
     inspection.channel_condition_type = ChannelConditionType.find_by(code: hash['CHANRATING'])
     inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: hash['SCOURCRIT'])
 
-    if struct_class_code == 'BRIDGE'
+    if struct_class_code == 'BRIDGE' || struct_class_code == 'MISCELLANEOUS'
       # condition ratings
       {deck_condition_rating_type_id: 'DKRATING',
        superstructure_condition_rating_type_id: 'SUPRATING',
@@ -659,6 +659,8 @@ class BridgeLike < TransamAssetRecord
       bridgelike = Bridge.find_or_initialize_by(asset_tag: asset_tag)
     when 'CULVERT'
       bridgelike = Culvert.find_or_initialize_by(asset_tag: asset_tag)
+    when 'MISCELLANEOUS'
+      bridgelike = MiscStructure.find_or_initialize_by(asset_tag: asset_tag)
     else
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
@@ -671,7 +673,9 @@ class BridgeLike < TransamAssetRecord
       # standardize format
       design_code = bridge_hash['DESIGNMAIN'].rjust(2, '0')
       design_type = DesignConstructionType.find_by(code: design_code)
-      if design_type
+      if struct_class_code == 'MISCELLANEOUS'
+        asset_subtype = AssetSubtype.find_by(name: 'Miscellaneous Structure')
+      elsif design_type
         asset_subtype = design_type.asset_subtype
         # Sanity check
         unless asset_subtype.asset_type.name.upcase == struct_class_code
@@ -750,7 +754,7 @@ class BridgeLike < TransamAssetRecord
     
     # Bridge vs. Culvert
     case struct_class_code
-    when 'BRIDGE'
+    when 'BRIDGE', 'MISCELLANEOUS'
       optional[:deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
       optional[:wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
       optional[:membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])
