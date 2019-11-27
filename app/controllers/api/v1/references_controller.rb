@@ -34,21 +34,21 @@ class Api::V1::ReferencesController < Api::ApiController
   end
 
   def query_bridges
-    @bridges = Bridge.where(id: @highway_structures)
+    @bridges = Bridge.where(highway_structures: {id: @highway_structures})
   end
 
   def query_culverts
-    @culverts = Culvert.where(id: @highway_structures)
+    @culverts = Culvert.where(highway_structures: {id: @highway_structures})
   end
 
   def query_ancillary_structures
-    @highway_signs = HighwaySign.where(id: @highway_structures)
-    @highway_signals = HighwaySignal.where(id: @highway_structures)
-    @high_mast_lights = HighMastLight.where(id: @highway_structures)
+    @highway_signs = HighwaySign.where(highway_structures: {id: @highway_structures})
+    @highway_signals = HighwaySignal.where(highway_structures: {id: @highway_structures})
+    @high_mast_lights = HighMastLight.where(highway_structures: {id: @highway_structures})
   end
 
   def query_misc_structures
-    @misc = MiscStructure.where(id: @highway_structures)
+    @misc = MiscStructure.where(highway_structures: {id: @highway_structures})
   end
 
   def query_element_definitions
