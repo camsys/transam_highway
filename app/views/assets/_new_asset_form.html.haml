@@ -7,6 +7,10 @@
 
   }
 
+:ruby
+  city_names = District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name)
+  county_names = District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name)
+
 %ul.nav.nav-tabs
   %li.active
     %a{:href => '#required', :data =>{:toggle => 'tab'}}
@@ -41,8 +45,8 @@
         = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type')
 
         = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys, label: reference_label('highway_structures', 'state', '* State')
-        = f.input :region, label: reference_label('highway_structures', 'region_id', 'Region')
-        = f.input :maintenance_section, label: reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
+        = f.association :region, label: reference_label('highway_structures', 'region_id', 'Region')
+        = f.association :maintenance_section, label: reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
         = f.input :county, label: reference_label('highway_structures', 'county', 'County')
         = f.input :city, label: reference_label('highway_structures', 'city', '* City')
         
@@ -82,4 +86,14 @@
       
   .form-actions.form-section
     = f.button :submit, '+ Add Asset & Go to New Record', :class => 'btn btn-primary'
+
+:javascript
+  $('#asset_county').typeahead({
+      items: 10,
+      source: #{county_names.to_json.html_safe || []}
+  });
+  $('#asset_city').typeahead({
+      items: 10,
+      source: #{city_names.to_json.html_safe || []}
+  });
     
