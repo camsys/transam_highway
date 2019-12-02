@@ -61,20 +61,22 @@
 
 :javascript
 
-  $('body .datepicker').bootstrapDP({
-    minViewMode: "months",
-    autoclose: true
-  });
+  $(document).on("focus", ".datepicker", function(){
+    $(this).bootstrapDP({
+      minViewMode: "months",
+      autoclose: true
+    });
 
-  $('body .datepicker').datepicker().on("changeMonth", function(e) {
-    // change to end of month date
-    var currentDate = e.date;
-    console.log(currentDate);
-    var endMonthDate = moment(currentDate).endOf("month").toDate();
-    var _self = this;
-    setTimeout(function() {
-      $(_self).datepicker('update', endMonthDate);
-    }, 50);
+    $(this).datepicker().on("changeMonth", function(e) {
+      // change to end of month date
+      var currentDate = e.date;
+      console.log(currentDate);
+      var endMonthDate = moment(currentDate).endOf("month").toDate();
+      var _self = this;
+      setTimeout(function() {
+        $(_self).datepicker('update', endMonthDate);
+      }, 50);
+    });
   });
 
   $('.inspection_schedule_form').validate({
