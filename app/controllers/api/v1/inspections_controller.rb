@@ -441,6 +441,7 @@ class Api::V1::InspectionsController < Api::ApiController
     query_bridges
     query_culverts
     query_ancillary_structures
+    query_miscellaneous_structures
     query_inspections
     query_bridge_conditions
     query_culvert_conditions
@@ -488,6 +489,11 @@ class Api::V1::InspectionsController < Api::ApiController
     @highway_signals = HighwaySignal.where("highway_structures.id": @highway_structure_ids)
     @high_mast_lights = HighMastLight.where("highway_structures.id": @highway_structure_ids)
     @ancillary_asset_ids = @highway_signs.or(@highway_signals).or(@high_mast_lights).pluck("transam_assetible_id")
+  end
+
+  def query_miscellaneous_structures
+    @miscellaneous_structures = MiscStructure.where("highway_structures.id": @highway_structure_ids)
+    @misc_asset_ids = @miscellaneous_structures.pluck("transam_assetible_id")
   end
 
   def query_inspections
