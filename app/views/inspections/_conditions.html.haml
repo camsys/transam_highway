@@ -6,7 +6,7 @@
     = render 'inspections/sshml/conditions'
   - else
     .col-md-6
-      - if condition_type == 'Bridge' || condition_type = 'MiscStructure'
+      - if condition_type == 'Bridge' || condition_type == 'MiscStructure'
         = editable_association_tag(@inspection, :deck_condition_rating_type, reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck Condition'), model_name: 'Inspection')
         = editable_association_tag(@inspection, :superstructure_condition_rating_type, reference_label('bridge_conditions', 'superstructure_condition_rating_type_id', 'Superstructure Condition'), model_name: 'Inspection')
         = editable_association_tag(@inspection, :substructure_condition_rating_type, reference_label('bridge_conditions', 'substructure_condition_rating_type_id', 'Substructure Condition'), model_name: 'Inspection')
@@ -16,7 +16,7 @@
       = editable_association_tag(@inspection, :structural_appraisal_rating_type, reference_label('bridge_conditions', 'structural_appraisal_rating_type_id', 'Structural Appraisal Rating'), model_name: 'Inspection')
       = editable_association_tag(@inspection, :deck_geometry_appraisal_rating_type, reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry Appraisal Rating'), model_name: 'Inspection')
 
-      - if condition_type == 'Bridge' || condition_type = 'MiscStructure'
+      - if condition_type == 'Bridge' || condition_type == 'MiscStructure'
         = editable_association_tag(@inspection, :underclearance_appraisal_rating_type, reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearance Appraisal Rating'), model_name: 'Inspection')
 
 
