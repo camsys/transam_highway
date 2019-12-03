@@ -8,10 +8,17 @@
     %thead
       %tr
         %th.center Location
-        %th.center L
-        - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
-          %th.center= l.number
-        %th.center R
+        %th.center
+          = "L"
+          = select_tag "#{roadbed.left_edge.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.left_edge.has_no_restrictions? ? nil : (roadbed.left_edge.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
+
+        - roadbed.roadbed_lines.by_inspection(@inspection.inspection).lines.each do |l|
+          %th.center
+            = l.number
+            = select_tag "#{l.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], l.has_no_restrictions? ? nil : (l.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
+        %th.center
+          = "R"
+          = select_tag "#{roadbed.right_edge.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.right_edge.has_no_restrictions? ? nil : (roadbed.right_edge.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
     %tbody
       - if roadbed.use_minimum_clearance?
         %tr{data: {type: 'minimum_clearance'}}
@@ -19,7 +26,7 @@
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'minimum_clearance'
 
 
-          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+          - roadbed.roadbed_lines.by_inspection(@inspection.inspection).lines.each do |l|
             = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'minimum_clearance'
 
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'minimum_clearance'
@@ -29,7 +36,7 @@
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'entry'
 
 
-          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+          - roadbed.roadbed_lines.by_inspection(@inspection.inspection).lines.each do |l|
             = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'entry'
 
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'entry'
@@ -37,13 +44,28 @@
           %td Exit
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.left_edge, line_type: 'left_edge', number_type: 'exit'
 
-          - roadbed.roadbed_lines.by_inspection(@inspection).lines.each do |l|
+          - roadbed.roadbed_lines.by_inspection(@inspection.inspection).lines.each do |l|
             = render 'roadbed_lines/roadbed_line_cell', line: l, line_type: 'line', number_type: 'exit'
 
           = render 'roadbed_lines/roadbed_line_cell', line: roadbed.right_edge, line_type: 'right_edge', number_type: 'exit'
 
 - if roadbed
   :javascript
+    $(".roadbed_line_toggle").change(function() {
+      var roadbed_line_id = $(this).attr('id').split('_')[0];
+      var cells = $('td[data-line-id="'+roadbed_line_id+'"] input');
+
+      if (parseInt($(this).val()) == 1) {
+        if (parseInt(cells.first().val()) == 0) {
+          cells.val('');
+        }
+        cells.attr('disabled', false);
+      } else {
+        cells.val($(this).val());
+        cells.attr('disabled', true);
+      }
+    });
+
     function is_vc_form_valid() {
       //TODO: add form validations
       return true;
@@ -75,6 +97,9 @@
     function submit_vc_changes() {
       if(is_vc_form_valid()) {
         $("#spinner").show();
+
+        $('input').attr('disabled', false); // undisable all inputs so they're submitted
+
         $.ajax({
           url: "#{save_vertical_clearance_changes_roadbed_path(roadbed&.object_key)}",
           method: 'post',

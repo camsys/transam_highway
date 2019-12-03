@@ -32,7 +32,7 @@ class Roadbed < ApplicationRecord
     roadway.highway_structure.asset_type
   end
   def use_minimum_clearance?
-    AncillaryStructure.subclasses.map(&:to_s).include? asset_type.class_name
+    (AncillaryStructure.subclasses.map(&:to_s) << "MiscStructure").include? asset_type.class_name
   end
 
   def left_edge

@@ -4,7 +4,7 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
   let!(:test_user) { create(:normal_user) }
   let!(:test_condition_type) { create(:channel_condition_type) }
   let(:test_association_class) { "ChannelConditionType" }
-  let!(:test_highway_structure) { create(:highway_structure) }
+  let!(:test_highway_structure) { create(:bridge) }
   let!(:test_inspection) { create(:inspection, highway_structure: test_highway_structure) }
   let!(:test_element) { create(:element, inspection: test_inspection) }
   let!(:test_defect) { create(:defect, inspection: test_inspection, element: test_element) }
@@ -29,8 +29,8 @@ RSpec.describe Api::V1::ReferencesController, type: :request do
     end
 
     it 'includes structures data' do 
-      expect(json['data']['structures'].size).to eq(1)
-      expect(json['data']['structures'][0]["object_key"]).to eq(test_highway_structure.object_key)
+      expect(json['data']['structures'].size).to eq(6)
+      expect(json['data']['structures']['bridges'][0]["object_key"]).to eq(test_highway_structure.object_key)
     end
 
     it 'includes element_definition data' do 

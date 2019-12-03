@@ -44,11 +44,11 @@
         = f.input_field :max_calculated_inspection_due_date, :class => "form-control datepicker-clear", :as => :string, :data => {'date-container' => '.inspection_proxy_max_calculated_inspection_due_date'}, :value => f.object.max_calculated_inspection_due_date
         %span.input-group-addon
           %i.fa.fa-calendar
-  = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), include_blank: 'Select All'
-  = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), include_blank: 'Select All'
-  = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), include_blank: 'Select All'
-  = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), include_blank: 'Select All'
-  = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone'), include_blank: 'Select All'
+  = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('inspections', 'inspection_fiscal_year', 'Fiscal Year'), include_blank: 'Select All'
+  = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('inspections', 'inspection_month', 'Inspection Month'), include_blank: 'Select All'
+  = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('inspections', 'inspection_quarter', 'Inspection Quarter'), include_blank: 'Select All'
+  = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('inspections', 'inspection_trip_key', 'Inspection Trip'), include_blank: 'Select All'
+  = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('inspections', 'inspection_zone_id', 'Inspection Zone'), include_blank: 'Select All'
   
 .col-sm-3
   - orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)

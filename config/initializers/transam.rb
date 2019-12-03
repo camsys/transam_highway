@@ -30,7 +30,13 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'StructureMaterialType',
   'StructureStatusType',
   'TrafficDirectionType',
-  'WearingSurfaceType'
+  'WearingSurfaceType',
+  'AncillaryConditionType',
+  'AssemblyType',
+  'ColumnType',
+  'FoundationType',
+  'MastArmFrameType',
+  'UpperConnectionType'
 ]
 
 Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'BridgeLike', 'FieldReference', 'District']

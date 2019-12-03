@@ -15,7 +15,7 @@ json.defect_locations do
 end
 
 case @inspection.highway_structure.asset_subtype.asset_type.name
-when "Bridge"
+when "Bridge" || "MiscStructure"
   json.bridge_conditions do
     json.partial! 'api/v1/bridge_conditions/listing', bridge_condition: @inspection.becomes(BridgeCondition).reload
   end

@@ -1,0 +1,99 @@
+:css
+  .form-section-header {
+    font-size: 1.5em;
+    margin-bottom: .5em;
+    color: #a7a7a7;
+    font-weight: normal;
+
+  }
+
+:ruby
+  city_names = District.joins(:district_type).where(district_types: {name: 'Place'}).pluck(:name)
+  county_names = District.joins(:district_type).where(district_types: {name: 'County'}).pluck(:name)
+
+%ul.nav.nav-tabs
+  %li.active
+    %a{:href => '#required', :data =>{:toggle => 'tab'}}
+      Required Fields
+
+= simple_form_for(@asset,
+  :as => :asset,
+  :url => @asset.new_record? ? inventory_index_path : inventory_path,
+  :method => @asset.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+
+  = hidden_field_tag :asset_seed_class_name, 'AssetType'
+
+  .tab-content.form-section
+    .tab-pane.fade.in.active#required
+      .col-sm-6
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+
+        .form-group
+          %label.control-label.string.required= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
+          %div= select_tag :asset_type, options_from_collection_for_select(AssetType.where(id: @asset_class_instance.id).order(:id), "id", "to_s"), class: 'form-control'
+
+        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type')
+
+        = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys, label: reference_label('highway_structures', 'state', '* State')
+        = f.association :region, label: reference_label('highway_structures', 'region_id', 'Region')
+        = f.association :maintenance_section, label: reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
+        = f.input :county, label: reference_label('highway_structures', 'county', 'County')
+        = f.input :city, label: reference_label('highway_structures', 'city', '* City')
+        
+        = f.input :latitude, label: reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, label: reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
+
+        = f.hidden_field :purchase_cost, value: 0
+        = f.hidden_field :in_service_date, value: Date.today
+        = f.hidden_field :purchased_new, value: true
+        = f.hidden_field :purchase_date, value: Date.today
+
+      .col-sm-6
+
+        %h2.form-section-header
+          Organization
+
+        = f.association :organization, collection: Organization.where(short_name: 'CDOT')
+
+        %h2.form-section-header
+          Classification
+
+        = f.association :owner, label: reference_label('highway_structures', 'owner_id', 'Owner')
+        = f.association :structure_status_type, label: reference_label('highway_structures', 'structure_status_type_id', 'Structure Status')
+
+        %h2.form-section-header
+          Inspection
+
+        = f.association :inspection_program, label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
+
+        %h2.form-section-header
+          Age & Service
+
+        - asset_dir = @asset.class.to_s.underscore
+        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On')
+        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under')
+      
+  .form-actions.form-section
+    = f.button :submit, '+ Add Asset & Go to New Record', :class => 'btn btn-primary'
+
+:javascript
+  $('#asset_county').typeahead({
+      items: 10,
+      source: #{county_names.to_json.html_safe || []}
+  });
+  $('#asset_city').typeahead({
+      items: 10,
+      source: #{city_names.to_json.html_safe || []}
+  });
+    

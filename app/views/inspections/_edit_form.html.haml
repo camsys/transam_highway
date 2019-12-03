@@ -1,0 +1,134 @@
+:css
+  .inspector-assignment-label {
+    display: block;
+  }
+
+  .inspector-checkboxes {
+    padding-left: 0px;
+    vertical-align: inherit;
+  }
+
+:ruby
+  inspectors = []
+  User.active.with_role(:inspector).each do |user|
+    user.organizations.each do |l|
+      inspectors << {
+        name: user.to_s,
+        id: user.id,
+        organization_id: l.id
+      }
+    end
+  end
+
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  assignable_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      assignable_teams << l
+    end
+  end
+
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Set Schedule
+    .modal-body
+      = simple_form_for(:transam_workflow_model_proxy,
+                    :html => {:class => 'form-vertical inspection_form' },
+                    :url => fire_workflow_events_transam_workflow_index_path,
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        = f.input :transam_asset_id, as: :hidden, input_html: {value: @asset.highway_structure.id}
+
+        = f.input :global_ids, as: :hidden, input_html: {value: @inspection.inspection.to_global_id}
+        = f.input :to_state, as: :hidden
+        = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
+
+        .row
+          .col-sm-6
+            = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, input_html: {:value => format_as_date(@inspection.calculated_inspection_due_date)}
+
+            = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), required: false, include_blank: true, selected: @inspection.inspection_fiscal_year
+            = f.input :inspection_month, collection: %w(JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC), label: reference_label('highway_structures', 'inspection_month', 'Inspection Month'), required: false, include_blank: true, selected: @inspection.inspection_month
+            .row
+              .col-sm-6
+                = f.input :inspection_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false, include_blank: true, selected: @inspection.inspection_quarter
+              .col-sm-6
+                = f.input :inspection_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false, include_blank: true, selected: @inspection.inspection_trip_key
+            .row
+              .col-sm-6
+                = f.input :inspection_second_quarter, collection: %w(A B C D E F G H), label: reference_label('highway_structures', 'inspection_quarter', 'Inspection Quarter'), required: false, include_blank: true, selected: @inspection.inspection_second_quarter
+              .col-sm-6
+                = f.input :inspection_second_trip_key, collection: (1..99).to_a, label: reference_label('highway_structures', 'inspection_trip_key', 'Inspection Trip'), required: false, include_blank: true, selected: @inspection.inspection_second_trip_key
+            = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('highway_structures', 'inspection_zone', 'Inspection Zone'), required: false, include_blank: true, selected: @inspection.inspection_zone_id
+          .col-sm-6
+            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id
+            = f.input :inspector_ids, collection: @inspection.assigned_organization_id ? User.active.with_role(:inspector).joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
+
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $('.datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
+  });
+
+  $('body .datepicker').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
+  });
+
+  $('.inspection_form').validate({
+    submitHandler: function(form) {
+      if ($('.transam_workflow_model_proxy_inspector_ids input[type="checkbox"]:checked').length > 0) {
+        $('#transam_workflow_model_proxy_to_state').val('assigned');
+      } else if (parseInt($('#transam_workflow_model_proxy_assigned_organization_id').val()) > 0) {
+        $('#transam_workflow_model_proxy_to_state').val('ready');
+      } else {
+       $('#transam_workflow_model_proxy_to_state').val('open');
+      }
+
+      form.submit();
+    }
+  });
+
+  $('#cancel_inspection_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
+
+  function new_inspector_checkbox(inspector) {
+    return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+  }
+
+  function update_inspection_inspectors_by_team(team_id) {
+    if(team_id) {
+      team_id = parseInt(team_id);
+    }
+    $('.inspector-checkboxes').remove();
+    $('input[name="transam_workflow_model_proxy[inspector_ids][]"]').val('');
+
+    var inspectors = #{inspectors.to_json.html_safe || {}};
+    inspectors.filter(function(l){return l.organization_id == team_id;}).forEach(function(l) {
+      $('.transam_workflow_model_proxy_inspector_ids').append(new_inspector_checkbox(l));
+    });
+  }
+
+  $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
+    var team_id = $(this).val();
+    update_inspection_inspectors_by_team(team_id);
+  });
+

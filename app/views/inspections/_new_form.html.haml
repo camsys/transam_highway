@@ -1,0 +1,68 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Unscheduled Inspection
+    .modal-body
+      = simple_form_for(@inspection,
+                    :html => {:class => 'form-vertical inspection_form' },
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        = f.input :transam_asset_id, as: :hidden, input_html: {value: @asset.highway_structure.id}
+        .row
+          .col-sm-4
+            = f.association :inspection_type, collection: InspectionType.can_be_unscheduled, required: true
+          .col-sm-4
+            = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
+        = f.input :description, required: @inspection.inspection_type.try(:name) == 'Special'
+
+
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $('.inspection_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#inspection_inspection_type_id').change(function() {
+    if (parseInt($(this).val()) == parseInt('#{InspectionType.find_by(name: 'Special').id}')){
+      $('#inspection_description').rules("add", {
+        required: true
+      });
+      $('label[for="inspection_description"]').html('<abbr title="required">*</abbr> Description');
+    } else {
+      $('#inspection_description').rules("add", {
+        required: false
+      });
+      $('label[for="inspection_description"]').html('Description');
+    }
+  });
+
+  $('#cancel_inspection_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
+
+  $('.datepicker').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true
+  });
+
+  $('.datepicker').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
+  });

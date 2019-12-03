@@ -82,8 +82,8 @@ class BridgeLike < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
-  def self.allowable_params
-    FORM_PARAMS
+  def self.inspection_types
+    InspectionType.all
   end
 
   def self.default_map_renderer_attr
@@ -511,10 +511,11 @@ class BridgeLike < TransamAssetRecord
     bridgelike.set_calculated_condition!
 
     # Add the open inspection
-    bridgelike.open_inspection
+    # TO DO / WIP Replace with InspectionGenerator
+    InspectionGenerator.new(bridgelike.inspection_type_settings.find_by(name: 'Routine')).create
     
     return true, msg, bridgelike.class.name
-  end
+  end # create_or_update_from_xml
 
   def self.process_roadway(hash, bridgelike)
     # Validate ON_UNDER
@@ -554,20 +555,20 @@ class BridgeLike < TransamAssetRecord
   
 
   def self.process_inspection(hash, struct_class_code, date)
-    inspection_frequency = hash['BRINSPFREQ']
+    type, desc, inspection_frequency = get_inspection_type(hash['INSPTYPE'], hash)
 
-    # inspection type
-    type = InspectionType.find_by(code: hash['INSPTYPE'])
+    raise StandardError.new "No inspection type found." unless type
     
     inspection_klass = case struct_class_code
-    when 'BRIDGE'
+    when 'BRIDGE', 'MISCELLANEOUS'
       BridgeCondition
     when 'CULVERT'
       CulvertCondition
     end
 
     inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
-                                      inspection_frequency: inspection_frequency, inspection_type: type,
+                                      inspection_frequency: inspection_frequency,
+                                      inspection_type: type, description: desc,
                                       notes: hash['NOTES'], state: 'final')
     # safety ratings
     {railings_safety_type_id: 'RAILRATING',
@@ -581,7 +582,7 @@ class BridgeLike < TransamAssetRecord
     inspection.channel_condition_type = ChannelConditionType.find_by(code: hash['CHANRATING'])
     inspection.scour_critical_bridge_type = ScourCriticalBridgeType.find_by(code: hash['SCOURCRIT'])
 
-    if struct_class_code == 'BRIDGE'
+    if struct_class_code == 'BRIDGE' || struct_class_code == 'MISCELLANEOUS'
       # condition ratings
       {deck_condition_rating_type_id: 'DKRATING',
        superstructure_condition_rating_type_id: 'SUPRATING',
@@ -605,7 +606,36 @@ class BridgeLike < TransamAssetRecord
     inspection.save!
     inspection
   end
-      
+
+  def self.get_inspection_type(type_code, hash)
+    frequency = hash['BRINSPFREQ']
+
+    # Map from BrM inspection types to SIMSA type
+    case type_code
+    # special
+    when 'L', 'M', 'O'
+      type = InspectionType.find_by(name: 'Special')
+      case type_code
+      when 'L'
+        desc = 'Accident Damage (traffic)'
+      when 'M'
+        desc = 'Natural Disaster Damage'
+      when 'O'
+        desc = 'Other'
+      end
+      frequency = hash['OSINSPFREQ']
+    when 'D'
+      type = InspectionType.find_by(name: 'Underwater')
+      frequency = hash['UWINSPFREQ']
+    when 'G'
+      type = InspectionType.find_by(name: 'Fracture Critical')
+      frequency = hash['FCINSPFREQ']
+    else
+      type = InspectionType.find_by(code: type_code)
+    end
+    return type, desc, frequency
+  end
+  
   # Convert units if needed and round values
   def self.process_quantities(value, target_units)
     case target_units
@@ -619,7 +649,7 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, inspection_trip)
+                                 highway_authority, inspection_program)
     asset_tag = bridge_hash['BRKEY']
     
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -629,6 +659,8 @@ class BridgeLike < TransamAssetRecord
       bridgelike = Bridge.find_or_initialize_by(asset_tag: asset_tag)
     when 'CULVERT'
       bridgelike = Culvert.find_or_initialize_by(asset_tag: asset_tag)
+    when 'MISCELLANEOUS'
+      bridgelike = MiscStructure.find_or_initialize_by(asset_tag: asset_tag)
     else
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
@@ -641,7 +673,9 @@ class BridgeLike < TransamAssetRecord
       # standardize format
       design_code = bridge_hash['DESIGNMAIN'].rjust(2, '0')
       design_type = DesignConstructionType.find_by(code: design_code)
-      if design_type
+      if struct_class_code == 'MISCELLANEOUS'
+        asset_subtype = AssetSubtype.find_by(name: 'Miscellaneous Structure')
+      elsif design_type
         asset_subtype = design_type.asset_subtype
         # Sanity check
         unless asset_subtype.asset_type.name.upcase == struct_class_code
@@ -666,30 +700,6 @@ class BridgeLike < TransamAssetRecord
       msg = "Updated #{inspection_program} #{struct_class_code} #{asset_tag}"
     end
     
-    unless inspection_trip.blank?
-      # break down 
-      inspection_trip_parts = inspection_trip.split(" ")
-      case inspection_program.name
-      when 'On-System' # 'FYY MON QTT' 
-        inspection_fiscal_year = inspection_trip_parts[0]
-        inspection_month = inspection_trip_parts[1]
-        if inspection_trip_parts[2]
-          inspection_quarter = inspection_trip_parts[2][0]
-          inspection_trip_key = inspection_trip_parts[2][1..-1]
-          inspection_trip_key = inspection_trip_key[1..-1] if inspection_trip_key[0] == "_"
-          if inspection_trip_parts[3]
-            inspection_second_quarter = inspection_trip_parts[3][0]
-            inspection_second_trip_key = inspection_trip_parts[3][1..-1]
-            inspection_second_trip_key = inspection_second_trip_key[1..-1] if inspection_second_trip_key[0] == "_"
-          end
-        end
-      when 'Off-System' # '{NORTH|CENTRAL|SOUTH} FY {EVN|ODD}' 
-        inspection_zone = InspectionZone.find_by(name: inspection_trip_parts[0].titleize)
-        inspection_fiscal_year = inspection_trip_parts[2]
-      else # Give up for now
-      end
-    end
-
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: bridgelike.organization.state,
@@ -733,15 +743,7 @@ class BridgeLike < TransamAssetRecord
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
       remarks: bridge_hash['NOTES'],
-      inspection_program: inspection_program,
-      inspection_trip: inspection_trip,
-      inspection_zone: inspection_zone,
-      inspection_fiscal_year: inspection_fiscal_year,
-      inspection_month: inspection_month,
-      inspection_quarter: inspection_quarter,
-      inspection_trip_key: inspection_trip_key&.to_i,
-      inspection_second_quarter: inspection_second_quarter,
-      inspection_second_trip_key: inspection_second_trip_key&.to_i
+      inspection_program: inspection_program
     }
 
     # Validate Owner and maintenance responsibility. 
@@ -752,7 +754,7 @@ class BridgeLike < TransamAssetRecord
     
     # Bridge vs. Culvert
     case struct_class_code
-    when 'BRIDGE'
+    when 'BRIDGE', 'MISCELLANEOUS'
       optional[:deck_structure_type] = DeckStructureType.find_by(code: bridge_hash['DKSTRUCTYP'])
       optional[:wearing_surface_type] = WearingSurfaceType.find_by(code: bridge_hash['DKSURFTYPE'])
       optional[:membrane_type] = MembraneType.find_by(code: bridge_hash['DKMEMBTYPE'])

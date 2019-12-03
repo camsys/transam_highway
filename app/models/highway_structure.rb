@@ -21,9 +21,11 @@ class HighwayStructure < TransamAssetRecord
   belongs_to :historical_significance_type
 
   belongs_to :inspection_program
-  belongs_to :inspection_zone
 
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
+  has_many :inspection_type_settings, foreign_key: :transam_asset_id, dependent: :destroy
+
+  accepts_nested_attributes_for :inspection_type_settings, :reject_if => lambda { |a| a[:frequency_months].blank? && a[:is_required] == "true" }
 
   has_many :elements, through: :inspections
   has_many :defects, through: :elements
@@ -52,15 +54,6 @@ class HighwayStructure < TransamAssetRecord
       :location_description,
       :length,
       :inspection_date,
-      :fracture_critical_inspection_required,
-      :fracture_critical_inspection_frequency,
-      :underwater_inspection_required,
-      :underwater_inspection_frequency,
-      :other_special_inspection_required,
-      :other_special_inspection_frequency,
-      :fracture_critical_inspection_date,
-      :underwater_inspection_date,
-      :other_special_inspection_date,
       :is_temporary,
       :structure_status_type_id,
       :region,
@@ -74,7 +67,8 @@ class HighwayStructure < TransamAssetRecord
       :lanes_on,
       :lanes_under,
       :historical_significance_type_id,
-      :highway_structure_type_id
+      :highway_structure_type_id,
+      :inspection_type_settings_attributes => [InspectionTypeSetting.allowable_params]
   ]
 
   CLEANSABLE_FIELDS = [
@@ -90,10 +84,6 @@ class HighwayStructure < TransamAssetRecord
   # Class Methods
   #
   #-----------------------------------------------------------------------------
-
-  def self.allowable_params
-    FORM_PARAMS
-  end
 
   def self.default_map_renderer_attr
     :calculated_condition
@@ -127,6 +117,10 @@ class HighwayStructure < TransamAssetRecord
   #
   #-----------------------------------------------------------------------------
 
+  def inspection_class
+    Inspection
+  end
+
   def reset_lanes(roadway)
     update_attributes(lanes_on: roadways.on.sum(:lanes),
                       lanes_under: roadways.under.sum(:lanes))
@@ -158,49 +152,6 @@ class HighwayStructure < TransamAssetRecord
 
   def last_closed_inspection
     inspections.where(state: 'final').ordered.first
-  end
-
-  def open_inspection
-    if inspections.where.not(state: 'final').count > 0
-      Inspection.get_typed_inspection(inspections.where.not(state: 'final').first)
-    elsif inspections.count > 0
-      old_insp = Inspection.get_typed_inspection(last_closed_inspection)
-      new_insp = old_insp.deep_clone include: {elements: :defects}, except: [:object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, {elements: [:guid, {defects: [:object_key, :guid]}]}]
-
-      old_insp.elements.where(id: old_insp.elements.distinct.pluck(:parent_element_id)).each do |old_parent_elem|
-        new_parent_elem = new_insp.elements.select{|e| e.object_key == old_parent_elem.object_key}.first
-        new_insp.elements.select{|e| e.parent_element_id == old_parent_elem.id}.each do |kopy_element|
-          kopy_element.parent = new_parent_elem
-        end
-      end
-      new_insp.elements.each do |elem|
-        # set inspection id for defects
-        elem.defects.each do |defect|
-          defect.inspection = new_insp
-        end
-
-        elem.object_key = nil
-      end
-
-      new_insp.state = 'open'
-      
-      new_insp.inspection_frequency = old_insp.inspection_frequency
-      if new_insp.inspection_frequency && old_insp.calculated_inspection_due_date
-        new_insp.calculated_inspection_due_date = (old_insp.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
-      end
-
-      new_insp.save!
-
-      new_insp
-    else
-      typed_asset = TransamAsset.get_typed_asset(self)
-      if eval("defined?(#{typed_asset.class}Condition)")
-        (typed_asset.class.to_s + 'Condition').constantize.new(highway_structure: self)
-      else
-        self.inspections.build
-      end
-    end
-
   end
 
   protected

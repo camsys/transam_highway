@@ -29,6 +29,10 @@ class AncillaryStructure < BridgeLike
   # Class Methods
   #-----------------------------------------------------------------------------
 
+  def self.inspection_types
+    InspectionType.where(name: ['Routine', 'Special', 'Initial', 'Damage'])
+  end
+  
   def self.process_roadway(hash, bridgelike)
     roadway = super
     roadway.update_attributes(features_intersected: bridgelike.features_intersected)
@@ -36,11 +40,13 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_inspection(hash, struct_class_code, date)
-    inspection_frequency = hash['BRINSPFREQ']
-    type = InspectionType.find_by(code: hash['INSPTYPE'])
+    type, desc, inspection_frequency = get_inspection_type(hash['INSPTYPE'], hash)
+
+    raise StandardError.new "No inspection type found." unless type
 
     inspection = AncillaryCondition.new(event_datetime: date, calculated_inspection_due_date: date,
-                                        inspection_frequency: inspection_frequency, inspection_type: type,
+                                        inspection_frequency: inspection_frequency,
+                                        inspection_type: type, description: desc,
                                         notes: hash['NOTES'], state: 'final')
 
     inspection.ancillary_condition_type_id = AncillaryConditionType.where(code: hash['CULVRATING']).pluck(:id).first
@@ -56,7 +62,7 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, inspection_trip)
+                                 highway_authority, inspection_program)
     asset_tag = hash['BRKEY']
 
     # Structure Class, NBI 24 is 
@@ -107,19 +113,6 @@ class AncillaryStructure < BridgeLike
       msg = "Updated #{inspection_program} #{structure_klass} #{asset_tag}"
     end
 
-    unless inspection_trip.blank?
-      # break down 
-      inspection_trip_parts = inspection_trip.split(" ")
-      # TODO: get format from CDOT and parse
-      inspection_fiscal_year = nil
-      inspection_month = nil
-      inspection_quarter = nil
-      inspection_trip_key = nil
-      inspection_second_quarter = nil
-      inspection_second_trip_key = nil
-      inspection_zone = nil
-    end
-
     optional = {
       # TransamAsset, NBI 1, 8, 27
       state: structure.organization.state,
@@ -142,15 +135,7 @@ class AncillaryStructure < BridgeLike
 
       remarks: hash['NOTES'],
       maintenance_patrol: '99',
-      inspection_program: inspection_program,
-      inspection_trip: inspection_trip,
-      inspection_zone: inspection_zone,
-      inspection_fiscal_year: inspection_fiscal_year,
-      inspection_month: inspection_month,
-      inspection_quarter: inspection_quarter,
-      inspection_trip_key: inspection_trip_key&.to_i,
-      inspection_second_quarter: inspection_second_quarter,
-      inspection_second_trip_key: inspection_second_trip_key&.to_i
+      inspection_program: inspection_program
     }
 
     # Validate Owner and maintenance responsibility. 

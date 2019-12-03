@@ -1,7 +1,7 @@
 :ruby 
   @asset_class_name = @asset.asset_type.class_name
 
-  if @asset_class_name == 'Bridge'
+  if @asset_class_name == 'Bridge' || @asset_class_name == 'MiscStructure'
     @latest_condition = @asset.latest_bridge_condition
   elsif @asset_class_name == 'Culvert'
     @latest_condition = @asset.latest_culvert_condition

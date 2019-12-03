@@ -1,0 +1,113 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title Inspection Schedule
+    .modal-body
+      = simple_form_for(@asset,
+                    :as => :asset,
+                    :html => {:class => 'form-vertical inspection_schedule_form' },
+                    :url => inventory_path(@asset),
+                    :wrapper => :vertical_form,
+                    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+        .row
+          .col-sm-3
+            .form-group
+              %label.control-label
+                Inspection Type
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                * Required
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                * Frequency
+          .col-sm-2
+            .form-group
+              %label.control-label.required
+                * Due Date
+          .col-sm-2
+            .form-group
+              %label.control-label.string
+                Description
+        = f.simple_fields_for :inspection_type_settings, @not_special_settings do |setting|
+          .row{id: "#{setting.object.inspection_type_id}_inspection_type_setting_row"}
+            .col-sm-3
+              = setting.object.inspection_type
+              = setting.input :inspection_type_id, as: :hidden
+
+            .col-sm-2= setting.input :is_required, as: :select, label: false, include_blank: false, input_html: {class: 'is_required_field'}
+            .col-sm-2= setting.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
+            .col-sm-2
+              - due_date = f.object.inspections.where(inspection_type_id: setting.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if setting.object.is_required
+              = setting.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date), class: 'schedule_field'}, disabled: !setting.object.is_required, required: setting.object.is_required
+            - if setting.object.inspection_type.name == 'Special'
+              .col-sm-2= setting.input :description, label: false, disabled: !setting.object.is_required, required: setting.object.is_required, input_html: {class: 'schedule_field'}
+
+        #inspection_type_settings
+          = f.simple_fields_for :inspection_type_settings, @special_settings do |setting|
+            = render 'inspection_type_setting_fields', f: setting
+          .links.pull-right
+            = link_to_add_association f, :inspection_type_settings do
+              %i.fa.fa-2x.fa-plus-circle
+        .row
+          .col-xs-12
+            = f.submit 'Save', :class => 'btn btn-primary'
+            %button.btn.btn-warning#cancel_inspection_schedule_form{type: 'button'}
+              Cancel
+
+:javascript
+
+  $(document).on("focus", ".datepicker", function(){
+    $(this).bootstrapDP({
+      minViewMode: "months",
+      autoclose: true
+    });
+
+    $(this).datepicker().on("changeMonth", function(e) {
+      // change to end of month date
+      var currentDate = e.date;
+      console.log(currentDate);
+      var endMonthDate = moment(currentDate).endOf("month").toDate();
+      var _self = this;
+      setTimeout(function() {
+        $(_self).datepicker('update', endMonthDate);
+      }, 50);
+    });
+  });
+
+  $('.inspection_schedule_form').validate({
+    submitHandler: function(form) {
+      $( ".inspection_schedule_form input,.inspection_schedule_form select" ).prop( "disabled", false );
+      form.submit();
+    }
+  });
+
+  $('#cancel_inspection_schedule_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
+
+  $('body').on('change', '.is_required_field', function() {
+     var required = $(this).val();
+
+    $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').val('');
+
+    if (required == 'false') {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', true);
+
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').rules( "add", {
+        required: false
+      });
+    } else {
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').attr('disabled', false);
+
+      $('#'+$(this).parents('.row').attr('id') + ' .schedule_field').rules( "add", {
+        required: true
+      });
+    }
+    $('.inspection_schedule_form').valid();
+
+  });

@@ -52,7 +52,7 @@
     %label.control-label= reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type')
     .display-value= @asset.highway_structure_type
   .form-group
-    %label.control-label Inspection Program (80)
+    %label.control-label= reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
     .display-value= @asset.inspection_program
 
   .form-group

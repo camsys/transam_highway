@@ -12,6 +12,10 @@ class Api::V1::ReferencesController < Api::ApiController
   def get_data
     get_associations
     query_highway_structures
+    query_bridges
+    query_culverts
+    query_ancillary_structures
+    query_misc_structures
     query_element_definitions
     query_defect_definitions
     query_element_defect_definitions
@@ -27,6 +31,24 @@ class Api::V1::ReferencesController < Api::ApiController
     unless params[:limit].blank?
       @highway_structures = @highway_structures.limit(params[:limit])
     end
+  end
+
+  def query_bridges
+    @bridges = Bridge.where(highway_structures: {id: @highway_structures})
+  end
+
+  def query_culverts
+    @culverts = Culvert.where(highway_structures: {id: @highway_structures})
+  end
+
+  def query_ancillary_structures
+    @highway_signs = HighwaySign.where(highway_structures: {id: @highway_structures})
+    @highway_signals = HighwaySignal.where(highway_structures: {id: @highway_structures})
+    @high_mast_lights = HighMastLight.where(highway_structures: {id: @highway_structures})
+  end
+
+  def query_misc_structures
+    @misc = MiscStructure.where(highway_structures: {id: @highway_structures})
   end
 
   def query_element_definitions

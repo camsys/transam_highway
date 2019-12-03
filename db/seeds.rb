@@ -35,6 +35,7 @@ asset_types = [
     {name: 'Highway Sign', description: 'Highway Sign', class_name: 'HighwaySign', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
     {name: 'Highway Signal', description: 'Highway Signal', class_name: 'HighwaySignal', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
     {name: 'High Mast Light', description: 'High Mast Light', class_name: 'HighMastLight', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
+    {name: 'Miscellaneous Structure', description: 'Miscellaneous Structure', class_name: 'MiscStructure', display_icon_name: 'fa fa-map-signs', map_icon_name: 'blueIcon', active: true},
 
 ]
 asset_subtypes = [
@@ -52,7 +53,8 @@ asset_subtypes = [
 
   {belongs_to: 'asset_type', type: 'Highway Signal', name: 'Mast Arm Signal', description: 'Mast Arm Signal', active: true},
 
-  {belongs_to: 'asset_type', type: 'High Mast Light', name: 'High Mast Light”', description: 'High mast light”', active: true},
+  {belongs_to: 'asset_type', type: 'High Mast Light', name: 'High Mast Light', description: 'High mast light', active: true},
+  {belongs_to: 'asset_type', type: 'Miscellaneous Structure', name: 'Miscellaneous Structure', description: 'Miscellaneous Structure', active: true},
 ]
 
 roles = [
@@ -508,12 +510,14 @@ defect_definitions = [
 ]
 
 inspection_types = [
-    {code: '1', name: 'Regular NBI inspection', active: true},
-    {code: '4', name: 'Special', active: true},
-    {code: 'D', name: 'Underwater - Contract SCUBA', active: true},
-    {code: 'L', name: 'Special - Accident Damage (traffic)', active: true},
-    {code: 'M', name: 'Special - Natural Disaster Damage', description: 'Special - Natural Disaster Damage (flood, fire, wind, earthquake, etc.)', active: true},
-    {code: 'O', name: 'Special - Other', active: true}
+    {code: '1', name: 'Routine', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'U', name: 'Underwater', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'G', name: 'Fracture Critical', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: 'P', name: 'Special Pin', active: true, can_be_recurring: true, can_be_unscheduled: false},
+    {code: '4', name: 'Special', active: true, can_be_recurring: true, can_be_unscheduled: true},
+    {code: '2', name: 'Initial', active: true, can_be_unscheduled: true},
+    {code: '3', name: 'Damage', active: true, can_be_unscheduled: true},
+    {code: '6', name: 'In-depth', active: true, can_be_unscheduled: true},
 ]
 
 feature_safety_types = [

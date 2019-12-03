@@ -51,7 +51,7 @@
         %th.center{:data => {:field => 'organization_type', :sortable => 'true'}}= reference_label('inspections', 'organization_type_id', 'Inspection Group')
         %th.center{:data => {:field => 'assigned_organization', :sortable => 'true'}}= reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
         %th.center{:data => {:field => 'inspectors', :sortable => 'false'}}= reference_label('inspections', 'inspectors', 'Inspectors')
-        %th.center{:data => {:field => 'inspection_trip', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
+        %th.center{:data => {:field => 'inspection_trip', :sortable => 'true'}}= reference_label('inspections', 'inspection_trip', 'Inspection Trip')
         %th.center{:data => {:field => 'calculated_inspection_due_date', :sortable => 'true', :formatter => "month_year_formatter"}}= reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')
         %th.center{:data => {:field => 'event_datetime', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'event_datetime', 'Inspection Date')
         %th.center{:data => {:field => 'transam_assets_asset_tag', :sortable => 'true', :formatter => 'structure_link_formatter'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
@@ -63,7 +63,7 @@
         %th.center{:data => {:field => 'owner', :sortable => 'true'}}= reference_label('highway_structures', 'owner_id', 'Owner')
         %th.center{:data => {:field => 'calculated_condition', :sortable => 'false'}}= reference_label('highway_structures', 'calculated_condition', 'Condition')
         %th.center{:data => {:field => 'inspection_program', :sortable => 'true'}}= reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
-        /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone', 'Inspection Zone')
+        /%th.center{:data => {:field => 'inspection_zone', :sortable => 'true'}}= reference_label('inspections', 'inspection_zone_id', 'Inspection Zone')
         %th.center{:data => {:field => 'routine_report_submitted_at', :sortable => 'true', :formatter => "date_formatter"}}= reference_label('inspections', 'routine_report_submitted_at', 'Routine Inspection Submitted')
 
 = render 'shared/table_formatters'
@@ -82,7 +82,7 @@
     organization_type: "organization_types.name",
     inspection_program: "inspection_programs.name",
     inspection_type: "inspection_types.name",
-    inspection_trip: "highway_structures.inspection_trip"
+    inspection_trip: "inspections.inspection_trip"
   };
 
   $('#inspection-table').bootstrapTable({

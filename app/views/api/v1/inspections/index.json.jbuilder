@@ -43,6 +43,11 @@ if @highway_structures
         json.partial! 'api/v1/ancillary_structures/listing', collection: @high_mast_lights, as: :ancillary_structure
       end
     end
+    if @miscellaneous_structures
+      json.miscellaneous do
+        json.partial! 'api/v1/bridges/listing', collection: @miscellaneous_structures, as: :bridge
+      end
+    end
   end
 end
 

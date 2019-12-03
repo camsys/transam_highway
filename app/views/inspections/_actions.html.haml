@@ -7,7 +7,7 @@
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
     - allowable_events.each do |evt|
-      - if (can? evt.name.to_sym, @inspection.inspection)
+      - if (can? evt.name.to_sym, @inspection.inspection) && evt.name.to_sym != :schedule
         %li
           = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
             %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}

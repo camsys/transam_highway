@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_25_155252) do
+ActiveRecord::Schema.define(version: 2019_11_17_002400) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -812,15 +812,6 @@ ActiveRecord::Schema.define(version: 2019_10_25_155252) do
     t.string "location_description"
     t.decimal "length", precision: 10
     t.date "inspection_date"
-    t.boolean "fracture_critical_inspection_required"
-    t.integer "fracture_critical_inspection_frequency"
-    t.boolean "underwater_inspection_required"
-    t.integer "underwater_inspection_frequency"
-    t.boolean "other_special_inspection_required"
-    t.integer "other_special_inspection_frequency"
-    t.date "fracture_critical_inspection_date"
-    t.date "underwater_inspection_date"
-    t.date "other_special_inspection_date"
     t.boolean "is_temporary"
     t.bigint "structure_status_type_id"
     t.bigint "maintenance_section_id"
@@ -841,19 +832,10 @@ ActiveRecord::Schema.define(version: 2019_10_25_155252) do
     t.bigint "highway_structure_type_id"
     t.bigint "historical_significance_type_id"
     t.bigint "inspection_program_id"
-    t.string "inspection_trip"
-    t.bigint "inspection_zone_id"
-    t.string "inspection_fiscal_year"
-    t.string "inspection_month"
-    t.string "inspection_quarter"
-    t.integer "inspection_trip_key"
-    t.string "inspection_second_quarter"
-    t.integer "inspection_second_trip_key"
     t.index ["highway_structure_type_id"], name: "index_highway_structures_on_highway_structure_type_id"
     t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
     t.index ["historical_significance_type_id"], name: "index_highway_structures_on_historical_significance_type_id"
     t.index ["inspection_program_id"], name: "index_highway_structures_on_inspection_program_id"
-    t.index ["inspection_zone_id"], name: "index_highway_structures_on_inspection_zone_id"
     t.index ["main_span_design_construction_type_id"], name: "idx_structures_on_main_span_design_construction_type_id"
     t.index ["main_span_material_type_id"], name: "index_highway_structures_on_main_span_material_type_id"
     t.index ["maintenance_responsibility_id"], name: "index_highway_structures_on_maintenance_responsibility_id"
@@ -919,10 +901,26 @@ ActiveRecord::Schema.define(version: 2019_10_25_155252) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "inspection_type_settings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "object_key", limit: 12, null: false
+    t.bigint "transam_asset_id"
+    t.bigint "inspection_type_id"
+    t.integer "frequency_months"
+    t.string "description"
+    t.boolean "is_required"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inspection_type_id"], name: "index_inspection_type_settings_on_inspection_type_id"
+    t.index ["object_key"], name: "index_inspection_type_settings_on_object_key"
+    t.index ["transam_asset_id"], name: "index_inspection_type_settings_on_transam_asset_id"
+  end
+
   create_table "inspection_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "code"
     t.string "description"
+    t.boolean "can_be_unscheduled"
+    t.boolean "can_be_recurring"
     t.boolean "active"
   end
 
@@ -938,6 +936,15 @@ ActiveRecord::Schema.define(version: 2019_10_25_155252) do
     t.bigint "inspectionible_id"
     t.string "inspectionible_type"
     t.bigint "inspection_type_id"
+    t.string "description"
+    t.string "inspection_trip"
+    t.string "inspection_fiscal_year"
+    t.string "inspection_month"
+    t.string "inspection_quarter"
+    t.integer "inspection_trip_key"
+    t.string "inspection_second_quarter"
+    t.integer "inspection_second_trip_key"
+    t.bigint "inspection_zone_id"
     t.bigint "transam_asset_id"
     t.bigint "assigned_organization_id"
     t.string "state"
@@ -962,6 +969,7 @@ ActiveRecord::Schema.define(version: 2019_10_25_155252) do
     t.index ["inspection_team_member_alt_id"], name: "index_inspections_on_inspection_team_member_alt_id"
     t.index ["inspection_team_member_id"], name: "index_inspections_on_inspection_team_member_id"
     t.index ["inspection_type_id"], name: "index_inspections_on_inspection_type_id"
+    t.index ["inspection_zone_id"], name: "index_inspections_on_inspection_zone_id"
     t.index ["inspectionible_type", "inspectionible_id"], name: "inspectionible_idx"
     t.index ["object_key"], name: "index_inspections_on_object_key"
     t.index ["organization_type_id"], name: "index_inspections_on_organization_type_id"

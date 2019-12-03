@@ -7,7 +7,7 @@ if ['Element', 'Defect', 'DefectLocation'].include? imagable_type
   json.feature_id image.imagable.try(:guid)
   json.inspection_id image.base_imagable.try(:guid)
 elsif imagable_type == 'Inspection'
-  json.structure_id image.base_imagable.try(:guid)
+  json.structure_id image.imagable.highway_structure.transam_asset.try(:guid)
   json.feature_id nil
   json.inspection_id image.imagable.try(:guid)
 else

@@ -1,5 +1,18 @@
+:css
+  .transam-popover {
+    margin-left: 5%;
+  }
+
 :ruby
   table_dom_id = SecureRandom.hex
+
+#table_actions.btn-toolbar
+  .btn-group
+    = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+      = "Manage Schedule";
+    = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+      %i.fa.fa-plus
+      = "Plan Unscheduled";
 
 .table-responsive
   %table.table.table-hover{:id => table_dom_id,
@@ -27,33 +40,57 @@
           :single_select => 'false'}}
     %thead
       %tr
-        %th.center{:data => {:sortable => 'true'}}
-          = reference_label('inspections', 'organization_type_id', 'Inspection Group')
+        %th.center Inspection Detail
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'inspection_type_id', 'Inspection Type')
+        %th.center{:data => {:sortable => 'true'}} Inspection Type Description
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'event_datetime', 'Inspection Date')
         %th.center{:data => {:sortable => 'true'}}
+          = reference_label('inspections', 'calculated_inspection_due_date', 'Due Date')
+        %th.center{:data => {:sortable => 'true'}}
           = reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
         %th.center{:data => {:sortable => 'true'}}
-          = reference_label('inspections', 'inspector_id', 'Inspectors')
+          = reference_label('inspections', 'inspection_team_leader_id', 'Inspection Team Leader')
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'state', 'Inspection Status')
         %th.center{:data => {:sortable => 'false'}} Actions
 
     %tbody
-      - @asset.inspections.ordered.each do |inspection|
+      - (@asset.inspections.not_final.order(calculated_inspection_due_date: :desc) + @asset.inspections.final.order(event_datetime: :desc)).each do |inspection|
         %tr
-          %td.left= inspection.organization_type
-          %td.left= inspection.assigned_organization
-          %td.left= inspection.inspection_type
-          %td.left= format_as_date(inspection.event_datetime)
-          %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
-          %td.left= format_as_list(inspection.inspectors)
-          %td.left= inspection.state&.titleize
-          %td.left
+          %td.center
             = link_to inspection_path(inspection), :class => "btn btn-primary btn-xs", :title => "Show inspection" do
               %i.fa.fa-play
               View
+          %td.left= inspection.assigned_organization
+          %td.left= inspection.inspection_type
+          %td.left= inspection.inspection_type&.description
+          %td.left= format_as_date(inspection.event_datetime)
+          %td.left= format_as_date(inspection.calculated_inspection_due_date)
+          %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
+          %td.left
+            - if inspection.inspectors.count > 0
+              = inspection.inspection_team_leader
+              %a.transam-popover{data: {placement: 'right', toggle: 'popover', html: 'true', content: inspection.inspectors.map{|i| i.to_s}.join('<br>').html_safe}, title: 'All Inspectors', tabindex: '0'}
+                %i.fa.fa-info-circle.fa-1-25x
+          %td.left= inspection.state&.titleize
+          %td.left
+            - if can? :update, inspection
+              = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
+                %i.fa.fa-edit.fa-1-5x.text-success
+              - if (inspection.inspection_type&.can_be_unscheduled && inspection.inspection_type&.name != 'Special') || (inspection.inspection_type&.name == 'Special' && inspection.description?)
+                = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                  %i.fa.fa-trash-o.fa-fw.text-danger
+
+:javascript
+
+  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+    $('.transam-popover').popover({
+      trigger: 'hover'
+    });
+
+    $('.transam-tooltip').tooltip();
+  });

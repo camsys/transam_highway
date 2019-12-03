@@ -26,14 +26,14 @@
       %label.control-label
         = reference_label('inspections', 'inspection_frequency', 'Routine Inspection Frequency')
       .display-value
-        = @inspection.highway_structure.inspection_frequency
+        = @inspection.highway_structure.inspection_type_settings.find_by(inspection_type: @inspection.inspection_type).try(:frequency_months)
 
   .col-sm-3
     .form-group
       %label.control-label
-        = reference_label('highway_structures', 'inspection_trip', 'Inspection Trip')
+        = reference_label('inspections', 'inspection_trip', 'Inspection Trip')
       .display-value
-        = @inspection.highway_structure.inspection_trip
+        = @inspection.inspection_trip
     .form-group
       %label.control-label Inspectors
       .display-value= format_as_list(@inspection.inspectors)

@@ -1,2 +1,3 @@
 = editable_asset_field_tag(@asset, :length, reference_label('bridges', 'length', 'Length'))
+= editable_asset_association_tag(@asset, :vertical_reference_feature_below, reference_label('bridges', 'vertical_reference_feature_below_id', 'Reference Vertical Feature Below Bridge'), include_blank: true)
 = editable_asset_field_tag(@asset, :min_vertical_clearance_below, reference_label('bridges', 'min_vertical_clearance_below', 'Minimum Vertical Clearance Below Bridge'))
