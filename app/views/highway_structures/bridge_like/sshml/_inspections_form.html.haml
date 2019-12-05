@@ -1,8 +1,5 @@
-.form-group
-  %label.control-label
-    = reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
-  .display-value
-    = @asset.inspection_program
+= editable_asset_association_tag(@asset, :inspection_program, reference_label('highway_structures', 'inspection_program_id', 'Inspection Program'), include_blank: true)
+
 .form-group
   %label.control-label
     = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')

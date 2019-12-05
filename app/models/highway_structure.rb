@@ -53,6 +53,7 @@ class HighwayStructure < TransamAssetRecord
       :structure_number,
       :location_description,
       :length,
+      :inspection_program_id,
       :inspection_date,
       :is_temporary,
       :structure_status_type_id,
