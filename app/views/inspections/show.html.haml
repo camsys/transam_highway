@@ -20,7 +20,8 @@
       %span #{@inspection.highway_structure.inspection_program}
       = " : "
       - # hard-coded for now
-      %span Routine
+      %span
+        = @inspection.inspection_type.name
       =" : "
       %span #{format_as_date(@inspection.calculated_inspection_due_date)}
     .col-sm-2
