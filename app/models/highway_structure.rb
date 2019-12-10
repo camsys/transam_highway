@@ -3,6 +3,8 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  after_initialize :set_defaults
+
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
   belongs_to :highway_structure_type
@@ -156,4 +158,8 @@ class HighwayStructure < TransamAssetRecord
   end
 
   protected
+
+  def set_defaults
+    self.calculated_condition ||= "unknown"
+  end
 end
