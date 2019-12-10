@@ -506,7 +506,8 @@ defect_definitions = [
 {number: 3600, short_name: 'Eff - Protect Sys(e.g. cathodic)', long_name: 'Effectiveness - Protective System (e.g. cathodic)', description: 'This defect is used to report the effectiveness of internal concrete protective systems (epoxy rebar, cathodic protection etc.).'},
 {number: 4000, short_name: 'Settlement', long_name: 'Settlement', description: 'This defect is used to report settlement in substructure elements.'},
 {number: 6000, short_name: 'Scour', long_name: 'Scour', description: 'This defect is used to report scour in substructure elements.'},
-{number: 7000, short_name: 'Damage', long_name: 'Damage', description: 'This defect is used to capture impact damage that has occurred.'}
+{number: 7000, short_name: 'Damage', long_name: 'Damage', description: 'This defect is used to capture impact damage that has occurred.'},
+{number: 8000, short_name: 'General', long_name: 'General Defect', description: 'This defect is used to report conditions not captured by any other defect.'}
 ]
 
 inspection_types = [
@@ -683,7 +684,7 @@ element_definitions = [
  {number: 342, mat_key: '6', long_name: 'Sign Attachment', short_name: 'Sign Attachment', quantity_unit: 'each'},
  {number: 343, mat_key: '6', long_name: 'Pole Attachment', short_name: 'Pole Attachment', quantity_unit: 'each'},
  {number: 372, mat_key: '9', long_name: 'FalseBent SmFlag', short_name: 'FalseBent SmFlag', quantity_unit: 'each'},
-
+ {number: 700, mat_key: '0', long_name: 'Miscellaneous Element', short_name: 'Miscellaneous', quantity_unit: 'each', description: 'This element is used when no other defined element applies.'}
 ]
 
 inspection_programs = [
@@ -749,7 +750,8 @@ defect_definitions_element_definitions = {
       3600 => [520],
       4000 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334],
       6000 => [12, 13, 15, 16, 28, 29, 30, 31, 38, 39, 54, 60, 65, 102, 104, 105, 106, 107, 109, 110, 111, 112, 113, 115, 116, 117, 118, 120, 135, 136, 141, 142, 143, 144, 145, 146, 147, 148, 149, 152, 154, 155, 156, 157, 161, 162, 202, 203, 204, 205, 206, 207, 208, 210, 211, 212, 213, 215, 216, 217, 218, 219, 220, 225, 226, 227, 228, 229, 231, 233, 234, 235, 236, 240, 241, 242, 243, 244, 245, 300, 301, 302, 303, 304, 305, 306, 310, 311, 312, 313, 314, 315, 316, 320, 321, 330, 331, 332, 333, 334],
-      7000 => [610, 611, 612, 620, 630, 631, 640, 661, 662, 663]
+      7000 => [610, 611, 612, 620, 630, 631, 640, 661, 662, 663],
+      8000 => [700]
     }
 
 mast_arm_frame_types = [
