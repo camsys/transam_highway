@@ -54,7 +54,10 @@ class InspectionGenerator
     typed_asset = TransamAsset.get_typed_asset(@inspection_type_setting.highway_structure)
     initial_params = {highway_structure: @inspection_type_setting.highway_structure, inspection_type: @inspection_type_setting.inspection_type, calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date}
     initial_params[:inspection_type_setting] = @inspection_type_setting unless @is_unscheduled
-    typed_asset.inspection_class.create(initial_params)
+    new_insp = typed_asset.inspection_class.create(initial_params)
+
+    new_insp.create_streambed_profile if ['Bridge', 'Culvert'].include? typed_asset.class.name
+
   end
 
   def active
@@ -95,6 +98,11 @@ class InspectionGenerator
     end
 
     new_insp.save!
+
+    if new_insp.streambed_profile.nil?
+      typed_asset = TransamAsset.get_typed_asset(new_insp.highway_structure)
+      new_insp.create_streambed_profile if ['Bridge', 'Culvert'].include? typed_asset.class.name
+    end
 
     new_insp
   end

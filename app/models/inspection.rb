@@ -227,8 +227,6 @@ class Inspection < InspectionRecord
   def open_new_inspection
     new_insp = InspectionGenerator.new(self.inspection_type_setting).create
 
-    new_insp.create_streambed_profile if new_insp.streambed_profile.nil?
-
     new_insp_elements = {}
 
     new_insp.elements.each do |elem|
