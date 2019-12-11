@@ -15,7 +15,7 @@ RSpec.describe InspectionGenerator, type: :service do
 
 
     it 'returns not final one if already exists' do
-      Inspection.where.not(id: test_inspection.inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       generator = InspectionGenerator.new(test_inspection_type_setting)
 
       expect(generator.create).not_to eq(test_inspection)
@@ -48,7 +48,7 @@ RSpec.describe InspectionGenerator, type: :service do
 
 
     it "copies" do
-      Inspection.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       generator = InspectionGenerator.new(test_inspection_type_setting)
 
       copy = generator.create
@@ -77,7 +77,7 @@ RSpec.describe InspectionGenerator, type: :service do
     end
 
     it 'copies child elements' do
-      Inspection.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       test_child_element = create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this child element', parent: test_element)
 
       generator = InspectionGenerator.new(test_inspection_type_setting)
