@@ -13,8 +13,8 @@ class Inspection < InspectionRecord
   belongs_to :organization_type
   belongs_to :assigned_organization, class_name: 'Organization'
 
+  belongs_to :inspection_type_setting
   belongs_to :inspection_type
-
 
   belongs_to :inspection_zone
 
@@ -154,6 +154,9 @@ class Inspection < InspectionRecord
     }
   end
 
+  def description
+    inspection_type_setting&.inspection_type&.description || read_attribute(:description)
+  end
   # ---------------------------------------------------------------------
   #
   # Methods to check logic before workflow transitions
@@ -222,7 +225,7 @@ class Inspection < InspectionRecord
   # called as callback after `finalize` event
   # to open a new inspection
   def open_new_inspection
-    new_insp = InspectionGenerator.new(InspectionTypeSetting.find_by(inspection_type: self.inspection_type, highway_structure: self.highway_structure)).create
+    new_insp = InspectionGenerator.new(self.inspection_type_setting).create
 
     new_insp.create_streambed_profile if new_insp.streambed_profile.nil?
 

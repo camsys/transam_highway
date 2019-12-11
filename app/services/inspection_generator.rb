@@ -17,9 +17,11 @@
 class InspectionGenerator
 
   attr_accessor :inspection_type_setting
+  attr_accessor :is_unscheduled
 
-  def initialize(inspection_type_setting)
+  def initialize(inspection_type_setting, is_unscheduled=false)
     self.inspection_type_setting = inspection_type_setting
+    self.is_unscheduled = is_unscheduled
   end
 
   def inspections
@@ -27,7 +29,7 @@ class InspectionGenerator
   end
 
   def specific_inspections
-    inspections.where(inspection_type: @inspection_type_setting.inspection_type)
+    @is_unscheduled ? inspections.where(inspection_type: @inspection_type_setting.inspection_type, inspection_type_setting: nil) : inspections.where(inspection_type_setting: @inspection_type_setting)
   end
 
   def cancel
@@ -36,9 +38,7 @@ class InspectionGenerator
 
   def create
 
-    is_recurring = (@inspection_type_setting.inspection_type.can_be_recurring && @inspection_type_setting.inspection_type.name != 'Special') || (@inspection_type_setting.inspection_type.name == 'Special' && @inspection_type_setting.description.present?)
-
-    insp = if is_recurring && specific_inspections.where.not(state: 'final').count > 0
+    insp = if specific_inspections.where.not(state: 'final').count > 0
       active.update!(calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date) if @inspection_type_setting.calculated_inspection_due_date
       active
     elsif inspections.count > 0
@@ -52,7 +52,9 @@ class InspectionGenerator
 
   def initial
     typed_asset = TransamAsset.get_typed_asset(@inspection_type_setting.highway_structure)
-    typed_asset.inspection_class.create(highway_structure: @inspection_type_setting.highway_structure, inspection_type: @inspection_type_setting.inspection_type, calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date)
+    initial_params = {highway_structure: @inspection_type_setting.highway_structure, inspection_type: @inspection_type_setting.inspection_type, calculated_inspection_due_date: @inspection_type_setting.calculated_inspection_due_date}
+    initial_params[:inspection_type_setting] = @inspection_type_setting unless @is_unscheduled
+    typed_asset.inspection_class.create(initial_params)
   end
 
   def active
@@ -72,7 +74,7 @@ class InspectionGenerator
     new_insp.elements.each do |elem|
       # set inspection id for defects
       elem.defects.each do |defect|
-        defect.inspection = new_insp
+        defect.inspection = elem.inspection
       end
 
       elem.object_key = nil
@@ -80,6 +82,7 @@ class InspectionGenerator
 
     new_insp.state = 'open'
 
+    new_insp.inspection_type_setting = @inspection_type_setting unless @is_unscheduled
     new_insp.inspection_type = @inspection_type_setting.inspection_type
     new_insp.inspection_frequency = @inspection_type_setting.frequency_months
     if new_insp.inspection_frequency || @inspection_type_setting.inspection_type.can_be_unscheduled
