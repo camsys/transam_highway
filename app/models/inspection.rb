@@ -240,26 +240,58 @@ class Inspection < InspectionRecord
     end
 
     # update all other open inspections
-    self.highway_structure.inspections.where.not(state: 'final', id: new_insp.id).each do |insp|
-      (Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
+    self.highway_structure.inspections.where(state: ['open', 'ready', 'assigned']).where.not(id: new_insp.id).each do |insp|
+      insp = Inspection.get_typed_inspection(insp)
+
+      (insp.class.attribute_names.map{|x| x.to_sym} + Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
         insp.send("#{field_name}=", new_insp.send(field_name))
       end
       insp.save
 
       insp.elements.each do |elem|
-        elem.quantity = new_insp_elements[elem.element_definition_id][0]
-        elem.notes = new_insp_elements[elem.element_definition_id][1]
-        elem.save
+        if new_insp_elements[elem.element_definition_id]
+          elem.quantity = new_insp_elements[elem.element_definition_id][0]
+          elem.notes = new_insp_elements[elem.element_definition_id][1]
+          elem.save
 
-        elem.defects.each do |defect|
-          defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
-          defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
-          defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
-          defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
-          defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
-          defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
-          defect.save
+          elem.defects.each do |defect|
+
+            if new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id]
+              defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
+              defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
+              defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
+              defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
+              defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
+              defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
+              defect.save
+            else
+              defect.destroy
+            end
+          end
+
+          # add new defects
+          new_insp.elements.find_by(element_definition_id: elem.element_definition_id).defects.where.not(defect_definition_id: elem.defects.select(:defect_definition_id)).each do |defect|
+            new_defect = defect.dup
+            new_defect.object_key = nil
+            new_defect.guid = nil
+            new_defect.element = elem
+            new_defect.inspection = elem.inspection
+            new_defect.save
+
+          end
+        else
+          elem.destroy
         end
+      end
+
+      # add new element
+      new_insp.elements.where.not(element_definition_id: insp.elements.select(:element_definition_id)).each do |elem|
+        new_elem = elem.dup
+        new_elem.object_key = nil
+        new_elem.guid = nil
+        new_elem.inspection = insp.inspection
+        new_elem.parent_element = insp.elements.find_by(element_definition_id: elem.parent_element.element_definition_id)
+        new_elem.save
       end
     end
 
