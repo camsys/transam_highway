@@ -230,7 +230,7 @@ class Inspection < InspectionRecord
     new_insp_elements = {}
 
     new_insp.elements.each do |elem|
-      new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes]
+      new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent_element.element_definition_id]
 
       elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
         new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
@@ -238,7 +238,7 @@ class Inspection < InspectionRecord
     end
 
     # update all other open inspections
-    self.highway_structure.inspections.where(state: ['open', 'ready', 'assigned']).where.not(id: new_insp.id).each do |insp|
+    self.highway_structure.inspections.where(state: ['open', 'ready']).where.not(id: new_insp.id).each do |insp|
       insp = Inspection.get_typed_inspection(insp)
 
       (insp.class.attribute_names.map{|x| x.to_sym} + Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
@@ -250,6 +250,7 @@ class Inspection < InspectionRecord
         if new_insp_elements[elem.element_definition_id]
           elem.quantity = new_insp_elements[elem.element_definition_id][0]
           elem.notes = new_insp_elements[elem.element_definition_id][1]
+          elem.parent_element = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2])
           elem.save
 
           elem.defects.each do |defect|
@@ -282,7 +283,7 @@ class Inspection < InspectionRecord
         end
       end
 
-      # add new element
+      # add new elements
       new_insp.elements.where.not(element_definition_id: insp.elements.select(:element_definition_id)).each do |elem|
         new_elem = elem.dup
         new_elem.object_key = nil
