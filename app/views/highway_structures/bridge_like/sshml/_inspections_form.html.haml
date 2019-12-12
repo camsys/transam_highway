@@ -4,7 +4,7 @@
   %label.control-label
     = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')
   .display-value
-    = format_as_date @asset.inspection_date
+    = format_as_date @asset.last_closed_inspection
   %label.control-label
     = reference_label('inspections', 'inspection_trip', 'Inspection Trip')
   .display-value

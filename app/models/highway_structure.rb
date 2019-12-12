@@ -150,7 +150,7 @@ class HighwayStructure < TransamAssetRecord
   end
 
   def active_inspection
-    inspections.where.not(state: 'final').ordered.first
+    inspections.where(inspection_type: InspectionType.find_by(name: 'Routine')).where.not(state: 'final').ordered.first || inspections.where(inspection_type: InspectionType.find_by(name: 'Routine'), state: 'final').ordered.first
   end
 
   def last_closed_inspection
