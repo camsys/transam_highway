@@ -15,6 +15,9 @@
   %li.active
     %a{:href => '#required', :data =>{:toggle => 'tab'}}
       Required Fields
+  %li
+    %a{:href => '#recommended', :data =>{:toggle => 'tab'}}
+      Recommended Fields
 
 = simple_form_for(@asset,
   :as => :asset,
@@ -37,53 +40,70 @@
           Identification & Classification
 
         = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
-
-        .form-group
-          %label.control-label.string.required= reference_label('highway_structures', 'highway_structurible_type', 'Structure Class')
-          %div= select_tag :asset_type, options_from_collection_for_select(AssetType.where(id: @asset_class_instance.id).order(:id), "id", "to_s"), class: 'form-control'
-
-        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type')
-
-        = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys, label: reference_label('highway_structures', 'state', '* State')
-        = f.association :region, label: reference_label('highway_structures', 'region_id', 'Region')
-        = f.association :maintenance_section, label: reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
-        = f.input :county, label: reference_label('highway_structures', 'county', 'County')
-        = f.input :city, label: reference_label('highway_structures', 'city', '* City')
+        = f.input :state, :as => :select, :collection => ISO3166::Country['US'].states.keys, label: reference_label('highway_structures', 'state', '* State'), selected: "CO", required: true
+        = f.association :region, label: reference_label('highway_structures', 'region_id', '* Region'), required: true
+        = f.association :maintenance_section, label: reference_label('highway_structures', 'maintenance_section_id', '* Maintenance Section'), required: true
+        = f.input :county, label: reference_label('highway_structures', 'county', '* County'), required: true
+        = f.input :city, label: reference_label('highway_structures', 'city', '* City'), required: true
         
-        = f.input :latitude, label: reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
-        = f.input :longitude, label: reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
+        = f.input :latitude, :as => :float, :input_html => {min: 36.8, max: 41.1}, label: reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, :as => :float, :input_html => {min: -109.0, max: -102.0}, label: reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
 
         = f.hidden_field :purchase_cost, value: 0
         = f.hidden_field :in_service_date, value: Date.today
         = f.hidden_field :purchased_new, value: true
         = f.hidden_field :purchase_date, value: Date.today
+        = f.hidden_field :organization_id, value: Organization.find_by(short_name: 'CDOT').id
 
       .col-sm-6
 
         %h2.form-section-header
-          Organization
+          Classification
 
-        = f.association :organization, collection: Organization.where(short_name: 'CDOT')
+        .form-group
+          %label.control-label.string.required= "* " + reference_label('highway_structures', 'highway_structurible_type', '* Structure Class')
+          %div= select_tag :asset_type, options_from_collection_for_select(AssetType.where(id: @asset_class_instance.id).order(:id), "id", "to_s"), class: 'form-control'
+        = f.association :structure_status_type, label: reference_label('highway_structures', 'structure_status_type_id', '* Structure Status'), required: true
+
+        %h2.form-section-header
+          Structure Type & Material
+
+        = f.association :asset_subtype, collection: AssetSubtype.where(asset_type: @asset_class_instance).order(:id), label: reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type')
+
+        %h2.form-section-header
+          Inspection
+
+        = f.association :inspection_program, label: reference_label('highway_structures', 'inspection_program_id', '* Inspection Program'), required: true
+
+    .tab-pane.fade.in#recommended
+      .col-sm-6
+
+        - asset_dir = @asset.class.to_s.underscore
+
+        %h2.form-section-header
+          Identification & Classification
+
+        = f.input :features_intersected, label: reference_label('highway_structures', 'features_intersected', 'Features Intersected')
+        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+          = f.input :facility_carried, label: reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+        = f.input :location_description, label: reference_label('highway_structures', 'location_description', 'Location Description')
+        = f.input :milepoint, label: reference_label('highway_structures', 'milepoint', 'Milepoint')
+
+        %h2.form-section-header
+          Age & Service
+
+        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On')
+        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under')
+        = f.input :manufacture_year, label: reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built')
+
+      .col-sm-6
 
         %h2.form-section-header
           Classification
 
         = f.association :owner, label: reference_label('highway_structures', 'owner_id', 'Owner')
-        = f.association :structure_status_type, label: reference_label('highway_structures', 'structure_status_type_id', 'Structure Status')
 
-        %h2.form-section-header
-          Inspection
-
-        = f.association :inspection_program, label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program')
-
-        %h2.form-section-header
-          Age & Service
-
-        - asset_dir = @asset.class.to_s.underscore
-        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
-          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On')
-        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under')
-      
   .form-actions.form-section
     = f.button :submit, '+ Add Asset & Go to New Record', :class => 'btn btn-primary'
 
@@ -96,4 +116,3 @@
       items: 10,
       source: #{city_names.to_json.html_safe || []}
   });
-    
