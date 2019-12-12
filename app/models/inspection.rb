@@ -155,7 +155,7 @@ class Inspection < InspectionRecord
   end
 
   def description
-    inspection_type_setting&.inspection_type&.description || read_attribute(:description)
+    inspection_type_setting&.description || read_attribute(:description)
   end
   # ---------------------------------------------------------------------
   #
