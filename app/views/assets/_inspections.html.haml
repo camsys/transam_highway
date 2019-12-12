@@ -45,7 +45,7 @@
           = reference_label('inspections', 'assigned_organization_id', 'Inspection Team')
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'inspection_type_id', 'Inspection Type')
-        %th.center{:data => {:sortable => 'true'}} Inspection Type Description
+        %th.center{:data => {:sortable => 'true'}} Description
         %th.center{:data => {:sortable => 'true'}}
           = reference_label('inspections', 'event_datetime', 'Inspection Date')
         %th.center{:data => {:sortable => 'true'}}
@@ -67,7 +67,7 @@
               View
           %td.left= inspection.assigned_organization
           %td.left= inspection.inspection_type
-          %td.left= inspection.inspection_type&.description
+          %td.left= inspection.description
           %td.left= format_as_date(inspection.event_datetime)
           %td.left= format_as_date(inspection.calculated_inspection_due_date)
           %td.left= Inspection.get_typed_inspection(inspection).calculated_condition&.titleize
