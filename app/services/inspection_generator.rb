@@ -58,6 +58,8 @@ class InspectionGenerator
 
     new_insp.create_streambed_profile if ['Bridge', 'Culvert'].include? typed_asset.class.name
 
+    new_insp
+
   end
 
   def active
