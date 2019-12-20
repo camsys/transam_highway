@@ -88,7 +88,7 @@ class InspectionGenerator
 
     new_insp.state = 'open'
 
-    new_insp.inspection_type_setting = @inspection_type_setting unless @is_unscheduled
+    new_insp.inspection_type_setting = (@is_unscheduled ? nil : @inspection_type_setting)
     new_insp.inspection_type = @inspection_type_setting.inspection_type
     new_insp.inspection_frequency = @inspection_type_setting.frequency_months
     if new_insp.inspection_frequency || @inspection_type_setting.inspection_type.can_be_unscheduled
