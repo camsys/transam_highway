@@ -4,6 +4,7 @@ class HighwayStructure < TransamAssetRecord
   actable as: :highway_structurible
 
   after_initialize :set_defaults
+  before_save :pass_nil_struct_num
 
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
@@ -161,5 +162,9 @@ class HighwayStructure < TransamAssetRecord
 
   def set_defaults
     self.calculated_condition ||= "unknown"
+  end
+
+  def pass_nil_struct_num
+    self[:structure_number] = nil if self[:structure_number].blank?
   end
 end
