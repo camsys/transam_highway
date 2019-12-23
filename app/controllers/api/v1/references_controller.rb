@@ -34,7 +34,7 @@ class Api::V1::ReferencesController < Api::ApiController
   end
 
   def query_bridges
-    @bridges = Bridge.where(highway_structures: {id: @highway_structures})
+    @bridges = Bridge.bridge_only.where(highway_structures: {id: @highway_structures})
   end
 
   def query_culverts
