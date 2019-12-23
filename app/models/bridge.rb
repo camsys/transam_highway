@@ -7,7 +7,7 @@ class Bridge < BridgeLike
 
   has_many :bridge_conditions, through: :inspections, source: :inspectionible, source_type: 'BridgeLikeCondition', class_name: 'BridgeCondition'
 
-  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['Bridge', 'MiscStructure']})) }
+  default_scope { where(asset_subtype: AssetSubtype.joins(:asset_type).where(asset_types: {class_name: ['Bridge']})) }
   #-----------------------------------------------------------------------------
   #
   # Instance Methods
