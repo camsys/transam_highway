@@ -190,7 +190,7 @@ class Inspection < InspectionRecord
 
   end
 
-  def can_schedule
+  def can_schedule(user)
     true
   end
 
