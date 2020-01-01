@@ -1,6 +1,8 @@
 class BridgeLike < TransamAssetRecord
-  acts_as :highway_structure, as: :highway_structurible
 
+  has_paper_trail
+
+  acts_as :highway_structure, as: :highway_structurible
 
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
@@ -930,6 +932,15 @@ class BridgeLike < TransamAssetRecord
       return nil
     end
     nil
+  end
+
+  def latest_condition
+    Inspection.get_typed_inspection(inspections.ordered.first)
+  end
+
+  def set_calculated_condition!
+    self.calculated_condition = latest_condition&.calculated_condition || 'unknown'
+    self.save
   end
   
 end

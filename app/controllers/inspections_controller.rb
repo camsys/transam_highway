@@ -138,7 +138,13 @@ class InspectionsController < TransamController
     # Use callbacks to share common setup or constraints between actions.
     def set_inspection
       @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
-      @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+
+      if @inspection.state == 'final'
+        @asset = TransamAsset.get_typed_version(@inspection.highway_structure_version)
+      else
+        @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+      end
+
     end
 
     # Only allow a trusted parameter "white list" through.

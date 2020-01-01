@@ -1,5 +1,7 @@
 class Inspection < InspectionRecord
 
+  has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
+
   actable as: :inspectionible
 
   include TransamObjectKey
@@ -157,6 +159,15 @@ class Inspection < InspectionRecord
   def description
     read_attribute(:description).present? ? read_attribute(:description) : inspection_type_setting&.description
   end
+
+  def highway_structure_version
+    if state == 'final'
+      versions.last.reify(belongs_to: true).highway_structure.version
+    else
+      highway_structure
+    end
+  end
+
   # ---------------------------------------------------------------------
   #
   # Methods to check logic before workflow transitions

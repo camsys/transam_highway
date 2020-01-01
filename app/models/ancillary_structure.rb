@@ -11,15 +11,7 @@ class AncillaryStructure < BridgeLike
 
   #-----------------------------------------------------------------------------
   # Instance Methods
-  #-----------------------------------------------------------------------------  
-  def latest_ancillary_condition
-    ancillary_conditions.ordered.first
-  end
-
-  def set_calculated_condition!
-    self.calculated_condition = latest_ancillary_condition&.calculated_condition || 'unknown'
-    self.save
-  end
+  #-----------------------------------------------------------------------------
 
   def inspection_class
     AncillaryCondition

@@ -24,5 +24,5 @@
     .tab-content
       %legend
         = label
-      = render "#{prefix}/#{key}_form"
+      = render partial: "#{prefix}/#{key}_form", locals: {asset: @asset.assigned_version ? TransamAsset.get_typed_version(@asset.assigned_version) : @asset}
 

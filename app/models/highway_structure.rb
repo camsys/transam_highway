@@ -1,4 +1,6 @@
 class HighwayStructure < TransamAssetRecord
+  has_paper_trail
+
   acts_as :transam_asset, as: :transam_assetible
 
   actable as: :highway_structurible
@@ -156,6 +158,15 @@ class HighwayStructure < TransamAssetRecord
 
   def last_closed_inspection
     inspections.where(state: 'final').ordered.first
+  end
+
+  def assigned_version
+    if inspections.where.not(state: ['open', 'ready', 'final']).count > 0
+      # we know inspections only have versions for assigned and final so we take the first one which will be an assigned
+      insp = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).order(:created_at).first.reify(belongs_to: true)
+
+      insp.highway_structure.version
+    end
   end
 
   protected
