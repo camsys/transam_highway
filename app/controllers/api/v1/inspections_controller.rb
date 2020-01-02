@@ -507,7 +507,7 @@ class Api::V1::InspectionsController < Api::ApiController
   end
 
   def query_bridge_conditions
-    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @bridge_asset_ids)
+    @bridge_conditions = BridgeCondition.where("inspections.id": @inspection_ids, "transam_asset_id": @bridge_asset_ids + @misc_asset_ids)
   end
 
   def query_culvert_conditions
