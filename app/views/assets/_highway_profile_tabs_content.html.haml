@@ -19,10 +19,21 @@
 
   prefix = "highway_structures/#{asset_dir}"
 
+
+  # TODO: possibly move logic to decide asset object to controller
+  # there are four cases
+  # you're coming from an asset detail: you either are looking at live or assigned version
+  # you're coming from an inspection detail: you etiher are looking at live or final version
+  if @inspection # will only be defined if on inspection page
+    asset = @asset # logic for whether live or final comes from inspection controller
+  else
+    asset = @asset.assigned_version ? TransamAsset.get_typed_version(@asset.assigned_version) : @asset
+  end
+
 - tabs.each do |key, label|
   .tab-pane.fade{id: "#{key}"}
     .tab-content
       %legend
         = label
-      = render partial: "#{prefix}/#{key}_form", locals: {asset: @asset.assigned_version ? TransamAsset.get_typed_version(@asset.assigned_version) : @asset}
+      = render partial: "#{prefix}/#{key}_form", locals: {asset: asset}
 

@@ -162,9 +162,9 @@ class Inspection < InspectionRecord
 
   def highway_structure_version
     if state == 'final'
-      versions.last.reify(belongs_to: true).highway_structure.version
+      return versions.last.reify(belongs_to: true).highway_structure&.version || versions.last.reify(belongs_to: true).highway_structure
     else
-      highway_structure
+      return highway_structure
     end
   end
 
