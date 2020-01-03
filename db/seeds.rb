@@ -85,7 +85,8 @@ system_config_extensions = [
     {class_name: 'Roadbed', extension_name: 'TransamGuid',engine_name: 'highway', active: true},
     {class_name: 'RoadbedLine', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'StreambedProfile', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
-    {class_name: 'StreambedProfilePoint', extension_name: 'TransamGuid', engine_name: 'highway', active: true}
+    {class_name: 'StreambedProfilePoint', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
+    {class_name: 'AssetType', extension_name: 'HasAssemblyTypes', engine_name: 'highway', active: true}
 ]
 
 route_signing_prefixes = [
@@ -850,6 +851,15 @@ upper_connection_types = [
     {name: 'Unknown', code: '999', active: true}
 ]
 
+asset_types_assembly_types = {
+    'Bridge' => ['Deck', 'Superstructure', 'Substructure', 'Joints', 'Rails', 'Other'],
+    'Culvert' => ['Deck', 'Superstructure', 'Substructure', 'Joints', 'Rails', 'Other'],
+    'Highway Sign' => ['Ancillary', 'Other', 'Rails'],
+    'Highway Signal' => ['Ancillary', 'Other', 'Rails'],
+    'High Mast Light' => ['Ancillary', 'Other', 'Rails'],
+    'Miscellaneous Structure' => ['Deck', 'Superstructure', 'Substructure', 'Joints', 'Rails', 'Other', 'Ancillary']
+}
+
 merge_tables = %w{ organization_types asset_types asset_subtypes roles system_config_extensions }
 
 merge_tables.each do |table_name|
@@ -928,4 +938,18 @@ data.each do |defect, elements|
     end
   end
 
+table_name = 'asset_types_assembly_types'
+puts "  Loading #{table_name}"
+if is_mysql
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
+elsif is_sqlite
+  ActiveRecord::Base.connection.execute("DELETE FROM #{table_name};")
+else
+  ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
+end
+data = eval(table_name)
+data.each do |asset_type, assembly_types|
+  AssetType.find_by(name: asset_type).assembly_type_ids =
+    AssemblyType.where(name: assembly_types).pluck(:id)
+end
 

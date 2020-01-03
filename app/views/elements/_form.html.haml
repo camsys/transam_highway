@@ -15,7 +15,9 @@
         %label.control-label
           Assembly Type
 
-        = select_tag(:assembly_type_id, options_from_collection_for_select(AssemblyType.active, :id, :name, @element.element_definition&.assembly_type_id), :class => 'form-control', :prompt => 'Select...')
+        = select_tag(:assembly_type_id, 
+                     options_from_collection_for_select(@assembly_types,
+                                                        :id, :name, @element.element_definition&.assembly_type_id), :class => 'form-control', :prompt => 'Select...')
     .col-sm-12
       = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type).order(:number), label: 'Element ID', required: true, :prompt => 'Select...'
 
