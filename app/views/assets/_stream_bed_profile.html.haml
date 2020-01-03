@@ -1,6 +1,11 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+:css
+  #streambed_table tbody > tr:nth-of-type(3n-2) {
+    background-color: #f5f5f5;
+  }
+
 .row
   .col-sm-12
     .panel.panel-default
@@ -85,6 +90,24 @@
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level, data: {streambed_profile: profile.object_key}}
                           - else
                             = format_as_decimal(profile.water_level,1)
+                      %tr
+                        %td.right Reference Line
+                        %td.left{:colspan => cols.count + 1}
+                          - if (can? :update, @asset) && profile.inspection.nil?
+                            %span.text-display
+                              %em= profile.reference_line
+                            %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line, data: {streambed_profile: profile.object_key}}
+                          - else
+                            %em= profile.reference_line
+                      %tr
+                        %td.right Water Level Taken At
+                        %td.left{:colspan => cols.count + 1}
+                          - if (can? :update, @asset) && profile.inspection.nil?
+                            %span.text-display
+                              %em= profile.water_level_reference
+                            %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference, data: {streambed_profile: profile.object_key}}
+                          - else
+                            %em= profile.water_level_reference
 
 
 :javascript
@@ -107,13 +130,15 @@
   function enable_streambed_profile_editing() {
     $('#streambed_table .number-display').hide();
     $('#streambed_table .number-input').show();
+    $('#streambed_table .text-display').hide();
+    $('#streambed_table .text-input').show();
   }
 
   function submit_streambed_profile_changes() {
     $("#spinner").show();
 
     var targets = {};
-    $( "#streambed_table input:not(.water-level)" ).each(function( index ) {
+    $( "#streambed_table input:not(.water-level):not(.reference-line):not(.water-level-reference)" ).each(function( index ) {
       if (!targets[$(this).data('streambed-profile')]) {
         targets[$(this).data('streambed-profile')] = {};
       }
@@ -131,12 +156,24 @@
       water_levels[$(this).data('streambed-profile')] = $(this).val();
     });
 
+    var reference_lines = {};
+    $( "#streambed_table input.reference-line" ).each(function( index ) {
+      reference_lines[$(this).data('streambed-profile')] = $(this).val();
+    });
+
+    var water_level_references = {};
+    $( "#streambed_table input.water-level-reference" ).each(function( index ) {
+      water_level_references[$(this).data('streambed-profile')] = $(this).val();
+    });
+
     $.ajax({
       url: "#{update_many_streambed_profiles_path}",
       method: 'put',
       data: {
         targets: targets,
-        water_levels: water_levels
+        water_levels: water_levels,
+        reference_lines: reference_lines,
+        water_level_references: water_level_references
       },
       success: function() {
         $("#spinner").hide();
