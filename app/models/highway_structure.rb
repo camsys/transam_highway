@@ -3,6 +3,9 @@ class HighwayStructure < TransamAssetRecord
 
   actable as: :highway_structurible
 
+  after_initialize :set_defaults
+  before_save :pass_nil_struct_num
+
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
   belongs_to :highway_structure_type
@@ -53,6 +56,7 @@ class HighwayStructure < TransamAssetRecord
       :structure_number,
       :location_description,
       :length,
+      :inspection_program_id,
       :inspection_date,
       :is_temporary,
       :structure_status_type_id,
@@ -147,7 +151,7 @@ class HighwayStructure < TransamAssetRecord
   end
 
   def active_inspection
-    inspections.where.not(state: 'final').ordered.first
+    inspections.where(inspection_type: InspectionType.find_by(name: 'Routine')).where.not(state: 'final').ordered.first || inspections.where(inspection_type: InspectionType.find_by(name: 'Routine'), state: 'final').ordered.first
   end
 
   def last_closed_inspection
@@ -155,4 +159,12 @@ class HighwayStructure < TransamAssetRecord
   end
 
   protected
+
+  def set_defaults
+    self.calculated_condition ||= "unknown"
+  end
+
+  def pass_nil_struct_num
+    self[:structure_number] = nil if self[:structure_number].blank?
+  end
 end

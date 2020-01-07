@@ -19,6 +19,10 @@
 
   prefix = "highway_structures/#{asset_dir}"
 
+  if @from_inspection
+    tabs.except!(:roadways)
+  end
+
 - tabs.each do |key, label|
   .tab-pane.fade{id: "#{key}"}
     .tab-content

@@ -13,8 +13,8 @@ class Inspection < InspectionRecord
   belongs_to :organization_type
   belongs_to :assigned_organization, class_name: 'Organization'
 
+  belongs_to :inspection_type_setting
   belongs_to :inspection_type
-
 
   belongs_to :inspection_zone
 
@@ -154,6 +154,9 @@ class Inspection < InspectionRecord
     }
   end
 
+  def description
+    read_attribute(:description).present? ? read_attribute(:description) : inspection_type_setting&.description
+  end
   # ---------------------------------------------------------------------
   #
   # Methods to check logic before workflow transitions
@@ -183,11 +186,11 @@ class Inspection < InspectionRecord
 
   def allowed_to_finalize
     typed_inspection = Inspection.get_typed_inspection(self)
-    inspection_team_leader.present? && event_datetime.present? && event_datetime > highway_structure.inspection_date && typed_inspection.has_required_photos?
-
+    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
+    inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
   end
 
-  def can_schedule
+  def can_schedule(user)
     true
   end
 
@@ -222,45 +225,79 @@ class Inspection < InspectionRecord
   # called as callback after `finalize` event
   # to open a new inspection
   def open_new_inspection
-    new_insp = InspectionGenerator.new(InspectionTypeSetting.find_by(inspection_type: self.inspection_type, highway_structure: self.highway_structure)).create
+    if self.inspection_type_setting.present?
 
-    new_insp.create_streambed_profile if new_insp.streambed_profile.nil?
+      new_insp = InspectionGenerator.new(self.inspection_type_setting).create
 
-    new_insp_elements = {}
+      new_insp_elements = {}
 
-    new_insp.elements.each do |elem|
-      new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes]
+      new_insp.elements.each do |elem|
+        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent_element.element_definition_id]
 
-      elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
-        new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
-      end
-    end
-
-    # update all other open inspections
-    self.highway_structure.inspections.where.not(state: 'final', id: new_insp.id).each do |insp|
-      (Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
-        insp.send("#{field_name}=", new_insp.send(field_name))
-      end
-      insp.save
-
-      insp.elements.each do |elem|
-        elem.quantity = new_insp_elements[elem.element_definition_id][0]
-        elem.notes = new_insp_elements[elem.element_definition_id][1]
-        elem.save
-
-        elem.defects.each do |defect|
-          defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
-          defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
-          defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
-          defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
-          defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
-          defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
-          defect.save
+        elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
+          new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
         end
       end
-    end
 
-    new_insp
+      # update all other open inspections
+      self.highway_structure.inspections.where(state: ['open', 'ready']).where.not(id: new_insp.id).each do |insp|
+        insp = Inspection.get_typed_inspection(insp)
+
+        (insp.class.attribute_names.map{|x| x.to_sym} + Inspection.attribute_names.map{|x| x.to_sym} - [:id, :object_key, :guid, :state, :event_datetime, :weather, :temperature, :calculated_inspection_due_date, :qc_inspector_id, :qa_inspector_id, :routine_report_submitted_at, :organization_type_id, :assigned_organization_id, :inspection_team_leader_id, :inspection_team_member_id, :inspection_team_member_alt_id, :inspection_type_id]).each do |field_name|
+          insp.send("#{field_name}=", new_insp.send(field_name))
+        end
+        insp.save
+
+        insp.elements.each do |elem|
+          if new_insp_elements[elem.element_definition_id]
+            elem.quantity = new_insp_elements[elem.element_definition_id][0]
+            elem.notes = new_insp_elements[elem.element_definition_id][1]
+            elem.parent_element = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2])
+            elem.save
+
+            elem.defects.each do |defect|
+
+              if new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id]
+                defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
+                defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
+                defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
+                defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
+                defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
+                defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
+                defect.save
+              else
+                defect.destroy
+              end
+            end
+
+            # add new defects
+            new_insp.elements.find_by(element_definition_id: elem.element_definition_id).defects.where.not(defect_definition_id: elem.defects.select(:defect_definition_id)).each do |defect|
+              new_defect = defect.dup
+              new_defect.object_key = nil
+              new_defect.guid = nil
+              new_defect.element = elem
+              new_defect.inspection = elem.inspection
+              new_defect.save
+
+            end
+          else
+            elem.destroy
+          end
+        end
+
+        # add new elements
+        new_insp.elements.where.not(element_definition_id: insp.elements.select(:element_definition_id)).each do |elem|
+          new_elem = elem.dup
+          new_elem.object_key = nil
+          new_elem.guid = nil
+          new_elem.inspection = insp.inspection
+          new_elem.parent_element = insp.elements.find_by(element_definition_id: elem.parent_element.element_definition_id)
+          new_elem.save
+        end
+      end
+
+      new_insp
+    end
 
   end
 

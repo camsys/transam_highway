@@ -50,7 +50,7 @@
         .panel-body
           = render 'details'
 
-- if @asset.class.name == "Bridge"
+- if ["Bridge", "Culvert"].include? @asset.class.name
   = render 'stream_bed_profile'
 
 .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}

@@ -7,7 +7,7 @@
     .col-sm-2= f.input :is_required, as: :select, label: false, input_html: {class: 'is_required_field'}
     .col-sm-2= f.input :frequency_months, collection: [3, 6, 9, 12, 24, 48, 60], label: false, input_html: {class: 'schedule_field'}, disabled: !f.object.is_required, required: f.object.is_required
     .col-sm-2
-      - due_date = f.object.highway_structure.inspections.where(inspection_type_id: f.object.inspection_type_id).where.not(state: 'final').last.try(:calculated_inspection_due_date) if f.object.is_required
+      - due_date = f.object.highway_structure.inspections.where(inspection_type_setting_id: f.object.id).where.not(state: 'final').ordered.last.try(:calculated_inspection_due_date) if f.object.is_required && f.object.id
 
       = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => false, input_html: {:value => format_as_date(due_date), class: 'schedule_field'}, disabled: !f.object.is_required, required: f.object.is_required
     .col-sm-2= f.input :description, label: false, disabled: !f.object.is_required, required: f.object.is_required, input_html: {class: 'schedule_field'}

@@ -19,7 +19,9 @@ class StreambedProfile < ApplicationRecord
       :inspection_id,
       :date,
       :year,
-      :water_level
+      :water_level,
+      :reference_line,
+      :water_level_reference
     ]
   end
 

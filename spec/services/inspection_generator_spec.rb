@@ -6,18 +6,22 @@ RSpec.describe InspectionGenerator, type: :service do
   describe ".create" do
 
     let!(:test_bridge) { create(:bridge) }
-    let(:test_inspection_type_setting) { create(:inspection_type_setting, highway_structure: test_bridge.highway_structure, inspection_type: test_inspection.inspection.inspection_type) }
-    let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure, state: 'final', notes: 'we want to copy this') }
+    let!(:test_inspection_type) { create(:inspection_type) }
+
+    let!(:test_inspection_type_setting) { create(:inspection_type_setting, highway_structure: test_bridge.highway_structure, inspection_type: test_inspection_type) }
+    let!(:test_inspection) { create(:bridge_condition, highway_structure: test_bridge.highway_structure, state: 'final', notes: 'we want to copy this', inspection_type: test_inspection_type, inspection_type_setting: test_inspection_type_setting) }
     let!(:test_element) { create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this element') }
     let!(:test_defect) { create(:defect, inspection: test_inspection.inspection, element: test_element, notes: 'we want to copy this defect') }
 
 
     it 'returns not final one if already exists' do
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       generator = InspectionGenerator.new(test_inspection_type_setting)
 
       expect(generator.create).not_to eq(test_inspection)
 
       test_inspection.update!(state: 'open')
+
       expect(generator.create).to eq(test_inspection)
 
       test_inspection.update!(state: 'assigned')
@@ -43,8 +47,8 @@ RSpec.describe InspectionGenerator, type: :service do
     end
 
 
-    it "copies", :focus do
-      test_inspection.save
+    it "copies" do
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       generator = InspectionGenerator.new(test_inspection_type_setting)
 
       copy = generator.create
@@ -73,6 +77,7 @@ RSpec.describe InspectionGenerator, type: :service do
     end
 
     it 'copies child elements' do
+      BridgeCondition.where.not(id: test_inspection.id).destroy_all # delete generated inspection from inspection type setting callback to create scenario for test
       test_child_element = create(:element, inspection: test_inspection.inspection, notes: 'we want to copy this child element', parent: test_element)
 
       generator = InspectionGenerator.new(test_inspection_type_setting)

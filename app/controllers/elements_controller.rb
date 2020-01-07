@@ -7,6 +7,7 @@ class ElementsController < TransamController
   def new
     @element = Element.new
     @element.inspection = @inspection
+    @assembly_types = @inspection.highway_structure.asset_type.assembly_types
   end
 
 

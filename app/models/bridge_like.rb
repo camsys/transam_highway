@@ -649,7 +649,7 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program)
+                                 highway_authority, inspection_program, flexible=[], rigid=[])
     asset_tag = bridge_hash['BRKEY']
     
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -675,6 +675,14 @@ class BridgeLike < TransamAssetRecord
       design_type = DesignConstructionType.find_by(code: design_code)
       if struct_class_code == 'MISCELLANEOUS'
         asset_subtype = AssetSubtype.find_by(name: 'Miscellaneous Structure')
+      elsif struct_class_code == 'CULVERT'
+        if flexible.include? struct_type_code
+          asset_subtype = AssetSubtype.find_by(name: 'Flexible')
+        elsif rigid.include? struct_type_code 
+          asset_subtype = AssetSubtype.find_by(name: 'Rigid')
+        else # Whatever the generic culvert default is
+          asset_subtype = DesignConstructionType.find_by(name: 'Culvert').asset_subtype
+        end
       elsif design_type
         asset_subtype = design_type.asset_subtype
         # Sanity check
@@ -683,8 +691,6 @@ class BridgeLike < TransamAssetRecord
         end
       elsif struct_class_code == 'BRIDGE'
         asset_subtype = DesignConstructionType.find_by(name: 'Other').asset_subtype
-      elsif struct_class_code == 'CULVERT'
-        asset_subtype = DesignConstructionType.find_by(name: 'Culvert').asset_subtype
       end
 
       required = {

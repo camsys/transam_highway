@@ -89,6 +89,18 @@ class StreambedProfilesController < ApplicationController
         streambed_profile.update(water_level: water_level) if streambed_profile
       end
     end
+    if params[:reference_lines]
+      params[:reference_lines].each do |target, reference_line|
+        streambed_profile = StreambedProfile.find_by(object_key: target)
+        streambed_profile.update(reference_line: reference_line) if streambed_profile
+      end
+    end
+    if params[:water_level_references]
+      params[:water_level_references].each do |target, water_level_reference|
+        streambed_profile = StreambedProfile.find_by(object_key: target)
+        streambed_profile.update(water_level_reference: water_level_reference) if streambed_profile
+      end
+    end
   end
 
   private
