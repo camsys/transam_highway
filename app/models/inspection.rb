@@ -186,7 +186,7 @@ class Inspection < InspectionRecord
 
   def allowed_to_finalize
     typed_inspection = Inspection.get_typed_inspection(self)
-    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).max(:event_datetime)
+    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
     inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
   end
 
