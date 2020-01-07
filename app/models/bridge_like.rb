@@ -445,8 +445,7 @@ class BridgeLike < TransamAssetRecord
 
         inspection.save!
       end # i_hashes.each
-      
-      bridgelike.update_attributes(inspection_date: last_inspection_date)
+
     end # if hash['inspevnt']
 
     elements = {}
