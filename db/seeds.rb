@@ -851,7 +851,7 @@ upper_connection_types = [
     {name: 'Unknown', code: '999', active: true}
 ]
 
-asset_types_assembly_types = {
+assembly_types_asset_types = {
     'Bridge' => ['Deck', 'Superstructure', 'Substructure', 'Joints', 'Rails', 'Other'],
     'Culvert' => ['Deck', 'Superstructure', 'Substructure', 'Joints', 'Rails', 'Other'],
     'Highway Sign' => ['Ancillary', 'Other', 'Rails'],
@@ -938,7 +938,7 @@ data.each do |defect, elements|
     end
   end
 
-table_name = 'asset_types_assembly_types'
+table_name = 'assembly_types_asset_types'
 puts "  Loading #{table_name}"
 if is_mysql
   ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
