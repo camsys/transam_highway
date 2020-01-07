@@ -938,6 +938,11 @@ data.each do |defect, elements|
     end
   end
 
+# AssetType.assembly_type_ids depends on system config extension that hasn't been loaded yet
+AssetType.class_eval do 
+  include HasAssemblyTypes
+end
+
 table_name = 'assembly_types_asset_types'
 puts "  Loading #{table_name}"
 if is_mysql
