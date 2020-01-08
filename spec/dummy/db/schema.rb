@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_17_002400) do
+ActiveRecord::Schema.define(version: 2020_01_02_211300) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -59,6 +59,11 @@ ActiveRecord::Schema.define(version: 2019_11_17_002400) do
     t.string "name"
     t.string "code"
     t.boolean "active"
+  end
+
+  create_table "assembly_types_asset_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "assembly_type_id", null: false
+    t.bigint "asset_type_id", null: false
   end
 
   create_table "asset_event_asset_subsystems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -936,6 +941,7 @@ ActiveRecord::Schema.define(version: 2019_11_17_002400) do
     t.bigint "inspectionible_id"
     t.string "inspectionible_type"
     t.bigint "inspection_type_id"
+    t.bigint "inspection_type_setting_id"
     t.string "description"
     t.string "inspection_trip"
     t.string "inspection_fiscal_year"
@@ -969,6 +975,7 @@ ActiveRecord::Schema.define(version: 2019_11_17_002400) do
     t.index ["inspection_team_member_alt_id"], name: "index_inspections_on_inspection_team_member_alt_id"
     t.index ["inspection_team_member_id"], name: "index_inspections_on_inspection_team_member_id"
     t.index ["inspection_type_id"], name: "index_inspections_on_inspection_type_id"
+    t.index ["inspection_type_setting_id"], name: "index_inspections_on_inspection_type_setting_id"
     t.index ["inspection_zone_id"], name: "index_inspections_on_inspection_zone_id"
     t.index ["inspectionible_type", "inspectionible_id"], name: "inspectionible_idx"
     t.index ["object_key"], name: "index_inspections_on_object_key"
@@ -1686,6 +1693,8 @@ ActiveRecord::Schema.define(version: 2019_11_17_002400) do
     t.decimal "water_level", precision: 10
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "reference_line"
+    t.string "water_level_reference"
     t.index ["guid"], name: "index_streambed_profiles_on_guid"
     t.index ["inspection_id"], name: "index_streambed_profiles_on_inspection_id"
     t.index ["object_key"], name: "index_streambed_profiles_on_object_key"
@@ -2032,7 +2041,6 @@ ActiveRecord::Schema.define(version: 2019_11_17_002400) do
     t.index ["object_key"], name: "workflow_events_idx1"
   end
 
-  add_foreign_key "defect_locations", "defects"
   add_foreign_key "query_field_asset_classes", "query_asset_classes"
   add_foreign_key "query_field_asset_classes", "query_fields"
   add_foreign_key "query_filters", "query_fields"
