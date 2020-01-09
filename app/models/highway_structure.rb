@@ -59,7 +59,6 @@ class HighwayStructure < TransamAssetRecord
       :location_description,
       :length,
       :inspection_program_id,
-      :inspection_date,
       :is_temporary,
       :structure_status_type_id,
       :region,
@@ -146,6 +145,10 @@ class HighwayStructure < TransamAssetRecord
       end
       json
     end
+  end
+
+  def inspection_date
+    active_inspection&.event_datetime&.to_date
   end
 
   def inspection_frequency

@@ -29,7 +29,14 @@
   else
     asset = @asset.assigned_version ? TransamAsset.get_typed_version(@asset.assigned_version) : @asset
   end
+  
+  
+  if @inspection
+    tabs.except!(:roadways)
+  end
 
+  
+  
 - tabs.each do |key, label|
   .tab-pane.fade{id: "#{key}"}
     .tab-content

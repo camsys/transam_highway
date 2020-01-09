@@ -18,6 +18,10 @@
     tabs.except!(:load_rating_posting, :navigation_data)
   end
 
+  if @inspection
+    tabs.except!(:roadways)
+  end
+
 - tabs.each do |key, label|
   %li
     %a{href: "##{key}", data: {toggle: 'tab'}}

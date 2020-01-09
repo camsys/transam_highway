@@ -57,6 +57,7 @@ class InspectionsController < TransamController
 
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
+
   end
 
   # GET /inspections/new
