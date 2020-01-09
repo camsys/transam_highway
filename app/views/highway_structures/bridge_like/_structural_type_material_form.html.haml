@@ -1,16 +1,16 @@
 - if @sshml
-  = render 'highway_structures/bridge_like/sshml/structural_type_material_form'
+  = render partial: 'highway_structures/bridge_like/sshml/structural_type_material_form', locals: {asset: asset}
 - else
-  = editable_asset_association_tag(@asset, :main_span_material_type, reference_label('highway_structures', 'main_span_material_type_id', 'Main Span Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-  = editable_asset_association_tag(@asset, :main_span_design_construction_type, reference_label('highway_structures', 'main_span_design_construction_type_id', 'Main Span Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-  = editable_asset_association_tag(@asset, :highway_structure_type, reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type'), HighwayStructureType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-  = editable_asset_association_tag(@asset, :asset_subtype, reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type'), AssetSubtype.where(asset_type: @asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
-  = editable_asset_association_tag(@asset, :approach_spans_material_type, reference_label('bridges', 'approach_spans_material_type_id', 'Approach Spans Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-  = editable_asset_association_tag(@asset, :approach_spans_design_construction_type, reference_label('bridges', 'approach_spans_design_construction_type_id', 'Approach Spans Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
-  = editable_asset_field_tag(@asset, :num_spans_main, reference_label('bridges', 'num_spans_main', 'Number of Spans'), required: false)
-  = editable_asset_field_tag(@asset, :num_spans_approach, reference_label('bridges', 'num_spans_approach', 'Number of Approach Spans'), required: false)
+  = editable_asset_association_tag(asset, :main_span_material_type, reference_label('highway_structures', 'main_span_material_type_id', 'Main Span Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+  = editable_asset_association_tag(asset, :main_span_design_construction_type, reference_label('highway_structures', 'main_span_design_construction_type_id', 'Main Span Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+  = editable_asset_association_tag(asset, :highway_structure_type, reference_label('highway_structures', 'highway_structure_type_id', 'Structure Type'), HighwayStructureType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+  = editable_asset_association_tag(asset, :asset_subtype, reference_label('bridges', 'transam_assets.asset_subtype_id', 'Design Type'), AssetSubtype.where(asset_type: asset.asset_type).order(:id).collect{|x| [x.id, x.name]})
+  = editable_asset_association_tag(asset, :approach_spans_material_type, reference_label('bridges', 'approach_spans_material_type_id', 'Approach Spans Material'), StructureMaterialType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+  = editable_asset_association_tag(asset, :approach_spans_design_construction_type, reference_label('bridges', 'approach_spans_design_construction_type_id', 'Approach Spans Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
+  = editable_asset_field_tag(asset, :num_spans_main, reference_label('bridges', 'num_spans_main', 'Number of Spans'), required: false)
+  = editable_asset_field_tag(asset, :num_spans_approach, reference_label('bridges', 'num_spans_approach', 'Number of Approach Spans'), required: false)
   - if @asset_class_name == 'Bridge'
-    = editable_asset_association_tag(@asset, :deck_structure_type, reference_label('bridges', 'deck_structure_type_id', 'deck_structure_type'.titleize))
-    = editable_asset_association_tag(@asset, :wearing_surface_type, reference_label('bridges', 'wearing_surface_type_id', 'wearing_surface_type'.titleize))
-    = editable_asset_association_tag(@asset, :membrane_type, reference_label('bridges', 'membrane_type_id', 'membrane_type'.titleize))
-    = editable_asset_association_tag(@asset, :deck_protection_type, reference_label('bridges', 'deck_protection_type_id', 'deck_protection_type'.titleize))
+    = editable_asset_association_tag(asset, :deck_structure_type, reference_label('bridges', 'deck_structure_type_id', 'deck_structure_type'.titleize))
+    = editable_asset_association_tag(asset, :wearing_surface_type, reference_label('bridges', 'wearing_surface_type_id', 'wearing_surface_type'.titleize))
+    = editable_asset_association_tag(asset, :membrane_type, reference_label('bridges', 'membrane_type_id', 'membrane_type'.titleize))
+    = editable_asset_association_tag(asset, :deck_protection_type, reference_label('bridges', 'deck_protection_type_id', 'deck_protection_type'.titleize))

@@ -53,9 +53,11 @@ class InspectionsController < TransamController
     add_breadcrumb @asset, inventory_path(@asset)
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
 
+    @asset_class_name = @asset.class.name.underscore
+
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
-    @from_inspection = true
+
   end
 
   # GET /inspections/new
@@ -139,7 +141,13 @@ class InspectionsController < TransamController
     # Use callbacks to share common setup or constraints between actions.
     def set_inspection
       @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
-      @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+
+      if @inspection.state == 'final'
+        @asset = TransamAsset.get_typed_version(@inspection.highway_structure_version)
+      else
+        @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+      end
+
     end
 
     # Only allow a trusted parameter "white list" through.
