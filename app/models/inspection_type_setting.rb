@@ -28,8 +28,12 @@ class InspectionTypeSetting < ApplicationRecord
 
 
   def calculated_inspection_due_date=(value)
-    attribute_will_change!(:calculated_inspection_due_date)
-    self[:calculated_inspection_due_date] = Chronic.parse(value)
+    if value.is_a? String
+      attribute_will_change!(:calculated_inspection_due_date)
+      self[:calculated_inspection_due_date] = Chronic.parse(value)
+    else
+      super
+    end
   end
 
   protected
