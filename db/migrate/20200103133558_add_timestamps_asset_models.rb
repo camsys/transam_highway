@@ -3,9 +3,11 @@ class AddTimestampsAssetModels < ActiveRecord::Migration[5.2]
     add_timestamps(:highway_structures, null: true)
     add_timestamps(:bridge_likes, null: true)
 
-    BridgeLike.all.each do |a|
-      a.update_columns(created_at: a.transam_asset.created_at, updated_at: a.transam_asset.updated_at)
-      a.highway_structure.update_columns(created_at: a.transam_asset.created_at, updated_at: a.transam_asset.updated_at)
+    unless Rails.env.test?
+      BridgeLike.all.each do |a|
+        a.update_columns(created_at: a.transam_asset.created_at, updated_at: a.transam_asset.updated_at)
+        a.highway_structure.update_columns(created_at: a.transam_asset.created_at, updated_at: a.transam_asset.updated_at)
+      end
     end
 
     change_column_null(:highway_structures, :created_at, false)
