@@ -164,7 +164,7 @@ class HighwayStructure < TransamAssetRecord
   end
 
   def assigned_version
-    return assigned_inspection_version.highway_structure&.version || assigned_inspection_version.highway_structure
+    return assigned_inspection_version&.highway_structure&.version || assigned_inspection_version&.highway_structure
   end
 
   def assigned_inspection_version
