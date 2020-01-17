@@ -50,7 +50,7 @@
         .row
           .col-sm-6
             - unless @inspection.inspection_type_setting
-              = f.input :description
+              = f.input :description, input_html: {value: @inspection.description}
             = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, input_html: {:value => format_as_date(@inspection.calculated_inspection_due_date)}
 
             = f.input :inspection_fiscal_year, collection: %w(EVN ODD LP0 LP1 LP2 LP3 12M), label: reference_label('highway_structures', 'inspection_fiscal_year', 'Fiscal Year'), required: false, include_blank: true, selected: @inspection.inspection_fiscal_year
