@@ -164,11 +164,13 @@ class HighwayStructure < TransamAssetRecord
   end
 
   def assigned_version
+    return assigned_inspection_version.highway_structure&.version || assigned_inspection_version.highway_structure
+  end
+
+  def assigned_inspection_version
     if inspections.where.not(state: ['open', 'ready', 'final']).count > 0
       # we know inspections only have versions for assigned and final so we take the first one which will be an assigned
-      insp = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first.reify(belongs_to: true)
-
-      return insp.highway_structure&.version || insp.highway_structure
+      return PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first.reify(belongs_to: true)
     end
   end
 

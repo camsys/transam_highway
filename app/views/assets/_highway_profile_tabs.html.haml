@@ -19,7 +19,7 @@
   end
 
   if @inspection
-    tabs.except!(:roadways)
+    tabs.except!(:appraisal, :condition, :roadways)
   end
 
 - tabs.each do |key, label|
