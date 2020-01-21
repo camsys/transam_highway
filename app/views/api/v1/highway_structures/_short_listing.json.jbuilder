@@ -1,5 +1,6 @@
 json.(highway_structure, :object_key, :asset_subtype_id, :asset_tag, :county, :city, :facility_carried, :highway_structurible_type, :calculated_condition, :milepoint, :inspection_frequency)
 json.id highway_structure.guid
+json.asset_type highway_structure.asset_type.name
 json.latitude highway_structure.try(:geometry).try(:y)
 json.longitude highway_structure.try(:geometry).try(:x)
 json.asset_subtype highway_structure.asset_subtype.try(:to_s) 
