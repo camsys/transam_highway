@@ -31,7 +31,7 @@
       = reference_label('bridge_conditions', 'deck_geometry_appraisal_rating_type_id', 'Deck Geometry')
     .display-value
       = @latest_condition&.deck_geometry_appraisal_rating_type
-  - if @asset_class_name == 'Bridge'
+  - if ['Bridge', 'MiscStructure'].include? @asset_class_name
     .form-group
       %label.control-label
         = reference_label('bridge_conditions', 'underclearance_appraisal_rating_type_id', 'Underclearances Appraisal')

@@ -50,7 +50,7 @@
           %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'asset_link_formatter', :field => 'asset_tag'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'structure_status_type'}}= reference_label('highway_structures', 'structure_status_type_id', 'Status')
           %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'owner'}}= reference_label('highway_structures', 'owner_id', 'Organization')
-          - unless ['HighwaySign', 'HighwaySignal', 'HighMastLight', 'MiscStructure'].include? @asset_class_name
+          - if AssetSubtype.where(asset_type: AssetType.find_by(class_name: @asset_class_name)).count > 1
             %th.center{:data => {:searchable => 'true', :sortable => 'false', :field => 'bridge_like_type'}}= reference_label(table_title.underscore, 'transam_assets.asset_subtype_id', 'Type')
           - unless ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset_class_name
             %th.left{:data => {:searchable => 'true', :sortable => 'true', :field => 'facility_carried'}}= reference_label('highway_structures', 'facility_carried', 'Facility Carried')

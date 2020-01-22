@@ -9,7 +9,7 @@
   = editable_asset_association_tag(asset, :approach_spans_design_construction_type, reference_label('bridges', 'approach_spans_design_construction_type_id', 'Approach Spans Design'), DesignConstructionType.active.collect{|x| [x.id, x.name]}, include_blank: true)
   = editable_asset_field_tag(asset, :num_spans_main, reference_label('bridges', 'num_spans_main', 'Number of Spans'), required: false)
   = editable_asset_field_tag(asset, :num_spans_approach, reference_label('bridges', 'num_spans_approach', 'Number of Approach Spans'), required: false)
-  - if @asset_class_name == 'Bridge'
+  - if ['Bridge', 'MiscStructure'].include? @asset_class_name
     = editable_asset_association_tag(asset, :deck_structure_type, reference_label('bridges', 'deck_structure_type_id', 'deck_structure_type'.titleize))
     = editable_asset_association_tag(asset, :wearing_surface_type, reference_label('bridges', 'wearing_surface_type_id', 'wearing_surface_type'.titleize))
     = editable_asset_association_tag(asset, :membrane_type, reference_label('bridges', 'membrane_type_id', 'membrane_type'.titleize))
