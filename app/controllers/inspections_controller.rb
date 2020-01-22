@@ -53,7 +53,7 @@ class InspectionsController < TransamController
     add_breadcrumb @asset, inventory_path(@asset)
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
 
-    @asset_class_name = @asset.class.name.underscore
+    @asset_class_name = @asset.asset_type.class_name
 
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
