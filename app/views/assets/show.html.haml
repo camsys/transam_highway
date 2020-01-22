@@ -2,7 +2,7 @@
   @asset_class_name = @asset.asset_type.class_name
 
   if @asset.assigned_version
-    @latest_condition = @asset.assigned_inspection_version
+    @latest_condition = Inspection.get_typed_version(@asset.assigned_inspection_version)
   else
     @latest_condition = @asset.latest_condition
   end

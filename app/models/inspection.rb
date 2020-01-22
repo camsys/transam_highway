@@ -81,6 +81,15 @@ class Inspection < InspectionRecord
     end
   end
 
+  def self.get_typed_version(version)
+    if version.respond_to? :reify
+      inspectionible_ver = version.inspectionible.version.reify(has_one: true, belongs_to: true, has_many: true)
+      return TransamAsset.get_typed_asset(version.highway_structure).inspection_class.new(inspectionible_ver.attributes)
+    else
+      return get_typed_inspection(version)
+    end
+  end
+
   def self.allowable_params
     FORM_PARAMS
   end
