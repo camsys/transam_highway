@@ -43,6 +43,12 @@ class Api::V1::InspectionsController < Api::ApiController
           ac_hash = params[:ancillary_condition].permit(@ancillary_condition.allowable_params).to_h
           @ancillary_condition.update!(ac_hash) if @ancillary_condition
         end
+
+        if params[:structure]
+          @structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
+          structure_hash = params[:structure].permit(@structure.allowable_params).to_h
+          @structure&.update!(structure_hash)
+        end
         
         if params[:elements] && params[:elements].any?
           params[:elements].each do |el_params|
