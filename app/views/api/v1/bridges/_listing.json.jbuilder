@@ -6,5 +6,4 @@ json.(bridge, :operating_rating, :inventory_rating, :border_bridge_structure_num
 associations = [:design_load_type, :operating_rating_method_type, :inventory_rating_method_type, :bridge_posting_type, :deck_structure_type, :wearing_surface_type, :membrane_type, :deck_protection_type, :approach_spans_material_type, :approach_spans_design_construction_type]
 associations.each do |asso|
   json.(bridge, "#{asso}_id")
-  json.set! asso, bridge.try(asso).try(:name)
 end
