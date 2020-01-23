@@ -253,7 +253,7 @@ class Inspection < InspectionRecord
       new_insp_elements = {}
 
       new_insp.elements.each do |elem|
-        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent_element.element_definition_id]
+        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent_element&.element_definition_id]
 
         elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
           new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
@@ -273,7 +273,7 @@ class Inspection < InspectionRecord
           if new_insp_elements[elem.element_definition_id]
             elem.quantity = new_insp_elements[elem.element_definition_id][0]
             elem.notes = new_insp_elements[elem.element_definition_id][1]
-            elem.parent_element = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2])
+            elem.parent_element = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2]) if new_insp_elements[elem.element_definition_id][2].present?
             elem.save
 
             elem.defects.each do |defect|
@@ -312,7 +312,7 @@ class Inspection < InspectionRecord
           new_elem.object_key = nil
           new_elem.guid = nil
           new_elem.inspection = insp.inspection
-          new_elem.parent_element = insp.elements.find_by(element_definition_id: elem.parent_element.element_definition_id)
+          new_elem.parent_element = insp.elements.find_by(element_definition_id: elem.parent_element.element_definition_id) if elem.parent_element
           new_elem.save
         end
       end
