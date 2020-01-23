@@ -107,7 +107,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'schedule', from_state: 'open', to_state: 'assigned', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
 
-        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
+        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Open'},
 
 
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
