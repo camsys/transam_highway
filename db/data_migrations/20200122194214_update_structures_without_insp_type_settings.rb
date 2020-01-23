@@ -1,7 +1,6 @@
 class UpdateStructuresWithoutInspTypeSettings < ActiveRecord::DataMigration
   def up
     HighwayStructure.joins('LEFT JOIN inspection_type_settings ON inspection_type_settings.transam_asset_id = highway_structures.id').where(inspection_type_settings: {transam_asset_id: nil}).each do |asset|
-      puts asset.object_key
       setting = InspectionTypeSetting.create!(highway_structure: asset, is_required: false, inspection_type: InspectionType.find_by(name: 'Routine'), frequency_months: (['HighwaySign', 'HighwaySignal', 'HighMastLight'].include?(asset.asset_type.class_name) ? 48 : 24))
 
       # set is_required without callbacks so doesnt try to generate inspection
