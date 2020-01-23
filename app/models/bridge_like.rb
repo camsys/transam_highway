@@ -803,7 +803,7 @@ class BridgeLike < TransamAssetRecord
 
   def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class,
                                   ade_mapping={}, add_mapping={}, ade_515_mapping={},
-                                  steel_coating=nil)
+                                  steel_coating=nil, condition_states=['CS1', 'CS2', 'CS3', 'CS4'])
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
     grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
@@ -864,17 +864,30 @@ class BridgeLike < TransamAssetRecord
         end
 
         if defect_def
-          # set quantities
-          parent_elem.defects.build(inspection: inspection,
-                                    defect_definition: defect_def,
-                                    total_quantity: process_quantities(hash['ELEM_QUANTITY'], units),
-                                    notes: hash['ELEM_NOTES'],
-                                    condition_state_1_quantity: process_quantities(hash['ELEM_QTYSTATE1'], units),
-                                    condition_state_2_quantity: process_quantities(hash['ELEM_QTYSTATE2'], units),
-                                    condition_state_3_quantity: process_quantities(hash['ELEM_QTYSTATE3'], units),
-                                    condition_state_4_quantity: process_quantities(hash['ELEM_QTYSTATE4'], units))
-
-
+          # set quantities and create defect locations
+          defect = 
+            parent_elem.defects.build(inspection: inspection,
+                                      defect_definition: defect_def,
+                                      total_quantity:
+                                        process_quantities(hash['ELEM_QUANTITY'], units),
+                                      notes: hash['ELEM_NOTES'],
+                                      condition_state_1_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE1'], units),
+                                      condition_state_2_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE2'], units),
+                                      condition_state_3_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE3'], units),
+                                      condition_state_4_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE4'], units))
+          
+          [:condition_state_1_quantity, :condition_state_2_quantity, :condition_state_3_quantity,
+           :condition_state_4_quantity].each_with_index do |symbol, index|
+            quantity = defect.send(symbol) 
+            if quantity > 0
+              defect.defect_locations.build(quantity: quantity,
+                                            condition_state: condition_states[index])
+            end
+          end
         else # Assume BME
           bme_def = ElementDefinition.find_by(number: key,
                                               element_classification: bme_class)
