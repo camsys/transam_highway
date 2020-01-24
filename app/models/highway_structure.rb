@@ -148,7 +148,7 @@ class HighwayStructure < TransamAssetRecord
   end
 
   def inspection_date
-    active_inspection&.event_datetime&.to_date
+    last_closed_inspection&.event_datetime&.to_date
   end
 
   def inspection_frequency

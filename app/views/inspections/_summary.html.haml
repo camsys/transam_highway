@@ -23,7 +23,7 @@
       .form-group
         %label.control-label= reference_label('inspections', "#{@inspection.inspection_type.name.downcase.gsub(' ', '_')}_inspection_date", "#{@inspection.inspection_type.name} Inspection Date")
         .display-value
-          = format_as_date((@inspection.highway_structure.inspections.where(inspection_type: @inspection.inspection_type).where.not(state: 'final').ordered.first || inspections.where(inspection_type: @inspection.inspection_type, state: 'final').ordered.first)&.event_datetime)
+          = format_as_date(@inspection.highway_structure.inspections.where(inspection_type_setting: @inspection.inspection_type_setting, state: 'final').ordered.first&.event_datetime)
       .form-group
         %label.control-label
           = reference_label('inspection_type_settings', "#{@inspection.inspection_type.name.downcase.gsub(' ', '_')}_inspection_frequency", "#{@inspection.inspection_type.name} Inspection Frequency")

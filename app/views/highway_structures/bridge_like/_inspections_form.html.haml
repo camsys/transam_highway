@@ -5,7 +5,7 @@
 
   .form-group
     %label.control-label
-      = reference_label('highway_structures', 'inspection_date', 'Last Routine Inspection Date')
+      = reference_label('inspection_type_settings', 'routine_inspection_date', 'Last Routine Inspection Date')
     .display-value
       = format_as_date asset.last_closed_inspection&.event_datetime
   .form-group
@@ -14,19 +14,19 @@
     .display-value
       = asset.active_inspection&.inspection_trip
 
-  - asset.class.inspection_types.active.can_be_recurring.each do |inspection_type|
+  - asset.inspection_type_settings.each do |insp_type_setting|
     .form-group
       %label.control-label
-        = reference_label('inspection_type_settings', "#{inspection_type.name.downcase.gsub(' ', '_')}_inspection_required", "#{inspection_type.name} Inspection Required")
+        = reference_label('inspection_type_settings', "#{insp_type_setting.inspection_type.name.downcase.gsub(' ', '_')}_inspection_required", "#{insp_type_setting.inspection_type.name} Inspection Required")
       .display-value
-        = asset.inspection_type_settings.joins(:inspection_type).find_by(inspection_type: inspection_type).try(:is_required) ? 'Yes' : 'No'
+        = insp_type_setting.is_required ? 'Yes' : 'No'
     .form-group
       %label.control-label
-        = reference_label('inspection_type_settings', "#{inspection_type.name.downcase.gsub(' ', '_')}_inspection_frequency", "#{inspection_type.name} Inspection Frequency")
+        = reference_label('inspection_type_settings', "#{insp_type_setting.inspection_type.name.downcase.gsub(' ', '_')}_inspection_frequency", "#{insp_type_setting.inspection_type.name} Inspection Frequency")
       .display-value
-        = asset.inspection_type_settings.joins(:inspection_type).find_by(inspection_type: inspection_type).try(:frequency_months)
+        = insp_type_setting.frequency_months
     .form-group
       %label.control-label
-        = reference_label('inspections', "#{inspection_type.name.downcase.gsub(' ', '_')}_inspection_date", "#{inspection_type.name} Details (critical feature)")
+        = reference_label('inspections', "#{insp_type_setting.inspection_type.name.downcase.gsub(' ', '_')}_inspection_date", "#{insp_type_setting.inspection_type.name} Details (critical feature)")
       .display-value
-        = format_as_date asset.inspections.where(inspection_type: inspection_type).last.try(:event_datetime)
+        = format_as_date(insp_type_setting.event_datetime)
