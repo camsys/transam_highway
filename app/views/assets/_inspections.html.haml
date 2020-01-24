@@ -84,6 +84,10 @@
               - unless inspection.inspection_type_setting.present?
                 = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
                   %i.fa.fa-trash-o.fa-fw.text-danger
+            = link_to print_inspection_path(inspection, format: :pdf), :class => "button btn-xs", :title => "Export Inspection PDF", :id => "export_inspection_to_pdf" do
+              %i.fa.fa-file-pdf-o.fa-1-5x
+
+
 
 :javascript
 

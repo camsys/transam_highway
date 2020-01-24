@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
     member do
       get 'allowed_to_finalize'
+      get 'print'
     end
   end
 

@@ -1,0 +1,31 @@
+.document
+  -#- if @inspection.class == BridgeCondition
+  -#  = render partial: 'inspections/vertical_report_header.pdf.haml', :locals => {:inspection => @inspection}
+  -#  = render partial: 'inspections/vertical_report.pdf.haml', :locals => {:inspection => @inspection}
+  -#  .div.alwaysbreak { page-break-before: always; }
+
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
+  = render partial: 'inspections/structure_inventory_appraisal.pdf.haml', :locals => {:inspection => @inspection}
+  .div.alwaysbreak { page-break-before: always; }
+
+  - if @inspection.class == BridgeCondition
+    = render :partial => 'inspections/vertical_clearance_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/vertical_clearance.html.haml', :locals => {:inspection => @inspection}
+    .div.alwaysbreak { page-break-before: always; }
+
+  - if @inspection.class == BridgeCondition
+    = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection}
+    .div.alwaysbreak { page-break-before: always; }
+
+  - if @inspection.images.any?
+    = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/report_photo_log.html.haml', :locals => {:inspection => @inspection}
+    .div.alwaysbreak { page-break-before: always; }
+
+    = render :partial => 'inspections/maintenance_recommendations_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/maintenance_recommendations.html.haml', :locals => {:inspection => @inspection}
+    .div.alwaysbreak { page-break-before: always; }
+
+  = render :partial => 'inspections/inspectors_header.html.haml', :locals => {:inspection => @inspection}
+  = render :partial => 'inspections/inspectors.html.haml', :locals => {:inspection => @inspection}

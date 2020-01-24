@@ -14,4 +14,8 @@ module HighwayFormatHelper
       block_given? ? yield(value) : value
     end
   end
+
+  def format_for_pdf_printing(datetime)
+    datetime.strftime(" %m/%d/%Y @ %k:%M")
+  end
 end
