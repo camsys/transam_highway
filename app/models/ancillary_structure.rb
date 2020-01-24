@@ -54,7 +54,7 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program)
+                                 highway_authority, inspection_program, ignore1, ignore2)
     asset_tag = hash['BRKEY']
 
     # Structure Class, NBI 24 is 

@@ -652,7 +652,7 @@ class BridgeLike < TransamAssetRecord
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
                                  highway_authority, inspection_program, flexible=[], rigid=[])
     asset_tag = bridge_hash['BRKEY']
-    
+        
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
     bridgelike = nil
     case struct_class_code
@@ -666,8 +666,16 @@ class BridgeLike < TransamAssetRecord
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
     end
-      
+
     if bridgelike.new_record?
+      # Check for a previously loaded structure that has changed type
+      # Destroy the existing structure so that the new structure saves cleanly
+      struct = HighwayStructure.find_by(asset_tag: asset_tag)
+      if struct
+        puts "Destroying existing #{struct.asset_type.name}: #{asset_tag}"
+        struct.destroy
+      end
+
       msg = "Created #{inspection_program} #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
