@@ -82,6 +82,14 @@ class AncillaryStructure < BridgeLike
     structure = structure_klass.find_or_initialize_by(asset_tag: asset_tag)
     
     if structure.new_record?
+      # Check for a previously loaded structure that has changed type
+      # Destroy the existing structure so that the new structure saves cleanly
+      highway_structure = HighwayStructure.find_by(asset_tag: asset_tag)
+      if highway_structure
+        puts "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}"
+        highway_structure.destroy
+      end
+
       msg = "Created #{inspection_program} #{structure_klass} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
