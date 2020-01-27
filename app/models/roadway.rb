@@ -1,5 +1,6 @@
 class Roadway < ApplicationRecord
   include TransamObjectKey
+  has_paper_trail
 
   # Callbacks
   after_save :reset_lanes_if_needed

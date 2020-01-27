@@ -1,5 +1,6 @@
 class RoadbedLine < ApplicationRecord
   include TransamObjectKey
+  has_paper_trail
 
   belongs_to :roadbed
   belongs_to :inspection
