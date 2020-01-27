@@ -93,8 +93,8 @@
           Age & Service
 
         - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
-          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On')
-        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under')
+          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On'), label_method: :to_s, value_method: :id
+        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under'), label_method: :to_s, value_method: :id
         = f.input :manufacture_year, label: reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built')
 
       .col-sm-6
