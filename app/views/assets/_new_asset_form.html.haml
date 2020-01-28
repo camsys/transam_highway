@@ -46,8 +46,8 @@
         = f.input :county, label: reference_label('highway_structures', 'county', '* County'), required: true
         = f.input :city, label: reference_label('highway_structures', 'city', '* City'), required: true
         
-        = f.input :latitude, :as => :float, :input_html => {min: 36.8, max: 41.1}, label: reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
-        = f.input :longitude, :as => :float, :input_html => {min: -109.0, max: -102.0}, label: reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
+        = f.input :latitude, :as => :float, :input_html => {min: SystemConfig.instance.min_lat, max: SystemConfig.instance.max_lat}, label: reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col left-col'
+        = f.input :longitude, :as => :float, :input_html => {min: SystemConfig.instance.min_lon, max: SystemConfig.instance.max_lon}, label: reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), required: true, wrapper_class: 'form-group col-xs-6 row-col right-col'
 
         = f.hidden_field :purchase_cost, value: 0
         = f.hidden_field :in_service_date, value: Date.today

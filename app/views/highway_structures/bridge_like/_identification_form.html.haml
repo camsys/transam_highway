@@ -20,16 +20,8 @@
 .profile-location-description
   = editable_asset_field_tag(asset, :location_description, reference_label('highway_structures', 'location_description', 'Location Description'), required: false)
 = editable_asset_field_tag(asset, :milepoint, reference_label('highway_structures', 'milepoint', 'Milepoint'), required: false)
-.form-group
-  %label.control-label
-    = reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude')
-  .display-value
-    = asset.geometry.try(:y)
-.form-group
-  %label.control-label
-    = reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude')
-  .display-value
-    = asset.geometry.try(:x)
+= editable_asset_field_tag(asset, :latitude, reference_label('highway_structures', 'transam_assets.geometry.y', 'Latitude'), type: 'number', min: SystemConfig.instance.min_lat, max: SystemConfig.instance.max_lat, current_value: asset.geometry.y)
+= editable_asset_field_tag(asset, :longitude, reference_label('highway_structures', 'transam_assets.geometry.x', 'Longitude'), type: 'number', min: SystemConfig.instance.min_lon, max: SystemConfig.instance.max_lon, current_value: asset.geometry.x)
 - unless @sshml
   .row
     .col-sm-2
@@ -81,7 +73,4 @@
         $('.profile-county .editable-field').editable('setValue', old_county);
       }
     });
-
   });
-
-    
