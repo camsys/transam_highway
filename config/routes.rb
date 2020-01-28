@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       get 'reset'
       post 'new_search'
       get 'inspection_type_settings'
+      get 'audit_export'
     end
 
     member do

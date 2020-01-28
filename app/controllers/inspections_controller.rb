@@ -1,6 +1,8 @@
 class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
+
   before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
   before_action :reformat_date_fields, only: [:create, :update]
 
@@ -27,6 +29,10 @@ class InspectionsController < TransamController
         }
       }
     end
+  end
+
+  def audit_export
+    @export_results = InspectionAuditService.new.table_of_changes(nil)
   end
 
   def inspection_type_settings

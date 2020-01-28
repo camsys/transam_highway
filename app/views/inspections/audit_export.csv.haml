@@ -1,0 +1,2 @@
+- @export_results.each do |row|
+  = CSV.generate_line(row, {:row_sep => nil}).html_safe
