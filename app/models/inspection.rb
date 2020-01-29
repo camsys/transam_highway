@@ -4,6 +4,8 @@ class Inspection < InspectionRecord
 
   actable as: :inspectionible
 
+  after_initialize :set_defaults
+
   include TransamObjectKey
 
   include TransamWorkflow
@@ -332,5 +334,20 @@ class Inspection < InspectionRecord
   end
 
   protected
+
+  def set_defaults
+
+    # this really is for data loaded inspections that might not have an inspection type setting
+    # if inspection type != Special, can use inspection type to get setting
+    # otherwise find matching description as well
+    if self.inspection_type_setting.nil?
+      if self.inspection_type.name == 'Special'
+        self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type, description: self.description).where.not(inspection_type_setting: nil).first.inspection_type_setting
+      else
+        self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type).where.not(inspection_type_setting: nil).first.inspection_type_setting
+      end
+    end
+
+  end
 
 end
