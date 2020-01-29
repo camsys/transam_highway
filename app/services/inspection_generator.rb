@@ -99,7 +99,7 @@ class InspectionGenerator
       if @inspection_type_setting.calculated_inspection_due_date
         new_insp.calculated_inspection_due_date = @inspection_type_setting.calculated_inspection_due_date
       elsif specific_inspections.where(state: 'final').ordered.first.try(:calculated_inspection_due_date)
-        new_insp.calculated_inspection_due_date = (specific_inspections.where(state: 'final').ordered.first.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_beginning_of_month
+        new_insp.calculated_inspection_due_date = (specific_inspections.where(state: 'final').ordered.first.calculated_inspection_due_date + (new_insp.inspection_frequency).months).at_end_of_month
       end
     end
 
