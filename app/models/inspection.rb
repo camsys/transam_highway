@@ -341,7 +341,7 @@ class Inspection < InspectionRecord
     # if inspection type != Special, can use inspection type to get setting
     # otherwise find matching description as well
     if self.inspection_type_setting.nil?
-      if self.inspection_type.name == 'Special'
+      if self.inspection_type&.name == 'Special'
         self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type, description: self.description).where.not(inspection_type_setting: nil).first&.inspection_type_setting
       else
         self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type).where.not(inspection_type_setting: nil).first&.inspection_type_setting
