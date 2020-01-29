@@ -32,8 +32,8 @@
     .col-xs-6
       .row
         .col-xs-8
-          = f.input :order_date, :wrapper => :vertical_append, :label => "Date First Recommended" do
-            = f.input_field :order_date, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.order_date)
+          = f.input :date_recommended, :wrapper => :vertical_append, :label => "Date First Recommended" do
+            = f.input_field :date_recommended, :as => :string, :class => 'form-control datepicker', :value => format_as_date(f.object.date_recommended)
             %span.input-group-addon
               %i.fa.fa-calendar
       .row
