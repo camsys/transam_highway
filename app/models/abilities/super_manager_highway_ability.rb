@@ -12,6 +12,9 @@ module Abilities
         inspection.updatable?
       end
 
+      can :update_from_inspection, TransamAssetRecord
+      can :update_from_structure, TransamAssetRecord
+
     end
   end
 end
