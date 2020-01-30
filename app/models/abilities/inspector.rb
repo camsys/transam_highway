@@ -12,6 +12,8 @@ module Abilities
         (inspection.inspector_ids.include? user.id)
       end
 
+      can :update, TransamAssetRecord
+
     end
   end
 end
