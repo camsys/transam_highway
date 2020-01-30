@@ -17,7 +17,7 @@
     }
 
 - unless skip_legend
-    %legend 
+    %legend
         Roadways
 
 .table-responsive
@@ -26,9 +26,24 @@
             %tr
                 %th.center Roadway Fields
                 - highway_structure.roadways.on.each do |r|
-                    %th.center= "On Structure - #{r.on_under_indicator}"   
+                    %th.center
+                        = "On Structure - #{r.on_under_indicator}"
+                        = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
+                            %i.fa.fa-edit.fa-fw.text-success
+                        = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                            %i.fa.fa-trash-o.fa-fw.text-danger
                 - highway_structure.roadways.under.each do |r|
-                    %th.center= "Under Structure - #{r.on_under_indicator}"   
+                    %th.center
+                        = "On Structure - #{r.on_under_indicator}"
+                        = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
+                            %i.fa.fa-edit.text-success
+                        = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                            %i.fa.fa-trash-o.fa-fw.text-danger
+                %th.center
+                    = link_to new_roadway_path(asset: @asset.object_key), :remote => true, :class => "button btn-xs", :title => "Add roadway"    do
+                        %i.fa.fa-plus.fa-fw.text-info
+
+
         %tbody
             %tr.field-name
                 %th.center= reference_label('roadways', 'on_under_indicator', 'On Under')
@@ -37,9 +52,9 @@
                 %th.center= reference_label('roadways', 'route_number', 'Highway Segment')
                 %th.center= reference_label('highway_structures', 'features_intersected', 'Features Intersected')
                 - unless @sshml
-                    %th.center= reference_label('roadways', 'facility_carried', 'Facility Carried')
+                    %th.center= reference_label('highway_structures', 'facility_carried', 'Facility Carried')
                 %th.center= reference_label('roadways', 'min_vertical_clearance', 'Minimum Vertical Clearance')
-                %th.center= reference_label('roadways', 'milepoint', 'Milepoint')
+                %th.center= reference_label('highway_structures', 'milepoint', 'Milepoint')
                 %th.center= reference_label('roadways', 'on_base_network', 'Base Highway Network')
                 %th.center= reference_label('roadways', 'lrs_route', 'LRS Inventory Route')
                 %th.center= reference_label('roadways', 'lrs_subroute', 'Subroute Number')
@@ -50,7 +65,7 @@
                 %th.center= reference_label('roadways', 'total_horizontal_clearance', 'Total Horizontal Clearance')
                 %th.center= reference_label('roadways', 'strahnet_designation_type_id', 'Strategic Highway Network')
                 %th.center= reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
-                %th.center= reference_label('roadways', 'on_national_higway_system', 'NHS')
+                %th.center= reference_label('roadways', 'on_national_highway_system', 'NHS')
                 %th.center= reference_label('roadways', 'average_daily_truck_traffic_percent', 'Truck ADT')
                 %th.center= reference_label('roadways', 'on_truck_network', 'Designated National Network')
                 %th.center= reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
