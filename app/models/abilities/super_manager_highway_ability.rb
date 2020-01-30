@@ -8,11 +8,8 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :update, [Inspection, BridgeCondition, CulvertCondition] do |inspection|
-        inspection.updatable?
-      end
+      can :update, [Inspection, BridgeCondition, CulvertCondition]
 
-      can :update_from_inspection, TransamAssetRecord
       can :update_from_structure, TransamAssetRecord
 
     end

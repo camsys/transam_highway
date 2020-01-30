@@ -69,10 +69,17 @@
   }
 
   function link_formatter(value, row) {
-    if (row['state'] == 'completed') {
-      return '';
-    } else {
-      return '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+    action_html = ''
+    if (row['state'] != 'completed') {
+      if ('#{@inspection.present?}' == 'true') {
+        if ('#{(can? :update, @inspection.inspection) && @inspection.updatable?}' == 'true'){
+          action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+        }
+      } else {
+        if ('#{(can? :update, @asset) && !@asset.assigned_version}' == 'true'){
+          action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
+        }
+      }
     }
-
+    return action_html;
   }

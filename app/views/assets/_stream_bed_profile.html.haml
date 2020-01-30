@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can? :update, @asset
+          - if can?(:update, @asset) && !@asset.assigned_version
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -27,16 +27,16 @@
           .row
             .col-sm-12
               #streambed_table_actions.btn-toolbar
-                - if can? :update, @asset
+                - if can?(:update, @asset) && !@asset.assigned_version
                   .btn-group
                     = link_to new_streambed_profile_path(transam_asset_id: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Profile' do
                       %i.fa.fa-plus
                       = " New Profile"
-                - if @asset.streambed_profiles.where(inspection_id: nil).last
-                  .btn-group
-                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.where(inspection_id: nil).last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
-                      %i.fa.fa-plus
-                      = " New Distance"
+                  - if @asset.streambed_profiles.where(inspection_id: nil).last
+                    .btn-group
+                      = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.where(inspection_id: nil).last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
+                        %i.fa.fa-plus
+                        = " New Distance"
               .table-responsive#streambed_table
                 -# Remove .table-hover with data-classes
                 %table{:id => table_dom_id,
@@ -74,7 +74,7 @@
                         - cols.each do |distance|
                           %td.center
                             - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                            - if (can? :update, @asset) && profile.inspection.nil?
+                            - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
                               - if profile_point
                                 %span.number-display
                                   = format_as_decimal(profile_point.value,1)
@@ -84,7 +84,7 @@
                             - else
                               = format_as_decimal(profile_point.value,1) if profile_point
                         %td.center
-                          - if (can? :update, @asset) && profile.inspection.nil?
+                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
                             %span.number-display
                               = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level, data: {streambed_profile: profile.object_key}}
@@ -93,7 +93,7 @@
                       %tr
                         %td.right Reference Line
                         %td.left{:colspan => cols.count + 1}
-                          - if (can? :update, @asset) && profile.inspection.nil?
+                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
                             %span.text-display
                               %em= profile.reference_line
                             %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line, data: {streambed_profile: profile.object_key}}
@@ -102,7 +102,7 @@
                       %tr
                         %td.right Water Level Taken At
                         %td.left{:colspan => cols.count + 1}
-                          - if (can? :update, @asset) && profile.inspection.nil?
+                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
                             %span.text-display
                               %em= profile.water_level_reference
                             %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference, data: {streambed_profile: profile.object_key}}

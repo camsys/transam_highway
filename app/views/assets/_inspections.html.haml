@@ -8,8 +8,9 @@
 
 #table_actions.btn-toolbar
   .btn-group
-    = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
-      = "Manage Schedule";
+    - if can?(:update_from_structure,@asset)
+      = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+        = "Manage Schedule";
     = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
       %i.fa.fa-plus
       = "Plan Unscheduled";
@@ -78,7 +79,7 @@
                 %i.fa.fa-info-circle.fa-1-25x
           %td.left= inspection.state&.titleize
           %td.left
-            - if can? :update, inspection
+            - if can?(:update, inspection)
               = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
                 %i.fa.fa-edit.fa-1-5x.text-success
               - unless inspection.inspection_type_setting.present?
