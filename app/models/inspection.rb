@@ -260,7 +260,7 @@ class Inspection < InspectionRecord
       new_insp_elements = {}
 
       new_insp.elements.each do |elem|
-        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parentt&.element_definition_id]
+        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent&.element_definition_id]
 
         elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
           new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
