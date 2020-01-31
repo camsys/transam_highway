@@ -15,7 +15,7 @@ json.address address.join(', ')
 json.(highway_structure, :city, :county, :state, :zip)
 
 # NBI
-json.(highway_structure, :route_number, :features_intersected, :location_description, :length, :is_temporary)
+json.(highway_structure, :route_number, :features_intersected, :location_description, :length)
 
 # NBI Dates
 json.inspection_date highway_structure.inspection_date.try(:strftime, "%m/%d/%Y")

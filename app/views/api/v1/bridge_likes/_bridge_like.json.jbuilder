@@ -18,7 +18,7 @@ json.(bridge_like, :city, :county, :state, :zip)
 json.calculated_condition bridge_like.calculated_condition
 
 # NBI
-json.(bridge_like, :route_number, :features_intersected, :facility_carried, :location_description, :num_spans_main, :num_spans_approach, :length, :border_bridge_state, :border_bridge_pcnt_responsibility, :border_bridge_structure_number, :is_temporary)
+json.(bridge_like, :route_number, :features_intersected, :facility_carried, :location_description, :num_spans_main, :num_spans_approach, :length, :border_bridge_state, :border_bridge_pcnt_responsibility, :border_bridge_structure_number)
 
 # NBI Dates
 json.inspection_date bridge_like.inspection_date.try(:strftime, "%m/%d/%Y")

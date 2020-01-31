@@ -1,22 +1,31 @@
 # Please keep this list alphabetized to simplify maintenance
 Rails.application.config.rails_admin_highway_lookup_tables = [
+  'AncillaryConditionType',
+  'AssemblyType',
+  'AssetSubtype',
   'AssetType',
   'BridgeAppraisalRatingType',
   'BridgeConditionRatingType',
   'BridgePostingType',
   'BridgeTollType',
   'ChannelConditionType',
+  'ColumnType',
   'CulvertConditionType',
   'DeckProtectionType',
   'DeckStructureType',
   'DesignConstructionType',
   'DesignLoadType',
   'FeatureSafetyType',
+  'FoundationType',
   'FunctionalClass',
+  'HighwayStructureType',
   'HistoricalSignificanceType',
   'ImageClassification',
+  'InspectionProgram',
+  'InspectionType',
   'LoadRatingMethodType',
   'MaintenanceSection',
+  'MastArmFrameType',
   'MembraneType',
   'OperationalStatusType',
   'ReferenceFeatureType',
@@ -31,13 +40,8 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'StructureMaterialType',
   'StructureStatusType',
   'TrafficDirectionType',
-  'WearingSurfaceType',
-  'AncillaryConditionType',
-  'AssemblyType',
-  'ColumnType',
-  'FoundationType',
-  'MastArmFrameType',
-  'UpperConnectionType'
+  'UpperConnectionType',
+  'WearingSurfaceType'
 ]
 
 Rails.application.config.rails_admin_highway_models = ['HighwayStructure', 'BridgeLike', 'FieldReference', 'District']
