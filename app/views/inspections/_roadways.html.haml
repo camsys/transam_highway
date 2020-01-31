@@ -35,7 +35,7 @@
                                 %i.fa.fa-trash-o.fa-fw.text-danger
                 - highway_structure.roadways.under.each do |r|
                     %th.center
-                        = "On Structure - #{r.on_under_indicator}"
+                        = "Under Structure - #{r.on_under_indicator}"
                         - if can?(:update,@inspection) && @inspection.updatable?
                             = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
                                 %i.fa.fa-edit.text-success
