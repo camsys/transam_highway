@@ -2,7 +2,8 @@ class InspectionTypeSetting < ApplicationRecord
 
   include TransamObjectKey
 
-  has_paper_trail only: Rails.application.config.inspection_audit_changes.map {|x| x.split('.')[0] == self.table_name ? x.split('.')[1] : nil}.compact
+  has_paper_trail if: Proc.new { |s| s.inspection_type == InspectionType.find_by(name: 'Routine') },
+                  only: Rails.application.config.inspection_audit_changes.map {|x| x.split('.')[0] == self.table_name ? x.split('.')[1] : nil}.compact
 
   after_initialize  :set_defaults
   after_save        :update_inspection
