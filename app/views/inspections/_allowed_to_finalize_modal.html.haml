@@ -1,8 +1,8 @@
 :ruby
-  if inspection_type_setting
-    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
+  if @inspection.inspection_type_setting
+    last_inspection_date = @inspection.highway_structure.inspections.where(state: 'final', inspection_type_setting: @inspection.inspection_type_setting).maximum(:event_datetime)
   else
-    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
+    last_inspection_date = @inspection.highway_structure.inspections.where(state: 'final', inspection_type: @inspection.inspection_type).maximum(:event_datetime)
   end
 
 .modal-dialog.modal-lg
