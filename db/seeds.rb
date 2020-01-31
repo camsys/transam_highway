@@ -86,7 +86,8 @@ system_config_extensions = [
     {class_name: 'RoadbedLine', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'StreambedProfile', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'StreambedProfilePoint', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
-    {class_name: 'AssetType', extension_name: 'HasAssemblyTypes', engine_name: 'highway', active: true}
+    {class_name: 'AssetType', extension_name: 'HasAssemblyTypes', engine_name: 'highway', active: true},
+    {class_name: 'DefectLocation', extension_name: 'TransamGuid', engine_name: 'highway', active: true}
 ]
 
 route_signing_prefixes = [
