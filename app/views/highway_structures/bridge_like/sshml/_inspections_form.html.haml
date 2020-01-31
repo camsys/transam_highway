@@ -2,10 +2,6 @@
 
 .form-group
   %label.control-label
-    = reference_label('inspection_type_settings', 'routine_inspection_date', 'Last Routine Inspection Date')
-  .display-value
-    = format_as_date asset.last_closed_inspection&.event_datetime
-  %label.control-label
     = reference_label('inspections', 'inspection_trip', 'Inspection Trip')
   .display-value
     = asset.active_inspection&.inspection_trip
