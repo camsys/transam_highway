@@ -1,5 +1,5 @@
 json.(highway_structure, :object_key, :asset_tag, :external_id, :state, :county, :city, :location_description, :calculated_condition, :is_temporary, :milepoint, :features_intersected, :remarks)
-json.asset_type highway_structure.asset_type.name
+json.asset_type_id highway_structure.asset_type.id
 unless sshml
   json.(highway_structure, :facility_carried, :approach_roadway_width)
 end

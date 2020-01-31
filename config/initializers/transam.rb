@@ -1,5 +1,6 @@
 # Please keep this list alphabetized to simplify maintenance
 Rails.application.config.rails_admin_highway_lookup_tables = [
+  'AssetType',
   'BridgeAppraisalRatingType',
   'BridgeConditionRatingType',
   'BridgePostingType',
