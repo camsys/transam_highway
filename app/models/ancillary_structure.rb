@@ -11,15 +11,7 @@ class AncillaryStructure < BridgeLike
 
   #-----------------------------------------------------------------------------
   # Instance Methods
-  #-----------------------------------------------------------------------------  
-  def latest_ancillary_condition
-    ancillary_conditions.ordered.first
-  end
-
-  def set_calculated_condition!
-    self.calculated_condition = latest_ancillary_condition&.calculated_condition || 'unknown'
-    self.save
-  end
+  #-----------------------------------------------------------------------------
 
   def inspection_class
     AncillaryCondition
@@ -62,7 +54,7 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program)
+                                 highway_authority, inspection_program, ignore1, ignore2)
     asset_tag = hash['BRKEY']
 
     # Structure Class, NBI 24 is 
@@ -90,6 +82,14 @@ class AncillaryStructure < BridgeLike
     structure = structure_klass.find_or_initialize_by(asset_tag: asset_tag)
     
     if structure.new_record?
+      # Check for a previously loaded structure that has changed type
+      # Destroy the existing structure so that the new structure saves cleanly
+      highway_structure = HighwayStructure.find_by(asset_tag: asset_tag)
+      if highway_structure
+        puts "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}"
+        highway_structure.destroy
+      end
+
       msg = "Created #{inspection_program} #{structure_klass} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D

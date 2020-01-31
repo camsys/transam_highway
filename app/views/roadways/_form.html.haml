@@ -1,0 +1,139 @@
+= simple_form_for(@roadway || Roadway.new,
+              :html => {:class => 'form-vertical roadway_form' },
+              :wrapper => :vertical_form,
+              :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+  = f.hidden_field Rails.application.config.asset_base_class_name.foreign_key.to_sym, :value => @asset.try(:transam_asset).try(:id) || @asset.id
+
+  .row
+    .col-xs-4
+      .row
+        .col-xs-10
+          = f.input :on_under_indicator, collection: @roadway.allowed_indicators,
+            label: reference_label('roadways', 'on_under_indicator', 'On Under')
+      .row
+        .col-xs-10
+          = f.association :route_signing_prefix, collection: RouteSigningPrefix.active,
+            label: reference_label('roadways', 'route_signing_prefix_id', 'Road Prefix')
+
+      .row
+        .col-xs-10
+          = f.association :service_level_type, collection: ServiceLevelType.active,
+            label: reference_label('roadways', 'level_of_service_type_id', 'Level of Service')
+
+      .row
+        .col-xs-10
+          = f.input :route_number, input_html: {maxlength: 5},
+            label: reference_label('roadways', 'route_number', 'Highway Segment')
+
+      .row
+        .col-xs-10
+          = f.input :features_intersected, input_html: {maxlength: 24},
+            label: reference_label('highway_structures', 'features_intersected', 'Features Intersected')
+
+      - unless @sshml
+        .row
+          .col-xs-10
+            = f.input :facility_carried, input_html: {maxlength: 18},
+              label: reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+
+      .row
+        .col-xs-10
+          = f.input :min_vertical_clearance, input_html: {min: 0},
+            label: reference_label('roadways', 'min_vertical_clearance', 'Minimum Vertical Clearance')
+      .row
+        .col-xs-10
+          = f.input :milepoint, input_html: {min: 0},
+            label: reference_label('highway_structures', 'milepoint', 'Milepoint')
+
+    .col-xs-4
+      .row
+        .col-xs-10
+          = f.input :on_base_network, as: :select,
+            include_blank: false,
+            label: reference_label('roadways', 'on_base_network', 'Base Highway Network')
+
+      .row
+        .col-xs-10
+          = f.input :lrs_route,
+          label: reference_label('roadways', 'lrs_route', 'LRS Inventory Route')
+
+      .row
+        .col-xs-10
+          = f.input :lrs_subroute,
+          label: reference_label('roadways', 'lrs_subroute', 'Subroute Number')
+
+      .row
+        .col-xs-10
+          = f.association :functional_class, collection: FunctionalClass.active,
+            label: reference_label('roadways', 'functional_class_id', 'Functional Classification')
+
+      .row
+        .col-xs-10
+          = f.input :lanes, input_html: {min: 0},
+          label: reference_label('roadways', 'lanes', 'Lanes')
+
+      .row
+        .col-xs-10
+          = f.input :average_daily_traffic, input_html: {min: 0},
+            label: reference_label('roadways', 'average_daily_traffic', 'Average Daily Traffic')
+
+      .row
+        .col-xs-10
+          = f.input :average_daily_traffic_year, include_blank: false,
+            collection: (@adt_min_year..@adt_max_year).to_a.reverse,
+            label: reference_label('roadways', 'average_daily_traffic_year', 'Year of Average Daily Traffic')
+      .row
+        .col-xs-10
+          = f.input :total_horizontal_clearance, input_html: {min: 0},
+          label: reference_label('roadways', 'total_horizontal_clearance', 'Total Horizontal Clearance')
+
+    .col-xs-4
+      .row
+        .col-xs-10
+          = f.association :strahnet_designation_type, collection: StrahnetDesignationType.active,
+            label: reference_label('roadways', 'strahnet_designation_type_id', 'Strategic Highway Network')
+
+      .row
+        .col-xs-10
+          = f.association :traffic_direction_type, collection: TrafficDirectionType.active,
+          label: reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
+      .row
+        .col-xs-10
+          = f.input :on_national_highway_system, as: :select,
+            label: reference_label('roadways', 'on_national_highway_system', 'NHS')
+
+      .row
+        .col-xs-10
+          = f.input :average_daily_truck_traffic_percent, input_html: {min: 0, max: 100},
+            label: reference_label('roadways', 'average_daily_truck_traffic_percent', 'Truck ADT')
+      .row
+        .col-xs-10
+          = f.input :on_truck_network, as: :select,
+            label: reference_label('roadways', 'on_truck_network', 'Designated National Network')
+      .row
+        .col-xs-10
+          = f.input :future_average_daily_traffic, input_html: {min: 0},
+            label: reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
+      .row
+        .col-xs-10
+          = f.input :future_average_daily_traffic_year, include_blank: false,
+            collection: (@future_adt_min_year..@future_adt_max_year).to_a.reverse,
+            label: reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
+
+  .row
+    .col-xs-12
+      = f.submit 'Save', :class => 'btn btn-primary'
+      %button.btn.btn-warning#cancel_roadway_form{type: 'button'}
+        Cancel
+
+:javascript
+
+  $('.roadway_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+  $('#cancel_roadway_form').click(function() {
+    $('#form-modal').modal('hide');
+  });

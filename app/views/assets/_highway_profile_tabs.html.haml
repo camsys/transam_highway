@@ -18,8 +18,8 @@
     tabs.except!(:load_rating_posting, :navigation_data)
   end
 
-  if @from_inspection
-    tabs.except!(:roadways)
+  if @inspection
+    tabs.except!(:appraisal, :condition, :roadways)
   end
 
 - tabs.each do |key, label|

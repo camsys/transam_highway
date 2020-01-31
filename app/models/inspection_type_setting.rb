@@ -2,6 +2,9 @@ class InspectionTypeSetting < ApplicationRecord
 
   include TransamObjectKey
 
+  has_paper_trail if: Proc.new { |s| s.inspection_type == InspectionType.find_by(name: 'Routine') },
+                  only: Rails.application.config.inspection_audit_changes.map {|x| x.split('.')[0] == self.table_name ? x.split('.')[1] : nil}.compact
+
   after_initialize  :set_defaults
   after_save        :update_inspection
 
@@ -28,8 +31,12 @@ class InspectionTypeSetting < ApplicationRecord
 
 
   def calculated_inspection_due_date=(value)
-    attribute_will_change!(:calculated_inspection_due_date)
-    self[:calculated_inspection_due_date] = Chronic.parse(value)
+    if value.is_a? String
+      attribute_will_change!(:calculated_inspection_due_date)
+      self[:calculated_inspection_due_date] = Chronic.parse(value)
+    else
+      super
+    end
   end
 
   protected

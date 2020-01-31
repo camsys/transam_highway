@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_02_211300) do
+ActiveRecord::Schema.define(version: 2020_01_07_172433) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -391,6 +391,8 @@ ActiveRecord::Schema.define(version: 2020_01_02_211300) do
     t.bigint "column_type_id"
     t.bigint "foundation_type_id"
     t.bigint "upper_connection_type_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["approach_spans_design_construction_type_id"], name: "idx_bridge_likes_on_approach_spans_design_construction_type_id"
     t.index ["approach_spans_material_type_id"], name: "index_bridge_likes_on_approach_spans_material_type_id"
     t.index ["bridge_posting_type_id"], name: "index_bridge_likes_on_bridge_posting_type_id"
@@ -816,7 +818,6 @@ ActiveRecord::Schema.define(version: 2020_01_02_211300) do
     t.string "features_intersected"
     t.string "location_description"
     t.decimal "length", precision: 10
-    t.date "inspection_date"
     t.boolean "is_temporary"
     t.bigint "structure_status_type_id"
     t.bigint "maintenance_section_id"
@@ -837,6 +838,8 @@ ActiveRecord::Schema.define(version: 2020_01_02_211300) do
     t.bigint "highway_structure_type_id"
     t.bigint "historical_significance_type_id"
     t.bigint "inspection_program_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["highway_structure_type_id"], name: "index_highway_structures_on_highway_structure_type_id"
     t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
     t.index ["historical_significance_type_id"], name: "index_highway_structures_on_historical_significance_type_id"

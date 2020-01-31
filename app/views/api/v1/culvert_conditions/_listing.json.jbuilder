@@ -1,1 +1,1 @@
-json.partial! 'api/v1/bridge_like_conditions/listing', bridge_like_condition: culvert_condition
+json.partial! 'api/v1/bridge_like_conditions/listing', bridge_like_condition: culvert_condition, culvert: true

@@ -1,12 +1,10 @@
 :ruby 
   @asset_class_name = @asset.asset_type.class_name
 
-  if @asset_class_name == 'Bridge' || @asset_class_name == 'MiscStructure'
-    @latest_condition = @asset.latest_bridge_condition
-  elsif @asset_class_name == 'Culvert'
-    @latest_condition = @asset.latest_culvert_condition
-  elsif @asset_class_name == 'HighwaySign' || 'HighwaySignal' || 'HighMastLight'
-    @latest_condition = @asset.latest_ancillary_condition
+  if @asset.assigned_version
+    @latest_condition = Inspection.get_typed_version(@asset.assigned_inspection_version)
+  else
+    @latest_condition = @asset.latest_condition
   end
 
 :css
@@ -36,7 +34,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}SI&A
-          = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
+          = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset, allowed_to_edit:(can?(:update_from_structure, @asset) && !@asset.assigned_version)}
       #collapse-profile.panel-collapse.collapse.in
         .panel-body
           = render 'profile'        

@@ -21,7 +21,7 @@
       = format_as_integer(defect.condition_state_4_quantity)
     %input.number-input.form-control.required{data: {type: 'cs4'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_4_quantity}
   %td.center
-    - if can?(:update, @inspection.inspection)
+    - if can?(:update, @inspection.inspection) && @inspection.updatable?
       = render 'defect_row_action_buttons', defect: defect
 - if defect.notes.present?
   %tr.notes

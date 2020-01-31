@@ -1,6 +1,7 @@
 # Basic
 json.(highway_structure, :object_key, :organization_id)
 json.id highway_structure.guid
+json.asset_type highway_structure.asset_type.name
 json.organization highway_structure.organization.try(:to_s) 
 json.(highway_structure, :asset_tag, :external_id, :description, :manufacture_year)
 
@@ -14,7 +15,7 @@ json.address address.join(', ')
 json.(highway_structure, :city, :county, :state, :zip)
 
 # NBI
-json.(highway_structure, :route_number, :features_intersected, :location_description, :length, :is_temporary)
+json.(highway_structure, :route_number, :features_intersected, :location_description, :length)
 
 # NBI Dates
 json.inspection_date highway_structure.inspection_date.try(:strftime, "%m/%d/%Y")
@@ -23,5 +24,6 @@ json.inspection_date highway_structure.inspection_date.try(:strftime, "%m/%d/%Y"
 associations = [:route_signing_prefix]
 associations.each do |asso|
   json.(highway_structure, "#{asso}_id")
-  json.set! asso, highway_structure.try(asso).try(:name)
 end
+
+json.(highway_structure, :lanes_on, :lanes_under)

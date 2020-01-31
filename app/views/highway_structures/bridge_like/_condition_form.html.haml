@@ -1,4 +1,4 @@
-- if @asset_class_name == 'Bridge'
+- if ['Bridge', 'MiscStructure'].include? @asset_class_name
   .form-group
     %label.control-label
       = reference_label('bridge_conditions', 'deck_condition_rating_type_id', 'Deck')

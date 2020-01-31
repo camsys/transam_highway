@@ -1,5 +1,6 @@
 class Roadbed < ApplicationRecord
   include TransamObjectKey
+  has_paper_trail
   
   belongs_to :roadway
   has_many :roadbed_lines, dependent: :destroy

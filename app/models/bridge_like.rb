@@ -1,6 +1,8 @@
 class BridgeLike < TransamAssetRecord
-  acts_as :highway_structure, as: :highway_structurible
 
+  has_paper_trail
+
+  acts_as :highway_structure, as: :highway_structurible
 
   belongs_to :main_span_material_type, class_name: 'StructureMaterialType'
   belongs_to :main_span_design_construction_type, class_name: 'DesignConstructionType'
@@ -445,8 +447,7 @@ class BridgeLike < TransamAssetRecord
 
         inspection.save!
       end # i_hashes.each
-      
-      bridgelike.update_attributes(inspection_date: last_inspection_date)
+
     end # if hash['inspevnt']
 
     elements = {}
@@ -651,7 +652,7 @@ class BridgeLike < TransamAssetRecord
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
                                  highway_authority, inspection_program, flexible=[], rigid=[])
     asset_tag = bridge_hash['BRKEY']
-    
+        
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
     bridgelike = nil
     case struct_class_code
@@ -665,8 +666,16 @@ class BridgeLike < TransamAssetRecord
       msg = "Skipping processing of Structure Class: #{struct_class_code}"
       return false, msg
     end
-      
+
     if bridgelike.new_record?
+      # Check for a previously loaded structure that has changed type
+      # Destroy the existing structure so that the new structure saves cleanly
+      struct = HighwayStructure.find_by(asset_tag: asset_tag)
+      if struct
+        puts "Destroying existing #{struct.asset_type.name}: #{asset_tag}"
+        struct.destroy
+      end
+
       msg = "Created #{inspection_program} #{struct_class_code} #{asset_tag}"
       # Set asset required fields
       # determine correct asset_subtype, NBI 43D
@@ -802,7 +811,7 @@ class BridgeLike < TransamAssetRecord
 
   def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class,
                                   ade_mapping={}, add_mapping={}, ade_515_mapping={},
-                                  steel_coating=nil)
+                                  steel_coating=nil, condition_states=['CS1', 'CS2', 'CS3', 'CS4'])
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
     grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
@@ -863,17 +872,30 @@ class BridgeLike < TransamAssetRecord
         end
 
         if defect_def
-          # set quantities
-          parent_elem.defects.build(inspection: inspection,
-                                    defect_definition: defect_def,
-                                    total_quantity: process_quantities(hash['ELEM_QUANTITY'], units),
-                                    notes: hash['ELEM_NOTES'],
-                                    condition_state_1_quantity: process_quantities(hash['ELEM_QTYSTATE1'], units),
-                                    condition_state_2_quantity: process_quantities(hash['ELEM_QTYSTATE2'], units),
-                                    condition_state_3_quantity: process_quantities(hash['ELEM_QTYSTATE3'], units),
-                                    condition_state_4_quantity: process_quantities(hash['ELEM_QTYSTATE4'], units))
-
-
+          # set quantities and create defect locations
+          defect = 
+            parent_elem.defects.build(inspection: inspection,
+                                      defect_definition: defect_def,
+                                      total_quantity:
+                                        process_quantities(hash['ELEM_QUANTITY'], units),
+                                      notes: hash['ELEM_NOTES'],
+                                      condition_state_1_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE1'], units),
+                                      condition_state_2_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE2'], units),
+                                      condition_state_3_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE3'], units),
+                                      condition_state_4_quantity:
+                                        process_quantities(hash['ELEM_QTYSTATE4'], units))
+          
+          [:condition_state_1_quantity, :condition_state_2_quantity, :condition_state_3_quantity,
+           :condition_state_4_quantity].each_with_index do |symbol, index|
+            quantity = defect.send(symbol) 
+            if quantity > 0
+              defect.defect_locations.build(quantity: quantity,
+                                            condition_state: condition_states[index])
+            end
+          end
         else # Assume BME
           bme_def = ElementDefinition.find_by(number: key,
                                               element_classification: bme_class)
@@ -930,6 +952,15 @@ class BridgeLike < TransamAssetRecord
       return nil
     end
     nil
+  end
+
+  def latest_condition
+    Inspection.get_typed_inspection(inspections.ordered.first)
+  end
+
+  def set_calculated_condition!
+    self.calculated_condition = latest_condition&.calculated_condition || 'unknown'
+    self.save
   end
   
 end

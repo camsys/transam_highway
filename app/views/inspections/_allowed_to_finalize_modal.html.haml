@@ -1,3 +1,10 @@
+:ruby
+  if @inspection.inspection_type_setting
+    last_inspection_date = @inspection.highway_structure.inspections.where(state: 'final', inspection_type_setting: @inspection.inspection_type_setting).maximum(:event_datetime)
+  else
+    last_inspection_date = @inspection.highway_structure.inspections.where(state: 'final', inspection_type: @inspection.inspection_type).maximum(:event_datetime)
+  end
+
 .modal-dialog.modal-lg
   .modal-content
     .modal-header
@@ -11,7 +18,7 @@
       .alert{class: @inspection.event_datetime.present? ? 'alert-success' : 'alert-danger'}
         = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{@inspection.event_datetime.present? ? '' : 'NOT'} set."
       - if @inspection.event_datetime
-        .alert{class: @inspection.event_datetime > @asset.inspection_date ? 'alert-success' : 'alert-danger'}
-          = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{@inspection.event_datetime > @asset.inspection_date ? '' : 'NOT'} after #{reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')}."
+        .alert{class: (last_inspection_date.nil? || @inspection.event_datetime > last_inspection_date) ? 'alert-success' : 'alert-danger'}
+          = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{(last_inspection_date.nil? || @inspection.event_datetime > last_inspection_date) ? '' : 'NOT'} after #{reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')}."
       .alert{class: @inspection.has_required_photos? ? 'alert-success' : 'alert-danger'}
         = "Inspection does #{@inspection.has_required_photos? ? '' : 'NOT'} have the required photos."

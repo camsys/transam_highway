@@ -1,3 +1,10 @@
+json.structure do
+  structure = TransamAsset.get_typed_asset(@inspection.highway_structure) 
+  is_sshml = structure.is_a? AncillaryStructure
+  json.partial! 'api/v1/highway_structures/listing', highway_structure: structure, sshml: is_sshml
+  json.partial! 'api/v1/bridge_likes/listing', bridge_like: structure, sshml: is_sshml
+end
+
 json.inspection do
   json.partial! 'api/v1/inspections/listing',  inspection: @inspection
 end

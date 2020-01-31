@@ -1,4 +1,6 @@
 class HighwayStructure < TransamAssetRecord
+  has_paper_trail
+
   acts_as :transam_asset, as: :transam_assetible
 
   actable as: :highway_structurible
@@ -57,7 +59,6 @@ class HighwayStructure < TransamAssetRecord
       :location_description,
       :length,
       :inspection_program_id,
-      :inspection_date,
       :is_temporary,
       :structure_status_type_id,
       :region,
@@ -146,6 +147,10 @@ class HighwayStructure < TransamAssetRecord
     end
   end
 
+  def inspection_date
+    last_closed_inspection&.event_datetime&.to_date
+  end
+
   def inspection_frequency
     active_inspection&.inspection_frequency
   end
@@ -156,6 +161,17 @@ class HighwayStructure < TransamAssetRecord
 
   def last_closed_inspection
     inspections.where(state: 'final').ordered.first
+  end
+
+  def assigned_version
+    return assigned_inspection_version&.reify(belongs_to: true)&.highway_structure&.version || assigned_inspection_version&.reify(belongs_to: true)&.highway_structure
+  end
+
+  def assigned_inspection_version
+    if inspections.where.not(state: ['open', 'ready', 'final']).count > 0
+      # we know inspections only have versions for assigned and final so we take the first one which will be an assigned
+      return PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first
+    end
   end
 
   protected

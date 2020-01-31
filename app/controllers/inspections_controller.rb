@@ -1,6 +1,8 @@
 class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
+
   before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
   before_action :reformat_date_fields, only: [:create, :update]
 
@@ -29,6 +31,10 @@ class InspectionsController < TransamController
     end
   end
 
+  def audit_export
+    @export_results = InspectionAuditService.new.table_of_changes(nil)
+  end
+
   def inspection_type_settings
     @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
 
@@ -53,9 +59,11 @@ class InspectionsController < TransamController
     add_breadcrumb @asset, inventory_path(@asset)
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
 
+    @asset_class_name = @asset.asset_type.class_name
+
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
-    @from_inspection = true
+
   end
 
   # GET /inspections/new
@@ -139,7 +147,13 @@ class InspectionsController < TransamController
     # Use callbacks to share common setup or constraints between actions.
     def set_inspection
       @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
-      @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+
+      if @inspection.state == 'final'
+        @asset = TransamAsset.get_typed_version(@inspection.highway_structure_version)
+      else
+        @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
+      end
+
     end
 
     # Only allow a trusted parameter "white list" through.

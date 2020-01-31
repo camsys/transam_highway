@@ -1,6 +1,10 @@
 class Inspection < InspectionRecord
 
+  has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
+
   actable as: :inspectionible
+
+  after_initialize :set_defaults
 
   include TransamObjectKey
 
@@ -79,6 +83,16 @@ class Inspection < InspectionRecord
     end
   end
 
+  def self.get_typed_version(version)
+    if version.respond_to? :reify
+      reified_ver = version.reify(belongs_to: true)
+      inspectionible_ver = reified_ver.inspectionible.version&.reify(has_one: true, belongs_to: true, has_many: true) || reified_ver.inspectionible
+      return TransamAsset.get_typed_asset(reified_ver.highway_structure).inspection_class.new(inspectionible_ver.attributes)
+    else
+      return get_typed_inspection(version)
+    end
+  end
+
   def self.allowable_params
     FORM_PARAMS
   end
@@ -95,7 +109,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'schedule', from_state: 'open', to_state: 'assigned', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
 
-        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
+        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Open'},
 
 
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
@@ -157,6 +171,15 @@ class Inspection < InspectionRecord
   def description
     read_attribute(:description).present? ? read_attribute(:description) : inspection_type_setting&.description
   end
+
+  def highway_structure_version
+    if state == 'final'
+      return versions.last.reify(belongs_to: true).highway_structure&.version || versions.last.reify(belongs_to: true).highway_structure
+    else
+      return highway_structure
+    end
+  end
+
   # ---------------------------------------------------------------------
   #
   # Methods to check logic before workflow transitions
@@ -186,8 +209,13 @@ class Inspection < InspectionRecord
 
   def allowed_to_finalize
     typed_inspection = Inspection.get_typed_inspection(self)
-    last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
-    inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
+    if inspection_type_setting
+      last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
+    else
+      last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
+    end
+
+      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
   end
 
   def can_schedule(user)
@@ -232,7 +260,7 @@ class Inspection < InspectionRecord
       new_insp_elements = {}
 
       new_insp.elements.each do |elem|
-        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent_element.element_definition_id]
+        new_insp_elements[elem.element_definition_id] = [elem.quantity, elem.notes, elem.parent&.element_definition_id]
 
         elem.defects.pluck("defect_definition_id","condition_state_1_quantity", "condition_state_2_quantity", "condition_state_3_quantity", "condition_state_4_quantity", "total_quantity", "notes").each do |defect|
           new_insp_elements[elem.element_definition_id] << { defect[0] => defect[1..-1] }
@@ -252,7 +280,7 @@ class Inspection < InspectionRecord
           if new_insp_elements[elem.element_definition_id]
             elem.quantity = new_insp_elements[elem.element_definition_id][0]
             elem.notes = new_insp_elements[elem.element_definition_id][1]
-            elem.parent_element = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2])
+            elem.parent = insp.elements.find_by(element_definition_id: new_insp_elements[elem.element_definition_id][2]) if new_insp_elements[elem.element_definition_id][2].present?
             elem.save
 
             elem.defects.each do |defect|
@@ -291,7 +319,7 @@ class Inspection < InspectionRecord
           new_elem.object_key = nil
           new_elem.guid = nil
           new_elem.inspection = insp.inspection
-          new_elem.parent_element = insp.elements.find_by(element_definition_id: elem.parent_element.element_definition_id)
+          new_elem.parent = insp.elements.find_by(element_definition_id: elem.parent.element_definition_id) if elem.parent
           new_elem.save
         end
       end
@@ -306,5 +334,20 @@ class Inspection < InspectionRecord
   end
 
   protected
+
+  def set_defaults
+
+    # this really is for data loaded inspections that might not have an inspection type setting
+    # if inspection type != Special, can use inspection type to get setting
+    # otherwise find matching description as well
+    if self.inspection_type_setting.nil? && self.highway_structure
+      if self.inspection_type&.name == 'Special'
+        self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type, description: self.description).where.not(inspection_type_setting: nil).first&.inspection_type_setting
+      else
+        self.inspection_type_setting = self.highway_structure.inspections.where(inspection_type: self.inspection_type).where.not(inspection_type_setting: nil).first&.inspection_type_setting
+      end
+    end
+
+  end
 
 end

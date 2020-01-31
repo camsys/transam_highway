@@ -7,7 +7,7 @@
     %button.btn.btn-primary.inspection-edit-xeditable-button
       Edit
     .edit-xeditable-buttons{style: 'display: none;'}
-      %button.btn.btn-primary.save-xeditable-button
+      %button.btn.btn-primary.save-xeditable-button{data: obj.is_a?(TransamAssetRecord) ? {xeditable_url: inventory_path(@asset)} : {}}
         Save
       %button.btn.btn-primary.cancel-xeditable-button
         Cancel

@@ -19,14 +19,22 @@
         = reference_label('inspections', 'event_datetime', 'Inspection Date')
       .display-value
         = format_as_date(@inspection.event_datetime)
-    .form-group
-      %label.control-label= reference_label('highway_structures', 'inspection_date', 'Routine Inspection Date')
-      .display-value= format_as_date(@inspection.highway_structure.inspection_date)
-    .form-group
-      %label.control-label
-        = reference_label('inspections', 'inspection_frequency', 'Routine Inspection Frequency')
-      .display-value
-        = @inspection.highway_structure.inspection_type_settings.find_by(inspection_type: @inspection.inspection_type).try(:frequency_months)
+    - if @inspection.inspection_type_setting
+      .form-group
+        %label.control-label= reference_label('inspections', "#{@inspection.inspection_type.name.downcase.gsub(' ', '_')}_inspection_date", "#{@inspection.inspection_type.name} Inspection Date")
+        .display-value
+          - last_insp_date = @inspection.highway_structure.inspections.where(inspection_type_setting: @inspection.inspection_type_setting, state: 'final').ordered.first&.event_datetime
+          - if last_insp_date.nil?
+            - if @inspection.inspection_type.can_be_unscheduled?
+              - last_insp_date = @inspection.highway_structure.inspections.where(inspection_type: @inspection.inspection_type, state: 'final', description: nil).ordered.first&.event_datetime
+            - else
+              - last_insp_date = @inspection.highway_structure.inspections.where(inspection_type: @inspection.inspection_type, state: 'final').ordered.first&.event_datetime
+          = format_as_date(last_insp_date)
+      .form-group
+        %label.control-label
+          = reference_label('inspection_type_settings', "#{@inspection.inspection_type.name.downcase.gsub(' ', '_')}_inspection_frequency", "#{@inspection.inspection_type.name} Inspection Frequency")
+        .display-value
+          = @inspection.inspection_type_setting.try(:frequency_months)
 
   .col-sm-3
     .form-group
