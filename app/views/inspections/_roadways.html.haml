@@ -28,20 +28,23 @@
                 - highway_structure.roadways.on.each do |r|
                     %th.center
                         = "On Structure - #{r.on_under_indicator}"
-                        = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
-                            %i.fa.fa-edit.fa-fw.text-success
-                        = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
-                            %i.fa.fa-trash-o.fa-fw.text-danger
+                        - if can?(:update,@inspection) && @inspection.updatable?
+                            = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
+                                %i.fa.fa-edit.fa-fw.text-success
+                            = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                                %i.fa.fa-trash-o.fa-fw.text-danger
                 - highway_structure.roadways.under.each do |r|
                     %th.center
                         = "On Structure - #{r.on_under_indicator}"
-                        = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
-                            %i.fa.fa-edit.text-success
-                        = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
-                            %i.fa.fa-trash-o.fa-fw.text-danger
+                        - if can?(:update,@inspection) && @inspection.updatable?
+                            = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
+                                %i.fa.fa-edit.text-success
+                            = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                                %i.fa.fa-trash-o.fa-fw.text-danger
                 %th.center
-                    = link_to new_roadway_path(asset: @asset.object_key), :remote => true, :class => "button btn-xs", :title => "Add roadway"    do
-                        %i.fa.fa-plus.fa-fw.text-info
+                    - if can?(:update,@inspection) && @inspection.updatable?
+                        = link_to new_roadway_path(asset: @asset.object_key), :remote => true, :class => "button btn-xs", :title => "Add roadway"    do
+                            %i.fa.fa-plus.fa-fw.text-info
 
 
         %tbody
