@@ -36,6 +36,7 @@ class RoadwaysController < TransamController
 
     if @roadway.save
       @asset = @roadway.highway_structure
+      fix_indicator_if_needed
     else
       render :new
     end
@@ -45,6 +46,7 @@ class RoadwaysController < TransamController
   def update
     if @roadway.update(roadway_params)
       @asset.reload
+      fix_indicator_if_needed
     else
       render :edit
     end
@@ -53,6 +55,7 @@ class RoadwaysController < TransamController
   # DELETE /roadways/1
   def destroy
     @roadway.destroy
+    fix_indicator_if_needed
   end
 
   private
@@ -68,4 +71,19 @@ class RoadwaysController < TransamController
     def roadway_params
       params.require(:roadway).permit(Roadway.allowable_params)
     end
+
+  # Should be [1, 2] or [1, A, B] but not [1, A] or [1, 2, A]
+  def fix_indicator_if_needed
+    count = @asset.roadways.count
+    has_one = @asset.roadways.exists?(on_under_indicator: '1')
+    if (has_one && count == 2) || (count == 1)
+      # If there's an A, change it to 2
+      r = @asset.roadways.find_by(on_under_indicator: 'A')
+      r&.update_attributes(on_under_indicator: '2')
+    else
+      # If there's a 2, change it to A
+      r = @asset.roadways.find_by(on_under_indicator: '2')
+      r&.update_attributes(on_under_indicator: 'A')
+    end
+  end
 end
