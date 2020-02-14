@@ -164,7 +164,7 @@ class Inspection < InspectionRecord
       inspection_type: self.inspection_type&.to_s,
       routine_report_submitted_at: self.routine_report_submitted_at,
       inspectors: self.inspectors.map(&:name).join(', '),
-      inspection_category: 'Scheduled' # Hard-code for now
+      inspection_category: self.inspection_type_setting.present? ? 'Scheduled' : 'Unscheduled'
     }
   end
 
