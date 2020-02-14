@@ -1,6 +1,6 @@
 class RoadwaysController < TransamController
   before_action :set_roadway, only: [:show, :edit, :update, :destroy]
-  before_action :set_asset, only: [:show, :edit, :update, :complete]
+  before_action :set_asset, only: [:show, :edit, :update, :destroy]
 
   # GET /roadways
   def index
@@ -35,8 +35,7 @@ class RoadwaysController < TransamController
     @roadway = Roadway.new(roadway_params)
 
     if @roadway.save
-      notify_user(:notice, 'Roadway was successfully create.')
-      redirect_back(fallback_location: inventory_path(@roadway.highway_structure))
+      @asset = @roadway.highway_structure
     else
       render :new
     end
@@ -45,8 +44,7 @@ class RoadwaysController < TransamController
   # PATCH/PUT /roadways/1
   def update
     if @roadway.update(roadway_params)
-      notify_user(:notice, 'Roadway was successfully updated.')
-      redirect_back(fallback_location: inventory_path(@roadway.highway_structure))
+      @asset.reload
     else
       render :edit
     end
@@ -55,8 +53,6 @@ class RoadwaysController < TransamController
   # DELETE /roadways/1
   def destroy
     @roadway.destroy
-    notify_user(:notice, 'Roadway was successfully destroyed.')
-    redirect_back(fallback_location: inventory_path(@roadway.highway_structure))
   end
 
   private

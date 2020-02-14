@@ -1,0 +1,6 @@
+- if @roadway.errors.any?
+  $('#form-modal').html("#{escape_javascript(render 'roadways/form_modal')}");
+- else
+  $('#form-modal').modal('hide');
+
+  $('#roadways > div.tab-content').html("#{escape_javascript(render 'inspections/roadways', highway_structure: @asset)}");
