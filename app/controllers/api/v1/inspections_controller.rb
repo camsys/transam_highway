@@ -116,7 +116,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
         if params[:defect_locations] && params[:defect_locations].any?
           params[:defect_locations].each do |dl_params|
-            change_type = dl_params[:sync_change_type]&.upcase
+            change_type = dl_params[:change_type]&.upcase
 
             clean_params = dl_params.permit(DefectLocation.allowable_params).to_h
             dl_guid = dl_params[:id]
