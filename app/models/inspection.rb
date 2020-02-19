@@ -215,7 +215,7 @@ class Inspection < InspectionRecord
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
     end
 
-      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
+      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
   end
 
   def can_schedule(user)

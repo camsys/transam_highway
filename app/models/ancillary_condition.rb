@@ -30,7 +30,4 @@ class AncillaryCondition < BridgeLikeCondition
     end
   end
 
-  def has_required_photos?
-    true
-  end
 end
