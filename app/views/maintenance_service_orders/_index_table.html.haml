@@ -39,7 +39,8 @@
       %th.center{:data => {:field => "completed_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'false'}} Date Completed
       - unless @asset
         %th.center{:data => {:field => "asset", :align => 'left', :sortable => 'true'}} Asset
-      %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
+      - if @asset || @inspection
+        %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
 
 = render 'shared/table_formatters'
 
@@ -79,7 +80,7 @@
       }
       return action_html;
     }
-- else
+- elsif @asset
   :javascript
 
     function link_formatter(value, row) {
