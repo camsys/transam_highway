@@ -1,0 +1,45 @@
+.document
+  -#- if @inspection.class == BridgeCondition
+  -#  = render partial: 'inspections/vertical_report_header.pdf.haml', :locals => {:inspection => @inspection}
+  -#  = render partial: 'inspections/vertical_report.pdf.haml', :locals => {:inspection => @inspection}
+  -#  .div.alwaysbreak { page-break-before: always; }
+
+  - if @inspection.highway_structure.asset_tag == "A-06-I"
+    = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
+    = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection}
+    &nbsp;
+    .div.alwaysbreak
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection}
+  &nbsp;
+  .div.alwaysbreak
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection}
+  &nbsp;
+  .div.alwaysbreak
+  -#- if @inspection.class == BridgeCondition
+    = render :partial => 'inspections/vertical_clearance_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/vertical_clearance.html.haml', :locals => {:inspection => @inspection}
+    .div.alwaysbreak
+
+  - if @inspection.class == BridgeCondition
+    = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection}
+    -#= render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}
+    -#= render 'inspections/elements_panel.html.haml'
+    -#= render :partial => 'inspections/elements_panel.html.haml', :locals => {:inspection => @inspection}
+    &nbsp;
+    .div.alwaysbreak
+
+  - if @inspection.images.any?
+    = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/report_photo_log.html.haml', :locals => {:inspection => @inspection}
+    &nbsp;
+    .div.alwaysbreak
+
+    -#= render :partial => 'inspections/maintenance_recommendations_header.html.haml', :locals => {:inspection => @inspection}
+    -#= render :partial => 'inspections/maintenance_recommendations.html.haml', :locals => {:inspection => @inspection}
+    -#&nbsp;
+    -#.div.alwaysbreak
+
+  = render :partial => 'inspections/inspectors_header.html.haml', :locals => {:inspection => @inspection}
+  = render :partial => 'inspections/inspectors.html.haml', :locals => {:inspection => @inspection}
