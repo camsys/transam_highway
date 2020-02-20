@@ -2,18 +2,18 @@ Rails.application.routes.draw do
 
   resources :inspections do
 
-    resources :elements do 
-      collection do 
+    resources :elements do
+      collection do
         post :save_quantity_changes
       end
 
-      member do 
+      member do
         get :edit_comment
       end
 
       resources :child_elements
-      resources :defects do 
-        member do 
+      resources :defects do
+        member do
           get :edit_comment
         end
 
@@ -25,10 +25,11 @@ Rails.application.routes.draw do
 
     resources :images
 
-    collection do 
+    collection do
       get 'reset'
       post 'new_search'
       get 'inspection_type_settings'
+      get 'audit_export'
     end
 
     member do
@@ -45,8 +46,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :roadbeds do 
-    member do 
+  resources :roadways
+
+  resources :roadbeds do
+    member do
       post :save_vertical_clearance_changes
     end
   end
@@ -57,7 +60,7 @@ Rails.application.routes.draw do
       get 'process_file'
     end
   end
-  
+
   # JSON API #
   namespace :api do
     namespace :v1 do

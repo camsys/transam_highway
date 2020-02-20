@@ -48,7 +48,7 @@ class Api::V1::CulvertsController < Api::ApiController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_culvert
-    @culvert = culvert.find_by(:object_key => params[:id])
+    @culvert = Culvert.find_by(:object_key => params[:id])
 
     unless @culvert
       @status = :fail

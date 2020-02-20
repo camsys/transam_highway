@@ -1,7 +1,8 @@
-json.(highway_structure, :object_key, :asset_subtype_id, :asset_tag, :external_id, :state, :county, :city, :location_description, :highway_structurible_type, :calculated_condition, :is_temporary, :milepoint, :features_intersected, :remarks)
+json.(highway_structure, :object_key, :asset_tag, :external_id, :state, :county, :city, :location_description, :calculated_condition, :milepoint, :features_intersected, :remarks)
+json.asset_type_id highway_structure.asset_type.id
+json.asset_subtype_id highway_structure.asset_subtype.id
 unless sshml
   json.(highway_structure, :facility_carried, :approach_roadway_width)
-  json.asset_subtype highway_structure.asset_subtype.try(:to_s)
 end
 json.id highway_structure.guid
 json.latitude highway_structure.try(:geometry).try(:y)
@@ -17,7 +18,6 @@ end
 
 associations.each do |asso|
   json.(highway_structure, "#{asso}_id")
-  json.set! asso, highway_structure.try(asso).try(:name)
 end
 
 if highway_structure.inspection_type_settings
@@ -25,3 +25,5 @@ if highway_structure.inspection_type_settings
     json.partial! 'api/v1/inspection_type_settings/inspection_type_setting', collection: highway_structure.inspection_type_settings, as: :inspection_type_setting
   end
 end
+
+json.(highway_structure, :lanes_on, :lanes_under)

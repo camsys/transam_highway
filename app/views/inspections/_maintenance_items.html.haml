@@ -1,5 +1,5 @@
 .row
-  - if can?(:update, @inspection.inspection)
+  - if can?(:update, @inspection.inspection) && @inspection.updatable?
     .col-sm-12
       .btn-group
         = link_to new_maintenance_service_order_path(asset: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Maintenance Item' do

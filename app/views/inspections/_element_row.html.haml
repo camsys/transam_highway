@@ -16,7 +16,7 @@
   %td.right.cs3= format_as_integer(element.defects.sum(:condition_state_3_quantity))
   %td.right.cs4= format_as_integer(element.defects.sum(:condition_state_4_quantity))
   %td.center
-    - if can?(:update, @inspection.inspection)
+    - if can?(:update, @inspection.inspection) && @inspection.updatable?
       - if is_child
         = render 'child_element_row_action_buttons', element: element
       - else

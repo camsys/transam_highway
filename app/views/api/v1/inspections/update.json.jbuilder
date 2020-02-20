@@ -1,3 +1,10 @@
+json.structure do
+  structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
+  is_sshml = structure.is_a? AncillaryStructure
+  json.partial! 'api/v1/highway_structures/listing', highway_structure: structure, sshml: is_sshml
+  json.partial! 'api/v1/bridge_likes/listing', bridge_like: structure, sshml: is_sshml
+end
+
 json.inspection do
   json.partial! 'api/v1/inspections/listing',  inspection: @inspection
 end
@@ -7,11 +14,11 @@ json.elements do
 end
 
 json.defects do
-  json.partial! 'api/v1/defects/listing', collection: @inspection.elements.collect(&:defects).sum, as: :defect
+  json.partial! 'api/v1/defects/listing', collection: @inspection.elements.collect(&:defects).sum([]), as: :defect
 end
 
 json.defect_locations do
-  json.partial! 'api/v1/defect_locations/listing', collection: DefectLocation.where(defect: @inspection.elements.collect(&:defects).sum), as: :defect_location
+  json.partial! 'api/v1/defect_locations/listing', collection: DefectLocation.where(defect: @inspection.elements.collect(&:defects).sum([])), as: :defect_location
 end
 
 case @inspection.highway_structure.asset_subtype.asset_type.name
@@ -29,7 +36,7 @@ when "HighwaySign" || "HighwaySignal" || "HighMastLight"
   end
 end
 
-json.images do 
+json.images do
   json.partial! 'api/v1/images/image', collection: @inspection.images, as: :image
 end
 

@@ -5,7 +5,7 @@ class AddHighwayMaintenancePriorityTypes < ActiveRecord::DataMigration
 
       maintenance_priority_types = [
           {:active => 1, :is_default => 0, :is_erf => 0, :name => 'Low',     :description => 'Lowest priority.'},
-          {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Normal',  :description => 'Normal priority.'},
+          {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Medium',  :description => 'Medium priority.'},
           {:active => 1, :is_default => 0, :is_erf => 0, :name => 'High',    :description => 'Highest priority.'},
           {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Blue',    :description => 'ERF - Blue.'},
           {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Green',    :description => 'ERF - Green.'},

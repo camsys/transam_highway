@@ -1,3 +1,5 @@
+require 'haml-rails'
+
 module TransamHighway
   class Engine < ::Rails::Engine
     # Add a load path for this specific Engine

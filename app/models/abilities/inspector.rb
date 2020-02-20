@@ -9,8 +9,10 @@ module Abilities
       end
 
       can :update, [Inspection, BridgeCondition, CulvertCondition] do |inspection|
-        (inspection.inspector_ids.include? user.id) && inspection.updatable?
+        (inspection.inspector_ids.include? user.id)
       end
+
+      can :update, TransamAssetRecord
 
     end
   end

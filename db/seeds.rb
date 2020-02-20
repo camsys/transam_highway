@@ -64,7 +64,7 @@ roles = [
 
 maintenance_priority_types = [
     {:active => 1, :is_default => 0, :is_erf => 0, :name => 'Low',     :description => 'Lowest priority.'},
-    {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Normal',  :description => 'Normal priority.'},
+    {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Medium',  :description => 'Medium priority.'},
     {:active => 1, :is_default => 0, :is_erf => 0, :name => 'High',    :description => 'Highest priority.'},
     {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Blue',    :description => 'ERF - Blue.'},
     {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Green',    :description => 'ERF - Green.'},
@@ -86,7 +86,8 @@ system_config_extensions = [
     {class_name: 'RoadbedLine', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'StreambedProfile', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
     {class_name: 'StreambedProfilePoint', extension_name: 'TransamGuid', engine_name: 'highway', active: true},
-    {class_name: 'AssetType', extension_name: 'HasAssemblyTypes', engine_name: 'highway', active: true}
+    {class_name: 'AssetType', extension_name: 'HasAssemblyTypes', engine_name: 'highway', active: true},
+    {class_name: 'DefectLocation', extension_name: 'TransamGuid', engine_name: 'highway', active: true}
 ]
 
 route_signing_prefixes = [

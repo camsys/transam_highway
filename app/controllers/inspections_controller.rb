@@ -1,6 +1,8 @@
 class InspectionsController < TransamController
   add_breadcrumb "Home", :root_path
 
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
+
   before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
   before_action :reformat_date_fields, only: [:create, :update]
 
@@ -29,6 +31,21 @@ class InspectionsController < TransamController
     end
   end
 
+  def audit_export
+
+    @start_date = Chronic.parse(params[:start_date]).beginning_of_day unless params[:start_date].blank?
+    @end_date = Chronic.parse(params[:end_date]).end_of_day unless params[:end_date].blank?
+
+    respond_to do |format|
+      format.html
+      format.csv {
+        @export_results = InspectionAuditService.new.table_of_changes(nil,@start_date, @end_date)
+      }
+    end
+
+
+  end
+
   def inspection_type_settings
     @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
 
@@ -53,7 +70,7 @@ class InspectionsController < TransamController
     add_breadcrumb @asset, inventory_path(@asset)
     add_breadcrumb "#{view_context.format_as_date(@inspection.event_datetime)} Inspection"
 
-    @asset_class_name = @asset.class.name.underscore
+    @asset_class_name = @asset.asset_type.class_name
 
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name

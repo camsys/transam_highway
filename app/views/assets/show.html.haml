@@ -2,7 +2,7 @@
   @asset_class_name = @asset.asset_type.class_name
 
   if @asset.assigned_version
-    @latest_condition = TransamAsset.get_typed_version(@asset.assigned_version).latest_condition
+    @latest_condition = Inspection.get_typed_version(@asset.assigned_inspection_version)
   else
     @latest_condition = @asset.latest_condition
   end
@@ -34,8 +34,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}SI&A
-          - unless @asset.assigned_version
-            = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset}
+          = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset, allowed_to_edit:(can?(:update_from_structure, @asset) && !@asset.assigned_version)}
       #collapse-profile.panel-collapse.collapse.in
         .panel-body
           = render 'profile'        

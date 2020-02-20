@@ -13,6 +13,7 @@ class ElementsController < TransamController
 
   # GET /inspections/:inspection_id/elements/1/edit
   def edit
+    @assembly_types = @inspection.highway_structure.asset_type.assembly_types
   end
 
   # POST /inspections/:inspection_id/elements

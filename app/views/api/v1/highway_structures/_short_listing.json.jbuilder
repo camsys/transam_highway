@@ -1,11 +1,14 @@
-json.(highway_structure, :object_key, :asset_subtype_id, :asset_tag, :county, :city, :facility_carried, :highway_structurible_type, :calculated_condition, :milepoint, :inspection_frequency)
+json.(highway_structure, :object_key, :asset_tag, :county, :city, :facility_carried, :calculated_condition, :milepoint, :inspection_frequency)
 json.id highway_structure.guid
+json.asset_type_id highway_structure.asset_type.id
+json.asset_subtype_id highway_structure.asset_subtype.id
 json.latitude highway_structure.try(:geometry).try(:y)
 json.longitude highway_structure.try(:geometry).try(:x)
-json.asset_subtype highway_structure.asset_subtype.try(:to_s) 
 json.manufacture_year highway_structure.manufacture_year
 
-associations = [:owner, :region, :highway_structure_type]
+associations = [:owner, :region]
 associations.each do |asso|
   json.set! asso, highway_structure.try(asso).try(:name)
 end
+
+json.(highway_structure, :lanes_on, :lanes_under)

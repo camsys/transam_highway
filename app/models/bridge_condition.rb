@@ -39,8 +39,8 @@ class BridgeCondition < BridgeLikeCondition
     end
   end
 
-  def has_required_photos?
-    (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Elevation From Upstream (Looking X)", "Underbridge/Superstructure"]).count == 3
-  end
+  # def has_required_photos?
+  #   (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Elevation From Upstream (Looking X)", "Underbridge/Superstructure"]).count == 3
+  # end
 
 end

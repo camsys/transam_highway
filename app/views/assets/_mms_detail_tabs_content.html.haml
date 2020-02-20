@@ -2,12 +2,14 @@
 
   .tab-pane.fade#odrs
     .tab-content
-      .row
-        .col-sm-12
-          .btn-group
-            = link_to new_maintenance_service_order_path(asset: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Maintenance Item' do
-              %i.fa.fa-plus
-              = " New Maintenance Item"
+
+      - if can?(:update, @asset) && !@asset.assigned_version
+        .row
+          .col-sm-12
+            .btn-group
+              = link_to new_maintenance_service_order_path(asset: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Maintenance Item' do
+                %i.fa.fa-plus
+                = " New Maintenance Item"
       .row
         .col-sm-12
           - if @asset.maintenance_service_orders.empty?

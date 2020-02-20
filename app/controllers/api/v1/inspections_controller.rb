@@ -16,9 +16,9 @@ class Api::V1::InspectionsController < Api::ApiController
       render status: 400, json: json_response(:error, message: @message)
       return
     end
-    
-    begin 
-      ActiveRecord::Base.transaction do 
+
+    begin
+      ActiveRecord::Base.transaction do
 
         if params[:inspection]
           inspection_hash = params[:inspection].permit(@inspection.allowable_params).to_h
@@ -43,7 +43,13 @@ class Api::V1::InspectionsController < Api::ApiController
           ac_hash = params[:ancillary_condition].permit(@ancillary_condition.allowable_params).to_h
           @ancillary_condition.update!(ac_hash) if @ancillary_condition
         end
-        
+
+        if params[:structure]
+          @structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
+          structure_hash = params[:structure].permit(@structure.allowable_params).to_h
+          @structure&.update!(structure_hash)
+        end
+
         if params[:elements] && params[:elements].any?
           params[:elements].each do |el_params|
             change_type = el_params[:change_type]&.upcase
@@ -59,7 +65,7 @@ class Api::V1::InspectionsController < Api::ApiController
               el = Element.find_by_guid(el_guid)
               clean_params[:parent] = el_parent if el_parent
               clean_params[:inspection] = @inspection
-              if el 
+              if el
                 el.update!(clean_params)
               else
                 if el_guid.blank?
@@ -85,7 +91,7 @@ class Api::V1::InspectionsController < Api::ApiController
             if df_params[:element_id]
               el_parent = Element.find_by_guid(df_params[:element_id])
             end
-            
+
             case change_type
             when 'ADD', 'UPDATE'
               el = Defect.find_by_guid(df_guid)
@@ -110,7 +116,7 @@ class Api::V1::InspectionsController < Api::ApiController
 
         if params[:defect_locations] && params[:defect_locations].any?
           params[:defect_locations].each do |dl_params|
-            change_type = dl_params[:sync_change_type]&.upcase
+            change_type = dl_params[:change_type]&.upcase
 
             clean_params = dl_params.permit(DefectLocation.allowable_params).to_h
             dl_guid = dl_params[:id]
@@ -365,21 +371,21 @@ class Api::V1::InspectionsController < Api::ApiController
     rescue ActiveRecord::RecordInvalid => invalid
       # generic errors
       @status = :error
-      @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}" 
+      @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}"
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # element guid is required to add a new element
     if @el_guid_required_to_add
       @status = :error
-      @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data" 
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new element data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
     # defect guid is required to add a new defect
     if @df_guid_required_to_add
       @status = :error
-      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data" 
+      @message  = "Unable to update inspection #{params[:id]} due to empty id in new defect data"
       render status: 400, json: json_response(:error, message: @message)
     end
 
@@ -417,7 +423,7 @@ class Api::V1::InspectionsController < Api::ApiController
       @message = "Unable to update inspection #{params[:id]} due to missing roadbed"
       render status: 400, json: json_response(:error, message: @message)
     end
-    
+
     # roadbed line guid is required to add a new roadbed line
     if @rbl_guid_required_to_add
       @status = :error
