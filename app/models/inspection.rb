@@ -285,13 +285,13 @@ class Inspection < InspectionRecord
 
             elem.defects.each do |defect|
 
-              if new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id]
-                defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
-                defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
-                defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
-                defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
-                defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
-                defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
+              if new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id]
+                defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][0]
+                defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][1]
+                defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][2]
+                defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][3]
+                defect.total_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][4]
+                defect.notes = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][5]
                 defect.save
               else
                 defect.destroy
