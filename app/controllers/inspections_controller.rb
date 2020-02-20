@@ -58,6 +58,18 @@ class InspectionsController < TransamController
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
 
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render :json => @inspection }
+
+      format.pdf do
+        # pdf = WickedPdf.new.pdf_from_string(inspection_pdf_template(@inspection) )
+        send_data(inspection_pdf_template(@inspection), type: 'application/pdf', disposition: 'inline', filename: 'InspectionReport.pdf')
+
+        # render :pdf => inspection_pdf_template(@inspection), :disposition => 'inline'
+      end
+    end
+
   end
 
   # GET /inspections/new
