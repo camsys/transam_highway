@@ -70,6 +70,8 @@ class Inspection < InspectionRecord
       :inspector_ids => []
   ]
 
+  UNALLOWABLE_INSPECTOR_PARAMS = []
+
   def self.get_typed_inspection(inspection)
     if inspection
       if inspection.specific

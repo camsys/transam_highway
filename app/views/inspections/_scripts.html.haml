@@ -1,3 +1,6 @@
+:ruby
+  disabled_fields = (current_user.has_role?(:inspector) && @inspection.inspection_type.name != 'Initial') ? @inspection.unallowable_inspector_params.map{|x| "##{x}"}.join(',') : ''
+
 = render partial: 'shared/xeditable_scripts'
 
 :javascript
@@ -19,8 +22,8 @@
       var tab_id = $(this).parent().parent().parent().parent().parent().find('.panel-collapse').attr('id');
 
       console.log(tab_id);
-      $('#'+tab_id+' .editable-field').editable('enable');
-      $('#'+tab_id+' .editable-field').editable('show', false);
+      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('enable');
+      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('show', false);
       $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
       //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
 
@@ -42,8 +45,8 @@
     $('#collapse-profile a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       tab_id = $('#collapse-profile .tab-pane.active').attr('id')
       if ($('#profile .inspection-edit-xeditable-button').is(":hidden")) {
-        $('#'+tab_id+' .editable-field').editable('enable');
-        $('#'+tab_id+' .editable-field').editable('show', false);
+        $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('enable');
+        $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('show', false);
         $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
         //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
 

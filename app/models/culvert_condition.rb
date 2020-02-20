@@ -10,6 +10,8 @@ class CulvertCondition < BridgeLikeCondition
       :culvert_condition_type_id
   ]
 
+  UNALLOWABLE_INSPECTOR_PARAMS = []
+
   def calculated_condition
     case culvert_condition_type&.value
       when 0..4
