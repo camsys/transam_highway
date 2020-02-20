@@ -1,0 +1,10 @@
+= form_tag audit_export_inspections_path(format: :csv), :method => "get", :class => 'navbar-form navbar-left' do
+  .form-group
+    %label Start Date
+    = text_field_tag(:start_date, nil, class: 'form-control datepicker')
+    %label End Date
+    = text_field_tag(:end_date, nil, class: 'form-control datepicker')
+
+  = button_tag :class => 'btn btn-primary', :type => 'submit' do
+    %i.fa.fa-download.fa-fw
+    Download

@@ -32,7 +32,18 @@ class InspectionsController < TransamController
   end
 
   def audit_export
-    @export_results = InspectionAuditService.new.table_of_changes(nil)
+
+    @start_date = Chronic.parse(params[:start_date]).beginning_of_day unless params[:start_date].blank?
+    @end_date = Chronic.parse(params[:end_date]).end_of_day unless params[:end_date].blank?
+
+    respond_to do |format|
+      format.html
+      format.csv {
+        @export_results = InspectionAuditService.new.table_of_changes(nil,@start_date, @end_date)
+      }
+    end
+
+
   end
 
   def inspection_type_settings
