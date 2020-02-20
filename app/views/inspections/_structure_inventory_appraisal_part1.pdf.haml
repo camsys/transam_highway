@@ -5,10 +5,11 @@
     %span.col-xs-6.text-header
       Appraisal
   .row
+
     %span.col-xs-3.text-limiter-counter
       Structure Key (8A)
     %span.col-xs-3.text-limiter-counter
-      -@inspection.highway_structure.structure_key
+      =@inspection.highway_structure.asset_tag.to_s
     %span.col-xs-3.text-limiter-counter
       Bridge Rail (36A)
     %span.col-xs-3.text-limiter-counter
@@ -17,7 +18,7 @@
     %span.col-xs-3.text-limiter-counter
       Structure Status (23)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.structure_status_type
     %span.col-xs-3.text-limiter-counter
       Transitions (36B)
     %span.col-xs-3.text-limiter-counter
@@ -26,7 +27,7 @@
     %span.col-xs-3.text-limiter-counter
       Highway Segment (5D)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.roadways.first.route_number
     %span.col-xs-3.text-limiter-counter
       Approach guardrail (36C)
     %span.col-xs-3.text-limiter-counter
@@ -35,7 +36,7 @@
     %span.col-xs-3.text-limiter-counter
       Legacy Milepoint (11A)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.roadways.first.milepoint
     %span.col-xs-3.text-limiter-counter
       End treatments (36D)
     %span.col-xs-3.text-limiter-counter
@@ -44,7 +45,7 @@
     %span.col-xs-3.text-limiter-counter
       City (4)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.city
     %span.col-xs-3.text-limiter-counter
       Rail Height (66H)
     %span.col-xs-3.text-limiter-counter
@@ -53,7 +54,7 @@
     %span.col-xs-3.text-limiter-counter
       County (3)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.county
     %span.col-xs-3.text-limiter-counter
       Fill/Asphalt Thickness (66T)
     %span.col-xs-3.text-limiter-counter
@@ -62,7 +63,7 @@
     %span.col-xs-3.text-limiter-counter
       Maint. Responsibility (21)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.maintenance_responsibility
     %span.col-xs-3.text-limiter-counter
       Structural Evaluation (67)
     %span.col-xs-3.text-limiter-counter
@@ -71,7 +72,7 @@
     %span.col-xs-3.text-limiter-counter
       Owner (22)
     %span.col-xs-3.text-limiter-counter
-      ____
+      =@inspection.highway_structure.owner
     %span.col-xs-3.text-limiter-counter
       Deck Geometry (68)
     %span.col-xs-3.text-limiter-counter
