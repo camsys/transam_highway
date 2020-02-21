@@ -116,7 +116,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}SI&A
-          = render partial: 'xeditable_edit_actions', locals: {obj: @asset, allowed_to_edit: ((can? :update, @inspection.inspection) && @inspection.updatable?)}
+          = render partial: 'shared/xeditable_edit_actions', locals: {obj: @asset, allowed_to_edit: ((can? :update, @inspection.inspection) && @inspection.updatable?)}
       #collapse-profile.panel-collapse.collapse.in
         .panel-body
           = render 'assets/profile'
