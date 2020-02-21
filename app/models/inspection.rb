@@ -34,7 +34,7 @@ class Inspection < InspectionRecord
 
   has_one :streambed_profile, dependent: :destroy
   has_many :roadbed_lines, dependent: :destroy
-  
+
   # Each asset has zero or more images. Images are deleted when the asset is deleted
   has_many    :images,      :as => :imagable,       :dependent => :destroy
 
@@ -50,6 +50,7 @@ class Inspection < InspectionRecord
       :temperature,
       :weather,
       :notes,
+      :status,
       :organization_type_id,
       :assigned_organization_id,
       :inspection_team_leader_id,
@@ -231,7 +232,7 @@ class Inspection < InspectionRecord
   def can_all(user)
     user.has_role?(:super_manager) || user.has_role?(:admin)
   end
-  
+
   def can_assign(user)
     can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
   end
@@ -247,7 +248,7 @@ class Inspection < InspectionRecord
   def can_submit(user)
     can_all(user) || user.has_role?(:manager)
   end
-  
+
   def can_finalize(user)
     can_all(user) || inspection_team_leader == user
   end # TEMP
