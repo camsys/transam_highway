@@ -7,7 +7,7 @@
   }
   tbody > tr.defect {
     background-color: lightgray;
-  }  
+  }
   tbody > tr.notes {
     font-size: 0.9em;
     font-style: italic;
@@ -24,10 +24,10 @@
     float: right;
   }
 
-  .number-input[type=number]::-webkit-inner-spin-button, 
-  .number-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
+  .number-input[type=number]::-webkit-inner-spin-button,
+  .number-input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   .cs_1_quantity {
@@ -45,7 +45,7 @@
   .cs_4_quantity {
     background-color: #F99C9B;
   }
-  
+
 :ruby
   table_dom_id = SecureRandom.hex
 
@@ -146,7 +146,7 @@
 
   function validate_quantity() {
     var is_valid = true;
-    $('tr.element').each(function() {
+    $('tr.element, tr.bme').each(function() {
       var element_id = $(this).attr('data-element-id');
       var element_total_quantity_td = $(this).find('> td.total_quantity');
       var element_total_quantity_input = element_total_quantity_td.find('.number-input');
@@ -163,8 +163,8 @@
         element_total_quantity_td.append('<label class="error">Invalid quantity</label>');
 
         is_valid = false;
-      } 
-    }); 
+      }
+    });
 
     $('.number-input').each(function() {
       validate_input(this);
@@ -198,7 +198,7 @@
     }
 
     function update_cs1_col_total(element_id) {
-      var el_row = $('tr.element[data-element-id=' + element_id + ']');
+      var el_row = $('tr[data-element-id=' + element_id + ']').not('.defect');
       var total_quan = parseFloat(el_row.find('.total_quantity .number-input').val());
       var cs234_total = parseFloat(el_row.find('.cs2').text()) + parseFloat(el_row.find('.cs3').text()) + parseFloat(el_row.find('.cs4').text());
       var t = parseFloat(total_quan - cs234_total);
@@ -209,7 +209,7 @@
     }
 
     function update_cs234_col_total(element_id, quan_class) {
-      var el_row = $('tr.element[data-element-id=' + element_id + ']');
+      var el_row = $('tr[data-element-id=' + element_id + ']').not('.defect');
       var total_quan = 0;
       $('.defect[data-element-id=' + element_id + '] .' + quan_class + ' .number-input').each(function() {
         total_quan += parseFloat($(this).val());
@@ -219,22 +219,22 @@
       if(isNumNaN(t)) {
         t = '-';
       }
-      el_row.find("." + quan_class).text(t);    
+      el_row.find("." + quan_class).text(t);
     }
 
     function update_defect_row_total(defect_id) {
       var defect_row = $('.defect[data-defect-id=' + defect_id + ']');
       var total_quan = parseFloat(defect_row.find('.cs1 .number-input').val()) + parseFloat(defect_row.find('.cs2 .number-input').val()) + parseFloat(defect_row.find('.cs3 .number-input').val()) + parseFloat(defect_row.find('.cs4 .number-input').val());
-      
+
       var t = parseFloat(total_quan);
       if(isNumNaN(t)) {
         t = '-';
       }
-      defect_row.find('.total_quantity').text(t);  
+      defect_row.find('.total_quantity').text(t);
       if(!quantity_changes.defects[defect_id]) {
         quantity_changes.defects[defect_id] = {};
       }
-      quantity_changes.defects[defect_id].total_quantity = total_quan;  
+      quantity_changes.defects[defect_id].total_quantity = total_quan;
     }
 
     $('body').on('change', '.cs1 .number-input', function() {
@@ -249,7 +249,7 @@
     });
 
     $('body').on('change', '.total_quantity .number-input', function() {
-      var el_id = $(this).parents('.element').attr('data-element-id');
+      var el_id = $(this).parents('.element, .bme').attr('data-element-id');
       update_cs1_col_total(el_id);
       quantity_changes.elements[el_id] = parseFloat($(this).val());
     });
@@ -266,7 +266,7 @@
       if(!quantity_changes.defects[defect_id]) {
         quantity_changes.defects[defect_id] = {};
       }
-      
+
       var cs_field_name = "";
       switch($(this).data('type')) {
         case 'cs2':
@@ -280,7 +280,7 @@
           break;
       }
       if(cs_field_name) {
-        quantity_changes.defects[defect_id][cs_field_name] = parseFloat($(this).val());  
+        quantity_changes.defects[defect_id][cs_field_name] = parseFloat($(this).val());
       }
     });
 
@@ -290,4 +290,3 @@
       is_form_valid();
     });
   });
-        
