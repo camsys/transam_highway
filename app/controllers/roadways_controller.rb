@@ -24,9 +24,10 @@ class RoadwaysController < TransamController
 
   # GET /roadways/1/edit
   def edit
-    @adt_min_year = @roadway.average_daily_traffic_year
+    # handle bad data, e.g. -1, nil
+    @adt_min_year = [@roadway.average_daily_traffic_year, (Date.today.year - 20)].compact.max
     @adt_max_year = Date.today.year
-    @future_adt_min_year = [Date.today.year, @roadway.future_average_daily_traffic_year].min
+    @future_adt_min_year = [[Date.today.year, @roadway.future_average_daily_traffic_year].compact.min, Date.today.year - 20].max
     @future_adt_max_year = Date.today.year + 20
   end
 
