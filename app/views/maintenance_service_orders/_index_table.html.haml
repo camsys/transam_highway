@@ -1,6 +1,16 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+#maintenance_service_orders_table_actions.row
+  = form_tag maintenance_service_orders_path(format: :json), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+    #filter-div
+      %label Priority
+      .form-group
+        = select_tag(:priority_type_id, options_for_select(MaintenancePriorityType.active.map{|t| [t.name, t.id]}, :selected => @priority_types), :class => "form-control", :multiple => true)
+
+      = button_tag :class => 'btn btn-default pull-right', :type => 'submit' do
+        %i.fa.fa-filter
+
 %table.table.table-hover{:id => table_dom_id,
     :data => {:toggle => 'table',
     :url => @asset.present? ? maintenance_service_orders_path(:asset_id => @asset.try(:transam_asset).try(:id) || @asset.id, :format => :json) : maintenance_service_orders_path(:format => :json),
@@ -15,7 +25,6 @@
     :page_size => current_user.num_table_rows,
     :search => 'false',
     :show_columns => 'true',
-    :show_export => 'true',
     :row_style => 'row_style',
     :click_to_select => 'true',
     :show_export => 'true',
@@ -69,6 +78,15 @@
     }
   }
 
+  var priority_types = #{@priority_types || []};
+
+  function query_params(params) {
+    if(priority_types.length > 0) {
+      params.priority_type_id = priority_types;
+    }
+
+    returns params;
+  }
 
 - if @inspection
   :javascript
