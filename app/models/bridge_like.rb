@@ -872,13 +872,14 @@ class BridgeLike < TransamAssetRecord
         end
 
         if defect_def
+          notes = hash['ELEM_NOTES']
+
           # set quantities and create defect locations
           defect =
             parent_elem.defects.build(inspection: inspection,
                                       defect_definition: defect_def,
                                       total_quantity:
                                         process_quantities(hash['ELEM_QUANTITY'], units),
-                                      notes: hash['ELEM_NOTES'],
                                       condition_state_1_quantity:
                                         process_quantities(hash['ELEM_QTYSTATE1'], units),
                                       condition_state_2_quantity:
@@ -893,7 +894,8 @@ class BridgeLike < TransamAssetRecord
             quantity = defect.send(symbol)
             if quantity > 0
               defect.defect_locations.build(quantity: quantity,
-                                            condition_state: condition_states[index])
+                                            condition_state: condition_states[index],
+                                            note: notes)
             end
           end
         else # Assume BME
