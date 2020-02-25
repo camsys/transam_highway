@@ -1,5 +1,29 @@
 :ruby
   table_dom_id = SecureRandom.hex
+- unless @asset || @inspection
+  .col-md-9
+    #maintenance_service_orders_table_actions.row
+      = form_tag maintenance_service_orders_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-left' do
+        #filter-div
+          %label Priority
+          .form-group
+            = select_tag(:priority_type_id, options_for_select(MaintenancePriorityType.active.map{|t| [t.name, t.id]}, :selected => @priority_types), :class => "form-control", :multiple => true, :include_blank => 'Select All')
+
+          %label Status
+          .form-group
+            = select_tag(:state, options_for_select(MaintenanceServiceOrder.state_names.map{|s| [MaintenanceServiceOrder.human_state_name(s) == MaintenanceServiceOrder.human_state_name(s).downcase ? MaintenanceServiceOrder.human_state_name(s).titleize : MaintenanceServiceOrder.human_state_name(s), s]}, :selected => @states), :class => "form-control", :multiple => true, :include_blank => "Select All")
+
+          %label Date First Recommended
+          .form-group
+            = date_field_tag(:date_recommended, @date_recommended)
+
+          %label Timeline
+          .form-group
+            = date_field_tag(:due_month, @due_month)
+
+          .form-group
+            = button_tag :class => 'btn btn-default pull-right filter', :type => 'submit' do
+              %i.fa.fa-filter
 
 %table.table.table-hover{:id => table_dom_id,
     :data => {:toggle => 'table',
@@ -15,9 +39,9 @@
     :page_size => current_user.num_table_rows,
     :search => 'false',
     :show_columns => 'true',
-    :show_export => 'true',
     :row_style => 'row_style',
     :click_to_select => 'true',
+    :query_params => "query_params",
     :show_export => 'true',
     :id_field => 'object_key',
     :export_types => "['csv', 'txt', 'excel']",
@@ -69,6 +93,27 @@
     }
   }
 
+  var priority_types = #{@priority_types || []};
+  var states = #{raw @states.blank? ? [] : raw(@states)};
+  var date_recommended = '#{@date_recommended}';
+  var due_month = '#{@due_month}';
+
+  function query_params(params) {
+    if(priority_types.length > 0) {
+      params.priority_type_id = priority_types;
+    }
+    if(states.length > 0) {
+      params.state = states;
+    }
+    if(date_recommended) {
+      params.date_recommended = date_recommended;
+    }
+    if(due_month) {
+      params.due_month = due_month;
+    }
+
+    return params;
+  }
 
 - if @inspection
   :javascript
