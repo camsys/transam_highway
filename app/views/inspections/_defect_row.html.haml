@@ -24,7 +24,7 @@
     - if can?(:update, @inspection.inspection) && @inspection.updatable?
       = render 'defect_row_action_buttons', defect: defect
 - if defect.defect_locations.any? || defect.notes.present?
-  - notes = defect.defect_locations.collect {|s| "#{indent_str}#{s}"}.join("\n")
+  - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
   - notes = defect.notes unless notes.present?
   %tr.notes
     %td
