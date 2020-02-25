@@ -15,4 +15,8 @@ class DefectLocation < ApplicationRecord
         :note
     ]
   end
+
+  def to_s
+    "#{quantity} #{defect.element.element_definition.quantity_unit} of #{condition_state} #{defect.defect_definition.short_name}: #{location_description}; #{note}"
+  end
 end

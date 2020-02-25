@@ -23,7 +23,9 @@
   %td.center
     - if can?(:update, @inspection.inspection) && @inspection.updatable?
       = render 'defect_row_action_buttons', defect: defect
-- if defect.notes.present?
+- if defect.defect_locations.any? || defect.notes.present?
+  - notes = defect.defect_locations.collect {|s| "#{indent_str}#{s}"}.join("\n")
+  - notes = defect.notes unless notes.present?
   %tr.notes
     %td
-    %td.left{colspan: 7}!= "#{indent_str}#{defect.notes}"
+    %td.left{colspan: 7}!= notes
