@@ -7,11 +7,11 @@
         #filter-div
           %label Priority
           .form-group
-            = select_tag(:priority_type_id, options_for_select(MaintenancePriorityType.active.map{|t| [t.name, t.id]}, :selected => @priority_types), :class => "form-control", :multiple => true, :include_blank => 'Select All')
+            = select_tag(:priority_type_id, options_for_select(MaintenancePriorityType.active.map{|t| [t.name, t.id]}, :selected => @priority_types), :class => "form-control", :multiple => true)
 
           %label Status
           .form-group
-            = select_tag(:state, options_for_select(MaintenanceServiceOrder.state_names.map{|s| [MaintenanceServiceOrder.human_state_name(s) == MaintenanceServiceOrder.human_state_name(s).downcase ? MaintenanceServiceOrder.human_state_name(s).titleize : MaintenanceServiceOrder.human_state_name(s), s]}, :selected => @states), :class => "form-control", :multiple => true, :include_blank => "Select All")
+            = select_tag(:state, options_for_select(MaintenanceServiceOrder.state_names.map{|s| [MaintenanceServiceOrder.human_state_name(s) == MaintenanceServiceOrder.human_state_name(s).downcase ? MaintenanceServiceOrder.human_state_name(s).titleize : MaintenanceServiceOrder.human_state_name(s), s]}, :selected => @states), :class => "form-control", :multiple => true)
 
           %label Date First Recommended
           .form-group
@@ -20,6 +20,10 @@
           %label Timeline
           .form-group
             = date_field_tag(:due_month, @due_month)
+
+          %label= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
+          .form-group
+            = text_field_tag(:asset_search_text, @asset_search_text)
 
           .form-group
             = button_tag :class => 'btn btn-default pull-right filter', :type => 'submit' do
@@ -62,7 +66,7 @@
       %th.center{:data => {:field => "due_month", :align => 'left', :sortable => 'false'}} Timeline
       %th.center{:data => {:field => "completed_date", :align => 'right', :formatter => 'date_formatter', :sortable => 'false'}} Date Completed
       - unless @asset
-        %th.center{:data => {:field => "asset", :align => 'left', :sortable => 'true'}} Asset
+        %th.center{:data => {:field => "transam_asset", :align => 'left', :formatter => 'asset_link_formatter', :sortable => 'true'}}= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
       - if @asset || @inspection
         %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
 
@@ -72,9 +76,41 @@
 
   var path = '#{maintenance_service_order_path("x")}';
 
+  $(document).ready(function() {
+
+    $('#priority_type_id').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Priority types...';
+        } else {
+          return 'Priority types - ' + options.length + ' selected';
+        }
+      }
+    });
+
+    $('#state').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Statuses...';
+        } else {
+          return 'Statuses - ' + options.length + ' selected';
+        }
+      }
+    });
+  });
+
   $(window).resize(function() {
     $("##{table_dom_id}").bootstrapTable('resetView');
   });
+
+  // table formatters
+  function asset_link_formatter(value, data) {
+    return "<a href='/inventory/" + data['transam_asset_object_key'] + "'>" + value + "</a>"
+  };
 
   function status_formatter(value, row) {
     d = new Date()
@@ -97,6 +133,7 @@
   var states = #{raw @states.blank? ? [] : raw(@states)};
   var date_recommended = '#{@date_recommended}';
   var due_month = '#{@due_month}';
+  var asset_search_text = '#{@asset_search_text}';
 
   function query_params(params) {
     if(priority_types.length > 0) {
@@ -110,6 +147,9 @@
     }
     if(due_month) {
       params.due_month = due_month;
+    }
+    if(asset_search_text) {
+      params.asset_search_text = asset_search_text;
     }
 
     return params;
