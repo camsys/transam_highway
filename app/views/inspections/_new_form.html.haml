@@ -1,3 +1,12 @@
+:ruby
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  assignable_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+      assignable_teams << l
+    end
+  end
+
 .modal-dialog.modal-lg
   .modal-content
     .modal-header
@@ -16,6 +25,8 @@
             = f.association :inspection_type, collection: InspectionType.can_be_unscheduled.where.not(id: @asset.inspections.where.not(state: 'final').select(:inspection_type_id)), required: true
           .col-sm-4
             = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
+          .col-sm-4
+            = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id
         = f.input :description, required: @inspection.inspection_type.try(:name) == 'Special'
 
 
