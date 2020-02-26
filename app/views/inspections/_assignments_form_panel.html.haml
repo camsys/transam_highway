@@ -8,4 +8,4 @@
 
     #inspection-assignments-panel-collapse.in
       .panel-body
-        = render partial: 'inspections/assignments_form', :locals => {filter_scripts_loaded: filter_scripts_loaded}
+        = render partial: 'inspections/assignments_form', :locals => {filter_scripts_loaded: filter_scripts_loaded, state: state, assigned_organization_id: assigned_organization_id}

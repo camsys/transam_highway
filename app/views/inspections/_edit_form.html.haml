@@ -97,7 +97,7 @@
   $('.inspection_form').validate({
     submitHandler: function(form) {
       if ($('.transam_workflow_model_proxy_inspector_ids input[type="checkbox"]:checked').length > 0) {
-        $('#transam_workflow_model_proxy_to_state').val('assigned');
+        $('#transam_workflow_model_proxy_to_state').val('ready');
       } else if (parseInt($('#transam_workflow_model_proxy_assigned_organization_id').val()) > 0) {
         $('#transam_workflow_model_proxy_to_state').val('ready');
       } else {

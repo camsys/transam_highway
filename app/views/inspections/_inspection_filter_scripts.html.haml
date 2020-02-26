@@ -9,20 +9,3 @@
       inspection_teams[org_type_id] << l.id
     end
   end
-
-:javascript
-  function update_inspection_teams_by_group(group_id, selector) {
-    if(group_id) {
-      var inspection_team_ids_by_group = #{inspection_teams.to_json.html_safe || {}};
-      group_id = parseInt(group_id);
-      var team_ids = inspection_team_ids_by_group[group_id];
-      $('#'+selector+' option').hide();
-      team_ids.forEach(function(team_id) {
-        $('#' +selector+' option[value=' + team_id + ']').show();
-      });
-
-      $('#' +selector+' option[value=""]').show();
-    } else {
-      $('#' +selector+' option').show();
-    }
-  }

@@ -113,16 +113,6 @@
       }, 50);
     });
 
-
-
-    $('#inspection_proxy_organization_type_id').change(function() {
-      var group_id = $(this).val();
-      update_inspection_teams_by_group(group_id, 'inspection_proxy_assigned_organization_id');
-      if(group_id) {
-        $('#inspection_proxy_assigned_organization_id').val('');
-      }
-    });
-
     $('#inspection_proxy_assigned_organization_id').change(function() {
       var team_id = $(this).val();
       update_inspectors_by_team(team_id);
@@ -147,7 +137,6 @@
       }
     }
 
-    update_inspection_teams_by_group("#{@search_proxy.organization_type_id}", 'inspection_proxy_assigned_organization_id');
     update_inspectors_by_team("#{@search_proxy.assigned_organization_id}");
 
     $('.all_state').on("click", function(event) {

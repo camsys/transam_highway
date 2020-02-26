@@ -6,7 +6,8 @@
     = render 'inspections/search_form'
 
   .col-sm-12
-    = render partial: 'inspections/assignments_form_panel', :locals => {filter_scripts_loaded: 1}
+    - if ['open', 'ready'].include? @search_proxy.single_state_selected || (@search_proxy.single_state_selected == 'assigned' && @search_proxy.assigned_organization_id.to_i > 0)
+      = render partial: 'inspections/assignments_form_panel', :locals => {filter_scripts_loaded: 1, state: @search_proxy.single_state_selected, assigned_organization_id: @search_proxy.assigned_organization_id}
   
   .col-sm-12
     #spinner{:style => 'padding: 20px;'}
