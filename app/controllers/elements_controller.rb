@@ -18,12 +18,12 @@ class ElementsController < TransamController
 
   # POST /inspections/:inspection_id/elements
   def create
-    @inspection = Inspection.get_typed_inspection @inspection
     @element = Element.new(element_params)
     @element.inspection = @inspection
 
     if @element.save
-      # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      # For proper redisplay
+      @inspection = Inspection.get_typed_inspection @inspection
     else
       render :new
     end
@@ -41,8 +41,8 @@ class ElementsController < TransamController
 
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
-    @inspection = Inspection.get_typed_inspection @inspection
     @element.destroy
+    @inspection = Inspection.get_typed_inspection @inspection
     # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
