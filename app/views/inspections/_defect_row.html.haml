@@ -22,7 +22,7 @@
     %input.number-input.form-control.required{data: {type: 'cs4'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_4_quantity}
   %td.center
     - if can?(:update, @inspection.inspection) && @inspection.updatable?
-      = render 'defect_row_action_buttons', defect: defect
+      = render 'inspections/defect_row_action_buttons', defect: defect
 - if defect.defect_locations.any? || defect.notes.present?
   - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
   - notes = defect.notes unless notes.present?

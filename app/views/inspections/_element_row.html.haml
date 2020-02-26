@@ -18,9 +18,9 @@
   %td.center
     - if can?(:update, @inspection.inspection) && @inspection.updatable?
       - if is_child
-        = render 'child_element_row_action_buttons', element: element
+        = render 'inspections/child_element_row_action_buttons', element: element
       - else
-        = render 'element_row_action_buttons', element: element
+        = render 'inspections/element_row_action_buttons', element: element
 - if element.notes.present?
   %tr.notes
     %td

@@ -19,5 +19,5 @@
       = link_to edit_comment_inspection_element_path(element.inspection, element), remote: true  do
         = "Edit Comment"
     %li.text-left
-      = link_to inspection_element_path(element.inspection, element), method: :delete, data: { confirm: 'Are you sure?' }  do
+      = link_to inspection_element_path(element.inspection, element), remote: true, method: :delete, data: { confirm: 'Are you sure?', dismiss: "modal" }  do
         = "Delete"

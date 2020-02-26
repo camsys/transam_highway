@@ -2,6 +2,7 @@
   = simple_form_for(@element,
   :url => inspection_element_path(@inspection, @element),
   :method => 'put',
+  :remote => true,
   :html => {:class => 'form-vertical element_comment_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
@@ -21,7 +22,7 @@
     // jquery validations
     $('.element_comment_form').validate({
       submitHandler: function(form) {
-        form.submit();
+        form.ajaxSubmit();
       }
     });
 
@@ -29,6 +30,3 @@
       $('#form-modal').modal('hide');
     });
   });
-
-
-
