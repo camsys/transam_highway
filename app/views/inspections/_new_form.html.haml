@@ -26,6 +26,7 @@
           .col-sm-4
             = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
           .col-sm-4
+            = f.input :status, as: :hidden, input_html: {value: 'open'}
             = f.input :assigned_organization_id, collection: assignable_teams, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id
         = f.input :description, required: @inspection.inspection_type.try(:name) == 'Special'
 
@@ -55,6 +56,14 @@
         required: false
       });
       $('label[for="inspection_description"]').html('Description');
+    }
+  });
+
+  $('#inspection_assigned_organization_id').change(function() {
+    if (parseInt($(this).val()) > 0){
+      $('#inspection_status').val('ready');
+    } else {
+       $('#inspection_status').val('open');
     }
   });
 
