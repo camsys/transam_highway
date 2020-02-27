@@ -103,7 +103,7 @@ class InspectionProxy < Proxy
       self.send "#{k}=", v
     end
 
-    selected_states = self.state.select(&:present?)
+    selected_states = (self.state || []).select(&:present?)
     self.single_state_selected = selected_states.first if selected_states.length == 1
 
     self.new_search ||= '1'

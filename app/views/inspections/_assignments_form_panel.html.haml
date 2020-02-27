@@ -1,11 +1,35 @@
-- filter_scripts_loaded ||= 0
+:ruby
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-#inspection-assignments-form.collpase
-  .panel.panel-default{:style => 'margin-bottom: 5px;'}
-    .panel-heading{:role => 'tab'}
-      %h4.panel-title
-        = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
+  assignable_teams = []
+  Organization.active.each do |l|
+    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
+    assignable_teams << l
+    end
+  end
 
-    #inspection-assignments-panel-collapse.in
-      .panel-body
-        = render partial: 'inspections/assignments_form', :locals => {filter_scripts_loaded: filter_scripts_loaded, state: state, assigned_organization_id: assigned_organization_id}
+  workflow_panel_boolean = (['open', 'ready', 'assigned'].include?(state) || (state == 'assigned' && assigned_organization_id.to_i > 0))
+  assignment_panel_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization: (orgs & assignable_teams).first)))
+
+- if workflow_panel_boolean
+  #div{class: assignment_panel_boolean ? 'col-sm-6' : 'col-sm-12'}
+    .panel.panel-default{:style => 'margin-bottom: 5px;'}
+      .panel-heading{:role => 'tab'}
+        %h4.panel-title
+          = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+      #inspection-assignments-panel-collapse.in
+        .panel-body
+          = render partial: 'inspections/bulk_transam_workflow_form', :locals => {state: state, assigned_organization_id: assigned_organization_id}
+
+  - if assignment_panel_boolean
+    .col-sm-6
+      .panel.panel-default{:style => 'margin-bottom: 5px;'}
+        .panel-heading{:role => 'tab'}
+          %h4.panel-title
+            = link_to 'Inspector Assignments', '#inspector-assignment-panel', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+        #inspector-assignment-panel.in
+          .panel-body
+            = render partial: 'inspections/assignments_form', :locals => {state: state, assigned_organization_id: assigned_organization_id}

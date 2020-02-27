@@ -31,6 +31,36 @@ class InspectionsController < TransamController
     end
   end
 
+  def change_inspectors
+    params[:inspector_assignment_proxy][:global_ids] = params[:inspector_assignment_proxy][:global_ids].split(',')
+
+    inspector_assignment_proxy = InspectorAssignmentProxy.new(inspector_assignment_proxy_form_params)
+
+    # make sure there's only one assigned organization
+    assigned_org_id = inspector_assignment_proxy.inspections.map{|x| x.assigned_organization_id}.uniq
+    if assigned_org_id.length == 1
+      assigned_org_id = assigned_org_id.first
+    else
+      notify_user(:alert, "More than one team selected.")
+      return
+    end
+
+    inspector_assignment_proxy.inspections.each do |insp|
+      User.joins(:organizations).where(id:inspector_assignment_proxy.inspector_ids, organizations: {id: assigned_org_id}).distinct.each do |inspector|
+        if inspector_assignment_proxy.is_removal.to_i > 0
+          insp.inspectors.delete(inspector)
+        elsif !(insp.inspectors.include?(inspector))
+          insp.inspectors << inspector
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path) }
+    end
+
+  end
+
   def audit_export
 
     @start_date = Chronic.parse(params[:start_date]).beginning_of_day unless params[:start_date].blank?
@@ -213,6 +243,10 @@ class InspectionsController < TransamController
 
     def inspection_proxy_form_params
       params.require(:inspection_proxy).permit(InspectionProxy.allowable_params)
+    end
+
+    def inspector_assignment_proxy_form_params
+      params.require(:inspector_assignment_proxy).permit(InspectorAssignmentProxy.allowable_params)
     end
 
     def reformat_date_fields

@@ -1,119 +1,49 @@
-:ruby
-  filter_scripts_loaded ||= 0
 
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
-  assignable_teams = []
-  Organization.active.each do |l|
-    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
-      assignable_teams << l
-    end
-  end
-
-:css
-  .inspector-assignment-label {
-    display: block;
-  }
-
-  .inspector-checkboxes {
-    padding-left: 0px;
-    vertical-align: inherit;
-  }
-
-
-
-= simple_form_for(:transam_workflow_model_proxy,
-  :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
-  :url => fire_workflow_events_transam_workflow_index_path,
+= simple_form_for(:inspector_assignment_proxy,
+  :html => {:class => 'form-vertical', :id => 'inspector_assignment_form'},
+  :url => change_inspectors_inspections_path,
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
   :radio_buttons => :vertical_radio_and_checkboxes,
   :file => :vertical_file_input,
   :boolean => :vertical_boolean}) do |f|
 
+  = f.button :submit, 'Add Inspectors', :class => "btn btn-primary assignment_form_submit", :id => 'add_inspectors_workflow', disabled: true
+  = f.button :submit, 'Remove Inspectors', :class => "btn btn-primary assignment_form_submit", :id => 'remove_inspectors_workflow', disabled: true
+
+  = f.input :is_removal, as: :hidden
   = f.input :global_ids, as: :hidden
-  = f.input :event_name, as: :hidden, input_html: {value: 'make_ready'}
-  = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
-
-  .row.group-team-fields
-    - orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+  .row
     .col-sm-6
-      - if state == 'open'
-        = f.input :assigned_organization_id, collection: (orgs & assignable_teams), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: (orgs & assignable_teams).count > 1 ? 'Select One' : false, selected: (orgs & assignable_teams).count == 1 ? (orgs & assignable_teams).first.id : nil
-      - elsif state == 'ready' && assigned_organization_id.to_i > 0
-        = f.input :assigned_organization_id, as: :hidden, input_html: {value: assigned_organization_id}
-
-  - if state == 'ready' && assigned_organization_id.to_id > 0 && (can? :assign, Inspection.new(assigned_organization: (orgs & assignable_teams).first))
-    .row
-      .col-sm-6
-        = f.input :inspector_ids, collection: User.active.with_role(:inspector).joins(:organizations).where(organizations: {id: assigned_organization_id}), as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: !(can?(:make_ready, Inspection.new))
-
-  = f.button :submit, 'Assign', :class => "btn btn-primary", :id => 'submit_group_team_assignment', disabled: true
-
-  - if state == 'ready'
-    = f.button :submit, 'To Open', :class => "btn btn-primary assignment_form_submit", :id => 'reopen_workflow', disabled: true
-    - if assigned_organization_id.to_i > 0
-      = f.button :submit, 'To Assigned', :class => "btn btn-primary assignment_form_submit", :id => 'assign_workflow', disabled: true
-  - elsif state == 'open'
-    = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'make_ready_workflow', disabled: true
-  - elsif (state == 'assigned' && assigned_organization_id.to_i > 0)
-    = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'unassign_workflow', disabled: true
-
-- unless filter_scripts_loaded == 1
-  = render 'inspection_filter_scripts'
+      = f.input :inspector_ids, collection: User.active.with_role(:inspector).joins(:organizations).where(organizations: {id: assigned_organization_id}), as: :check_boxes, label: false, required: !(can?(:make_ready, Inspection.new))
 
 :javascript
 
   $(document).ready(function() {
 
-    $("#open_assignments_form input[type=submit]").click(function() {
+    $("#inspector_assignment_form input[type=submit]").click(function() {
         $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
         $(this).attr("clicked", "true");
     });
   });
 
-
-  function enable_disable_assignment_submit() {
-    $('.assignment_form_submit').attr('disabled', 'disabled');
-    if ($('#inspection-table').bootstrapTable('getSelections').length > 0) {
-      if($('#transam_workflow_model_proxy_assigned_organization_id').val()) {
-        $('#make_ready_workflow').removeAttr('disabled');
-      }
-      if($('input[name="transam_workflow_model_proxy[inspector_ids][]"]:checked').length > 0) {
-        $('#assign_workflow').removeAttr('disabled');
-      }
-
-      $('#reopen_workflow,#unassign_workflow').removeAttr('disabled');
-    }
-
-  }
-
-  function new_inspector_checkbox(inspector) {
-    return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
-  }
-
-
-  $('#open_assignments_form').validate({
+  $('#inspector_assignment_form').validate({
     submitHandler: function(form){
 
-      // disable fields if don't have permissions to submit
-      $('.group-team-fields input').prop('disabled', "#{(can? :make_ready, Inspection.new) ? '' : 'true'}");
-
-      $('#open_assignments_form #transam_workflow_model_proxy_global_ids').val(Array.from(selected_rows));
+      $('#inspector_assignment_form #inspector_assignment_proxy_global_ids').val(Array.from(selected_rows));
 
       var val = $("input[type=submit][clicked=true]").attr('id');
-      if (val == 'reopen_workflow') {
-        $('#transam_workflow_model_proxy_assigned_organization_id').val('');
-      } elsif (val == 'unassign_workflow') {
-        $('input[name="transam_workflow_model_proxy[inspector_ids][]"]').val('');
+      if (val == 'add_inspectors_workflow') {
+        $('#inspector_assignment_proxy_is_removal').val(0);
+      } else {
+        $('#inspector_assignment_proxy_is_removal').val(1);
       }
 
       form.submit();
     }
   });
 
-  $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
-    enable_disable_assignment_submit();
-  });
-  $('#open_assignments_form').on('change', 'input[name="transam_workflow_model_proxy[inspector_ids][]"]', function() {
-    enable_disable_assignment_submit();
+  $('#inspector_assignment_form').on('change', 'input[name="inspector_assignment_proxy[inspector_ids][]"]', function() {
+    enable_disable_change_workflow();
+    enable_disable_change_inspectors();
   });
