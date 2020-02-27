@@ -5,22 +5,21 @@
   %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
   %td.left= defect.element.element_definition.quantity_unit
   %td.right.cs1
-    %button.number-display.btn
-      = link_to new_inspection_element_defect_defect_location_path(defect.inspection, defect.element, defect, condition_state: 'CS1'), :remote => true do
+    = link_to defect_location_new_or_edit_path(defect, 'CS1'), remote: true, class: "btn btn-outline-info" do
+      %button.number-display.btn
         = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS1')&.quantity || 0)
-    %input.number-input.form-control.required{data: {type: 'cs1'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_1_quantity}
   %td.right.cs2
-    %span.number-display
-      = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS2')&.quantity || 0)
-    %input.number-input.form-control.required{data: {type: 'cs2'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_2_quantity}
+    = link_to defect_location_new_or_edit_path(defect, 'CS2'), :remote => true do
+      %button.number-display.btn
+        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS2')&.quantity || 0)
   %td.right.cs3
-    %span.number-display
-      = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS3')&.quantity || 0)
-    %input.number-input.form-control.required{data: {type: 'cs3'}, style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_3_quantity}
+    = link_to defect_location_new_or_edit_path(defect, 'CS3'), :remote => true do
+      %button.number-display.btn
+        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS3')&.quantity || 0)
   %td.right.cs4
-    %span.number-display
-      = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS4')&.quantity || 0)
-    %input.number-input.form-control.required{data: {type: 'cs4'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_4_quantity}
+    = link_to defect_location_new_or_edit_path(defect, 'CS4'), :remote => true do
+      %button.number-display.btn
+        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS4')&.quantity || 0)
   %td.center
     - if can?(:update, @inspection.inspection) && @inspection.updatable?
       = render 'inspections/defect_row_action_buttons', defect: defect
