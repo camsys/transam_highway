@@ -23,7 +23,7 @@
       = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type).order(:number), label: 'Element ID', required: true, :prompt => 'Select...'
 
     .col-sm-2
-      = f.input :quantity, required: true, input_html: { min: '0' }
+      = f.input :quantity, required: true, input_html: { min: @element.min_quantity }
     .col-sm-1
       .form-group
         %label.control-label

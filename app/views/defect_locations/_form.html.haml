@@ -20,7 +20,7 @@
           = link_to image_tag(image.image.url(:thumb)), image.image.url, class: 'img-responsive gallery-image', data: {lightbox: 'gallery'}, title: image.original_filename
       .row
         .col-md-2
-          = f.input :quantity, required: true
+          = f.input :quantity, required: true, input_html: { min: 0, max: @element.quantity - @element.min_quantity + (@defect_location.quantity || 0) }
         .col-md-1
           .form-group
             %label.control-label
