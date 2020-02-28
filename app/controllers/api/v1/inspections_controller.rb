@@ -1,4 +1,7 @@
 class Api::V1::InspectionsController < Api::ApiController
+
+  before_action :set_paper_trail_whodunnit, only: [:update]
+
   # GET /inspections
   def index
     get_data
