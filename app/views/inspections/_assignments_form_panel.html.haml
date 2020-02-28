@@ -1,16 +1,8 @@
 :ruby
   orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
-  assignable_teams = []
-  Organization.active.each do |l|
-    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
-    assignable_teams << l
-    end
-  end
-
   workflow_panel_boolean = (['open', 'ready', 'assigned'].include?(state) || (state == 'assigned' && assigned_organization_id.to_i > 0))
-  assignment_panel_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization: (orgs & assignable_teams).first)))
+  assignment_panel_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization: (orgs).first)))
 
 - if workflow_panel_boolean
   #div{class: assignment_panel_boolean ? 'col-sm-6' : 'col-sm-12'}

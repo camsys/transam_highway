@@ -1,14 +1,6 @@
 :ruby
   orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
-  assignable_teams = []
-  Organization.active.each do |l|
-    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
-    assignable_teams << l
-    end
-  end
-
 = simple_form_for(:transam_workflow_model_proxy,
   :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
   :url => fire_workflow_events_transam_workflow_index_path,
@@ -35,7 +27,7 @@
     .col-sm-6
 
       - if state == 'open'
-        = f.input :assigned_organization_id, collection: (orgs & assignable_teams), label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: (orgs & assignable_teams).count > 1 ? 'Select One' : false, selected: (orgs & assignable_teams).count == 1 ? (orgs & assignable_teams).first.id : nil
+        = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil
       - elsif state == 'ready'
         = f.input :assigned_organization_id, as: :hidden, input_html: {value: assigned_organization_id}
         = f.input :inspector_ids, as: :hidden

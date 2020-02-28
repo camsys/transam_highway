@@ -18,14 +18,6 @@
 
   inspectors = inspectors.map{|x| x[0..1]}.uniq + [['None', -1]]
 
-  highway_team_org_type_id = OrganizationType.find_by(class_name: 'HighwayTeam').id
-  assignable_teams = []
-  Organization.active.each do |l|
-    if l.organization_type_id == highway_team_org_type_id || HighwayTeam.where(parent_id: l.id).count == 0
-      assignable_teams << l
-    end
-  end
-
 .col-sm-3
   = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
   = f.input :inspection_program_id, collection: InspectionProgram.active.pluck(:name, :id), label: reference_label('highway_structures', 'inspection_program_id', 'Inspection Program'), include_blank: 'Select All'
@@ -53,7 +45,7 @@
 .col-sm-3
   - orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
   = f.input :organization_type_id, collection: OrganizationType.where(class_name: ['HighwayAuthority', 'HighwayConsultant'], id: orgs.pluck(:organization_type_id)).map{|o| [o.name, o.id]} + [['None', -1]], label: reference_label('inspections', 'organization_type_id', 'Inspection Group'), include_blank: 'Select All'
-  = f.input :assigned_organization_id, collection: (orgs & assignable_teams).map{|x| [x.name, x.id]} + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
+  = f.input :assigned_organization_id, collection: orgs.map{|x| [x.name, x.id]} + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 
 .col-sm-3
