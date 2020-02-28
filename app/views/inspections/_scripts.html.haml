@@ -1,16 +1,14 @@
-:ruby
-  disabled_fields = (current_user.has_role?(:inspector) && @inspection.inspection_type.name != 'Initial') ? @inspection.unallowable_inspector_params.map{|x| "##{x}"}.join(',') : ''
-
-= render partial: 'shared/xeditable_scripts'
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset}
 
 :javascript
+
 
   // ------ override methods in shared xeditable scripts to handle edit/save buttons in different panels -----------
 
   $(function() {
     function enable_tab_editing(tab_id) {
-      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('enable');
-      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').filter(':visible').editable('show', false);
+      $('#'+tab_id+' .editable-field').editable('enable');
+      $('#'+tab_id+' .editable-field').filter(':visible').editable('show', false);
       $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
       //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
 
