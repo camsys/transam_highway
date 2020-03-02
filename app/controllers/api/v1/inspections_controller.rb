@@ -50,6 +50,13 @@ class Api::V1::InspectionsController < Api::ApiController
         if params[:structure]
           @structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
           structure_hash = params[:structure].permit(@structure.allowable_params).to_h
+          # Don't allow asset_subtype_id changes that would change asset_type
+          if structure_hash.include? :asset_subtype_id
+            unless @structure.asset_type == AssetSubtype.find(structure_hash[:asset_subtype_id]).asset_type
+              @struct_asset_type_must_match = true
+              raise ActiveRecord::Rollback
+            end
+          end
           @structure&.update!(structure_hash)
         end
 
@@ -375,6 +382,15 @@ class Api::V1::InspectionsController < Api::ApiController
       # generic errors
       @status = :error
       @message  = "Unable to update inspection #{params[:id]} due to the following error: #{invalid.record.errors.messages}"
+      render status: 400, json: json_response(:error, message: @message)
+    end
+
+    # Can't change asset type
+    if @struct_asset_type_must_match
+      @status = :error
+      current_type = @structure.asset_type.name
+      new_type = AssetSubtype.find(params[:structure][:asset_subtype_id]).asset_type.name
+      @message  = "Unable to update inspection #{params[:id]}. Cannot change structure #{current_type} into #{new_type}"
       render status: 400, json: json_response(:error, message: @message)
     end
 
