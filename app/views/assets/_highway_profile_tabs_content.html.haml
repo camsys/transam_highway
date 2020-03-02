@@ -33,6 +33,7 @@
   
   if @inspection
     tabs.except!(:appraisal, :condition, :roadways)
+    from_inspection = true
   end
 
   
@@ -42,5 +43,5 @@
     .tab-content
       %legend
         = label
-      = render partial: "#{prefix}/#{key}_form", locals: {asset: asset}
+      = render partial: "#{prefix}/#{key}_form", locals: {asset: asset, from_inspection: from_inspection}
 

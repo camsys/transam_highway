@@ -27,4 +27,9 @@ class Element < ApplicationRecord
                    "element_number" => element_definition.number
                  })
   end
+
+  # Can't set quantity less than sum of defects
+  def min_quantity
+    DefectLocation.where(defect_id: defects).sum(&:quantity)
+  end
 end

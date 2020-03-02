@@ -10,6 +10,8 @@ class CulvertCondition < BridgeLikeCondition
       :culvert_condition_type_id
   ]
 
+  UNALLOWABLE_INSPECTOR_PARAMS = []
+
   def calculated_condition
     case culvert_condition_type&.value
       when 0..4
@@ -30,8 +32,8 @@ class CulvertCondition < BridgeLikeCondition
     end
   end
 
-  def has_required_photos?
-    (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Culvert Inlet", "Culvert Outlet"]).count == 3
-  end
+  # def has_required_photos?
+  #   (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Culvert Inlet", "Culvert Outlet"]).count == 3
+  # end
 
 end

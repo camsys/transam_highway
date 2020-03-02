@@ -70,7 +70,7 @@
                   %tbody
                     - @asset.streambed_profiles.each do |profile|
                       %tr
-                        %td.center= profile.date.year
+                        %td.center= profile.date&.year
                         - cols.each do |distance|
                           %td.center
                             - profile_point = profile.streambed_profile_points.find_by(distance: distance)

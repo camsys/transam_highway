@@ -1,0 +1,6 @@
+- if @defect.errors.any?
+  $('#form-modal').html("#{escape_javascript(render 'defect_locations/form_modal')}");
+- else
+  $('#form-modal').modal('hide');
+
+  $('#elements_table_container tbody').html("#{escape_javascript(render 'inspections/elements_table_body')}");

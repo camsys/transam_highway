@@ -66,16 +66,16 @@ class Roadway < ApplicationRecord
     current_list = highway_structure.roadways.pluck(:on_under_indicator)
     current_list.delete('')
 
-    disallow_two = highway_structure.roadways.count > 2
+    has_one = highway_structure.roadways.exists?(on_under_indicator: '1')
     count = highway_structure.roadways.count
-    case count
-    when 0, 1, 2
+    if (count < 2) || (count == 2 && has_one)
       list = ['1', '2'] - current_list
     else
       list = ['1'] + (0..(count - 2)).collect{|i| ('A'.ord + i).chr} - current_list
     end
 
-    list << on_under_indicator if on_under_indicator.present?
+    # if New, on_under not on current_list yet
+    list << on_under_indicator if on_under_indicator.present? && !list.include?(on_under_indicator)
 
     list.sort
   end

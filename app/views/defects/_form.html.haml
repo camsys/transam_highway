@@ -5,6 +5,7 @@
   = simple_form_for(@defect,
   :url => @defect.new_record? ? inspection_element_defects_path(@inspection, @element) : inspection_element_defect_path(@inspection, @element, @defect),
   :method => @defect.new_record? ? 'post' : 'put',
+  :remote => true,
   :html => {:class => 'form-vertical defect_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
@@ -20,7 +21,7 @@
     .col-sm-12
       .form-group
         %label.control-label
-          Defect ID
+          Element ID
 
         %p
           = @element.element_definition
@@ -57,7 +58,7 @@
     // jquery validations
     $('.defect_form').validate({
       submitHandler: function(form) {
-        form.submit();
+        $(form).ajaxSubmit();
       }
     });
 
@@ -65,6 +66,3 @@
       $('#form-modal').modal('hide');
     });
   });
-
-
-

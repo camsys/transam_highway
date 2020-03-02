@@ -19,7 +19,7 @@ class DefectsController < TransamController
     @defect.inspection = @inspection
 
     if @defect.save
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      @inspection = Inspection.get_typed_inspection(@inspection)
     else
       render :new
     end
@@ -28,7 +28,7 @@ class DefectsController < TransamController
   # PATCH/PUT /inspections/:inspection_id/elements/:element_id/defects/1
   def update
     if @defect.update(defect_params)
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      @inspection = Inspection.get_typed_inspection(@inspection)
     else
       render :edit
     end
@@ -37,7 +37,7 @@ class DefectsController < TransamController
   # DELETE /inspections/:inspection_id/elements/:element_id/defects/1
   def destroy
     @defect.destroy
-    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+    @inspection = Inspection.get_typed_inspection(@inspection)
   end
 
   def edit_comment

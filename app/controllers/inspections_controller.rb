@@ -32,7 +32,18 @@ class InspectionsController < TransamController
   end
 
   def audit_export
-    @export_results = InspectionAuditService.new.table_of_changes(nil)
+
+    @start_date = Chronic.parse(params[:start_date]).beginning_of_day unless params[:start_date].blank?
+    @end_date = Chronic.parse(params[:end_date]).end_of_day unless params[:end_date].blank?
+
+    respond_to do |format|
+      format.html
+      format.csv {
+        @export_results = InspectionAuditService.new.table_of_changes(nil,@start_date, @end_date)
+      }
+    end
+
+
   end
 
   def inspection_type_settings
@@ -64,6 +75,18 @@ class InspectionsController < TransamController
     @show_debug = params[:debug] && ['development', 'staging'].include?(Rails.env)
     @sshml = ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @asset.asset_type.class_name
 
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render :json => @inspection }
+
+      format.pdf do
+        # pdf = WickedPdf.new.pdf_from_string(inspection_pdf_template(@inspection) )
+        send_data(inspection_pdf_template(@inspection), type: 'application/pdf', disposition: 'inline', filename: 'InspectionReport.pdf')
+
+        # render :pdf => inspection_pdf_template(@inspection), :disposition => 'inline'
+      end
+    end
+
   end
 
   # GET /inspections/new
@@ -84,9 +107,9 @@ class InspectionsController < TransamController
   def create
     @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
     if @asset
-      generator = InspectionGenerator.new(InspectionTypeSetting.new(inspection_params.except(:description)), true)
+      generator = InspectionGenerator.new(InspectionTypeSetting.new(inspection_params.slice(*(InspectionTypeSetting.allowable_params-[:description]))), true)
       @inspection = generator.create
-      if @inspection.update(description: params[:inspection][:description])
+      if @inspection.update(inspection_params)
         redirect_to inventory_path(@asset.object_key), notice: 'Inspection was successfully created.'
       else
         render :new
@@ -120,6 +143,29 @@ class InspectionsController < TransamController
     highway_structure = @inspection.highway_structure
     @inspection.destroy
     redirect_to inventory_url(highway_structure.object_key), notice: 'Inspection was successfully destroyed.'
+  end
+
+  #-----------------------------------------------------------------------------
+  # Print an inspection.
+  #-----------------------------------------------------------------------------
+  #  /inspections/1/print
+  def print
+
+    # @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
+    @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render :json => @inspection }
+
+      format.pdf do
+        # pdf = WickedPdf.new.pdf_from_string(inspection_pdf_template(@inspection) )
+        send_data(inspection_pdf_template(@inspection), type: 'application/pdf', disposition: 'inline', filename: 'InspectionReport.pdf')
+
+        # render :pdf => inspection_pdf_template(@inspection), :disposition => 'inline'
+      end
+    end
+
   end
 
   #-----------------------------------------------------------------------------
@@ -178,6 +224,25 @@ class InspectionsController < TransamController
       return date_str if date_str.match(/\A\d{4}-\d{2}-\d{2}\z/)
 
       Date.strptime(date_str, '%m/%d/%Y').strftime('%Y-%m-%d')
+    end
+
+    def inspection_pdf_template inspection
+      render_to_string(
+          pdf: "#{inspection}",
+          :margin => {
+              :top => 21,
+              :bottom => 7
+          },
+          :show_as_html => params[:debug].present?,
+          :layout => 'pdf.html',
+          :template => 'inspections/print.pdf.haml',
+          :orientation => 'portrait',
+          :footer => {
+              :center => view_context.format_for_pdf_printing(Time.now),
+              :left => "Printed by #{current_user}",
+              :right => 'Page [page] of [topage]'
+          }
+      )
     end
 
     #-----------------------------------------------------------------------------

@@ -43,7 +43,8 @@
         .panel-body
           = render 'summary'
 
-= render 'elements_panel'
+.row
+  = render 'elements_panel'
 
 .row
   .col-sm-12
@@ -56,7 +57,7 @@
         .panel-body
           = render 'conditions'
 
-= render 'streambed_profile_table' unless ['HighwaySign', 'HighwaySignal', 'HighMastLight'].include? @inspection.highway_structure.asset_type&.class_name
+= render 'streambed_profile_table' unless ['HighwaySign', 'HighwaySignal', 'HighMastLight', 'MiscStructure'].include? @inspection.highway_structure.asset_type&.class_name
 
 = render 'vertical_clearance_panel'
 
@@ -116,7 +117,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-profile'}SI&A
-          = render partial: 'xeditable_edit_actions', locals: {obj: @asset, allowed_to_edit: ((can? :update, @inspection.inspection) && @inspection.updatable?)}
+          = render partial: 'xeditable_asset_edit_actions', locals: {obj: @asset, allowed_to_edit: ((can? :update, @inspection.inspection) && @inspection.updatable?)}
       #collapse-profile.panel-collapse.collapse.in
         .panel-body
           = render 'assets/profile'

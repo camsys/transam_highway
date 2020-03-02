@@ -10,6 +10,8 @@ class AncillaryCondition < BridgeLikeCondition
       :ancillary_condition_type_id
   ]
 
+  UNALLOWABLE_INSPECTOR_PARAMS = []
+
   def calculated_condition
     case ancillary_condition_type&.value
       when 0..4
@@ -30,7 +32,4 @@ class AncillaryCondition < BridgeLikeCondition
     end
   end
 
-  def has_required_photos?
-    true
-  end
 end

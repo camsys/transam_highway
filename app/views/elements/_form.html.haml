@@ -1,35 +1,39 @@
 :ruby
-  element_definitions = ElementDefinition.non_protective.joins(:element_classification).order(:number).pluck(:assembly_type_id, :id, :number, :short_name, :quantity_unit, "element_classifications.name", :description)
+  element_definitions = ElementDefinition.non_protective.joins(:element_classification)
+    .order(:number).where.not(element_classifications: {name: 'ADE'})
+      .pluck(:assembly_type_id, :id, :number, :short_name, :quantity_unit,
+        "element_classifications.name", :description)
 .row
   = simple_form_for(@element,
   :url => @element.new_record? ? inspection_elements_path(@inspection) : inspection_element_path(@inspection, @element),
-  :method => @element.new_record? ? 'post' : 'put',
+  :method => @element.new_record? ? 'post' : 'patch',
+  :remote => true,
   :html => {:class => 'form-vertical element_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
     :radio_buttons => :vertical_radio_and_checkboxes,
     :file => :vertical_file_input,
     :boolean => :vertical_boolean}) do |f|
-    .col-sm-12
+    .col-sm-6
       .form-group
         %label.control-label
           Assembly Type
 
-        = select_tag(:assembly_type_id, 
+        = select_tag(:assembly_type_id,
                      options_from_collection_for_select(@assembly_types,
                                                         :id, :name, @element.element_definition&.assembly_type_id), :class => 'form-control', :prompt => 'Select...')
-    .col-sm-12
-      = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type).order(:number), label: 'Element ID', required: true, :prompt => 'Select...'
+    .col-sm-6
+      = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type, element_classification_id: ElementClassification.where.not(name: 'ADE')).order(:number), label: 'Element ID', required: true, :include_blank => 'Select...'
 
-    .col-sm-5
-      = f.input :quantity, required: true, input_html: { min: '0' }
     .col-sm-2
+      = f.input :quantity, required: true, input_html: { min: @element.min_quantity }
+    .col-sm-1
       .form-group
         %label.control-label
           Unit
         %p#element_quantity_unit
           = @element.element_definition&.quantity_unit
-    .col-sm-5
+    .col-sm-2
       .form-group
         %label.control-label
           Classification
@@ -69,7 +73,7 @@
             $('#element_element_definition_id').append(new_el);
           }
         );
-      } 
+      }
     }
 
     function update_element_definition_info(el_def_id) {
@@ -102,7 +106,7 @@
     // jquery validations
     $('.element_form').validate({
       submitHandler: function(form) {
-        form.submit();
+        $(form).ajaxSubmit();
       }
     });
 
@@ -110,6 +114,3 @@
       $('#form-modal').modal('hide');
     });
   });
-
-
-

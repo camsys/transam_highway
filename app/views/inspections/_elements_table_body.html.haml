@@ -1,0 +1,8 @@
+- @inspection.parent_elements.ordered.each do |element|
+  = render partial: "inspections/element_row", locals: {element: element, indent: 0, is_child: false}
+  - element.defects.ordered.each do |defect|
+    = render partial: "inspections/defect_row", locals: {defect: defect, indent: 1}
+  - element.children.ordered.each do |bme|
+    = render partial: "inspections/element_row", locals: {element: bme, indent: 1, is_child: true}
+    - bme.defects.ordered.each do |defect|
+      = render partial: "inspections/defect_row", locals: {defect: defect, indent: 2}

@@ -18,7 +18,7 @@
 
 - unless skip_legend
     %legend
-        Roadways
+        Roadway
 
 .table-responsive
     %table.table#roadways-table
@@ -31,7 +31,7 @@
                         - if (@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version)
                             = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
                                 %i.fa.fa-edit.fa-fw.text-success
-                            = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                            = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
                                 %i.fa.fa-trash-o.fa-fw.text-danger
                 - highway_structure.roadways.under.each do |r|
                     %th.center
@@ -39,7 +39,7 @@
                         - if (@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version)
                             = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
                                 %i.fa.fa-edit.text-success
-                            = link_to roadway_path(r.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
+                            = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
                                 %i.fa.fa-trash-o.fa-fw.text-danger
                 %th.center
                     - if (@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version)

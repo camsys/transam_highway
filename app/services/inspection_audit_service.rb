@@ -1,6 +1,7 @@
 class InspectionAuditService
 
-  def table_of_changes(typed_asset)# initialize empty array to store changes that matter to use
+  def table_of_changes(typed_asset, start_date, end_date)
+    # initialize empty array to store changes that matter to use
     changes_arr = [["Structure Key", "Label", "Item Number", "Old Value", "New Value", "User", "Date"]]
 
     assocs = Hash.new
@@ -11,7 +12,7 @@ class InspectionAuditService
       elsif assoc.end_with? 'rating_method_type_id'
         klass = LoadRatingMethodType
       elsif assoc == 'owner_id'
-        klass = Organization
+        klass = StructureAgentType
       else
         klass = assoc[0..-4].classify.constantize
       end
@@ -23,6 +24,9 @@ class InspectionAuditService
     values = Rails.application.config.inspection_audit_changes.map{|x| "%#{x.split('.')[1]}%"}
 
     versions = PaperTrail::Version.where(where_clause, *values).order(created_at: :desc)
+
+    versions = versions.where('versions.created_at >= ?', start_date) if start_date
+    versions = versions.where('versions.created_at <= ?', end_date) if end_date
 
     #get reference labels for export
     labels = Hash.new

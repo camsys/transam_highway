@@ -34,7 +34,7 @@ class Inspection < InspectionRecord
 
   has_one :streambed_profile, dependent: :destroy
   has_many :roadbed_lines, dependent: :destroy
-  
+
   # Each asset has zero or more images. Images are deleted when the asset is deleted
   has_many    :images,      :as => :imagable,       :dependent => :destroy
 
@@ -50,6 +50,7 @@ class Inspection < InspectionRecord
       :temperature,
       :weather,
       :notes,
+      :status,
       :organization_type_id,
       :assigned_organization_id,
       :inspection_team_leader_id,
@@ -69,6 +70,8 @@ class Inspection < InspectionRecord
       :inspection_zone_id,
       :inspector_ids => []
   ]
+
+  UNALLOWABLE_INSPECTOR_PARAMS = []
 
   def self.get_typed_inspection(inspection)
     if inspection
@@ -164,7 +167,7 @@ class Inspection < InspectionRecord
       inspection_type: self.inspection_type&.to_s,
       routine_report_submitted_at: self.routine_report_submitted_at,
       inspectors: self.inspectors.map(&:name).join(', '),
-      inspection_category: 'Scheduled' # Hard-code for now
+      inspection_category: self.inspection_type_setting.present? ? 'Scheduled' : 'Unscheduled'
     }
   end
 
@@ -215,7 +218,7 @@ class Inspection < InspectionRecord
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
     end
 
-      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date) && typed_inspection.has_required_photos?
+      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
   end
 
   def can_schedule(user)
@@ -229,7 +232,7 @@ class Inspection < InspectionRecord
   def can_all(user)
     user.has_role?(:super_manager) || user.has_role?(:admin)
   end
-  
+
   def can_assign(user)
     can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
   end
@@ -245,7 +248,7 @@ class Inspection < InspectionRecord
   def can_submit(user)
     can_all(user) || user.has_role?(:manager)
   end
-  
+
   def can_finalize(user)
     can_all(user) || inspection_team_leader == user
   end # TEMP
@@ -285,13 +288,13 @@ class Inspection < InspectionRecord
 
             elem.defects.each do |defect|
 
-              if new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id]
-                defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][0]
-                defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][1]
-                defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][2]
-                defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][3]
-                defect.total_quantity = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][4]
-                defect.notes = new_insp_elements[elem.element_definition_id][2][defect.defect_definition_id][5]
+              if new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id]
+                defect.condition_state_1_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][0]
+                defect.condition_state_2_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][1]
+                defect.condition_state_3_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][2]
+                defect.condition_state_4_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][3]
+                defect.total_quantity = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][4]
+                defect.notes = new_insp_elements[elem.element_definition_id][3][defect.defect_definition_id][5]
                 defect.save
               else
                 defect.destroy

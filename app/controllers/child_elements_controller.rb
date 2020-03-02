@@ -14,12 +14,13 @@ class ChildElementsController < TransamController
 
   # POST /inspections/:inspection_id/elements
   def create
+    @inspection = Inspection.get_typed_inspection @inspection
     @child_element = Element.new(element_params)
     @child_element.parent = @element
     @child_element.inspection = @inspection
 
     if @child_element.save
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :new
     end
@@ -28,7 +29,8 @@ class ChildElementsController < TransamController
   # PATCH/PUT /inspections/:inspection_id/elements/1
   def update
     if @child_element.update(element_params)
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      @inspection = Inspection.get_typed_inspection @inspection
+      # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :edit
     end
@@ -36,8 +38,9 @@ class ChildElementsController < TransamController
 
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
+    @inspection = Inspection.get_typed_inspection @inspection
     @child_element.destroy
-    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+    # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
   private

@@ -10,7 +10,7 @@
         %th.center Location
         %th.center
           = "L"
-          = select_tag "#{roadbed.left_edge.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.left_edge.has_no_restrictions? ? nil : (roadbed.left_edge.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
+          = select_tag "#{roadbed.left_edge&.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.left_edge&.has_no_restrictions? ? nil : (roadbed.left_edge&.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
 
         - roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection).lines.each do |l|
           %th.center
@@ -18,7 +18,7 @@
             = select_tag "#{l.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], l.has_no_restrictions? ? nil : (l.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
         %th.center
           = "R"
-          = select_tag "#{roadbed.right_edge.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.right_edge.has_no_restrictions? ? nil : (roadbed.right_edge.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
+          = select_tag "#{roadbed.right_edge&.id}_roadbed_line_toggle".to_sym, options_for_select([['No Restrictions', nil], ['N/A', 0], ['Value', 1]], roadbed.right_edge&.has_no_restrictions? ? nil : (roadbed.right_edge&.not_applicable? ? 0 : 1)), class: 'form-control roadbed_line_toggle', disabled: true
     %tbody
       - if roadbed.use_minimum_clearance?
         %tr{data: {type: 'minimum_clearance'}}
@@ -75,19 +75,19 @@
       if(!is_vc_editing_enabled()) {
         return null;
       }
-      
+
       var changes = {};
 
       $('.roadbed-line-cell').each(function(idx, cell) {
-        var line_id = $(cell).attr('data-line-id'); 
+        var line_id = $(cell).attr('data-line-id');
         if(!line_id) {
           return;
-        } 
+        }
         if(!changes[line_id]) {
           changes[line_id] = {};
         }
 
-        var number_type = $(cell).attr('data-number-type');  
+        var number_type = $(cell).attr('data-number-type');
         var val = $(cell).find('.number-input').val();
         changes[line_id][number_type] = val;
       });
@@ -134,7 +134,7 @@
       if(is_vc_editing_enabled()) {
         enable_vc_editing();
       }
-      
+
       $( window ).unload(function() {
         cache_roadbed_line_selection();
       });
@@ -143,5 +143,3 @@
         restore_roadbed_line_selection();
       }
     });
-          
-      

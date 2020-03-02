@@ -13,6 +13,7 @@ class ElementsController < TransamController
 
   # GET /inspections/:inspection_id/elements/1/edit
   def edit
+    @assembly_types = @inspection.highway_structure.asset_type.assembly_types
   end
 
   # POST /inspections/:inspection_id/elements
@@ -21,7 +22,8 @@ class ElementsController < TransamController
     @element.inspection = @inspection
 
     if @element.save
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      # For proper redisplay
+      @inspection = Inspection.get_typed_inspection @inspection
     else
       render :new
     end
@@ -30,7 +32,8 @@ class ElementsController < TransamController
   # PATCH/PUT /inspections/:inspection_id/elements/1
   def update
     if @element.update(element_params)
-      redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+      @inspection = Inspection.get_typed_inspection @inspection
+      # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
     else
       render :edit
     end
@@ -39,7 +42,8 @@ class ElementsController < TransamController
   # DELETE /inspections/:inspection_id/elements/1
   def destroy
     @element.destroy
-    redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
+    @inspection = Inspection.get_typed_inspection @inspection
+    # redirect_to inspection_path(@inspection, anchor: 'collapse-elements')
   end
 
   def edit_comment

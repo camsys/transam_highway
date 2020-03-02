@@ -1,0 +1,63 @@
+.row
+  .col-md-12
+    = simple_form_for([@inspection, @element, @defect, @defect_location],
+            :html => {:multipart => true, :class => 'form-vertical photo_form' },
+            :remote => true,
+            :wrapper => :vertical_form,
+            :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+      = f.input :condition_state, as: :hidden, input_html: {value: params[:condition_state]}
+      = f.input :global_base_imagable, as: :hidden, input_html: {value: @inspection.to_global_id}
+      .form-group
+        %label.control-label
+          Element
+        %div
+          = @element.element_definition
+
+      = f.input :image, as: :file, input_html: {extension: "png,jpg,jpeg,gif"}
+      - if @defect_location.images.any?
+        - image = @defect_location.images.first
+        .form-group
+          = link_to image_tag(image.image.url(:thumb)), image.image.url, class: 'img-responsive gallery-image', data: {lightbox: 'gallery'}, title: image.original_filename
+      .row
+        .col-md-2
+          = f.input :quantity, required: true, input_html: { min: 0, max: @element.quantity - @element.min_quantity + (@defect_location.quantity || 0) }
+        .col-md-1
+          .form-group
+            %label.control-label
+              Unit
+            %div
+              = @element.element_definition.quantity_unit
+        .col-md-2
+          .form-group
+            %label.control-label
+              Condition State
+            %div
+              = params[:condition_state]
+      .row
+        .col-md-12
+          = f.input :location_description, as: :text, :placeholder => 'Describe the location of the defect...'
+      .row
+        .col-md-12
+          = f.input :note, as: :text, :placeholder => 'Additional notes...'
+      = f.input :exportable, :as => :radio_buttons, label: 'Use Photo', checked: true
+      = f.submit "Save", :class => 'btn btn-primary'
+      %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
+
+:javascript
+
+  $.extend(jQuery.validator.messages, {
+      maxsize: "File size must not exceed #{Image::MAX_UPLOAD_FILE_SIZE} MB.",
+      extension: "Please attach a file with a valid extension {0}."
+  });
+
+  // jquery validations
+  $('.photo_form').validate({
+    rules: {
+      'defect_location[image]': {
+        maxsize: parseInt('#{Image::MAX_UPLOAD_FILE_SIZE * 1000000}')
+      }
+    },
+    submitHandler: function(form) {
+      $(form).ajaxSubmit();
+    }
+  });

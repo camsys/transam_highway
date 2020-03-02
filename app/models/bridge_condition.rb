@@ -15,6 +15,8 @@ class BridgeCondition < BridgeLikeCondition
     :underclearance_appraisal_rating_type_id
   ]
 
+  UNALLOWABLE_INSPECTOR_PARAMS = []
+
   def calculated_condition
     case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
           substructure_condition_rating_type&.value].compact.min
@@ -39,8 +41,8 @@ class BridgeCondition < BridgeLikeCondition
     end
   end
 
-  def has_required_photos?
-    (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Elevation From Upstream (Looking X)", "Underbridge/Superstructure"]).count == 3
-  end
+  # def has_required_photos?
+  #   (ImageClassification.where(id: images.select(:image_classification_id)).distinct.pluck(:name) & ["Roadway Looking Ahead on Inventory", "Elevation From Upstream (Looking X)", "Underbridge/Superstructure"]).count == 3
+  # end
 
 end

@@ -27,7 +27,7 @@
           .form-group
             %label.control-label.string.required
               * Maintenance Recommendation
-            = select_tag :maintenance_activity_types, options_from_collection_for_select(MaintenanceActivityType.active, :id, :name, maintenance_activity_type.try(:id)), include_blank: true, class: 'form-control', required: true, disabled: true
+            = select_tag :maintenance_activity_types, options_from_collection_for_select(MaintenanceActivityType.active.order("CASE WHEN (name = 'See Inspector Notes') THEN 1 ELSE 0 END ASC, id"), :id, :name, maintenance_activity_type.try(:id)), include_blank: true, class: 'form-control', required: true, disabled: true
 
     .col-xs-6
       .row

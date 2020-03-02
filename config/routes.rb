@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         end
 
         resources :images
+        resources :defect_locations
       end
 
       resources :images
@@ -34,6 +35,7 @@ Rails.application.routes.draw do
 
     member do
       get 'allowed_to_finalize'
+      get 'print'
     end
   end
 

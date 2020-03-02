@@ -63,13 +63,13 @@ roles = [
 ]
 
 maintenance_priority_types = [
-    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'Low',     :description => 'Lowest priority.'},
-    {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Normal',  :description => 'Normal priority.'},
-    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'High',    :description => 'Highest priority.'},
-    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Blue',    :description => 'ERF - Blue.'},
-    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Green',    :description => 'ERF - Green.'},
-    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Yellow',    :description => 'ERF - Yellow.'},
-    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Red',    :description => 'ERF - Red.'},
+    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'Low',     :description => 'Lowest priority.', :sort_order => 1},
+    {:active => 1, :is_default => 1, :is_erf => 0, :name => 'Medium',  :description => 'Medium priority.', :sort_order => 2},
+    {:active => 1, :is_default => 0, :is_erf => 0, :name => 'High',    :description => 'Highest priority.', :sort_order => 3},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Blue',    :description => 'ERF - Blue.', :sort_order => 4},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Green',    :description => 'ERF - Green.', :sort_order => 5},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Yellow',    :description => 'ERF - Yellow.', :sort_order => 6},
+    {:active => 1, :is_default => 0, :is_erf => 1, :name => 'ERF - Red',    :description => 'ERF - Red.', :sort_order => 7},
 ]
 
 system_config_extensions = [

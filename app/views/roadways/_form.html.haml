@@ -13,11 +13,13 @@
       .row
         .col-xs-10
           = f.association :route_signing_prefix, collection: RouteSigningPrefix.active,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'route_signing_prefix_id', 'Road Prefix')
 
       .row
         .col-xs-10
           = f.association :service_level_type, collection: ServiceLevelType.active,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'level_of_service_type_id', 'Level of Service')
 
       .row
@@ -49,7 +51,7 @@
       .row
         .col-xs-10
           = f.input :on_base_network, as: :select,
-            include_blank: false,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'on_base_network', 'Base Highway Network')
 
       .row
@@ -65,6 +67,7 @@
       .row
         .col-xs-10
           = f.association :functional_class, collection: FunctionalClass.active,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'functional_class_id', 'Functional Classification')
 
       .row
@@ -79,7 +82,7 @@
 
       .row
         .col-xs-10
-          = f.input :average_daily_traffic_year, include_blank: false,
+          = f.input :average_daily_traffic_year, include_blank: 'Select One',
             collection: (@adt_min_year..@adt_max_year).to_a.reverse,
             label: reference_label('roadways', 'average_daily_traffic_year', 'Year of Average Daily Traffic')
       .row
@@ -91,15 +94,18 @@
       .row
         .col-xs-10
           = f.association :strahnet_designation_type, collection: StrahnetDesignationType.active,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'strahnet_designation_type_id', 'Strategic Highway Network')
 
       .row
         .col-xs-10
           = f.association :traffic_direction_type, collection: TrafficDirectionType.active,
-          label: reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
+            include_blank: 'Select One',
+            label: reference_label('roadways', 'traffic_direction_type_id', 'Direction of Traffic')
       .row
         .col-xs-10
           = f.input :on_national_highway_system, as: :select,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'on_national_highway_system', 'NHS')
 
       .row
@@ -109,6 +115,7 @@
       .row
         .col-xs-10
           = f.input :on_truck_network, as: :select,
+            include_blank: 'Select One',
             label: reference_label('roadways', 'on_truck_network', 'Designated National Network')
       .row
         .col-xs-10
@@ -116,7 +123,7 @@
             label: reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
       .row
         .col-xs-10
-          = f.input :future_average_daily_traffic_year, include_blank: false,
+          = f.input :future_average_daily_traffic_year, include_blank: 'Select One',
             collection: (@future_adt_min_year..@future_adt_max_year).to_a.reverse,
             label: reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
 
@@ -130,7 +137,7 @@
 
   $('.roadway_form').validate({
     submitHandler: function(form) {
-      form.submit();
+      $(form).ajaxSubmit();
     }
   });
 

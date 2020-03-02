@@ -20,5 +20,3 @@
       - if @inspection.event_datetime
         .alert{class: (last_inspection_date.nil? || @inspection.event_datetime > last_inspection_date) ? 'alert-success' : 'alert-danger'}
           = "#{reference_label('inspections', 'event_datetime', 'Inspection Date')} is #{(last_inspection_date.nil? || @inspection.event_datetime > last_inspection_date) ? '' : 'NOT'} after #{reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')}."
-      .alert{class: @inspection.has_required_photos? ? 'alert-success' : 'alert-danger'}
-        = "Inspection does #{@inspection.has_required_photos? ? '' : 'NOT'} have the required photos."
