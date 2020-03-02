@@ -1,5 +1,8 @@
 :ruby
-  element_definitions = ElementDefinition.non_protective.joins(:element_classification).order(:number).pluck(:assembly_type_id, :id, :number, :short_name, :quantity_unit, "element_classifications.name", :description)
+  element_definitions = ElementDefinition.non_protective.joins(:element_classification)
+    .order(:number).where.not(element_classifications: {name: 'ADE'})
+      .pluck(:assembly_type_id, :id, :number, :short_name, :quantity_unit,
+        "element_classifications.name", :description)
 .row
   = simple_form_for(@element,
   :url => @element.new_record? ? inspection_elements_path(@inspection) : inspection_element_path(@inspection, @element),
@@ -20,7 +23,7 @@
                      options_from_collection_for_select(@assembly_types,
                                                         :id, :name, @element.element_definition&.assembly_type_id), :class => 'form-control', :prompt => 'Select...')
     .col-sm-6
-      = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type).order(:number), label: 'Element ID', required: true, :prompt => 'Select...'
+      = f.association :element_definition, collection: ElementDefinition.where(assembly_type: @element.element_definition&.assembly_type, element_classification_id: ElementClassification.where.not(name: 'ADE')).order(:number), label: 'Element ID', required: true, :include_blank => 'Select...'
 
     .col-sm-2
       = f.input :quantity, required: true, input_html: { min: @element.min_quantity }
