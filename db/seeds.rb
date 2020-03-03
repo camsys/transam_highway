@@ -285,12 +285,12 @@ scour_critical_bridge_types = [
 ]
 
 structure_status_types = [
-  {active: true, code: '0', name: 'Unknown'},
+  {active: false, code: '0', name: 'Unknown'},
   {active: true, code: '1', name: 'Inactive'},
-  {active: true, code: '2', name: 'Closed'},
+  {active: false, code: '2', name: 'Closed'},
   {active: true, code: '3', name: 'Active'},
   {active: true, code: '4', name: 'Proposed'},
-  {active: true, code: '5', name: 'Obsolete'}
+  {active: false, code: '5', name: 'Obsolete'}
 ]
 
 structure_agent_types = [
