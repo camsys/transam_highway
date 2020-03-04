@@ -31,6 +31,8 @@ Rails.application.routes.draw do
       post 'new_search'
       get 'inspection_type_settings'
       get 'audit_export'
+
+      post 'change_inspectors'
     end
 
     member do

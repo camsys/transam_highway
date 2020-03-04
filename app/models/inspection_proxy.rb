@@ -19,7 +19,9 @@ class InspectionProxy < Proxy
                   :state, :min_calculated_inspection_due_date, :max_calculated_inspection_due_date, 
                   :min_inspection_date, :max_inspection_date,
                   :inspection_frequency, :inspector_id, :inspection_zone_id,
-                  :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key, :inspection_type_id
+                  :inspection_fiscal_year, :inspection_month, :inspection_quarter, :inspection_trip_key, :inspection_type_id,
+                  :single_state_selected
+
 
   #-----------------------------------------------------------------------------
   # Validations
@@ -100,6 +102,9 @@ class InspectionProxy < Proxy
     attrs.each do |k, v|
       self.send "#{k}=", v
     end
+
+    selected_states = (self.state || []).select(&:present?)
+    self.single_state_selected = selected_states.first if selected_states.length == 1
 
     self.new_search ||= '1'
   end
