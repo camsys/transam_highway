@@ -1,4 +1,4 @@
-- disabled_fields = @inspection.inspection_type.name == 'Initial' ? [] : @asset.attributes.keys.select{|x| cannot?("update_#{x}", obj)}
+- disabled_fields = @inspection.inspection_type.name == 'Initial' ? [] : @asset.attributes.keys.select{|x| cannot?("update_#{x}", @asset)}
 = render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}
 
 :javascript
