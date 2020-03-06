@@ -71,8 +71,6 @@ class Inspection < InspectionRecord
       :inspector_ids => []
   ]
 
-  UNALLOWABLE_INSPECTOR_PARAMS = []
-
   def self.get_typed_inspection(inspection)
     if inspection
       if inspection.specific
@@ -205,14 +203,13 @@ class Inspection < InspectionRecord
   end
 
   def allowed_to_finalize
-    typed_inspection = Inspection.get_typed_inspection(self)
     if inspection_type_setting
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
     else
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
     end
 
-      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
+    inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
   end
 
   def can_make_ready(user)
@@ -224,11 +221,11 @@ class Inspection < InspectionRecord
   end
 
   def can_assign(user)
-    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
+    can_all(user) || (user.has_role?(:user) && (assigned_organization.try(:users) || []).include?(user))
   end
 
   def can_sync(user)
-    can_all(user) || user.has_role?(:inspector)
+    can_all(user) || user.has_role?(:user)
   end
 
   def can_start(user)

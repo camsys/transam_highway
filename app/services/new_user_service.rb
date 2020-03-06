@@ -26,7 +26,8 @@ class NewUserService
 
     user.update_user_organization_filters unless Rails.application.config.try(:user_organization_filters_ignored).present?
 
-    unless user.has_role? :inspector
+
+    if user.organization_id = HighwayAuthority.first.id && user.roles.roles.last.name != 'user'
       user.viewable_organizations = Organization.all
     else
       user.viewable_organizations = user.organizations

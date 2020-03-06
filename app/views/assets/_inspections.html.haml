@@ -8,12 +8,14 @@
 
 #table_actions.btn-toolbar
   .btn-group
-    - if can?(:update_from_structure,@asset)
+    - if can?(:update, @asset) && can?(:schedule, Inspection)
       = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
         = "Manage Schedule";
-    = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
-      %i.fa.fa-plus
-      = "Plan Unscheduled";
+
+    - if can? :create, Inspection
+      = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+        %i.fa.fa-plus
+        = "Plan Unscheduled";
 
 .table-responsive
   %table.table.table-hover{:id => table_dom_id,

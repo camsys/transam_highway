@@ -7,7 +7,7 @@
 :ruby
   inspectors = []
   Organization.all.each do |x|
-    inspectors += x.users.with_role(:inspector).map{|u| [u.name, u.id, x.id]}
+    inspectors += x.users.with_role(:user).map{|u| [u.name, u.id, x.id]}
   end
 
   inspector_ids_by_team = {}

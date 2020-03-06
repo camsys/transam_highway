@@ -3,7 +3,7 @@
   .tab-pane.fade#odrs
     .tab-content
 
-      - if can?(:update, @asset) && !@asset.assigned_version
+      - if can?(:update, @asset) && can?(:manage, MaintenanceServiceOrder) && !@asset.assigned_version
         .row
           .col-sm-12
             .btn-group

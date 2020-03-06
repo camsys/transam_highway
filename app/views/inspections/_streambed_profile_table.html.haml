@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update, @inspection.inspection) && @inspection.updatable?
+          - if can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -27,7 +27,7 @@
           .row
             .col-md-12
               #streambed_table_actions.btn-toolbar
-                - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && @inspection.updatable?
+                - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                   .btn-group
                     = link_to new_streambed_profile_streambed_profile_point_path(@inspection.streambed_profile), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
@@ -69,7 +69,7 @@
                         - cols.each do |distance|
                           %td.center
                             - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                            - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+                            - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                               - if profile_point
                                 %span.number-display
                                   = format_as_decimal(profile_point.value,1)
@@ -79,7 +79,7 @@
                             - else
                               = format_as_decimal(profile_point.value,1) if profile_point
                         %td.center
-                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                             %span.number-display
                               = format_as_decimal(profile.water_level,1)
                             %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
@@ -88,7 +88,7 @@
                       %tr
                         %td.right Reference Line
                         %td.left{:colspan => cols.count + 1}
-                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                             %span.text-display
                               %em= profile.reference_line
                             %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line}
@@ -97,7 +97,7 @@
                       %tr
                         %td.right Water Level Taken At
                         %td.left{:colspan => cols.count + 1}
-                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+                          - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                             %span.text-display
                               %em= profile.water_level_reference
                             %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference}
