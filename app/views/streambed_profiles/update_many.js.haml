@@ -1,0 +1,10 @@
+- if @errored
+  $('#form-modal').html("#{escape_javascript(render 'streambed_profiles/form_modal')}");
+- else
+  $('#form-modal').modal('hide');
+  - if @inspection
+    $('#streambed_table thead').html("#{escape_javascript(render 'inspections/streambed_profile_table_head')}");
+    $('#streambed_table tbody').html("#{escape_javascript(render 'inspections/streambed_profile_table_body')}");
+  - else
+    $('#streambed_table thead').html("#{escape_javascript(render 'assets/stream_bed_profile_head')}");
+    $('#streambed_table tbody').html("#{escape_javascript(render 'assets/stream_bed_profile_body')}");

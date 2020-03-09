@@ -1,5 +1,7 @@
 class StreambedProfilePointsController < ApplicationController
   before_action :set_streambed_profile
+  before_action :set_inspection
+  before_action :set_asset
   before_action :set_streambed_profile_point, only: [:show, :edit, :update, :destroy]
 
   # GET /streambed_profile_points
@@ -19,6 +21,7 @@ class StreambedProfilePointsController < ApplicationController
 
   # GET /streambed_profile_points/1/edit
   def edit
+
   end
 
   # POST /streambed_profile_points
@@ -27,7 +30,7 @@ class StreambedProfilePointsController < ApplicationController
     @streambed_profile_point.streambed_profile = @streambed_profile
 
     if @streambed_profile_point.save
-      redirect_to @streambed_profile.inspection ? inspection_path(@streambed_profile.inspection) : inventory_path(@streambed_profile.bridge_like.object_key)
+      @inspection = Inspection.get_typed_inspection @inspection
     else
       render :new
     end
@@ -35,7 +38,8 @@ class StreambedProfilePointsController < ApplicationController
 
   # PATCH/PUT /streambed_profile_points/1
   def update
-    if @streambed_profile_point.update(params.permit(StreambedProfilePoint.allowable_params))
+    if @streambed_profile_point.update(streambed_profile_point_params)
+      @inspection = Inspection.get_typed_inspection @inspection
       #redirect_to @streambed_profile_point, notice: 'Streambed profile point was successfully updated.'
     else
       render :edit
@@ -44,13 +48,21 @@ class StreambedProfilePointsController < ApplicationController
 
   # DELETE /streambed_profile_points/1
   def destroy
+    @inspection = Inspection.get_typed_inspection @inspection
     @streambed_profile_point.destroy
-    redirect_to streambed_profile_points_url, notice: 'Streambed profile point was successfully destroyed.'
   end
 
   private
     def set_streambed_profile
       @streambed_profile = StreambedProfile.find_by(object_key: params[:streambed_profile_id])
+    end
+
+    def set_inspection
+      @inspection = @streambed_profile.inspection
+    end
+
+    def set_asset
+      @asset = TransamAsset.get_typed_asset @streambed_profile.bridge_like
     end
 
     # Use callbacks to share common setup or constraints between actions.
