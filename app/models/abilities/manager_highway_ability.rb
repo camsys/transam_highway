@@ -10,6 +10,10 @@ module Abilities
       can :view_all, Inspection # allows for seeing everything and assigning to different teams
       can :schedule, Inspection
 
+      cannot :authorize, Organization do |org|
+        org.organization_type.class_name == 'HighwayAuthority' && user.organization.organization_type.class_name != 'HighwayAuthority'
+      end
+
     end
   end
 end
