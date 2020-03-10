@@ -210,7 +210,7 @@ class Inspection < InspectionRecord
   end
 
   def can_make_ready(user)
-    can_all(user) || user.has_role?(:manager)
+    can_all(user) || (user.has_role?(:manager) && user.organization.organization_type.class_name == 'HighwayAuthority')
   end
 
   def can_all(user)
@@ -230,7 +230,7 @@ class Inspection < InspectionRecord
   end
 
   def can_submit(user)
-    can_all(user) || user.has_role?(:manager)
+    can_all(user) || (user.has_role?(:manager) && user.organization.organization_type.class_name == 'HighwayAuthority')
   end
 
   def can_finalize(user)
