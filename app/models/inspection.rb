@@ -108,9 +108,6 @@ class Inspection < InspectionRecord
 
         {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
-        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Open'},
-
-
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
         {event_name: 'start', from_state: ['in_field', 'draft_report'], to_state: 'in_progress', can: {in_field: :can_sync, draft_report: :can_start}, human_name: 'To In Progress'},
@@ -217,7 +214,7 @@ class Inspection < InspectionRecord
   end
 
   def can_all(user)
-    user.has_role?(:super_manager) || user.has_role?(:admin)
+    user.has_role?(:admin)
   end
 
   def can_assign(user)
