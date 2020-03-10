@@ -1,11 +1,15 @@
 :ruby
   orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-  workflow_panel_boolean = (['open', 'ready', 'assigned'].include?(state) || (state == 'assigned' && assigned_organization_id.to_i > 0))
-  assignment_panel_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization: (orgs).first)))
 
-- if workflow_panel_boolean
-  #div{class: assignment_panel_boolean ? 'col-sm-6' : 'col-sm-12'}
+
+  from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
+  from_ready_boolean = (state == 'ready' && can?(:reopen, Inspection.new))
+  from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+  to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+
+- if from_open_boolean || from_ready_boolean || from_assigned_boolean
+  #div{class: to_assigned_boolean ? 'col-sm-6' : 'col-sm-12'}
     .panel.panel-default{:style => 'margin-bottom: 5px;'}
       .panel-heading{:role => 'tab'}
         %h4.panel-title
@@ -15,7 +19,7 @@
         .panel-body
           = render partial: 'inspections/bulk_transam_workflow_form', :locals => {state: state, assigned_organization_id: assigned_organization_id}
 
-  - if assignment_panel_boolean
+  - if to_assigned_boolean
     .col-sm-6
       .panel.panel-default{:style => 'margin-bottom: 5px;'}
         .panel-heading{:role => 'tab'}
