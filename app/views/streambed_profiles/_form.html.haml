@@ -23,7 +23,7 @@
     // jquery validations
     $('.streambed_profile_form').validate({
       submitHandler: function(form) {
-        form.submit();
+        $(form).ajaxSubmit();
       }
     });
 
