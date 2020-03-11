@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update, @asset) && !@asset.assigned_version
+          - if can?(:update_from_structure, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -27,14 +27,9 @@
           .row
             .col-sm-12
               #streambed_table_actions.btn-toolbar
-                - if can?(:update, @asset) && !@asset.assigned_version
+                - if can?(:update_from_structure, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
                   .btn-group
-                    = link_to new_streambed_profile_path(transam_asset_id: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Profile' do
-                      %i.fa.fa-plus
-                      = " New Profile"
-
-                  .btn-group
-                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.where(inspection_id: nil).last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
+                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
                       = " New Distance"
               .table-responsive#streambed_table

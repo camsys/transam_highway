@@ -4,7 +4,7 @@
   - @cols.each do |distance|
     %th.center
       = distance
-      - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && @inspection.updatable?
+      - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && @inspection.updatable? && StreambedProfilePoint.where(streambed_profile: @asset.streambed_profiles, distance: distance).pluck(:value).all?{|value| value.nil?}
         = link_to edit_streambed_profile_streambed_profile_point_path(streambed_profile_id: @inspection.streambed_profile.object_key, id: StreambedProfilePoint.find_by(streambed_profile: @inspection.streambed_profile, distance: distance).object_key), :remote => true, :class => "button btn-xs", :title => "Edit distance" do
           %i.fa.fa-edit.fa-fw.text-success
         = link_to streambed_profile_streambed_profile_point_path(streambed_profile_id: @inspection.streambed_profile.object_key, id: StreambedProfilePoint.find_by(streambed_profile: @inspection.streambed_profile, distance: distance).object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do

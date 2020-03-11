@@ -1,4 +1,4 @@
-- if @inspection
+- if @inspection.state != "final"
   $('#streambed_table thead').html("#{escape_javascript(render 'inspections/streambed_profile_table_head')}");
   $('#streambed_table tbody').html("#{escape_javascript(render 'inspections/streambed_profile_table_body')}");
 - else
