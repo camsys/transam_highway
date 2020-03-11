@@ -1,5 +1,5 @@
 module Abilities
-  class SuperManagerHighwayAbility
+  class RecurringInspSchedPrivilege
     include CanCan::Ability
 
     def initialize(user, organization_ids=[])
@@ -8,10 +8,7 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :update, [Inspection, BridgeCondition, CulvertCondition]
-
-      can :update_from_structure, TransamAssetRecord
-
+      can :schedule, Inspection
     end
   end
 end

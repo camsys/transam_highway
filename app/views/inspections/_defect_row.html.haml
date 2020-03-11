@@ -5,22 +5,12 @@
   %td.left!= "#{indent_str}#{defect.defect_definition.short_name}#{' (' + defect.guid + ')' if @show_debug}"
   %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
   %td.left= defect.element.element_definition.quantity_unit
-  %td.right.cs1
-    = link_to defect_location_new_or_edit_path(defect, 'CS1'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS1')&.quantity || 0)
-  %td.right.cs2
-    = link_to defect_location_new_or_edit_path(defect, 'CS2'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS2')&.quantity || 0)
-  %td.right.cs3
-    = link_to defect_location_new_or_edit_path(defect, 'CS3'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS3')&.quantity || 0)
-  %td.right.cs4
-    = link_to defect_location_new_or_edit_path(defect, 'CS4'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS4')&.quantity || 0)
+
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS1'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS2'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS3'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS4'
+
   %td.center
     - if can_update
       = render 'inspections/defect_row_action_buttons', defect: defect

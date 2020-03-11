@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update, @inspection.inspection) && @inspection.updatable?
+          - if can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -27,7 +27,7 @@
           .row
             .col-md-12
               #streambed_table_actions.btn-toolbar
-                - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && @inspection.updatable?
+                - if @inspection.streambed_profile && can?(:update, @inspection.inspection) && can?(:manage, StreambedProfile) && @inspection.updatable?
                   .btn-group
                     = link_to new_streambed_profile_streambed_profile_point_path(@inspection.streambed_profile), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus

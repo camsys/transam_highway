@@ -33,8 +33,6 @@ class BridgeLikeCondition < InspectionRecord
       :approach_rail_end_safety_type_id
   ]
 
-  UNALLOWABLE_INSPECTOR_PARAMS = []
-
   def bridge_like
     TransamAsset.get_typed_asset(highway_structure)
   end
