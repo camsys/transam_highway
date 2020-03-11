@@ -23,7 +23,7 @@
 
           %label= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
           .form-group
-            = text_field_tag(:asset_search_text, @asset_search_text, data: {convert: "uppercase"})
+            = text_field_tag(:asset_search_text, @asset_search_text)
 
           .form-group
             = button_tag :class => 'btn btn-default pull-right filter', :type => 'submit' do
@@ -100,11 +100,6 @@
           return 'Statuses - ' + options.length + ' selected';
         }
       }
-    });
-
-    // Force uppercase text for structure key input
-    $('[data-convert="uppercase"]').keyup(function(evt) {
-      this.value = this.value.toUpperCase();
     });
   });
 
