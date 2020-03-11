@@ -104,6 +104,4 @@ Rails.application.routes.draw do
       get 'table'
     end
   end
-
-  resources :maintenance_service_orders, only: [:index], controller: 'highway_maintenance_service_orders'
 end
