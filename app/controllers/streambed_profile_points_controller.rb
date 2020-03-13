@@ -38,7 +38,7 @@ class StreambedProfilePointsController < ApplicationController
 
   # PATCH/PUT /streambed_profile_points/1
   def update
-    if @streambed_profile_point.update(streambed_profile_point_params)
+    if StreambedProfilePoint.where(streambed_profile: @asset.streambed_profiles, distance: @streambed_profile_point.distance).update_all(streambed_profile_point_params.to_h)
       @inspection = Inspection.get_typed_inspection @inspection
       #redirect_to @streambed_profile_point, notice: 'Streambed profile point was successfully updated.'
     else
@@ -49,7 +49,7 @@ class StreambedProfilePointsController < ApplicationController
   # DELETE /streambed_profile_points/1
   def destroy
     @inspection = Inspection.get_typed_inspection @inspection
-    @streambed_profile_point.destroy
+    StreambedProfilePoint.where(streambed_profile: @asset.streambed_profiles, distance: @streambed_profile_point.distance).destroy_all
   end
 
   private
@@ -58,11 +58,11 @@ class StreambedProfilePointsController < ApplicationController
     end
 
     def set_inspection
-      @inspection = @streambed_profile.inspection
+      @inspection = @streambed_profile&.inspection
     end
 
     def set_asset
-      @asset = TransamAsset.get_typed_asset @streambed_profile.bridge_like
+      @asset = TransamAsset.get_typed_asset @streambed_profile&.bridge_like
     end
 
     # Use callbacks to share common setup or constraints between actions.

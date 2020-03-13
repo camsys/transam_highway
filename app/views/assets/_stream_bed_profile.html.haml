@@ -110,8 +110,8 @@
 
       if (($(this).data('streambed-profile-point')) && ($(this).data('streambed-profile-point').length > 0)) {
         targets[$(this).data('streambed-profile')][$(this).data('streambed-profile-point')] = $(this).val();
-      } else if (($(this).data('distance')) && ($(this).data('distance').length > 0)) {
-        targets[$(this).data('streambed-profile')] [$(this).data('distance')] = $(this).val();
+      } else if (($(this).data('distance')) && ($(this).data('distance').toString().length > 0)) {
+        targets[$(this).data('streambed-profile')][$(this).data('distance')] = $(this).val();
       }
     });
 
