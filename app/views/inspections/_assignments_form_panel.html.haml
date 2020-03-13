@@ -1,14 +1,12 @@
 :ruby
   orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-
-
   from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
   from_ready_boolean = (state == 'ready' && can?(:reopen, Inspection.new))
   from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
   to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))
 
-- if from_open_boolean || from_ready_boolean || from_assigned_boolean
+- if from_open_boolean || from_ready_boolean || from_assigned_boolean || to_assigned_boolean
   #div{class: to_assigned_boolean ? 'col-sm-6' : 'col-sm-12'}
     .panel.panel-default{:style => 'margin-bottom: 5px;'}
       .panel-heading{:role => 'tab'}
