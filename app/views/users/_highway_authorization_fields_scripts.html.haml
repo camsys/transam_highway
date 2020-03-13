@@ -1,0 +1,11 @@
+:javascript
+  function update_disabled_orgs() {
+    var highway_authority = parseInt('#{HighwayAuthority.first.id}');
+
+    $('select.remaining option').attr('disabled', false);
+    $('select.remaining option[value="' + highway_authority + '"]').attr('disabled', true);
+
+    var org_id = $('#user_organization_id').val();
+    $('#selected_grantees option').attr('disabled', false);
+    $('#selected_grantees option[value="' + org_id + '"]').attr('disabled', true);
+  }

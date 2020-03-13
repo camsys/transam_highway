@@ -1,0 +1,40 @@
+- @asset.streambed_profiles.where('date <= ?', (@inspection.calculated_inspection_due_date + 1.day)).each do |profile|
+  %tr
+    %td.center= profile.date.year
+    - @cols.each do |distance|
+      %td.center
+        - profile_point = profile.streambed_profile_points.find_by(distance: distance)
+        - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+          - if profile_point
+            %span.number-display
+              = format_as_decimal(profile_point.value,1)
+            %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile_point: profile_point.object_key}}
+          - else
+            %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, data: {distance: distance}}
+        - else
+          = format_as_decimal(profile_point.value,1) if profile_point
+    %td.center
+      - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+        %span.number-display
+          = format_as_decimal(profile.water_level,1)
+        %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level}
+      - else
+        = format_as_decimal(profile.water_level,1)
+  %tr
+    %td.right Reference Line
+    %td.left{:colspan => @cols.count + 1}
+      - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+        %span.text-display
+          %em= profile.reference_line
+        %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line}
+      - else
+        %em= profile.reference_line
+  %tr
+    %td.right Water Level Taken At
+    %td.left{:colspan => @cols.count + 1}
+      - if profile.inspection.try(:object_key) == @inspection.object_key && can?(:update, @inspection.inspection) && @inspection.updatable?
+        %span.text-display
+          %em= profile.water_level_reference
+        %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference}
+      - else
+        %em= profile.water_level_reference

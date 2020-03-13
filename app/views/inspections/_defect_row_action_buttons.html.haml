@@ -2,16 +2,9 @@
   %button.btn.btn-sm.dropdown-toggle.element_defect_row_action_button{:data => {:toggle => 'dropdown'}}
     .fa.fa-ellipsis-h
   %ul.dropdown-menu.dropdown-menu-right{:role => 'menu'}
-    - if can? :create, defect.images.build
-      %li.text-left
-        = link_to new_inspection_element_defect_image_path(defect.inspection, defect.element, defect, form_view: 'defects/photo_form'), :remote => true do
-          Add Photo
     %li.text-left
       = link_to edit_inspection_element_defect_path(defect.inspection, defect.element, defect), remote: true do
         = "Edit Defect"
     %li.text-left
-      = link_to edit_comment_inspection_element_defect_path(defect.inspection, defect.element, defect), remote: true do
-        = "Edit Comment"
-    %li.text-left
-      = link_to inspection_element_defect_path(defect.inspection, defect.element, defect), method: :delete, data: { confirm: 'Are you sure?' }  do
+      = link_to inspection_element_defect_path(defect.inspection, defect.element, defect), remote: true, method: :delete, data: { confirm: 'Are you sure?', dismiss: 'modal' }  do
         = "Delete"

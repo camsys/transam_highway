@@ -5,6 +5,7 @@
   = simple_form_for(@child_element,
   :url => @child_element.new_record? ? inspection_element_child_elements_path(@inspection, @element) : inspection_element_child_element_path(@inspection, @element, @child_element),
   :method => @child_element.new_record? ? 'post' : 'put',
+  :remote => true,
   :html => {:class => 'form-vertical child_element_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
@@ -78,7 +79,7 @@
     // jquery validations
     $('.child_element_form').validate({
       submitHandler: function(form) {
-        form.submit();
+        $(form).ajaxSubmit();
       }
     });
 

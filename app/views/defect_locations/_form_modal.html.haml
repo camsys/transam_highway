@@ -1,0 +1,12 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title
+        - defect = "#{@defect.defect_definition.to_s}: #{params[:condition_state]}"
+        = @defect_location.new_record? ? "Add #{defect} Location" : "Edit #{defect} Location"
+    .modal-body
+      = render(:partial => 'shared/form_errors', :locals => {:obj => @defect_location}) unless @defect_location.errors.empty?
+
+      = render "defect_locations/form"

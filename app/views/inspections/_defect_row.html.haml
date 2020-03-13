@@ -1,29 +1,22 @@
 - indent_str = '&nbsp;'*indent*4
+- can_update = can?(:update, @inspection.inspection) && @inspection.updatable?
 %tr.defect{data: {defect_id: defect.id, element_id: defect.element.id}}
   %td.left!= "#{indent_str}#{html_rjust(defect.defect_definition.number, 4)}"
   %td.left!= "#{indent_str}#{defect.defect_definition.short_name}#{' (' + defect.guid + ')' if @show_debug}"
-  %td.right.total_quantity= format_as_integer(defect.total_quantity)
-  %td.left
-  %td.right.cs1
-    %span.number-display
-      = format_as_integer(defect.condition_state_1_quantity)
-    %input.number-input.form-control.required{data: {type: 'cs1'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_1_quantity}
-  %td.right.cs2
-    %span.number-display
-      = format_as_integer(defect.condition_state_2_quantity)
-    %input.number-input.form-control.required{data: {type: 'cs2'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_2_quantity}
-  %td.right.cs3
-    %span.number-display
-      = format_as_integer(defect.condition_state_3_quantity)
-    %input.number-input.form-control.required{data: {type: 'cs3'}, style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_3_quantity}
-  %td.right.cs4
-    %span.number-display
-      = format_as_integer(defect.condition_state_4_quantity)
-    %input.number-input.form-control.required{data: {type: 'cs4'},style: 'display: none;', type: 'number', required: 'required', min: 0, value: defect.condition_state_4_quantity}
+  %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
+  %td.left= defect.element.element_definition.quantity_unit
+
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS1'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS2'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS3'
+  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS4'
+
   %td.center
-    - if can?(:update, @inspection.inspection) && @inspection.updatable?
-      = render 'defect_row_action_buttons', defect: defect
-- if defect.notes.present?
+    - if can_update
+      = render 'inspections/defect_row_action_buttons', defect: defect
+- if defect.defect_locations.any? || defect.notes.present?
+  - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
+  - notes = defect.notes unless notes.present?
   %tr.notes
     %td
-    %td.left{colspan: 7}!= "#{indent_str}#{defect.notes}"
+    %td.left{colspan: 7}!= notes

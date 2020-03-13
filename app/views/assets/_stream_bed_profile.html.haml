@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update, @asset) && !@asset.assigned_version
+          - if can?(:update_from_structure, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
@@ -27,16 +27,11 @@
           .row
             .col-sm-12
               #streambed_table_actions.btn-toolbar
-                - if can?(:update, @asset) && !@asset.assigned_version
+                - if can?(:update_from_structure, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
                   .btn-group
-                    = link_to new_streambed_profile_path(transam_asset_id: @asset.object_key), remote: true, class: 'btn btn-primary', title: 'New Profile' do
+                    = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
-                      = " New Profile"
-                  - if @asset.streambed_profiles.where(inspection_id: nil).last
-                    .btn-group
-                      = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.where(inspection_id: nil).last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
-                        %i.fa.fa-plus
-                        = " New Distance"
+                      = " New Distance"
               .table-responsive#streambed_table
                 -# Remove .table-hover with data-classes
                 %table{:id => table_dom_id,
@@ -60,78 +55,48 @@
                         :maintain_selected => 'true',
                         :single_select => 'false'}}
                   %thead
-                    %tr
-                      %th.center Inspection Year
-                      - cols = @asset.streambed_profiles.first.try(:all_possible_distances) || []
-                      - cols.each do |distance|
-                        %th.center= distance
-                      %th.center Water Level
+                    = render partial: "assets/stream_bed_profile_head"
 
                   %tbody
-                    - @asset.streambed_profiles.each do |profile|
-                      %tr
-                        %td.center= profile.date.year
-                        - cols.each do |distance|
-                          %td.center
-                            - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-                            - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
-                              - if profile_point
-                                %span.number-display
-                                  = format_as_decimal(profile_point.value,1)
-                                %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile_point.value, data: {streambed_profile: profile.object_key, streambed_profile_point: profile_point.object_key}}
-                              - else
-                                %input.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, data: {streambed_profile: profile.object_key, distance: distance}}
-                            - else
-                              = format_as_decimal(profile_point.value,1) if profile_point
-                        %td.center
-                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
-                            %span.number-display
-                              = format_as_decimal(profile.water_level,1)
-                            %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level, data: {streambed_profile: profile.object_key}}
-                          - else
-                            = format_as_decimal(profile.water_level,1)
-                      %tr
-                        %td.right Reference Line
-                        %td.left{:colspan => cols.count + 1}
-                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
-                            %span.text-display
-                              %em= profile.reference_line
-                            %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line, data: {streambed_profile: profile.object_key}}
-                          - else
-                            %em= profile.reference_line
-                      %tr
-                        %td.right Water Level Taken At
-                        %td.left{:colspan => cols.count + 1}
-                          - if can?(:update, @asset) && !@asset.assigned_version && profile.inspection.nil?
-                            %span.text-display
-                              %em= profile.water_level_reference
-                            %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference, data: {streambed_profile: profile.object_key}}
-                          - else
-                            %em= profile.water_level_reference
+                    = render partial: "assets/stream_bed_profile_body"
 
 
 :javascript
   $(function() {
     $('.edit-streambed-profiles-button').on('click', function() {
-      $('.edit-streambed-profiles-button').hide();
-      $('.save-streambed-profiles-buttons').show();
       enable_streambed_profile_editing();
     });
     $('.save-streambed-profiles-button').on('click', function() {
       submit_streambed_profile_changes();
+      disable_streambed_profile_editing();
     });
     $('.cancel-streambed-profiles-button').on('click', function() {
-      // reload
-      window.location.href = "#{inventory_path(@asset.object_key)}";
-      window.location.reload();
+      disable_streambed_profile_editing();
     });
   });
 
   function enable_streambed_profile_editing() {
+    $('.edit-streambed-profiles-button').hide();
+    $('.save-streambed-profiles-buttons').show();
     $('#streambed_table .number-display').hide();
     $('#streambed_table .number-input').show();
     $('#streambed_table .text-display').hide();
     $('#streambed_table .text-input').show();
+  }
+
+  function disable_streambed_profile_editing() {
+    $('.save-streambed-profiles-buttons').hide();
+    $('.edit-streambed-profiles-button').show();
+    $('#streambed_table .number-input').hide();
+    $('#streambed_table .number-input').each(function() {
+      $(this).val(parseFloat($(this).closest('td').find('span').html()));
+    })
+    $('#streambed_table .number-display').show();
+    $('#streambed_table .text-input').hide();
+    $('#streambed_table .text-input').each(function() {
+      $(this).val($(this).closest('td').find('em').html());
+    })
+    $('#streambed_table .text-display').show();
   }
 
   function submit_streambed_profile_changes() {
@@ -145,8 +110,8 @@
 
       if (($(this).data('streambed-profile-point')) && ($(this).data('streambed-profile-point').length > 0)) {
         targets[$(this).data('streambed-profile')][$(this).data('streambed-profile-point')] = $(this).val();
-      } else if (($(this).data('distance')) && ($(this).data('distance').length > 0)) {
-        targets[$(this).data('streambed-profile')] [$(this).data('distance')] = $(this).val();
+      } else if (($(this).data('distance')) && ($(this).data('distance').toString().length > 0)) {
+        targets[$(this).data('streambed-profile')][$(this).data('distance')] = $(this).val();
       }
     });
 
@@ -173,11 +138,11 @@
         targets: targets,
         water_levels: water_levels,
         reference_lines: reference_lines,
-        water_level_references: water_level_references
+        water_level_references: water_level_references,
+        asset_id: '#{@asset.object_key}'
       },
       success: function() {
         $("#spinner").hide();
-        window.location.reload();
       },
       failure: function() {
         $("#spinner").hide();

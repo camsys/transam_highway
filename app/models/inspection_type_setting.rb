@@ -15,6 +15,7 @@ class InspectionTypeSetting < ApplicationRecord
 
   def self.allowable_params
     [
+        :transam_asset_id,
         :id,
         :inspection_type_id,
         :frequency_months,

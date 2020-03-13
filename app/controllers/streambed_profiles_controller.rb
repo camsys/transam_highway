@@ -1,5 +1,7 @@
 class StreambedProfilesController < ApplicationController
   before_action :set_streambed_profile, only: [:edit, :update, :destroy]
+  before_action :set_inspection
+  before_action :set_asset
 
   def index
     @streambed_profiles = StreambedProfile.all
@@ -25,7 +27,7 @@ class StreambedProfilesController < ApplicationController
     @streambed_profile = StreambedProfile.new(streambed_profile_params)
 
     if @streambed_profile.save
-      redirect_to inventory_path(@streambed_profile.bridge_like.object_key), notice: 'Streambed profile was successfully created.'
+      @inspection = Inspection.get_typed_inspection @inspection
     else
       render :new
     end
@@ -47,6 +49,8 @@ class StreambedProfilesController < ApplicationController
         end
       end
 
+      @inspection = Inspection.get_typed_inspection @inspection
+
       #redirect_to @streambed_profile, notice: 'Streambed profile was successfully updated.'
     else
       render :edit
@@ -55,8 +59,8 @@ class StreambedProfilesController < ApplicationController
 
   # DELETE /streambed_profiles/1
   def destroy
+    @inspection = Inspection.get_typed_inspection @inspection
     @streambed_profile.destroy
-    redirect_to streambed_profiles_url, notice: 'Streambed profile was successfully destroyed.'
   end
 
   def new_distance
@@ -65,6 +69,7 @@ class StreambedProfilesController < ApplicationController
 
   def update_many
     if params[:targets]
+      @errored = false
       params[:targets].each do |target, points|
         streambed_profile = StreambedProfile.find_by(object_key: target)
 
@@ -77,6 +82,7 @@ class StreambedProfilesController < ApplicationController
               profile_point.update(value: val)
             end
           end
+          @errored = true if streambed_profile.errors.any?
         end
 
 
@@ -87,20 +93,24 @@ class StreambedProfilesController < ApplicationController
       params[:water_levels].each do |target, water_level|
         streambed_profile = StreambedProfile.find_by(object_key: target)
         streambed_profile.update(water_level: water_level) if streambed_profile
+        @errored = true if streambed_profile.errors.any?
       end
     end
     if params[:reference_lines]
       params[:reference_lines].each do |target, reference_line|
         streambed_profile = StreambedProfile.find_by(object_key: target)
         streambed_profile.update(reference_line: reference_line) if streambed_profile
+        @errored = true if streambed_profile.errors.any?
       end
     end
     if params[:water_level_references]
       params[:water_level_references].each do |target, water_level_reference|
         streambed_profile = StreambedProfile.find_by(object_key: target)
         streambed_profile.update(water_level_reference: water_level_reference) if streambed_profile
+        @errored = true if streambed_profile.errors.any?
       end
     end
+    @asset = TransamAsset.get_typed_asset TransamAsset.find_by(object_key: params[:asset_id])
   end
 
   private
@@ -108,6 +118,14 @@ class StreambedProfilesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_streambed_profile
       @streambed_profile = StreambedProfile.find_by(object_key: params[:id])
+    end
+
+    def set_inspection
+      @inspection = @streambed_profile&.inspection
+    end
+
+    def set_asset
+      @asset = TransamAsset.get_typed_asset @streambed_profile&.bridge_like
     end
 
     # Only allow a trusted parameter "white list" through.

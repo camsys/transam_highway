@@ -1,4 +1,4 @@
-:ruby 
+:ruby
   parent_element = element.parent
 .dropdown
   %button.btn.btn-sm.dropdown-toggle.element_defect_row_action_button{:data => {:toggle => 'dropdown'}}
@@ -18,5 +18,5 @@
       = link_to edit_comment_inspection_element_path(parent_element.inspection, element), remote: true do
         = "Edit Comment"
     %li.text-left
-      = link_to inspection_element_child_element_path(parent_element.inspection, parent_element, element), method: :delete, data: { confirm: 'Are you sure?' }  do
+      = link_to inspection_element_child_element_path(parent_element.inspection, parent_element, element), remote: true, method: :delete, data: { confirm: 'Are you sure?', dismiss: "modal" }  do
         = "Delete"

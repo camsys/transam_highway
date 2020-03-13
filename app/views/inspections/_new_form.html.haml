@@ -1,3 +1,7 @@
+:ruby
+
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+
 .modal-dialog.modal-lg
   .modal-content
     .modal-header
@@ -16,6 +20,9 @@
             = f.association :inspection_type, collection: InspectionType.can_be_unscheduled.where.not(id: @asset.inspections.where.not(state: 'final').select(:inspection_type_id)), required: true
           .col-sm-4
             = f.input :calculated_inspection_due_date, :as => :string, :wrapper => :vertical_append_calendar, :label => "Due Date", required: true, :value => @inspection.calculated_inspection_due_date
+          .col-sm-4
+            = f.input :status, as: :hidden, input_html: {value: 'open'}
+            = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id
         = f.input :description, required: @inspection.inspection_type.try(:name) == 'Special'
 
 
@@ -44,6 +51,14 @@
         required: false
       });
       $('label[for="inspection_description"]').html('Description');
+    }
+  });
+
+  $('#inspection_assigned_organization_id').change(function() {
+    if (parseInt($(this).val()) > 0){
+      $('#inspection_status').val('ready');
+    } else {
+       $('#inspection_status').val('open');
     }
   });
 

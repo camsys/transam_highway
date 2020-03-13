@@ -16,4 +16,5 @@ class InspectionRecord < ActiveRecord::Base
 
     return arr.flatten
   end
+
 end

@@ -12,7 +12,7 @@ class InspectionAuditService
       elsif assoc.end_with? 'rating_method_type_id'
         klass = LoadRatingMethodType
       elsif assoc == 'owner_id'
-        klass = Organization
+        klass = StructureAgentType
       else
         klass = assoc[0..-4].classify.constantize
       end

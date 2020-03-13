@@ -1,26 +1,15 @@
-= render partial: 'shared/xeditable_scripts'
+- disabled_fields = @inspection.inspection_type.name == 'Initial' ? [] : @asset.attributes.keys.select{|x| cannot?("update_#{x}", @asset)}
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}
 
 :javascript
 
+
   // ------ override methods in shared xeditable scripts to handle edit/save buttons in different panels -----------
-  function open_tab(tab_id) {
-    $('.editableform-loading').hide();
-    $('.editableform').show();
-    $('#' + tab_id).collapse('show');
-  }
 
-  $(document).ready(function() {
-    $('.inspection-edit-xeditable-button').on('click', function(e) {
-      e.stopPropagation();
-
-      //set selected radios
-      selected_radio_inputs = $(this).closest('.panel').find('input[type=radio]:checked');
-
-      var tab_id = $(this).parent().parent().parent().parent().parent().find('.panel-collapse').attr('id');
-
-      console.log(tab_id);
+  $(function() {
+    function enable_tab_editing(tab_id) {
       $('#'+tab_id+' .editable-field').editable('enable');
-      $('#'+tab_id+' .editable-field').editable('show', false);
+      $('#'+tab_id+' .editable-field').filter(':visible').editable('show', false);
       $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
       //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
 
@@ -28,42 +17,31 @@
         $(this).closest('.other-type-container').attr('data-original-value', $(this).val());
       });
 
+      // enable subforms
+      $('#'+tab_id+' .asset-subform').find('input, select').removeAttr('disabled');
+      $('#'+tab_id+' .asset-subform .asset-subform-action').show();
+      $('#'+tab_id+' .asset-subform .asset-subform-display').hide();
+
       // de-focus form: 1. make it select the first one; 2. lost is focus
       // the purpose of selecting first one is to avoid focus jumping to others
       setTimeout(function(){
         $('#'+tab_id+' .editable-input').find('input, select').first().focus();
         $(':focus').blur();
       }, 10);
+    }
+    $('.inspection-edit-xeditable-button').on('click', function(e) {
+      e.stopPropagation();
+
+      var tab_id = $(this).parent().parent().parent().parent().parent().find('.panel-collapse').attr('id');
+
+      enable_tab_editing(tab_id);
 
       $(this).hide();
       $(this).next('.edit-xeditable-buttons').show();
     });
 
-    $('#collapse-profile a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      tab_id = $('#collapse-profile .tab-pane.active').attr('id')
-      if ($('#profile .inspection-edit-xeditable-button').is(":hidden")) {
-        $('#'+tab_id+' .editable-field').editable('enable');
-        $('#'+tab_id+' .editable-field').editable('show', false);
-        $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
-        //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
-
-        $('.other-type-container select').each(function() {
-          $(this).closest('.other-type-container').attr('data-original-value', $(this).val());
-        });
-
-        // de-focus form: 1. make it select the first one; 2. lost is focus
-        // the purpose of selecting first one is to avoid focus jumping to others
-        setTimeout(function(){
-          $('#'+tab_id+' .editable-input').find('input, select').first().focus();
-          $(':focus').blur();
-        }, 10);
-      } else {
-        $('#'+tab_id+' input[type=radio]').attr('disabled', 'true');
-        $('#'+tab_id+' .editable-field').editable('hide');
-        $('#'+tab_id+' .editable-field').editable('disable');
-      }
-    });
   });
+
   // ----------------------------------------------------------------------------------------------------------------
 
   var user_tab_key = 'inspection_tab_key';

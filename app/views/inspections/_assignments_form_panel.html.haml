@@ -1,11 +1,29 @@
-- filter_scripts_loaded ||= 0
+:ruby
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
 
-#inspection-assignments-form.collpase
-  .panel.panel-default{:style => 'margin-bottom: 5px;'}
-    .panel-heading{:role => 'tab'}
-      %h4.panel-title
-        = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+  from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
+  from_ready_boolean = (state == 'ready' && can?(:reopen, Inspection.new))
+  from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+  to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))
 
-    #inspection-assignments-panel-collapse.in
-      .panel-body
-        = render partial: 'inspections/assignments_form', :locals => {filter_scripts_loaded: filter_scripts_loaded}
+- if from_open_boolean || from_ready_boolean || from_assigned_boolean || to_assigned_boolean
+  #div{class: to_assigned_boolean ? 'col-sm-6' : 'col-sm-12'}
+    .panel.panel-default{:style => 'margin-bottom: 5px;'}
+      .panel-heading{:role => 'tab'}
+        %h4.panel-title
+          = link_to 'Assignments', '#inspection-assignments-panel-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+      #inspection-assignments-panel-collapse.in
+        .panel-body
+          = render partial: 'inspections/bulk_transam_workflow_form', :locals => {state: state, assigned_organization_id: assigned_organization_id}
+
+  - if to_assigned_boolean
+    .col-sm-6
+      .panel.panel-default{:style => 'margin-bottom: 5px;'}
+        .panel-heading{:role => 'tab'}
+          %h4.panel-title
+            = link_to 'Inspector Assignments', '#inspector-assignment-panel', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+        #inspector-assignment-panel.in
+          .panel-body
+            = render partial: 'inspections/assignments_form', :locals => {state: state, assigned_organization_id: assigned_organization_id}
