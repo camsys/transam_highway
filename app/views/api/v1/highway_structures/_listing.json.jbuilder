@@ -9,7 +9,7 @@ json.latitude highway_structure.try(:geometry).try(:y)
 json.longitude highway_structure.try(:geometry).try(:x)
 json.manufacture_year highway_structure.manufacture_year
 
-associations = [:maintenance_responsibility, :owner, :structure_status_type, :historical_significance_type, :region, :maintenance_section, :main_span_material_type, :main_span_design_construction_type, :highway_structure_type]
+associations = [:maintenance_responsibility, :owner, :structure_status_type, :historical_significance_type, :region, :maintenance_section, :main_span_material_type, :main_span_design_construction_type, :highway_structure_type, :inspection_program]
 if sshml
   associations.reject!{|e| [:main_span_material_type, :main_span_design_construction_type].include?(e)}
   associations.concat([:mast_arm_frame_type, :column_type, :foundation_type, :upper_connection_type])
