@@ -18,9 +18,9 @@ class InspectionAuditService
       end
 
       if klass.has_attribute? :code
-        assocs[assoc] = klass.pluck(:id, :name, :code).each_with_object({}) { |(f,l,c),h|  h.update(f=>[l,c]) {|_,ov,nv| ov+nv }}
+        assocs[assoc] = klass.pluck(:id, :code, :name).each_with_object({}) { |(f,c,l),h|  h.update(f=>[c,l]) {|_,ov,nv| ov+nv }}
       else
-        assocs[assoc] = klass.pluck(:id, :name).each_with_object({}) { |(f,l),h|  h.update(f=>[l, nil]) {|_,ov,nv| ov+nv }}
+        assocs[assoc] = klass.pluck(:id, :name).each_with_object({}) { |(f,l),h|  h.update(f=>[nil, l]) {|_,ov,nv| ov+nv }}
       end
     end
 
@@ -51,11 +51,11 @@ class InspectionAuditService
 
       versions.each do |version|
         (version.changeset.keys & Rails.application.config.inspection_audit_changes.map{|x| x.split('.')[1]}).each do |col_change|
-          changes_arr << [typed_asset.asset_tag, labels[col_change][0], labels[col_change][1]] + version.changeset[col_change].map{
+          changes_arr << [typed_asset.asset_tag, labels[col_change][0], labels[col_change][1]] + version.changeset[col_change].map{|x|
             if assocs.key?(col_change)
               assocs[col_change][x] ? [assocs[col_change][x][0], assocs[col_change][x][1]] : [nil, nil]
             else
-              [x, nil]
+              [nil, x]
             end
           }.flatten + [users[version.whodunnit], version.created_at]
         end
@@ -82,7 +82,7 @@ class InspectionAuditService
               if assocs.key?(col_change)
                 assocs[col_change][x] ? [assocs[col_change][x][0], assocs[col_change][x][1]] : [nil, nil]
               else
-                [x, nil]
+                [nil, x]
               end
             }.flatten + [users[version.whodunnit], version.created_at]
           end
