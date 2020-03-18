@@ -1,0 +1,57 @@
+.row
+  = simple_form_for(@org,
+  :as => :organization,
+  :url => @org.new_record? ? organizations_path : organization_path,
+  :method => @org.new_record? ? 'post' : 'put',
+  :html => {:class => 'form-vertical org_form'},
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+    :radio_buttons => :vertical_radio_and_checkboxes,
+    :file => :vertical_file_input,
+    :boolean => :vertical_boolean}) do |f|
+    - if @org.new_record? # for now only allow organization type of planning partern
+      = f.input :organization_type_id, :as => :hidden
+      = f.input :customer_id, :as => :hidden, :input_html => {:value => Customer.first.id}
+    .col-md-6
+      .panel.panel-default.header-part
+        .panel-body
+          = dialog_tag('Corporate', {:icon => 'fa fa-book'}) do
+            - field_custom = SystemConfigFieldCustomization.find_by(is_locked: true, table_name: 'organizations', field_name: 'name', active: true)
+            = f.input :name, :label => "Common Name (dba)", :required => true, :disabled => (field_custom.present? && eval(field_custom.code_frag))
+            - field_custom = SystemConfigFieldCustomization.find_by(is_locked: true, table_name: 'organizations', field_name: 'legal_name', active: true)
+            = f.input :legal_name, :required => true, :label => "Legal Name", :disabled => (field_custom.present? && eval(field_custom.code_frag))
+            - field_custom = SystemConfigFieldCustomization.find_by(is_locked: true, table_name: 'organizations', field_name: 'short_name', active: true)
+            = f.input :short_name, :required => true, :label => "Acronym or Short Name", :disabled => (field_custom.present? && eval(field_custom.code_frag))
+            = f.input :external_id, :label => "External ID"
+          - if @org.type_of? HighwayConsultant
+            = dialog_tag('Associated Consultants', {:icon => 'fa fa-book'}) do
+              = f.input :highway_consultant_ids, :as => :hidden
+              .form-group
+                %label.control-label= " Highway Consultants"
+                #highway_consultant_select.input-md
+    .col-md-6
+      .panel.panel-default.header-part
+        .panel-body
+          = dialog_tag('Contact', {:icon => 'fa fa-book'}) do
+            = f.input :phone, :required => true, :as => :tel, :hint => 'Format 123-456-7890'
+            = f.input :fax, :as => :tel, :hint => 'Format 123-456-7890'
+            = f.input :url, :required => true, :as => :url
+            = f.input :country, :required => true, :label => "Country", collection: [[ 'United States of America', 'US']]
+            = f.input :address1, :required => true, :label => "Address 1"
+            = f.input :address2, :label => "Address 2"
+            .row
+              .col-sm-6
+                = f.input :city, :required => true
+              .col-sm-3
+                = f.input :state, :required => true, :as => :select, :collection => ISO3166::Country['US'].states.keys
+              .col-sm-3
+                = f.input :zip, :required => true
+            = f.input :county, :label => "County"
+            - if User.new.respond_to? :email_in_org_domain_list
+              = f.input :allowed_email_domains, :required => true, :label => 'Allowed Email Domains', :placeholder => 'To enter more than one domain, separate with |. Domains are the url that follows @ (ex: camsys.com).'
+
+    .col-md-12
+      = f.button :submit, 'Submit', :class => 'btn btn-primary'
+      = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
+
+= render 'form_scripts'
