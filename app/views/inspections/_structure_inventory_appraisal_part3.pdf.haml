@@ -19,117 +19,97 @@
         %span.col-xs-6.text-limiter-counter
           Road Prefix (5B)
         %span.col-xs-6.text-limiter-counter
-          =roadway.route_signing_prefix
+          ="#{roadway.route_signing_prefix_id} - #{roadway.route_signing_prefix}"
       .row
         %span.col-xs-6.text-limiter-counter
           Level of Service (5C
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.service_level_type
       .row
         %span.col-xs-6.text-limiter-counter
           Highway Segment (5D)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.route_number
       .row
         %span.col-xs-6.text-limiter-counter
           Features Intersected (6A)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.features_intersected
       .row
         %span.col-xs-6.text-limiter-counter
           Facility Carried (7)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.facility_carried
       .row
         %span.col-xs-6.text-limiter-counter
           Min Vertical Clearance (10)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.min_vertical_clearance
       .row
         %span.col-xs-6.text-limiter-counter
           LRS Reference Point (11)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.lrs_reference_point
       .row
         %span.col-xs-6.text-limiter-counter
           Legacy MP (11A)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.milepoint
       .row
         %span.col-xs-6.text-limiter-counter
-          Base Highway Network (12)
+          KRS Inventory Route (13A))
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.lrs_route
       .row
         %span.col-xs-6.text-limiter-counter
-          On Under (13A)
+          Detour(19))
         %span.col-xs-6.text-limiter-counter
-          ____
-      .row
-        %span.col-xs-6.text-limiter-counter
-          On Under (13B)
-        %span.col-xs-6.text-limiter-counter
-          ____
+          __NA__
       .row
         %span.col-xs-6.text-limiter-counter
           Functional Class (26)
         %span.col-xs-6.text-limiter-counter
-          ____
-      .row
-        %span.col-xs-6.text-limiter-counter
-          Roadway Lanes (28)
-        %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.functional_class
       .row
         %span.col-xs-6.text-limiter-counter
           Average Daily Traffic (29)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.average_daily_traffic
       .row
         %span.col-xs-6.text-limiter-counter
           Year of ADT (30)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.average_daily_traffic_year
       .row
         %span.col-xs-6.text-limiter-counter
           Total Horiz Clearance (47)
-        %span.col-xs-6.text-limiter-counter
-          ____
+        %span.col-xs-6.text-limiter-counter-yellow
+          =roadway.total_horizontal_clearance
       .row
         %span.col-xs-6.text-limiter-counter
           Strategic Hwy Net (100)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.strahnet_designation_type
       .row
         %span.col-xs-6.text-limiter-counter
           Direction of Traffic (102)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.traffic_direction_type
       .row
         %span.col-xs-6.text-limiter-counter
           NHS
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.on_national_highway_system
       .row
         %span.col-xs-6.text-limiter-counter
           Truck ADT (109)
         %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.average_daily_truck_traffic_percent
       .row
         %span.col-xs-6.text-limiter-counter
           Designated Nat Net (110)
         %span.col-xs-6.text-limiter-counter
-          ____
-      .row
-        %span.col-xs-6.text-limiter-counter
-          Future ADT (114)
-        %span.col-xs-6.text-limiter-counter
-          ____
-      .row
-        %span.col-xs-6.text-limiter-counter
-          Year of Future ADT (115)
-        %span.col-xs-6.text-limiter-counter
-          ____
+          =roadway.on_truck_network
 
     .col-xs-6
       -roadbeds = roadway.roadbeds
@@ -140,37 +120,46 @@
         -if roadbed_counter <= roadbed_max
           .row
             %span.col-xs-12.text-header
-              RoadBed - On  - NB County Road 77
+              ="#{roadway.on_under_indicator} - #{roadbed.direction} - #{roadbed.name}"
           .row
             %span.col-xs-6.text-limiter-counter
               Name (Direction of Inventory)
-            %span.col-xs-6.text-limiter-counter
-              __Why Yellow?__
+            %span.col-xs-6.text-limiter-counter-yellow
+              =roadbed.direction
           .row
             %span.col-xs-6.text-limiter-counter
               Roadway
-            %span.col-xs-6.text-limiter-counter
-              ____
+            %span.col-xs-6.text-limiter-counter-yellow
+              =roadway.facility_carried
           .row
             %span.col-xs-6.text-limiter-counter
-              Direction of Travel
-            %span.col-xs-6.text-limiter-counter
-              ____
+              Name
+            %span.col-xs-6.text-limiter-counter-yellow
+              =roadbed.name
           .row
             %span.col-xs-6.text-limiter-counter
               Lines
-            %span.col-xs-6.text-limiter-counter
-              ____
+            %span.col-xs-6.text-limiter-counter-yellow
+              =roadbed.number_of_lines
           .row
             %span.col-xs-6.text-limiter-counter
               Minimum VCLR
             %span.col-xs-6.text-limiter-counter
-              ____
+              -min = roadbed.minimum(@inspection)
+              -if min.nil?
+                No Restrictions
+              -else
+                =min
           .row
             %span.col-xs-6.text-limiter-counter
               Maximum VCLR
             %span.col-xs-6.text-limiter-counter
-              ____
+              -max = roadbed.maximum(@inspection)
+              -if max.nil?
+                No Restrictions
+              -else
+                =max
+
           .row
             &nbsp;
 
@@ -185,40 +174,42 @@
             %span.col-xs-12.text-header
               Road surface name? what are these called?
           .row
-            %span.col-xs-1.text-limiter-counter
-              Location
-            %span.col-xs-1.text-limiter-counter
-              L
+            %table.roadway-appraisal-table
+              %thead
+                %th
+                  Location
+                %th
+                  L
 
-            -roadbeds_lines = roadbed.roadbed_lines
-            -count = 1
-            -while count < roadbeds_lines.count-1 do
-              %span.col-xs-1.text-limiter-counter
-                =count
-              -count += 1
+                -roadbeds_lines = roadbed.roadbed_lines
+                -count = 1
+                -while count < roadbeds_lines.count-1 do
+                  %th
+                    =count
+                  -count += 1
+                %th
+                  R
 
-            %span.col-xs-1.text-limiter-counter
-              R
-
-          .row
-            %span.col-xs-1.text-limiter-counter
-              Entry
-            -roadbeds_lines = roadbed.roadbed_lines
-            -roadbeds_lines.each do |line|
-              %span.col-xs-1.text-limiter-counter
-                -if line.entry.nil?
-                  N/A
-                -else
-                  =line.entry
-          .row
-            %span.col-xs-1.text-limiter-counter
-              Exit
-            -roadbeds_lines = roadbed.roadbed_lines
-            -roadbeds_lines.each do |line|
-              %span.col-xs-1.text-limiter-counter
-                -if line.exit.nil?
-                  N/A
-                -else
-                  =line.exit
+              %tbody
+                %tr
+                  %td
+                    Entry
+                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines.each do |line|
+                    %td
+                      -if line.entry.nil?
+                        N/A
+                      -else
+                        =line.entry
+                %tr
+                  %td
+                    Exit
+                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines.each do |line|
+                    %td
+                      -if line.exit.nil?
+                        N/A
+                      -else
+                        =line.exit
           .row
             &nbsp;

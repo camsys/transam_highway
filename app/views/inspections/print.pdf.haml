@@ -5,16 +5,23 @@
   -#  .div.alwaysbreak { page-break-before: always; }
 
 
-  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
-  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection}
+
+  -@typed_inspection = Inspection.get_typed_inspection(@inspection)
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
+  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
   &nbsp;
   .div.alwaysbreak
-  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
-  = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection}
-  &nbsp;
-  .div.alwaysbreak
-  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection}
-  = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+
+  -i=0
+  -@inspection.highway_structure.roadways.each do |roadway|
+    -i += 1
+    &nbsp;
+    .div.alwaysbreak
+    = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway }
+    = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway, :road_counter => i}
+
   &nbsp;
   .div.alwaysbreak
   -#- if @inspection.class == BridgeCondition
@@ -22,24 +29,24 @@
     = render :partial => 'inspections/vertical_clearance.html.haml', :locals => {:inspection => @inspection}
     .div.alwaysbreak
 
-  - if @inspection.class == BridgeCondition
-    = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection}
+  - if @typed_inspection.class == BridgeCondition
+    = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     -#= render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}
     -#= render 'inspections/elements_panel.html.haml'
     -#= render :partial => 'inspections/elements_panel.html.haml', :locals => {:inspection => @inspection}
     &nbsp;
     .div.alwaysbreak
 
-  - if @inspection.images.any?
-    = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection}
-    = render :partial => 'inspections/report_photo_log.html.haml', :locals => {:inspection => @inspection}
+  - if @inspection.images.any? || TransamAsset.get_typed_asset(@inspection.highway_structure).images.any?
+    = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+    = render :partial => 'inspections/report_photo_log.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     &nbsp;
     .div.alwaysbreak
 
     -#= render :partial => 'inspections/maintenance_recommendations_header.html.haml', :locals => {:inspection => @inspection}
     -#= render :partial => 'inspections/maintenance_recommendations.html.haml', :locals => {:inspection => @inspection}
-    -#&nbsp;
-    -#.div.alwaysbreak
+    &nbsp;
+    .div.alwaysbreak
 
-  = render :partial => 'inspections/inspectors_header.html.haml', :locals => {:inspection => @inspection}
-  = render :partial => 'inspections/inspectors.html.haml', :locals => {:inspection => @inspection}
+  = render :partial => 'inspections/inspectors_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+  = render :partial => 'inspections/inspectors.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
