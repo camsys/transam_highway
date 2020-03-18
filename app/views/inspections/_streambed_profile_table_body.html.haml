@@ -1,4 +1,6 @@
-- @asset.streambed_profiles.where('date <= ?', (@inspection.calculated_inspection_due_date + 1.day)).each do |profile|
+- inspection_profile = @asset.streambed_profiles.joins(:inspection).where('streambed_profiles.inspection_id = ?', @inspection.id)
+- previous_final_profiles = @asset.streambed_profiles.joins(:inspection).where('inspections.state = ? AND streambed_profiles.date <= ?', 'final', (@inspection.calculated_inspection_due_date + 1.day))
+- inspection_profile.or(previous_final_profiles).each do |profile|
   %tr
     %td.center= profile.date.year
     - @cols.each do |distance|
