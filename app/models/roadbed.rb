@@ -3,6 +3,7 @@ class Roadbed < ApplicationRecord
   has_paper_trail
   
   belongs_to :roadway
+  belongs_to :inspection
   has_many :roadbed_lines, dependent: :destroy
 
   validates :name, presence: true
