@@ -1,4 +1,4 @@
-- @asset.streambed_profiles.each do |profile|
+- @asset.streambed_profiles.joins(:inspection).where('inspections.state = ?', 'final').each do |profile|
   %tr
     %td.center= profile.date&.year
     - @cols.each do |distance|

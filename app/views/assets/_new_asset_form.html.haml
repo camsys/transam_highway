@@ -14,10 +14,7 @@
 %ul.nav.nav-tabs
   %li.active
     %a{:href => '#required', :data =>{:toggle => 'tab'}}
-      Required Fields
-  %li
-    %a{:href => '#recommended', :data =>{:toggle => 'tab'}}
-      Recommended Fields
+      New Structure Fields
 
 = simple_form_for(@asset,
   :as => :asset,
@@ -35,6 +32,8 @@
   .tab-content.form-section
     .tab-pane.fade.in.active#required
       .col-sm-6
+
+        - asset_dir = @asset.class.to_s.underscore
 
         %h2.form-section-header
           Identification & Classification
@@ -54,8 +53,21 @@
         = f.hidden_field :purchased_new, value: true
         = f.hidden_field :purchase_date, value: Date.today
         = f.hidden_field :organization_id, value: Organization.find_by(short_name: 'CDOT').id
+        = f.input :features_intersected, label: reference_label('highway_structures', 'features_intersected', 'Features Intersected')
+        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+          = f.input :facility_carried, label: reference_label('highway_structures', 'facility_carried', 'Facility Carried')
+        = f.input :location_description, label: reference_label('highway_structures', 'location_description', 'Location Description')
+        = f.input :milepoint, label: reference_label('highway_structures', 'milepoint', 'Milepoint')
 
       .col-sm-6
+
+        %h2.form-section-header
+          Age & Service
+
+        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
+          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On'), label_method: :to_s, value_method: :id, required: true
+        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under'), label_method: :to_s, value_method: :id, required: true
+        = f.input :manufacture_year, label: reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built')
 
         %h2.form-section-header
           Classification
@@ -64,6 +76,7 @@
           %label.control-label.string.required= "* " + reference_label('highway_structures', 'highway_structurible_type', '* Structure Class')
           %div= select_tag :asset_type, options_from_collection_for_select(AssetType.where(id: @asset_class_instance.id).order(:id), "id", "to_s"), class: 'form-control'
         = f.association :structure_status_type, label: reference_label('highway_structures', 'structure_status_type_id', '* Structure Status'), collection: StructureStatusType.active, required: true
+        = f.association :owner, label: reference_label('highway_structures', 'owner_id', '* Owner'), required: true
 
         %h2.form-section-header
           Structure Type & Material
@@ -74,35 +87,6 @@
           Inspection
 
         = f.association :inspection_program, label: reference_label('highway_structures', 'inspection_program_id', '* Inspection Program'), required: true
-
-    .tab-pane.fade.in#recommended
-      .col-sm-6
-
-        - asset_dir = @asset.class.to_s.underscore
-
-        %h2.form-section-header
-          Identification & Classification
-
-        = f.input :features_intersected, label: reference_label('highway_structures', 'features_intersected', 'Features Intersected')
-        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
-          = f.input :facility_carried, label: reference_label('highway_structures', 'facility_carried', 'Facility Carried')
-        = f.input :location_description, label: reference_label('highway_structures', 'location_description', 'Location Description')
-        = f.input :milepoint, label: reference_label('highway_structures', 'milepoint', 'Milepoint')
-
-        %h2.form-section-header
-          Age & Service
-
-        - unless ['highway_sign', 'highway_signal', 'high_mast_light'].include? asset_dir
-          = f.association :service_on_type, label: reference_label('bridges', 'service_on_type_id', 'Service Type On'), label_method: :to_s, value_method: :id
-        = f.association :service_under_type, label: reference_label('bridges', 'service_under_type_id', 'Service Type Under'), label_method: :to_s, value_method: :id
-        = f.input :manufacture_year, label: reference_label('highway_structures', 'transam_assets.manufacture_year', 'Year Built')
-
-      .col-sm-6
-
-        %h2.form-section-header
-          Classification
-
-        = f.association :owner, label: reference_label('highway_structures', 'owner_id', 'Owner')
 
   .form-actions.form-section
     = f.button :submit, '+ Add Asset & Go to New Record', :class => 'btn btn-primary'
@@ -115,4 +99,8 @@
   $('#asset_city').typeahead({
       items: 10,
       source: #{city_names.to_json.html_safe || []}
+  });
+  // Force uppercase text for structure key input
+  $('#asset_asset_tag').keyup(function(evt) {
+    this.value = this.value.toUpperCase();
   });

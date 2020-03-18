@@ -1,3 +1,8 @@
+:css
+  .clear {
+    position: initial;
+  }
+
 :ruby
   table_dom_id = SecureRandom.hex
 - unless @asset || @inspection
@@ -11,19 +16,17 @@
 
           %label Status
           .form-group
-            = select_tag(:state, options_for_select(MaintenanceServiceOrder.state_names.map{|s| [MaintenanceServiceOrder.human_state_name(s) == MaintenanceServiceOrder.human_state_name(s).downcase ? MaintenanceServiceOrder.human_state_name(s).titleize : MaintenanceServiceOrder.human_state_name(s), s]}, :selected => @states), :class => "form-control", :multiple => true)
+            = select_tag(:state, options_for_select([['Pending', 'pending'], ['Overdue', 'overdue'], ['Completed', 'completed']], :selected => @states), :class => "form-control", :multiple => true)
 
           %label Date First Recommended
-          .form-group
-            = date_field_tag(:date_recommended, @date_recommended)
+          = text_field_tag(:date_recommended, @date_recommended, class: 'form-control datepicker', :style => 'display: inline-block; margin-left: 5px; width:auto;')
 
           %label Timeline
-          .form-group
-            = date_field_tag(:due_month, @due_month)
+          = text_field_tag(:due_month, @due_month, class: 'form-control datepicker', :style => 'display: inline-block; margin-left: 5px; width:auto;')
 
           %label= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
           .form-group
-            = text_field_tag(:asset_search_text, @asset_search_text)
+            = text_field_tag(:asset_search_text, @asset_search_text, data: {convert: "uppercase"})
 
           .form-group
             = button_tag :class => 'btn btn-default pull-right filter', :type => 'submit' do
@@ -101,6 +104,33 @@
         }
       }
     });
+
+    // Force uppercase text for structure key input
+    $('[data-convert="uppercase"]').keyup(function(evt) {
+      this.value = this.value.toUpperCase();
+    });
+  });
+
+  $('#date_recommended').bootstrapDP({
+    autoclose: true,
+    clearBtn: true
+  });
+
+  $('#due_month').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true,
+    clearBtn: true
+  });
+
+  $('#due_month').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
   });
 
   $(window).resize(function() {
@@ -114,8 +144,8 @@
 
   function status_formatter(value, row) {
     d = new Date()
-    d.setMonth(d.getMonth()-1)
-    if ((moment(d) > moment(row['due_date'])) && (row['state'] != 'completed')) {
+    first_of_month = new Date(d.getFullYear(), d.getMonth(), 1)
+    if ((moment(first_of_month) > moment(row['due_date'])) && (row['state'] != 'completed')) {
       return 'Overdue'
     } else {
       return value.charAt(0).toUpperCase() + value.slice(1)

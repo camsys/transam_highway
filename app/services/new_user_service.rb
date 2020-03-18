@@ -27,11 +27,24 @@ class NewUserService
     user.update_user_organization_filters unless Rails.application.config.try(:user_organization_filters_ignored).present?
 
 
-    if user.organization_id == HighwayAuthority.first.id && user.roles.roles.last.name != 'user'
-      user.viewable_organizations = Organization.all
+    if user.has_role? :manager
+      if user.organization_ids.include? HighwayAuthority.first.id
+        user.viewable_organizations = Organization.all
+      else
+        user.viewable_organizations.clear
+        user.viewable_organizations << HighwayAuthority.first
+
+        user.organizations.each do |org|
+          user.viewable_organizations << org unless user.viewable_organizations.include? org
+          typed_org = Organization.get_typed_organization(org)
+          typed_org.highway_consultants.each do |consultant|
+            user.viewable_organizations << consultant unless user.viewable_organizations.include? consultant
+          end
+        end
+      end
     else
       user.viewable_organizations = user.organizations
-      user.viewable_organization_ids << HighwayAuthority.first.id unless user.viewable_organization_ids.include? HighwayAuthority.first.id
+      user.viewable_organizations << HighwayAuthority.first unless user.viewable_organization_ids.include? HighwayAuthority.first.id
     end
     user.save!
 

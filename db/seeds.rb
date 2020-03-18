@@ -50,11 +50,12 @@ asset_subtypes = [
 ]
 
 roles = [
-    {name: 'recurring_insp_sched_privilege', show_in_user_mgmt: true, privilege: true, label: 'Recurring Inspection Schedule Ability', roles: 'user'},
-    {name: 'scour_critical_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Scour Critical (113) Ability', roles: 'user,manager'},
-    {name: 'sia_dtd_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA DTD Abilitiy', roles: 'user'},
-    {name: 'sia_full_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Complete SIA Abilitiy', roles: 'user'},
-    {name: 'sia_rating_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA Rating Abilitiy', roles: 'user'}
+    {name: 'sia_full_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Complete SIA Abilitiy', roles: 'basic_user,user'},
+    {name: 'sia_rating_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA Rating Abilitiy', roles: 'basic_user,user'},
+{name: 'sia_dtd_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA DTD Abilitiy', roles: 'basic_user,user'},
+    {name: 'scour_critical_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Scour Critical (113) Ability', roles: 'basic_user,user,manager'},
+    {name: 'maintenance_mgmt_privilege', show_in_user_mgmt: true, privilege: true, label: 'Maintenance Management Ability', roles: 'basic_user'},
+    {name: 'recurring_insp_sched_privilege', show_in_user_mgmt: true, privilege: true, label: 'Recurring Inspection Schedule Ability', roles: 'basic_user,user'},
 ]
 
 maintenance_priority_types = [

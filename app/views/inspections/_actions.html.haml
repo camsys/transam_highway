@@ -1,11 +1,11 @@
 - allowable_events = @inspection.allowable_event_objects
 
-.btn-group.pull-right.panel-action
+.btn-group.pull-right.panel-action.inspection-action-button
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
     %i.fa.fa-cog
     = " Actions"
     %span.caret
-  %ul.dropdown-menu{:role => 'menu'}
+  %ul.dropdown-menu.inspection-action-menu{:role => 'menu'}
     - allowable_events.each do |evt|
       - if (can? evt.name.to_sym, @inspection.inspection)
         %li
@@ -22,3 +22,12 @@
         = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
           %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('finalize')}
           To Final
+
+:javascript
+  $(document).ready(function() {
+    if ($('ul.inspection-action-menu li').length > 0) {
+      $('.inspection-action-button').show();
+    } else {
+      $('.inspection-action-button').hide();
+    }
+  });
