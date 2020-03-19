@@ -160,16 +160,13 @@
               -else
                 =max
 
-          .row
-            &nbsp;
-
-
-
     -roadbed_lines_counter = 0
     -roadbeds.each do |roadbed|
       -roadbed_lines_counter +=1
       -unless roadbed_lines_counter > roadbed_max
         .col-xs-12
+          .row
+            &nbsp;
           .row
             %span.col-xs-12.text-header
               Road surface name? what are these called?
