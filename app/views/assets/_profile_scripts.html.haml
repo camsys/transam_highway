@@ -1,0 +1,12 @@
+-# this is essentially the same script in shared/xeditable_scripts
+-# only thing different is the JS to update subheader if fields subheader calls are updated
+
+:javascript
+  function profile_save_callback() {
+    // update subheader
+    $.ajax({
+      url: "#{asset_path(@asset)}/get_subheader"
+    });
+  }
+
+= render 'shared/xeditable_scripts', locals: {obj: @asset}
