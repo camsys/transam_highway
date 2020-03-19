@@ -31,15 +31,21 @@
 
   - if @typed_inspection.class == BridgeCondition
     = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    -#= render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}
-    -#= render 'inspections/elements_panel.html.haml'
-    -#= render :partial => 'inspections/elements_panel.html.haml', :locals => {:inspection => @inspection}
+    = render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+    -#.div.class
+    -#  %col-xs-12
+    -#    = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}
+        -#= render partial: "inspections/elements_table_body.html.haml"
+        -#= render 'inspections/elements_panel.html.haml'
+        -#= render :partial => 'inspections/elements_panel.html.haml', :locals => {:inspection => @inspection}
+        -#=render :partial => 'inspections/elements_table_body.html.haml', :locals => {:inspection => @inspection}
+
     &nbsp;
     .div.alwaysbreak
 
   - if @inspection.images.any? || TransamAsset.get_typed_asset(@inspection.highway_structure).images.any?
     = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    = render :partial => 'inspections/report_photo_log.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+    = render :partial => 'inspections/report_photo_log.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     &nbsp;
     .div.alwaysbreak
 

@@ -82,7 +82,7 @@
               :single_select => 'false'}}
         %thead
           %tr
-            %th.centern Elem
+            %th.center Elem
             %th.center Description
             %th.center Quantity
             %th.center Unit
@@ -93,7 +93,7 @@
             %th.center
 
         %tbody
-          = render partial: "inspections/elements_table_body"
+          = render partial: "inspections/elements_table_body.html.haml"
 
 :javascript
   var quantity_changes = {

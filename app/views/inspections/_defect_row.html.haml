@@ -6,14 +6,14 @@
   %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
   %td.left= defect.element.element_definition.quantity_unit
 
-  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS1'
-  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS2'
-  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS3'
-  = render 'inspections/defect_location', defect: defect, can_update: can_update, cs: 'CS4'
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS1'
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS2'
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS3'
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS4'
 
   %td.center
     - if can_update
-      = render 'inspections/defect_row_action_buttons', defect: defect
+      = render 'inspections/defect_row_action_buttons.html.haml', defect: defect
 - if defect.defect_locations.any? || defect.notes.present?
   - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
   - notes = defect.notes unless notes.present?
