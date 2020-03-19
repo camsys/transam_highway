@@ -70,4 +70,4 @@
             %th.center.cs_4_quantity CS 4
             %th.center
           %tbody
-            = render partial: "inspections/elements_table_body.html.haml"
+            = render partial: "inspections/elements_table_body.html.haml", locals: {is_for_pdf: is_for_pdf }

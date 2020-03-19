@@ -31,7 +31,8 @@
 
   - if @typed_inspection.class == BridgeCondition
     = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    = render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+    -#= render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :is_for_pdf => true}
+    = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection, :is_for_pdf => true}
     -#.div.class
     -#  %col-xs-12
     -#    = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}

@@ -1,3 +1,6 @@
+-unless defined?(is_for_pdf)
+  -is_for_pdf = false
+
 - indent_str = '&nbsp;'*indent*4
 - can_update = can?(:update, @inspection.inspection) && @inspection.updatable?
 %tr.defect{data: {defect_id: defect.id, element_id: defect.element.id}}
@@ -6,10 +9,10 @@
   %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
   %td.left= defect.element.element_definition.quantity_unit
 
-  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS1'
-  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS2'
-  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS3'
-  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS4'
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS1', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS2', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS3', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS4', is_for_pdf: is_for_pdf
 
   %td.center
     - if can_update
