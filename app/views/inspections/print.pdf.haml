@@ -24,23 +24,11 @@
 
   &nbsp;
   .div.alwaysbreak
-  -#- if @inspection.class == BridgeCondition
-    = render :partial => 'inspections/vertical_clearance_header.html.haml', :locals => {:inspection => @inspection}
-    = render :partial => 'inspections/vertical_clearance.html.haml', :locals => {:inspection => @inspection}
-    .div.alwaysbreak
 
   - if @typed_inspection.class == BridgeCondition
     = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     -#= render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :is_for_pdf => true}
     = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection, :is_for_pdf => true}
-    -#.div.class
-    -#  %col-xs-12
-    -#    = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection}
-        -#= render partial: "inspections/elements_table_body.html.haml"
-        -#= render 'inspections/elements_panel.html.haml'
-        -#= render :partial => 'inspections/elements_panel.html.haml', :locals => {:inspection => @inspection}
-        -#=render :partial => 'inspections/elements_table_body.html.haml', :locals => {:inspection => @inspection}
-
     &nbsp;
     .div.alwaysbreak
 
