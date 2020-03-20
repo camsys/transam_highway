@@ -13,7 +13,8 @@ class HighwayConsultant < Organization
   has_and_belongs_to_many :highway_consultants,
                           :join_table => :highway_consultants_organizations,
                           :foreign_key => :organization_id,
-                          :association_foreign_key => :highway_consultant_id
+                          :association_foreign_key => :highway_consultant_id,
+                          :after_add => :after_add_highway_consultant_callback, :after_remove => :after_remove_highway_consultant_callback
 
   #------------------------------------------------------------------------------
   # Scopes
