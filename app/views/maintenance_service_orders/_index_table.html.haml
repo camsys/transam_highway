@@ -16,7 +16,7 @@
 
           %label Status
           .form-group
-            = select_tag(:state, options_for_select([['Pending', 'pending'], ['Overdue', 'overdue'], ['Completed', 'completed']], :selected => @states), :class => "form-control", :multiple => true)
+            = select_tag(:state, options_for_select([['Pending', 'pending'], ['Overdue', 'overdue'], ['Completed', 'completed']], :selected => @states), :class => "form-control", :multiple => true, :id => :maintenance_service_order_state)
 
           %label Date First Recommended
           = text_field_tag(:date_recommended, @date_recommended, class: 'form-control datepicker', :style => 'display: inline-block; margin-left: 5px; width:auto;')
@@ -93,7 +93,7 @@
       }
     });
 
-    $('#state').multiselect({
+    $('#maintenance_service_order_state').multiselect({
       inheritClass: true,
       maxHeight: 250,
       buttonText: function(options, select) {
