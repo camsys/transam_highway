@@ -12,7 +12,7 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-streambed'}Streambed Profile
-          - if can?(:update_from_structure, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
+          - if can?(:update, @asset) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
             .btn-group.pull-right.panel-action
               %div
                 %button.btn.btn-primary.edit-streambed-profiles-button
