@@ -5,6 +5,12 @@
 
 :ruby
   table_dom_id = SecureRandom.hex
+.row
+  .col-xs-12
+    =@asset
+.row
+  .col-xs-12
+    =@inspection
 - unless @asset || @inspection
   .col-md-9
     #maintenance_service_orders_table_actions.row
@@ -73,7 +79,8 @@
       - if @asset || @inspection
         %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
 
-= render 'shared/table_formatters'
+-#This needs to be fully qualified for pdf production.
+= render 'shared/table_formatters.html.haml'
 
 :javascript
 
