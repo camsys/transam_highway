@@ -27,7 +27,7 @@
           .row
             .col-sm-12
               #streambed_table_actions.btn-toolbar
-                - if can?(:update_from_structure, @asset) && can?(:manage, StreambedProfile) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
+                - if can?(:update, @asset) && can?(:manage, StreambedProfile) && !@asset.assigned_version && @asset.streambed_profiles.map{|p| p.inspection&.state}.any?('final')
                   .btn-group
                     = link_to new_streambed_profile_streambed_profile_point_path(@asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last), remote: true, class: 'btn btn-primary', title: 'New Distance' do
                       %i.fa.fa-plus
