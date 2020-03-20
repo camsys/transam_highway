@@ -4,7 +4,7 @@
     - @cols.each do |distance|
       %td.center
         - profile_point = profile.streambed_profile_points.find_by(distance: distance)
-        - if can?(:update_from_structure, @asset) && !@asset.assigned_version && profile.inspection&.state == 'final'
+        - if can?(:update_from_structure, @asset) && can?(:manage,StreambedProfile) && !@asset.assigned_version && profile.inspection&.state == 'final'
           - if profile_point
             %span.number-display
               = format_as_decimal(profile_point.value,1)
@@ -14,7 +14,7 @@
         - else
           = format_as_decimal(profile_point.value,1) if profile_point
     %td.center
-      - if can?(:update_from_structure, @asset) && !@asset.assigned_version && profile.inspection&.state == 'final'
+      - if can?(:update_from_structure, @asset) && can?(:manage,StreambedProfile) && !@asset.assigned_version && profile.inspection&.state == 'final'
         %span.number-display
           = format_as_decimal(profile.water_level,1)
         %input.water-level.number-input.form-control{style: 'display: none;', type: 'number', required: 'required', min: 0, value: profile.water_level, data: {streambed_profile: profile.object_key}}
@@ -23,7 +23,7 @@
   %tr
     %td.right Reference Line
     %td.left{:colspan => @cols.count + 1}
-      - if can?(:update_from_structure, @asset) && !@asset.assigned_version && profile.inspection&.state == 'final'
+      - if can?(:update_from_structure, @asset) && can?(:manage,StreambedProfile) && !@asset.assigned_version && profile.inspection&.state == 'final'
         %span.text-display
           %em= profile.reference_line
         %input.reference-line.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.reference_line, data: {streambed_profile: profile.object_key}}
@@ -32,7 +32,7 @@
   %tr
     %td.right Water Level Taken At
     %td.left{:colspan => @cols.count + 1}
-      - if can?(:update_from_structure, @asset) && !@asset.assigned_version && profile.inspection&.state == 'final'
+      - if can?(:update_from_structure, @asset) && can?(:manage,StreambedProfile) && !@asset.assigned_version && profile.inspection&.state == 'final'
         %span.text-display
           %em= profile.water_level_reference
         %input.water-level-reference.text-input.form-control{style: 'display: none;', type: 'text', required: 'required', value: profile.water_level_reference, data: {streambed_profile: profile.object_key}}
