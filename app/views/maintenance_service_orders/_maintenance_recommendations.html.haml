@@ -1,0 +1,44 @@
+
+%table{:border => 1}
+  %thead
+    %tr
+      %th.center
+        Priority
+      %th.center
+        Status
+      %th.center
+        General Location
+      %th.center
+        Recommendation
+      %th.center
+        Inspection Notes
+      %th.center
+        Date First Recommended
+      %th.center
+        Timeline
+      %th.center
+        Date Completed
+
+  %tbody
+    -maintenance_service_orders = MaintenanceServiceOrder.where(transam_asset_id: inspection.highway_structure.id)
+    -maintenance_service_orders.each do |mso|
+      -#-maintenance_service_order = MaintenanceServiceOrder
+      -first_maintenance_service_events = mso.maintenance_events.first
+      %tr
+        %td.center
+          =mso.priority_type
+        %td.center
+          =mso.state
+        %td.center
+          =first_maintenance_service_events.try(:maintenance_activity_type).try(:maintenance_activity_category_subtype).try(:name)
+        %td.center
+          =first_maintenance_service_events.try(:maintenance_activity_type).try(:name)
+        %td.center
+          =mso.notes
+        %td.center
+          =mso.date_recommended
+        %td.center
+          =first_maintenance_service_events.try(:due_date).try(:strftime,'%B %Y')
+        %td.center
+          -unless first_maintenance_service_events.completed_by.nil?
+            =first_maintenance_service_events.try(:updated_at).try(:strftime,'%d %B %Y')

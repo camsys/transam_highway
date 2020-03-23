@@ -1,3 +1,4 @@
+-typed_structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
 .col-xs-6
   .row
     %span.col-xs-12.text-header
@@ -61,7 +62,7 @@
     %span.col-xs-6.text-limiter-counter
       Structure Class (24)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.highway_structure_type
+      =TransamAsset.get_typed_asset(@inspection.highway_structure.transam_asset).class.name
   .row
     %span.col-xs-6.text-limiter-counter
       Major Minor (25)
@@ -97,7 +98,7 @@
     %span.col-xs-6.text-limiter-counter
       Due Date (90A)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.calculated_inspection_due_date
+      =@inspection.calculated_inspection_due_date.try(:strftime,'%B %Y')
   .row
     %span.col-xs-6.text-limiter-counter
       Target Date (90T)
@@ -112,17 +113,17 @@
     %span.col-xs-6.text-limiter-counter
       Frac Crit Insp Req'd (92AA)
     %span.col-xs-6.text-limiter-counter
-      __Where is this now I only see the column removed__
+      =@inspection.inspection_type_setting.is_required
   .row
     %span.col-xs-6.text-limiter-counter
       Underwater Insp Req'd (92BA)
     %span.col-xs-6.text-limiter-counter
-      __Where is this now I only see the column removed__
+      =@inspection.inspection_type_setting.is_required
   .row
     %span.col-xs-6.text-limiter-counter
       Special Insp Req'd (92CA)
     %span.col-xs-6.text-limiter-counter
-      __Where is this now I only see the column removed__
+      =@inspection.inspection_type_setting.is_required
   .row
     %span.col-xs-6.text-limiter-counter
       Border Bridge Struc Number (99)
@@ -146,6 +147,11 @@
       Maintenance (2M)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.maintenance_section
+  .row
+    %span.col-xs-6.text-limiter-counter
+      Transportation Planning Region (2T)
+    %span.col-xs-6.text-limiter-counter
+      __NA__
   .row
     %span.col-xs-6.text-limiter-counter
       Features Intersected (6A)
@@ -175,7 +181,7 @@
     %span.col-xs-6.text-limiter-counter
       Longitude (17)
     %span.col-xs-6.text-limiter-counter
-      =@asset.geometry.y
+      =@asset.geometry.x
   .row
     %span.col-xs-6.text-limiter-counter
       FHWA Region (Border) (98A)
@@ -245,7 +251,7 @@
       =@typed_inspection.approach_rail_end_safety_type
   .row
     %span.col-xs-6.text-limiter-counter
-      Rail Height (66H)
+      Rail Height (36H)
     %span.col-xs-6.text-limiter-counter-yellow
       __NA__
   .row
@@ -260,24 +266,26 @@
       =@typed_inspection.waterway_appraisal_rating_type
   .row
     %span.col-xs-6.text-limiter-counter
+      Approach Roadway Alignment (72)
+    %span.col-xs-6.text-limiter-counter-yellow
+      =@typed_inspection.approach_alignment_appraisal_rating_type
+  .row
+    %span.col-xs-6.text-limiter-counter
       Structural Evaluation (67)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.approach_rail_end_safety_type
+      =@typed_inspection.structural_appraisal_rating_type
   .row
     %span.col-xs-6.text-limiter-counter
       Deck Geometry (68)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.deck_geometry_appraisal_rating_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Underclearances Appraisal (69)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.underclearance_appraisal_rating_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Approach Roadway Alignment (72)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.approach_alignment_appraisal_rating_type
+
+  -if typed_inspection_methods.include?(:underclearance_appraisal_rating_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Underclearances Appraisal (69)
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@typed_inspection.underclearance_appraisal_rating_type
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Rail Type (125A)
@@ -300,30 +308,34 @@
     %span.col-xs-6.text-limiter-counter
       Historical Significance (37)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.highway_structurible.bridge_toll_type
+      =@inspection.highway_structure.historical_significance_type
   .row
     %span.col-xs-6.text-limiter-counter
       Temporary Structure (103)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.historical_significance_type
+      =@inspection.highway_structure.is_temporary
   .row
     %span.col-xs-12.text-header
       Condition
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Deck (58)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.deck_condition_rating_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Superstructure (59)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.superstructure_condition_rating_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Substructure (60)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.substructure_condition_rating_type
+  -if typed_inspection_methods.include?(:deck_condition_rating_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Deck (58)
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@typed_inspection.deck_condition_rating_type
+  -if typed_inspection_methods.include?(:superstructure_condition_rating_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Superstructure (59)
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@typed_inspection.superstructure_condition_rating_type
+
+  -if typed_inspection_methods.include?(:substructure_condition_rating_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Substructure (60)
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@typed_inspection.substructure_condition_rating_type
   .row
     %span.col-xs-6.text-limiter-counter
       Channel Protection (61)
@@ -341,7 +353,7 @@
     %span.col-xs-6.text-limiter-counter
       Approach Roadway Width (32)
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      =@inspection.highway_structure.approach_roadway_width
   .row
     %span.col-xs-6.text-limiter-counter
       Meridian (33)
@@ -352,70 +364,82 @@
       Skew (34))
     %span.col-xs-6.text-limiter-counter-yellow
       __NA__
+
   .row
     %span.col-xs-6.text-limiter-counter
       Maximum Span Length (48)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.max_span_length
+      =typed_structure.max_span_length
+
   .row
     %span.col-xs-6.text-limiter-counter
       Bridge Length (49)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.length
+      =typed_structure.length
+
   .row
     %span.col-xs-6.text-limiter-counter
       Left Curb or Sidewalk (50A)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.left_curb_sidewalk_width
+      =typed_structure.left_curb_sidewalk_width
+
   .row
     %span.col-xs-6.text-limiter-counter
       Right Curb or Sidewalk (50B)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.right_curb_sidewalk_width
+      =typed_structure.right_curb_sidewalk_width
+
   .row
     %span.col-xs-6.text-limiter-counter
       Curb to Curb (51)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.roadway_width
+      =typed_structure.roadway_width
+
   .row
     %span.col-xs-6.text-limiter-counter
       Out to Out (52)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.deck_width
+      =typed_structure.deck_width
+
   .row
     %span.col-xs-6.text-limiter-counter
       Min Vertical Clr Above Bridge (53)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.min_vertical_clearance_above
+      =typed_structure.min_vertical_clearance_above
+
+  .row
+    %span.col-xs-6.text-limiter-counter
+      Min Vertical Clr Below Bridge (54B)
+    %span.col-xs-6.text-limiter-counter-yellow
+      =typed_structure.min_vertical_clearance_below
+
   .row
     %span.col-xs-6.text-limiter-counter
       Ref Vert Feature Below Bridge (54A)
     %span.col-xs-6.text-limiter-counter-yellow
       __??__
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Min Vertical Clr Below Bridge (54B)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.min_vertical_clearance_below
+
   .row
     %span.col-xs-6.text-limiter-counter
       Ref Horiz Feat Below Bridge (55A)
     %span.col-xs-6.text-limiter-counter-yellow
       __??__
+
   .row
     %span.col-xs-6.overflow-hidden.text-limiter-counter
       Min Horiz Clr Below Bridge, Rt (55B)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.min_lateral_clearance_below_right
+      =typed_structure.min_lateral_clearance_below_right
+
   .row
     %span.col-xs-6.text-limiter-counter
       Min Horiz Clr Below Bridge, Lt (56)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.highway_structurible.min_lateral_clearance_below_left
+      =typed_structure.min_lateral_clearance_below_left
+
   .row
     %span.col-xs-12.text-header
-      Remarks
+      Structure Notes
   .row
     %span.col-xs-12.text-limiter-counter
-      I just used the inspection notes.  Not sure if that's right
-      =@inspection.notes
+      =@inspection.highway_structure.remarks

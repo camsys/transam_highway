@@ -1,3 +1,5 @@
+-typed_structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
+
 .col-xs-6
   .row
     %span.col-xs-12.text-header
@@ -24,6 +26,11 @@
       =@inspection.highway_structure.highway_structurible.operating_rating
   .row
     %span.col-xs-6.text-limiter-counter
+      Operating Rating (64F)
+    %span.col-xs-6.text-limiter-counter
+      __NA__
+  .row
+    %span.col-xs-6.text-limiter-counter
       Method for Inventory Rating (65)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.inventory_rating_method_type
@@ -34,7 +41,7 @@
       =@inspection.highway_structure.highway_structurible.inventory_rating
   .row
     %span.col-xs-6.text-limiter-counter
-      Inventory Rating Factor (64F))
+      Inventory Rating Factor (66F))
     %span.col-xs-6.text-limiter-counter
       __NA__
   .row
@@ -214,26 +221,22 @@
     %span.col-xs-6.text-limiter-counter
       Deck Structure Type (107)
     %span.col-xs-6.text-limiter-counter
-      No link to type just id?
-      =@inspection.highway_structure.highway_structurible.deck_structure_type_id
+      =typed_structure.deck_structure_type
   .row
     %span.col-xs-6.text-limiter-counter
       Wearing Surface Type (108A)
     %span.col-xs-6.text-limiter-counter
-      No link to type just id?
-      =@inspection.highway_structure.highway_structurible.wearing_surface_type_id
+      =typed_structure.wearing_surface_type
   .row
     %span.col-xs-6.text-limiter-counter
       Membrane Type (108B)
     %span.col-xs-6.text-limiter-counter
-      No link to type just id?
-      =@inspection.highway_structure.highway_structurible.membrane_type_id
+      =typed_structure.membrane_type
   .row
     %span.col-xs-6.text-limiter-counter
       Deck Protection Type (108C)
     %span.col-xs-6.text-limiter-counter
-      No link to type just id?
-      =@inspection.highway_structure.highway_structurible.deck_protection_type_id
+      =typed_structure.deck_protection_type
   .row
     %span.col-xs-6.text-limiter-counter
       Expansion Deck Type (124)

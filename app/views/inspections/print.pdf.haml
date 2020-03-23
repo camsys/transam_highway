@@ -5,14 +5,14 @@
   -#  .div.alwaysbreak { page-break-before: always; }
 
 
-
   -@typed_inspection = Inspection.get_typed_inspection(@inspection)
+  -typed_inspection_methods = @typed_inspection.class.instance_methods(false)
   = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
-  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
+  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect, :typed_inspection_methods => typed_inspection_methods}
   &nbsp;
   .div.alwaysbreak
   = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-  = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :methods => methods}
 
   -i=0
   -@inspection.highway_structure.roadways.each do |roadway|
@@ -20,14 +20,13 @@
     &nbsp;
     .div.alwaysbreak
     = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway }
-    = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway, :road_counter => i}
+    = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway, :road_counter => i, :methods => methods}
 
   &nbsp;
   .div.alwaysbreak
 
   - if @typed_inspection.class == BridgeCondition
     = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    -#= render :partial => 'inspections/element_inspection_data.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :is_for_pdf => true}
     = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection, :is_for_pdf => true}
     &nbsp;
     .div.alwaysbreak
@@ -38,10 +37,10 @@
     &nbsp;
     .div.alwaysbreak
 
-    -#= render :partial => 'inspections/maintenance_recommendations_header.html.haml', :locals => {:inspection => @inspection}
-    -#= render :partial => 'inspections/maintenance_recommendations.html.haml', :locals => {:inspection => @inspection}
-    &nbsp;
-    .div.alwaysbreak
+  = render :partial => 'maintenance_service_orders/maintenance_recommendations_header.html.haml', :locals => {:inspection => @inspection}
+  = render :partial => 'maintenance_service_orders/maintenance_recommendations.html.haml', :locals => {:inspection => @inspection}
+  &nbsp;
+  .div.alwaysbreak
 
   = render :partial => 'inspections/inspectors_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
   = render :partial => 'inspections/inspectors.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
