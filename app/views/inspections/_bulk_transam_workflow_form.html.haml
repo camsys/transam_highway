@@ -54,7 +54,6 @@
       var val = $("input[type=submit][clicked=true]").attr('id');
       if (val == 'reopen_workflow') {
         $('#transam_workflow_model_proxy_assigned_organization_id').val('');
-        $('#transam_workflow_model_proxy_inspector_ids').val('');
         $('#transam_workflow_model_proxy_event_name').val('reopen');
       } else if (val == 'unassign_workflow') {
         $('#transam_workflow_model_proxy_include_updates').val(0);

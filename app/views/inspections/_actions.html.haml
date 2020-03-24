@@ -14,7 +14,7 @@
             = evt.human_name
     - if @inspection.state == 'ready' && (can? :reopen, @inspection.inspection) && !(allowable_events.map{|x| x.name}.include? 'reopen')
       %li
-        = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: 'reopen', global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil, organization_type_id: nil}) do
+        = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: 'reopen', global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil}) do
           %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('reopen')}
           To Open
     - elsif @inspection.state == 'signature_ready' && !(allowable_events.map{|x| x.name}.include? 'finalize')
