@@ -559,10 +559,13 @@ class BridgeLike < TransamAssetRecord
   end
 
 
-  def self.process_inspection(hash, struct_class_code, date)
+  def self.process_inspection(hash, struct_class_code, date, error_stats)
     type, desc, inspection_frequency = get_inspection_type(hash['INSPTYPE'], hash)
 
-    raise StandardError.new "No inspection type found." unless type
+    unless type
+      error_stats[:no_inspection_type] += 1
+      raise EncodingError.new "No inspection type found for INSPTYPE: #{hash['INSPTYPE']}."
+    end
 
     inspection_klass = case struct_class_code
     when 'BRIDGE', 'MISCELLANEOUS'
@@ -654,7 +657,8 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, flexible=[], rigid=[])
+                                 highway_authority, inspection_program, error_stats,
+                                 flexible=[], rigid=[])
     asset_tag = bridge_hash['BRKEY']
 
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -802,6 +806,7 @@ class BridgeLike < TransamAssetRecord
       optional[:latitude] = lat
       optional[:longitude] = lon
     else
+      error_stats[:bad_lat_lon] += 1
       return false, "Location data not valid for #{asset_tag}. lat: #{lat}, lon: #{lon}"
     end
 
