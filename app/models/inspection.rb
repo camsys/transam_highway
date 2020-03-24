@@ -320,6 +320,10 @@ class Inspection < InspectionRecord
     (['assigned','draft_report', 'qc_review'].include? state)
   end
 
+  def scour_critical_bridge_type_updatable?
+    ['submitted', 'qa_review'].include? state
+  end
+
   protected
 
   def set_defaults

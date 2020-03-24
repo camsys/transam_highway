@@ -26,7 +26,7 @@
     .col-md-6
       = editable_association_tag(@inspection, :operational_status_type, reference_label('bridge_conditions', 'operational_status_type_id', 'Operational Status'), model_name: 'Inspection')
       = editable_association_tag(@inspection, :channel_condition_type, reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel/Protection Rating'), model_name: 'Inspection')
-      - if can? :update_scour_critical_bridge_type_id, @inspection
+      - if can?(:update_scour_critical_bridge_type_id, @inspection) && @inspection.scour_critical_bridge_type.updatable?
         = editable_association_tag(@inspection, :scour_critical_bridge_type, reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge'), model_name: 'Inspection')
 
       %hr
