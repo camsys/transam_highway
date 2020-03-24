@@ -192,7 +192,7 @@
 
     function link_formatter(value, row) {
       action_html = ''
-      if ((row['state'] != 'completed') && ('#{(can? :update, @inspection.inspection) && @inspection.updatable?}' == 'true')) {
+      if ((row['state'] != 'completed') && ('#{(can? :update, @inspection.inspection) && can?(:manage, MaintenanceServiceOrder) && @inspection.updatable?}' == 'true')) {
         action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
       }
       return action_html;
@@ -202,7 +202,7 @@
 
     function link_formatter(value, row) {
       action_html = ''
-      if ((row['state'] != 'completed') && ('#{(can? :update, @asset) && !@asset.assigned_version}' == 'true')) {
+      if ((row['state'] != 'completed') && ('#{(can? :update, @asset) && can?(:manage, MaintenanceServiceOrder) && !@asset.assigned_version}' == 'true')) {
         action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
       }
       return action_html;

@@ -84,7 +84,7 @@ class HighwayStructure < TransamAssetRecord
 
   ]
 
-  DTD_PARAMS = [:historical_significance_type_id, :region, :maintenance_section_id, :county, :city]
+  DTD_PARAMS = [:historical_significance_type_id, :region_id, :maintenance_section_id, :county, :city]
   RATING_PARAMS = []
   INSPECTOR_PARAMS = [:location_description, :remarks, :lanes_on, :lanes_under, :approach_roadway_width, :length, :asset_subtype_id, ]
 
