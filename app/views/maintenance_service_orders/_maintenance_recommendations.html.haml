@@ -1,22 +1,22 @@
 
-%table{:border => 1}
+%table{border: 1, width: '100%', padding: 2}
   %thead
     %tr
-      %th.center
+      %th.center.pdf_maint_rec_header
         Priority
-      %th.center
+      %th.center.pdf_maint_rec_header
         Status
-      %th.center
+      %th.center.pdf_maint_rec_header
         General Location
-      %th.center
+      %th.center.pdf_maint_rec_header
         Recommendation
-      %th.center
+      %th.center.pdf_maint_rec_header
         Inspection Notes
-      %th.center
+      %th.center.pdf_maint_rec_header
         Date First Recommended
-      %th.center
+      %th.center.pdf_maint_rec_header
         Timeline
-      %th.center
+      %th.center.pdf_maint_rec_header
         Date Completed
 
   %tbody
@@ -25,20 +25,20 @@
       -#-maintenance_service_order = MaintenanceServiceOrder
       -first_maintenance_service_events = mso.maintenance_events.first
       %tr
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =mso.priority_type
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =mso.state
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =first_maintenance_service_events.try(:maintenance_activity_type).try(:maintenance_activity_category_subtype).try(:name)
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =first_maintenance_service_events.try(:maintenance_activity_type).try(:name)
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =mso.notes
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =mso.date_recommended
-        %td.center
+        %td.center.pdf_maint_rec_cell
           =first_maintenance_service_events.try(:due_date).try(:strftime,'%B %Y')
-        %td.center
+        %td.center.pdf_maint_rec_cell
           -unless first_maintenance_service_events.completed_by.nil?
             =first_maintenance_service_events.try(:updated_at).try(:strftime,'%d %B %Y')

@@ -217,26 +217,31 @@
       Number of Approach Spans (46)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.num_spans_approach
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Deck Structure Type (107)
-    %span.col-xs-6.text-limiter-counter
-      =typed_structure.deck_structure_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Wearing Surface Type (108A)
-    %span.col-xs-6.text-limiter-counter
-      =typed_structure.wearing_surface_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Membrane Type (108B)
-    %span.col-xs-6.text-limiter-counter
-      =typed_structure.membrane_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Deck Protection Type (108C)
-    %span.col-xs-6.text-limiter-counter
-      =typed_structure.deck_protection_type
+  -typed_srtructure_methods = typed_srtructure_methods.class.instance_methods(false)
+  -if typed_srtructure_methods.include?(:deck_structure_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Deck Structure Type (107)
+      %span.col-xs-6.text-limiter-counter
+        =typed_structure.deck_structure_type
+  -if typed_srtructure_methods.include?(:wearing_surface_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Wearing Surface Type (108A)
+      %span.col-xs-6.text-limiter-counter
+        =typed_structure.wearing_surface_type
+  -if typed_srtructure_methods.include?(:membrane_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Membrane Type (108B)
+      %span.col-xs-6.text-limiter-counter
+        =typed_structure.membrane_type
+  -if typed_srtructure_methods.include?(:deck_protection_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Deck Protection Type (108C)
+      %span.col-xs-6.text-limiter-counter
+        =typed_structure.deck_protection_type
   .row
     %span.col-xs-6.text-limiter-counter
       Expansion Deck Type (124)
