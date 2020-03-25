@@ -38,6 +38,8 @@
 
       - if from_open_boolean || from_ready_switch_team_boolean
         = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil
+        - if from_ready_switch_team_boolean
+          = f.input :to_state, as: :hidden, input_html: {value: 'ready'}
       - if from_ready_to_open_boolean
         = f.input :assigned_organization_id, as: :hidden, input_html: {value: assigned_organization_id}
 
@@ -67,6 +69,8 @@
       } else if (val == 'unassign_workflow') {
         $('#transam_workflow_model_proxy_include_updates').val(0);
         $('#transam_workflow_model_proxy_event_name').val('unassign');
+      } else if (val == 'switch_team_workflow') {
+        $('#transam_workflow_model_proxy_event_name').val('');
       }
 
       form.submit();
