@@ -1,6 +1,5 @@
 :ruby
-
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
 
 .modal-dialog.modal-lg
   .modal-content

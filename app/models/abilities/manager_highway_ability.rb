@@ -7,7 +7,13 @@ module Abilities
       ability = Abilities::SiaFullEditPrivilege.new(user, user.viewable_organization_ids) rescue nil
       self.merge ability if ability.present?
 
-      can :view_all, Inspection # allows for seeing everything and assigning to different teams
+      if user.organization.organization_type.class_name == 'HighwayAuthority'
+        can :view_all, Inspection # allows for seeing everything and assigning to different teams
+      else
+        can :switch_team, InspectionRecord do |insp|
+          user.viewable_organization_ids.reject{|o| o == HighwayAuthority.first.id}.include? insp.assigned_organization_id
+        end
+      end
       can :schedule, Inspection
 
       cannot :authorize, Organization do |org|

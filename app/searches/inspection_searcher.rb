@@ -60,7 +60,7 @@ class InspectionSearcher < BaseSearcher
       if can_view_all
         inspection_klass.where("transam_assets.organization_id": organization_ids)
       else
-        inspection_klass.where("transam_assets.organization_id": organization_ids).where("inspections.assigned_organization_id": user&.organization_ids)
+        inspection_klass.where("transam_assets.organization_id": organization_ids).where("inspections.assigned_organization_id": organization_ids.reject{|x| x == HighwayAuthority.first.id})
       end
     end
 
@@ -130,10 +130,6 @@ class InspectionSearcher < BaseSearcher
 
   def inspection_program_id_conditions
     inspection_klass.where("highway_structures.inspection_program_id": parse_nil_search_value(search_proxy&.inspection_program_id)) unless search_proxy&.inspection_program_id.blank?
-  end
-
-  def organization_type_id_conditions
-    inspection_klass.where("inspections.organization_type_id": parse_nil_search_value(search_proxy&.organization_type_id)) unless search_proxy&.organization_type_id.blank?
   end
 
   def assigned_organization_id_conditions

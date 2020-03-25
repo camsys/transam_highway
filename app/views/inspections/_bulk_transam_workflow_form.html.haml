@@ -1,5 +1,12 @@
 :ruby
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
+
+  from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
+  from_ready_switch_team_boolean = state == 'ready' && assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id))
+  from_ready_to_open_boolean = state == 'ready' && can?(:reopen, Inspection.new)
+  from_ready_boolean = ( from_ready_to_open_boolean || from_ready_switch_team_boolean)
+  from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+  to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))
 
 = simple_form_for(:transam_workflow_model_proxy,
   :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
@@ -12,11 +19,14 @@
 
   .row
     .col-sm-12
-      - if state == 'ready'
-        = f.button :submit, 'To Open', :class => "btn btn-primary assignment_form_submit", :id => 'reopen_workflow', disabled: true
-      - elsif state == 'open'
+      - if from_ready_to_open_boolean || from_ready_switch_team_boolean
+        - if from_ready_to_open_boolean
+          = f.button :submit, 'To Open', :class => "btn btn-primary assignment_form_submit", :id => 'reopen_workflow', disabled: true
+        - if from_ready_switch_team_boolean
+          = f.button :submit, 'Switch Team', :class => "btn btn-primary assignment_form_submit", :id => 'switch_team_workflow', disabled: true
+      - elsif from_open_boolean
         = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'make_ready_workflow', disabled: true
-      - elsif (state == 'assigned' && assigned_organization_id.to_i > 0)
+      - elsif from_assigned_boolean
         = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'unassign_workflow', disabled: true
 
   = f.input :global_ids, as: :hidden
@@ -26,11 +36,10 @@
   .row.group-team-fields{style: 'margin-top: 5px;'}
     .col-sm-6
 
-      - if state == 'open'
+      - if from_open_boolean || from_ready_switch_team_boolean
         = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil
-      - elsif state == 'ready'
+      - if from_ready_to_open_boolean
         = f.input :assigned_organization_id, as: :hidden, input_html: {value: assigned_organization_id}
-        = f.input :inspector_ids, as: :hidden
 
 :javascript
 

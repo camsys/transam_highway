@@ -10,7 +10,7 @@
 
 :ruby
 
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.organizations)
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
 
   inspectors = []
   User.active.with_role(:user).each do |user|
@@ -19,7 +19,7 @@
         name: user.to_s,
         id: user.id,
         organization_id: l.id
-      }
+      } if orgs.include? l
     end
   end
 
