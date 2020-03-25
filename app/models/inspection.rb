@@ -5,6 +5,7 @@ class Inspection < InspectionRecord
   actable as: :inspectionible
 
   after_initialize :set_defaults
+  after_save       :remove_inspectors_after_reopen
 
   include TransamObjectKey
 
@@ -104,7 +105,7 @@ class Inspection < InspectionRecord
 
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', guard: :allowed_to_unassign, can: :can_assign, human_name: 'To Ready'},
+        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', can: :can_assign, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
 
@@ -189,10 +190,6 @@ class Inspection < InspectionRecord
 
   def allowed_to_make_ready
     assigned_organization.present?
-  end
-
-  def allowed_to_unassign
-    inspectors.count == 0
   end
 
   def allowed_to_assign
@@ -339,6 +336,12 @@ class Inspection < InspectionRecord
       end
     end
 
+  end
+
+  def remove_inspectors_after_reopen
+    unless assigned_organization
+      self.inspectors.clear
+    end
   end
 
 end
