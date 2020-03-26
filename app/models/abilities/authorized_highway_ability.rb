@@ -18,6 +18,7 @@ module Abilities
 
       can :update, TransamAssetRecord
       can :manage, StreambedProfile
+      can :manage, Roadway
 
       AssetType.pluck(:class_name).each do |class_name|
         class_name.constantize.new.inspector_params.each do |field|

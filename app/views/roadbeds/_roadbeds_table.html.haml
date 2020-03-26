@@ -1,4 +1,4 @@
-- can_update_inspection = can?(:update, inspection) && inspection.updatable?
+- can_update_inspection = can?(:manage, Roadway) && can?(:update, inspection) && inspection.updatable?
 %table.table.table-bordered#roadbeds-table
   %thead
     %tr

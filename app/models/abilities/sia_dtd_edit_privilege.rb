@@ -9,6 +9,7 @@ module Abilities
       end
 
       can [:update, :update_from_structure], TransamAssetRecord
+      can :manage, Roadway
 
       AssetType.pluck(:class_name).each do |class_name|
         class_name.constantize.new.dtd_params.each do |field|
