@@ -28,6 +28,12 @@
       = editable_association_tag(@inspection, :channel_condition_type, reference_label('bridge_conditions', 'channel_condition_type_id', 'Channel/Protection Rating'), model_name: 'Inspection')
       - if can?(:update_scour_critical_bridge_type_id, @inspection) && @inspection.scour_critical_bridge_type_updatable?
         = editable_association_tag(@inspection, :scour_critical_bridge_type, reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge'), model_name: 'Inspection')
+      - else
+        .form-group
+          %label.control-label
+            = reference_label('bridge_conditions', 'scour_critical_bridge_type_id', 'Scour Critical Bridge')
+          .display-value
+            = @inspection.scour_critical_bridge_type
 
       %hr
       = editable_association_tag(@inspection, :railings_safety_type, reference_label('bridge_conditions', 'railings_safety_type_id', 'Railings Safety'), model_name: 'Inspection')

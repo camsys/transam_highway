@@ -1,4 +1,13 @@
-- disabled_fields = @inspection.inspection_type.name == 'Initial' ? [] : @asset.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @asset)}
+:ruby
+  if @inspection.inspection_type.name == 'Initial'
+    disabled_fields =  []
+  else
+    if @inspection.scour_critical_bridge_type_updatable?
+      disabled_fields = @asset.allowable_params.reject{|x| x == :scour_critical_bridge_type_id}
+    else
+      disabled_fields = @asset.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @asset)}
+    end
+  end
 = render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}
 
 :javascript
