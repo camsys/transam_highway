@@ -621,18 +621,18 @@ class BridgeLike < TransamAssetRecord
     # Map from BrM inspection types to SIMSA type
     case type_code
     # special
-    when 'L', 'M', 'O'
+    when 'L', 'M', 'O', '4', '5'
       type = InspectionType.find_by(name: 'Special')
       case type_code
       when 'L'
         desc = 'Accident Damage (traffic)'
       when 'M'
         desc = 'Natural Disaster Damage'
-      when 'O'
+      when 'O', '4', '5'
         desc = 'Other'
       end
       frequency = hash['OSINSPFREQ']
-    when 'D'
+    when 'B', 'C', 'D', 'E'
       type = InspectionType.find_by(name: 'Underwater')
       frequency = hash['UWINSPFREQ']
     when 'G'
