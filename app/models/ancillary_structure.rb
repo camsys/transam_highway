@@ -36,7 +36,7 @@ class AncillaryStructure < BridgeLike
 
     unless type
       error_stats[:no_inspection_type] += 1
-      raise StandardError.new "No inspection type found for INSPTYPE: #{hash['INSPTYPE']}."
+      raise EncodingError.new "No inspection type found for INSPTYPE: #{hash['INSPTYPE']}."
     end
 
     inspection = AncillaryCondition.new(event_datetime: date, calculated_inspection_due_date: date,
@@ -57,7 +57,7 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, error_stats,
+                                 highway_authority, inspection_program, error_stats, logger,
                                  ignore1, ignore2)
     asset_tag = hash['BRKEY']
 
@@ -90,7 +90,10 @@ class AncillaryStructure < BridgeLike
       # Destroy the existing structure so that the new structure saves cleanly
       highway_structure = HighwayStructure.find_by(asset_tag: asset_tag)
       if highway_structure
-        puts "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}"
+        msg =  "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}; replacing with #{struct_class_code}"
+        puts
+        puts msg
+        logger.warn msg
         highway_structure.destroy
       end
 

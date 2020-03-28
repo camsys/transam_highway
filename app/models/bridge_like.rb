@@ -262,7 +262,7 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, error_stats,
+                                 highway_authority, inspection_program, error_stats, logger,
                                  flexible=[], rigid=[])
     asset_tag = bridge_hash['BRKEY']
 
@@ -276,7 +276,7 @@ class BridgeLike < TransamAssetRecord
     when 'MISCELLANEOUS'
       bridgelike = MiscStructure.find_or_initialize_by(asset_tag: asset_tag)
     else
-      msg = "Skipping processing of Structure Class: #{struct_class_code}"
+      msg = "Skipping processing of unexpected Structure Class: #{struct_class_code}"
       return false, msg
     end
 
@@ -285,7 +285,10 @@ class BridgeLike < TransamAssetRecord
       # Destroy the existing structure so that the new structure saves cleanly
       struct = HighwayStructure.find_by(asset_tag: asset_tag)
       if struct
-        puts "Destroying existing #{struct.asset_type.name}: #{asset_tag}"
+        msg =  "Destroying existing #{struct.asset_type.name}: #{asset_tag}; replacing with #{struct_class_code}"
+        puts
+        puts msg
+        logger.warn msg
         struct.destroy
       end
 
@@ -424,8 +427,9 @@ class BridgeLike < TransamAssetRecord
   end
 
   def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class,
-                                  ade_mapping={}, add_mapping={}, ade_515_mapping={},
-                                  steel_coating=nil, condition_states=['CS1', 'CS2', 'CS3', 'CS4'])
+                                  ade_mapping={}, add_mapping={}, ade_515_mapping={}, steel_coating=nil,
+                                  element_stats={ }, defect_stats={ }, defect_location_stats={ },
+                                  condition_states=['CS1', 'CS2', 'CS3', 'CS4'])
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
     grandparent_key = hash['ELEM_GRANDPARENT_KEY'].to_i
@@ -455,6 +459,9 @@ class BridgeLike < TransamAssetRecord
         end
 
         element.save!
+        element_stats['total elements'] += 1
+        element_stats[AssemblyType.where(id: elem_def.assembly_type_id).pluck(:name).first] += 1
+        element_stats[elem_def.number] += 1
         # Save to original key so that child can be attached to mapped element
         parent_elements[key] = element
       end
@@ -503,6 +510,8 @@ class BridgeLike < TransamAssetRecord
                                       condition_state_4_quantity:
                                         process_quantities(hash['ELEM_QTYSTATE4'], units))
 
+          defect_stats['total defects'] += 1
+          defect_stats[defect_def.number] += 1
           [:condition_state_1_quantity, :condition_state_2_quantity, :condition_state_3_quantity,
            :condition_state_4_quantity].each_with_index do |symbol, index|
             quantity = defect.send(symbol)
@@ -510,6 +519,8 @@ class BridgeLike < TransamAssetRecord
               defect.defect_locations.build(quantity: quantity,
                                             condition_state: condition_states[index],
                                             note: notes)
+              defect_location_stats['total defect locations'] += 1
+              defect_location_stats[condition_states[index]] += 1
             end
           end
         else # Assume BME
