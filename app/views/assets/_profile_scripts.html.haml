@@ -5,10 +5,19 @@
 :ruby
   disabled_fields = nil
   if @inspection.present?
-    unless (can?(:update, @inspection.inspection) && @inspection.updatable?)
-      disabled_fields = @asset.allowable_params
+    if @inspection.inspection_type.name == 'Initial'
+      disabled_fields =  []
+    else
+      disabled_fields = @asset.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @asset)}
+      if @inspection.scour_critical_bridge_type_updatable?
+        disabled_fields += @inspection.allowable_params.reject{|x| x == :scour_critical_bridge_type_id} # can is checked at save/edit button so can assume here its enabled
+      else
+        disabled_fields += @inspection.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @inspection)}
+      end
     end
   end
+
+
 :javascript
   function profile_save_callback() {
     // update subheader
