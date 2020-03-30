@@ -428,7 +428,7 @@ class BridgeLike < TransamAssetRecord
 
   def self.process_element_record(hash, bridgelike, inspection, parent_elements, bme_class,
                                   ade_mapping={}, add_mapping={}, ade_515_mapping={}, steel_coating=nil,
-                                  element_stats={ }, defect_stats={ }, defect_location_stats={ },
+                                  element_stats={ }, element_assembly_stats={ }, defect_stats={ }, defect_location_stats={ },
                                   condition_states=['CS1', 'CS2', 'CS3', 'CS4'])
     key = hash['ELEM_KEY'].to_i
     parent_key = hash['ELEM_PARENT_KEY'].to_i
@@ -460,7 +460,7 @@ class BridgeLike < TransamAssetRecord
 
         element.save!
         element_stats['total elements'] += 1
-        element_stats[AssemblyType.where(id: elem_def.assembly_type_id).pluck(:name).first] += 1
+        element_assembly_stats[AssemblyType.where(id: elem_def.assembly_type_id).pluck(:name).first] += 1
         element_stats[elem_def.number] += 1
         # Save to original key so that child can be attached to mapped element
         parent_elements[key] = element
