@@ -1,6 +1,6 @@
 class Inspection < InspectionRecord
 
-  has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
+  #has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
 
   actable as: :inspectionible
 
@@ -131,7 +131,7 @@ class Inspection < InspectionRecord
 
   # transitions that should happen automatically when you update an inspection (through the detail page) as long as all the conditions are meh
   def self.automatic_transam_workflow_transitions
-    ['reopen', 'unassign']
+    ['reopen']
   end
 
   def as_json(options={})
