@@ -1,6 +1,14 @@
 -# this is essentially the same script in shared/xeditable_scripts
 -# only thing different is the JS to update subheader if fields subheader calls are updated
 
+-# if you can't update SI&A, your disabled fields should be everything. otherwise, set to nil as shared script will figure it out from @asset object
+:ruby
+  disabled_fields = nil
+  if @inspection.present?
+    unless (can?(:update, @inspection.inspection) && @inspection.updatable?)
+      disabled_fields = @asset.allowable_params
+    end
+  end
 :javascript
   function profile_save_callback() {
     // update subheader
@@ -9,5 +17,5 @@
     });
   }
 
--# if you can't update SI&A, your disabled fields should be everything. otherwise, set to nil as shared script will figure it out from @asset object
-= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: (((can? :update, @inspection.inspection) && @inspection.updatable?) ? nil : @asset.allowable_params)}
+
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}
