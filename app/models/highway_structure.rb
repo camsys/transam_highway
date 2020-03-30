@@ -27,6 +27,8 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :inspection_program
 
+  belongs_to :federal_submission_type
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
   has_many :inspection_type_settings, foreign_key: :transam_asset_id, dependent: :destroy
 
@@ -73,6 +75,7 @@ class HighwayStructure < TransamAssetRecord
       :lanes_under,
       :historical_significance_type_id,
       :highway_structure_type_id,
+      :federal_submission_type_id,
       :inspection_type_settings_attributes => [InspectionTypeSetting.allowable_params]
   ]
 
