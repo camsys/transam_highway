@@ -1,5 +1,4 @@
 -inspections_images = @inspection.images
--asset_images = TransamAsset.get_typed_asset(@inspection.highway_structure).images
 
 
 -i = 0
@@ -29,28 +28,4 @@
           %span.col-xs-12
             = "#{image.image_classification} looking #{image.compass_point}"
 
--image_count = asset_images.count
--while(i < image_count) do
-  -image = asset_images[i]
-  .row
-    %span.col-xs-6
-      %span.col-xs-1
-        -i += 1
-        =i
-      %span.col-xs-11
-        %img{ src:"#{image.image.url(:thumb)}", alt:"#{image.description}" }
-      .row
-        %span.col-xs-12
-          = "#{image.image_classification} looking #{image.compass_point}"
-    -if i < asset_images.count
-      -image2 = asset_images[i]
-      %span.col-xs-6
-        %span.col-xs-1
-          -i += 1
-          =i
-        %span.col-xs-11
-          =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
-        .row
-          %span.col-xs-12
-            = "#{image.image_classification} looking #{image.compass_point}"
 

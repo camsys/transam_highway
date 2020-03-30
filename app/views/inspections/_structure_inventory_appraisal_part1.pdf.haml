@@ -7,42 +7,42 @@
     %span.col-xs-6.text-limiter-counter
       Structure Key (8A)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.asset_tag.to_s
+      =@asset.asset_tag.to_s
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Status (23)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.structure_status_type
+      =@asset.structure_status_type
   .row
     %span.col-xs-6.text-limiter-counter
       Highway Segment (5D)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.roadways.first.route_number
+      =@asset.roadways.first.route_number
   .row
     %span.col-xs-6.text-limiter-counter
       Legacy Milepoint (11A)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.roadways.first.milepoint
+      =@asset.roadways.first.milepoint
   .row
     %span.col-xs-6.text-limiter-counter
       City (4)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.city
+      =@asset.city
   .row
     %span.col-xs-6.text-limiter-counter
       County (3)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.county
+      =@asset.county
   .row
     %span.col-xs-6.text-limiter-counter
       Maint. Responsibility (21)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.maintenance_responsibility
+      =@asset.maintenance_responsibility
   .row
     %span.col-xs-6.text-limiter-counter
       Owner (22)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.owner
+      =@asset.owner
   .row
     %span.col-xs-6.text-limiter-counter
       Sufficency Rating
@@ -52,7 +52,7 @@
     %span.col-xs-6.text-limiter-counter
       Overall Condition (67A)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.calculated_condition
+      =@asset.calculated_condition
   .row
     %span.col-xs-6.text-limiter-counter
       Scour Critical (113)
@@ -62,7 +62,7 @@
     %span.col-xs-6.text-limiter-counter
       Structure Class (24)
     %span.col-xs-6.text-limiter-counter
-      =TransamAsset.get_typed_asset(@inspection.highway_structure.transam_asset).class.name
+      =TransamAsset.get_typed_asset(@asset.transam_asset).class.name
   .row
     %span.col-xs-6.text-limiter-counter
       Major Minor (25)

@@ -4,8 +4,7 @@
   -#  = render partial: 'inspections/vertical_report.pdf.haml', :locals => {:inspection => @inspection}
   -#  .div.alwaysbreak { page-break-before: always; }
 
-
-  -@typed_inspection = Inspection.get_typed_inspection(@inspection)
+  -@typed_inspection = @inspection
   -typed_inspection_methods = @typed_inspection.class.instance_methods(false)
   = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
   = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect, :typed_inspection_methods => typed_inspection_methods}
@@ -31,7 +30,7 @@
     &nbsp;
     .div.alwaysbreak
 
-  - if @inspection.images.any? || TransamAsset.get_typed_asset(@inspection.highway_structure).images.any?
+  - if @inspection.images.any?
     = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     = render :partial => 'inspections/report_photo_log.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
     &nbsp;

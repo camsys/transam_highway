@@ -112,7 +112,7 @@
           =roadway.on_truck_network
 
     .col-xs-6
-      -roadbeds = roadway.roadbeds
+      -roadbeds = roadway.roadbeds.where(inspection_id: @inspection.id)
       -roadbed_counter = 0
       -roadbed_max = 4
       -roadbeds.each do |roadbed|
