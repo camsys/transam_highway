@@ -339,7 +339,7 @@ class Inspection < InspectionRecord
   end
 
   def remove_inspectors_after_reopen
-    unless assigned_organization
+    if self.assigned_organization.nil? || self.saved_change_to_attribute?(:assigned_organization_id)
       self.inspectors.clear
     end
   end

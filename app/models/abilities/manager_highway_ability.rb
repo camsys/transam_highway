@@ -9,6 +9,7 @@ module Abilities
 
       if user.organization.organization_type.class_name == 'HighwayAuthority'
         can :view_all, Inspection # allows for seeing everything and assigning to different teams
+        can :switch_team, InspectionRecord
       else
         can :switch_team, InspectionRecord do |insp|
           user.viewable_organization_ids.reject{|o| o == HighwayAuthority.first.id}.include? insp.assigned_organization_id

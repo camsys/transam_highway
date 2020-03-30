@@ -9,4 +9,5 @@
     });
   }
 
-= render partial: 'shared/xeditable_scripts', locals: {obj: @asset}
+-# if you can't update SI&A, your disabled fields should be everything. otherwise, set to nil as shared script will figure it out from @asset object
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: (((can? :update, @inspection.inspection) && @inspection.updatable?) ? nil : @asset.allowable_params)}
