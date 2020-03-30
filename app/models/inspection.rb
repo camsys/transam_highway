@@ -1,6 +1,6 @@
 class Inspection < InspectionRecord
 
-  #has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
+  has_paper_trail only: [:state], if: Proc.new { |insp| ['assigned', 'final'].include? insp.state }
 
   actable as: :inspectionible
 
