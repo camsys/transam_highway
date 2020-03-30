@@ -17,11 +17,19 @@
   // ------ override methods in shared xeditable scripts to handle edit/save buttons in different panels -----------
 
   $(function() {
+    var disabled_fields = JSON.parse('#{disabled_fields.to_json.html_safe}');
+
     function enable_tab_editing(tab_id) {
       $('#'+tab_id+' .editable-field').editable('enable');
       $('#'+tab_id+' .editable-field').filter(':visible').editable('show', false);
       $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
       //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
+
+      $('#'+tab_id+' .editable-field').each(function(idx, field) {
+        if ($.inArray( $(field).attr('id'), disabled_fields ) >= 0) {
+          $(field).editable('disable');
+        }
+      });
 
       $('.other-type-container select').each(function() {
         $(this).closest('.other-type-container').attr('data-original-value', $(this).val());
