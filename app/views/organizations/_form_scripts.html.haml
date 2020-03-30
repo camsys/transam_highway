@@ -44,7 +44,7 @@
       if (highway_consultant.length) {
         var options = [];
         var selected = [];
-        var highway_consultants = JSON.parse('#{escape_javascript(HighwayConsultant.all.map{|o| [o.coded_name, o.id]}.to_json.html_safe)}');
+        var highway_consultants = JSON.parse('#{escape_javascript(HighwayConsultant.where.not(id: @org.id).map{|o| [o.coded_name, o.id]}.to_json.html_safe)}');
         var selected_highway_consultants = JSON.parse('#{(@org.try(:highway_consultants) ? @org.highway_consultants.pluck(:id) : []).to_json.html_safe}');
 
 

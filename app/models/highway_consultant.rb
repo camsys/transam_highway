@@ -80,13 +80,13 @@ class HighwayConsultant < Organization
 
   def after_add_highway_consultant_callback(highway_consultant)
     User.active.joins(:organizations).where(organizations: {id: self.id}).each do |u|
-      u.viewable_organizations << highway_consultant
+      u.viewable_organizations << highway_consultant unless u.viewable_organization_ids.include? highway_consultant.id
     end
   end
 
   def after_remove_highway_consultant_callback(highway_consultant)
     User.active.joins(:organizations).where(organizations: {id: self.id}).each do |u|
-      u.viewable_organizations.destroy(highway_consultant)
+      u.viewable_organizations.destroy(highway_consultant) if u.viewable_organization_ids.include? highway_consultant.id
     end
   end
 
