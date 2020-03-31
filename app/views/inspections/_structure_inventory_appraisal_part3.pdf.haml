@@ -7,6 +7,7 @@
       .row
         %span.col-xs-12.text-header
           ="#{road_counter} - #{roadway}"
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           On Under (5A)
@@ -15,51 +16,61 @@
             ="#{roadway.on_under_indicator} - On"
           -else
             ="#{roadway.on_under_indicator} - Under"
+            &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Road Prefix (5B)
         %span.col-xs-6.text-limiter-counter
           ="#{roadway.route_signing_prefix_id} - #{roadway.route_signing_prefix}"
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Level of Service (5C
         %span.col-xs-6.text-limiter-counter
           =roadway.service_level_type
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Highway Segment (5D)
         %span.col-xs-6.text-limiter-counter
           =roadway.route_number
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Features Intersected (6A)
         %span.col-xs-6.text-limiter-counter
           =roadway.features_intersected
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Facility Carried (7)
         %span.col-xs-6.text-limiter-counter
           =roadway.facility_carried
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Min Vertical Clearance (10)
         %span.col-xs-6.text-limiter-counter
           =roadway.min_vertical_clearance
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           LRS Reference Point (11)
         %span.col-xs-6.text-limiter-counter
           =roadway.lrs_reference_point
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Legacy MP (11A)
         %span.col-xs-6.text-limiter-counter
           =roadway.milepoint
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           KRS Inventory Route (13A))
         %span.col-xs-6.text-limiter-counter
           =roadway.lrs_route
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Detour(19))
@@ -70,46 +81,55 @@
           Functional Class (26)
         %span.col-xs-6.text-limiter-counter
           =roadway.functional_class
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Average Daily Traffic (29)
         %span.col-xs-6.text-limiter-counter
           =roadway.average_daily_traffic
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Year of ADT (30)
         %span.col-xs-6.text-limiter-counter
           =roadway.average_daily_traffic_year
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Total Horiz Clearance (47)
         %span.col-xs-6.text-limiter-counter-yellow
           =roadway.total_horizontal_clearance
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Strategic Hwy Net (100)
         %span.col-xs-6.text-limiter-counter
           =roadway.strahnet_designation_type
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Direction of Traffic (102)
         %span.col-xs-6.text-limiter-counter
           =roadway.traffic_direction_type
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           NHS
         %span.col-xs-6.text-limiter-counter
           =roadway.on_national_highway_system
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Truck ADT (109)
         %span.col-xs-6.text-limiter-counter
           =roadway.average_daily_truck_traffic_percent
+          &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
           Designated Nat Net (110)
         %span.col-xs-6.text-limiter-counter
           =roadway.on_truck_network
+          &nbsp;
 
     .col-xs-6
       -roadbeds = roadway.roadbeds.where(inspection_id: @inspection.id)
@@ -121,26 +141,31 @@
           .row
             %span.col-xs-12.text-header
               ="#{roadway.on_under_indicator} - #{roadbed.direction} - #{roadbed.name}"
+              &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Name (Direction of Inventory)
             %span.col-xs-6.text-limiter-counter-yellow
               =roadbed.direction
+              &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Roadway
             %span.col-xs-6.text-limiter-counter-yellow
               =roadway.facility_carried
+              &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Name
             %span.col-xs-6.text-limiter-counter-yellow
               =roadbed.name
+              &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Lines
             %span.col-xs-6.text-limiter-counter-yellow
               =roadbed.number_of_lines
+              &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Minimum VCLR
@@ -150,6 +175,7 @@
                 No Restrictions
               -else
                 =min
+                &nbsp;
           .row
             %span.col-xs-6.text-limiter-counter
               Maximum VCLR
@@ -159,6 +185,7 @@
                 No Restrictions
               -else
                 =max
+                &nbsp;
 
           .row
             &nbsp;

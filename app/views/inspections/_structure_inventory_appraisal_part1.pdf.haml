@@ -9,41 +9,52 @@
       Structure Key (8A)
     %span.col-xs-6.text-limiter-counter
       =@asset.asset_tag.to_s
+      &nbsp;
+
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Status (23)
     %span.col-xs-6.text-limiter-counter
       =@asset.structure_status_type
+      &nbsp;
+
   .row
     %span.col-xs-6.text-limiter-counter
       Highway Segment (5D)
     %span.col-xs-6.text-limiter-counter
       =@asset.roadways.first.route_number
+      &nbsp;
+
   .row
     %span.col-xs-6.text-limiter-counter
       Legacy Milepoint (11A)
     %span.col-xs-6.text-limiter-counter
       =@asset.roadways.first.milepoint
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       City (4)
     %span.col-xs-6.text-limiter-counter
       =@asset.city
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       County (3)
     %span.col-xs-6.text-limiter-counter
       =@asset.county
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Maint. Responsibility (21)
     %span.col-xs-6.text-limiter-counter
       =@asset.maintenance_responsibility
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Owner (22)
     %span.col-xs-6.text-limiter-counter
       =@asset.owner
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Sufficency Rating
@@ -54,16 +65,19 @@
       Overall Condition (67A)
     %span.col-xs-6.text-limiter-counter
       =@asset.calculated_condition
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Scour Critical (113)
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspectionible.scour_critical_bridge_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Class (24)
     %span.col-xs-6.text-limiter-counter
       =TransamAsset.get_typed_asset(@asset.transam_asset).class.name
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Major Minor (25)
@@ -74,61 +88,72 @@
       Design Type (43D)
     %span.col-xs-6.text-limiter-counter
       =@asset.asset_subtype.name
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Type (43C)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structure_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Inspection Program (80)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.inspection_program
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Inspection Team (82))
     %span.col-xs-6.text-limiter-counter
       =@inspection.assigned_organization
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Routine Inspection Date (90)
     %span.col-xs-6.text-limiter-counter-yellow
       =@asset.inspection_date.try(:strftime,'%B %Y')
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Due Date (90A)
     %span.col-xs-6.text-limiter-counter
       =@inspection.calculated_inspection_due_date.try(:strftime,'%B %Y')
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Target Date (90T)
     %span.col-xs-6.text-limiter-counter
-      Do we have this was the above calculated_inspection_due_date?
+      __NA__
   .row
     %span.col-xs-6.text-limiter-counter
       Inspection Trip (91T)
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspection_trip_key
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Frac Crit Insp Req'd (92AA)
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspection_type_setting.is_required
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Underwater Insp Req'd (92BA)
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspection_type_setting.is_required
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Special Insp Req'd (92CA)
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspection_type_setting.is_required
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Border Bridge Struc Number (99)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.border_bridge_structure_number
+      &nbsp;
   .row
     %span.col-xs-12.text-header
       Identification
@@ -137,16 +162,19 @@
       State (1)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.state
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Region (2E)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.region
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Maintenance (2M)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.maintenance_section
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Transportation Planning Region (2T)
@@ -157,41 +185,49 @@
       Features Intersected (6A)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.features_intersected
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Facility Carried by Structure (7)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.facility_carried
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Number (8)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.structure_number
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Location Description (9)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.location_description
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Latitude (16)
     %span.col-xs-6.text-limiter-counter
       =@asset.geometry.y
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Longitude (17)
     %span.col-xs-6.text-limiter-counter
       =@asset.geometry.x
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       FHWA Region (Border) (98A)
     %span.col-xs-6.text-limiter-counter
       =@asset.border_bridge_state
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Percent Responsibility (98B)
     %span.col-xs-6.text-limiter-counter
       =@asset.border_bridge_pcnt_responsibility
+      &nbsp;
   .row
     %span.col-xs-12.text-header
       Age & Service
@@ -200,26 +236,31 @@
       Year Built (27)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.transam_asset.manufacture_year
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Lanes On (28A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.lanes_on
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Lanes Under (28B)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.lanes_under
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Service Type On (42A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.service_on_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Service Type Under (42B)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.service_under_type
+      &nbsp;
 .col-xs-6
   .row
     %span.col-xs-12.text-header
@@ -229,21 +270,25 @@
       Bridge Rail (36A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.railings_safety_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Transitions (36B)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.transitions_safety_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Approach guardrail (36C)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.approach_rail_safety_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       End treatments (36D)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.approach_rail_end_safety_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Rail Height (36H)
@@ -253,27 +298,31 @@
     %span.col-xs-6.text-limiter-counter
       Fill/Asphalt Thickness (66T)
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context provided__
+      __NA__
   .row
     %span.col-xs-6.text-limiter-counter
       Waterway Adequacy (71)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.waterway_appraisal_rating_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Approach Roadway Alignment (72)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.approach_alignment_appraisal_rating_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structural Evaluation (67)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.structural_appraisal_rating_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Deck Geometry (68)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.deck_geometry_appraisal_rating_type
+      &nbsp;
 
   -if typed_inspection_methods.include?(:underclearance_appraisal_rating_type)
     .row
@@ -281,6 +330,7 @@
         Underclearances Appraisal (69)
       %span.col-xs-6.text-limiter-counter-yellow
         =@typed_inspection.underclearance_appraisal_rating_type
+        &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Rail Type (125A)
@@ -299,16 +349,19 @@
       Toll (20)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.bridge_toll_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Historical Significance (37)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.historical_significance_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Temporary Structure (103)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.is_temporary
+      &nbsp;
   .row
     %span.col-xs-12.text-header
       Condition
@@ -320,6 +373,7 @@
         Deck (58)
       %span.col-xs-6.text-limiter-counter-yellow
         =BridgeConditionRatingType.find_by(id: bridge_conditions.deck_condition_rating_type_id)
+        &nbsp;
 
   -if (bridge_conditions != nil && bridge_conditions.superstructure_condition_rating_type_id != nil)
     .row
@@ -327,6 +381,7 @@
         Superstructure (59)
       %span.col-xs-6.text-limiter-counter-yellow
         =BridgeConditionRatingType.find_by(id: bridge_conditions.superstructure_condition_rating_type_id)
+        &nbsp;
 
   -if (bridge_conditions != nil && bridge_conditions.substructure_condition_rating_type_id != nil)
     .row
@@ -334,18 +389,22 @@
         Substructure (60)
       %span.col-xs-6.text-limiter-counter-yellow
         =BridgeConditionRatingType.find_by(id: bridge_conditions.substructure_condition_rating_type_id)
+        &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Channel Protection (61)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.channel_condition_type
+      &nbsp;
+
   -if typed_structure_methods.include?(:ancillary_condition_type)
     .row
       %span.col-xs-6.text-limiter-counter
         SSHML Rating
       %span.col-xs-6.text-limiter-counter-yellow
         =@asset.ancillary_condition_type
+        &nbsp;
   .row
     %span.col-xs-12.text-header
       Geometric Data
@@ -354,6 +413,7 @@
       Approach Roadway Width (32)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.approach_roadway_width
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Meridian (33)
@@ -370,72 +430,84 @@
       Maximum Span Length (48)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.max_span_length
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Bridge Length (49)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.length
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Left Curb or Sidewalk (50A)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.left_curb_sidewalk_width
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Right Curb or Sidewalk (50B)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.right_curb_sidewalk_width
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Curb to Curb (51)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.roadway_width
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Out to Out (52)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.deck_width
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Min Vertical Clr Above Bridge (53)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.min_vertical_clearance_above
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Min Vertical Clr Below Bridge (54B)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.min_vertical_clearance_below
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Ref Vert Feature Below Bridge (54A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@asset.vertical_reference_feature_below
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Ref Horiz Feat Below Bridge (55A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@asset.lateral_reference_feature_below
+      &nbsp;
 
   .row
     %span.col-xs-6.overflow-hidden.text-limiter-counter
       Min Horiz Clr Below Bridge, Rt (55B)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.min_lateral_clearance_below_right
+      &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
       Min Horiz Clr Below Bridge, Lt (56)
     %span.col-xs-6.text-limiter-counter-yellow
       =typed_structure.min_lateral_clearance_below_left
+      &nbsp;
 
   .row
     %span.col-xs-12.text-header
@@ -443,3 +515,4 @@
   .row
     %span.col-xs-12.text-limiter-counter
       =@inspection.highway_structure.remarks
+      &nbsp;

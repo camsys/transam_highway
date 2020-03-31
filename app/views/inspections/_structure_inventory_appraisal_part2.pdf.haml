@@ -9,21 +9,25 @@
       Design Load (31)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.design_load_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Posting Status (41)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.bridge_like_conditions.first.operational_status_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Method for Operating Rating (63)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.operating_rating_method_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Operating Rating Tons (64)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.operating_rating
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Operating Rating (64F)
@@ -34,11 +38,13 @@
       Method for Inventory Rating (65)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.inventory_rating_method_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Inventory Rating Tons (66)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.inventory_rating
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Inventory Rating Factor (66F))
@@ -49,6 +55,7 @@
       Bridge Posting (70)
     %span.col-xs-6.text-limiter-counter
       =@inspection.highway_structure.highway_structurible.bridge_posting_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Posting Type 3 (64P01)
@@ -166,57 +173,66 @@
     %span.col-xs-6.text-limiter-counter
       FC Inspection Frequency
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      =@inspection.inspection_type_setting.frequency_months
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       FC Details (critical feature)
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      __NA__
   .row
     %span.col-xs-6.text-limiter-counter
       Special Inspection Required
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      =@inspection.inspection_type_setting.is_required
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Special Inspection Frequency
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      =@inspection.inspection_type_setting.frequency_months
   .row
     %span.col-xs-6.text-limiter-counter
       Special Details (critical feature)
     %span.col-xs-6.text-limiter-counter-yellow
-      __No Context__
+      __NA__
   .row
     %span.col-xs-6.text-limiter-counter
       Mat. and/or design (43A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.main_span_material_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Design and/or const (43B)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.main_span_design_construction_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Mat/Design, appr spans (44A)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.approach_spans_material_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Design/Const, appr spans (44B)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.approach_spans_design_construction_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Number of Spans (45)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.num_spans_main
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Number of Approach Spans (46)
     %span.col-xs-6.text-limiter-counter-yellow
       =@inspection.highway_structure.highway_structurible.num_spans_approach
+      &nbsp;
+
   -typed_structure_methods = typed_structure.class.instance_methods(false)
   -if typed_structure_methods.include?(:deck_structure_type)
     .row
@@ -224,24 +240,31 @@
         Deck Structure Type (107)
       %span.col-xs-6.text-limiter-counter
         =typed_structure.deck_structure_type
+        &nbsp;
+
   -if typed_structure_methods.include?(:wearing_surface_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Wearing Surface Type (108A)
       %span.col-xs-6.text-limiter-counter
         =typed_structure.wearing_surface_type
+        &nbsp;
+
   -if typed_structure_methods.include?(:membrane_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Membrane Type (108B)
       %span.col-xs-6.text-limiter-counter
         =typed_structure.membrane_type
+        &nbsp;
+
   -if typed_structure_methods.include?(:deck_protection_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Deck Protection Type (108C)
       %span.col-xs-6.text-limiter-counter
         =typed_structure.deck_protection_type
+        &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Expansion Deck Type (124)
