@@ -1,4 +1,5 @@
 -typed_structure = TransamAsset.get_typed_asset(@inspection.highway_structure)
+-typed_structure_methods = typed_structure.class.instance_methods(false)
 .col-xs-6
   .row
     %span.col-xs-12.text-header
@@ -72,7 +73,6 @@
     %span.col-xs-6.text-limiter-counter
       Design Type (43D)
     %span.col-xs-6.text-limiter-counter
-      - @asset = TransamAsset.find_by(id: @inspection.transam_asset_id)
       =@asset.asset_subtype.name
   .row
     %span.col-xs-6.text-limiter-counter
@@ -93,7 +93,7 @@
     %span.col-xs-6.text-limiter-counter
       Routine Inspection Date (90)
     %span.col-xs-6.text-limiter-counter-yellow
-      ="#{@inspection.inspection_month}/#{@inspection.inspection_fiscal_year}"
+      =@asset.inspection_date.try(:strftime,'%B %Y')
   .row
     %span.col-xs-6.text-limiter-counter
       Due Date (90A)
@@ -186,17 +186,12 @@
     %span.col-xs-6.text-limiter-counter
       FHWA Region (Border) (98A)
     %span.col-xs-6.text-limiter-counter
-      __??__
+      =@asset.border_bridge_state
   .row
     %span.col-xs-6.text-limiter-counter
       Percent Responsibility (98B)
     %span.col-xs-6.text-limiter-counter
-      __??__
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Border Bridge Struc Number (99)
-    %span.col-xs-6.text-limiter-counter
-      __??__
+      =@asset.border_bridge_pcnt_responsibility
   .row
     %span.col-xs-12.text-header
       Age & Service
@@ -317,35 +312,40 @@
   .row
     %span.col-xs-12.text-header
       Condition
-  -if typed_inspection_methods.include?(:deck_condition_rating_type)
+
+  -bridge_conditions = @asset.bridge_like_conditions.find_by(object_key: @inspection.object_key)
+  -if (bridge_conditions != nil && bridge_conditions.deck_condition_rating_type_id != nil)
     .row
       %span.col-xs-6.text-limiter-counter
         Deck (58)
       %span.col-xs-6.text-limiter-counter-yellow
-        =@typed_inspection.deck_condition_rating_type
-  -if typed_inspection_methods.include?(:superstructure_condition_rating_type)
+        =BridgeConditionRatingType.find_by(id: bridge_conditions.deck_condition_rating_type_id)
+
+  -if (bridge_conditions != nil && bridge_conditions.superstructure_condition_rating_type_id != nil)
     .row
       %span.col-xs-6.text-limiter-counter
         Superstructure (59)
       %span.col-xs-6.text-limiter-counter-yellow
-        =@typed_inspection.superstructure_condition_rating_type
+        =BridgeConditionRatingType.find_by(id: bridge_conditions.superstructure_condition_rating_type_id)
 
-  -if typed_inspection_methods.include?(:substructure_condition_rating_type)
+  -if (bridge_conditions != nil && bridge_conditions.substructure_condition_rating_type_id != nil)
     .row
       %span.col-xs-6.text-limiter-counter
         Substructure (60)
       %span.col-xs-6.text-limiter-counter-yellow
-        =@typed_inspection.substructure_condition_rating_type
+        =BridgeConditionRatingType.find_by(id: bridge_conditions.substructure_condition_rating_type_id)
+
   .row
     %span.col-xs-6.text-limiter-counter
       Channel Protection (61)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.channel_condition_type
-  .row
-    %span.col-xs-6.text-limiter-counter
-      SSHML Rating
-    %span.col-xs-6.text-limiter-counter-yellow
-      __??__
+  -if typed_structure_methods.include?(:ancillary_condition_type)
+    .row
+      %span.col-xs-6.text-limiter-counter
+        SSHML Rating
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@asset.ancillary_condition_type
   .row
     %span.col-xs-12.text-header
       Geometric Data
@@ -417,13 +417,13 @@
     %span.col-xs-6.text-limiter-counter
       Ref Vert Feature Below Bridge (54A)
     %span.col-xs-6.text-limiter-counter-yellow
-      __??__
+      =@asset.vertical_reference_feature_below
 
   .row
     %span.col-xs-6.text-limiter-counter
       Ref Horiz Feat Below Bridge (55A)
     %span.col-xs-6.text-limiter-counter-yellow
-      __??__
+      =@asset.lateral_reference_feature_below
 
   .row
     %span.col-xs-6.overflow-hidden.text-limiter-counter
