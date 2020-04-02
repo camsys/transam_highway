@@ -1,13 +1,5 @@
-%ul.nav.nav-tabs
-  %li.active
-    %a{:href => '#notes', :data =>{:toggle => 'tab'}}
-      Notes
-  %li
-    %a{:href => '#schedule', :data =>{:toggle => 'tab'}}
-      Schedule
-.tab-content{style: 'min-height: 100px;'}
-  .tab-pane.fade.in.active#notes
-    = render 'inspections/notes'
-  .tab-pane.fade.in#schedule
-    = render 'inspections/schedule'
+.row
+  .col-sm-6= render 'inspections/notes'
+  .col-sm-6= render 'inspections/assignment'
+= render 'inspections/schedule'
 
