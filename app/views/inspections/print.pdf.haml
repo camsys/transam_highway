@@ -13,22 +13,20 @@
   = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
   = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :methods => methods}
 
-  -i=0
+
   -@inspection.highway_structure.roadways.each do |roadway|
-    -i += 1
     &nbsp;
     .div.alwaysbreak
     = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway }
-    = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway, :road_counter => i, :methods => methods}
+    = render partial: 'inspections/structure_inventory_appraisal_part3.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway, :methods => methods}
 
   &nbsp;
   .div.alwaysbreak
 
-  - if @typed_inspection.class == BridgeCondition
-    = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection, :is_for_pdf => true}
-    &nbsp;
-    .div.alwaysbreak
+  = render :partial => 'inspections/element_inspection_data_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+  = render :partial => 'inspections/elements_table.html.haml', :locals => {:inspection => @inspection, :is_for_pdf => true}
+  &nbsp;
+  .div.alwaysbreak
 
   - if @inspection.images.any?
     = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
