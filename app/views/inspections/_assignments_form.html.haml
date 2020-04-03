@@ -15,7 +15,7 @@
   = f.input :global_ids, as: :hidden
   .row
     .col-sm-6
-      = f.input :inspector_ids, collection: User.active.with_role(:user).joins(:organizations).where(organizations: {id: assigned_organization_id}), as: :check_boxes, label: false, required: !(can?(:make_ready, Inspection.new))
+      = f.input :inspector_ids, collection: User.active.with_role(:user).joins(:organizations).where(organizations: {id: assigned_organization_id}).distinct, as: :check_boxes, label: false, required: !(can?(:make_ready, Inspection.new))
 
 :javascript
 

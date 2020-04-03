@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
 
     member do
+      get 'edit_inspectors'
       get 'allowed_to_finalize'
       get 'print'
     end

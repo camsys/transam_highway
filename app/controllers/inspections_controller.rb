@@ -3,7 +3,7 @@ class InspectionsController < TransamController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
 
-  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
+  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize, :edit_inspectors]
   before_action :reformat_date_fields, only: [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "inspection_key_list_cache_var"
@@ -29,6 +29,10 @@ class InspectionsController < TransamController
         }
       }
     end
+  end
+
+  def edit_inspectors
+
   end
 
   def change_inspectors
