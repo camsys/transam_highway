@@ -296,6 +296,8 @@ class Api::V1::InspectionsController < Api::ApiController
                 else
                   clean_params[:entry] = clean_params[:exit] = 0.0
                 end
+              elsif rbl_roadbed.try(:use_minimum_clearance?) && !clean_params[:minimum_clearance]
+                clean_params[:minimum_clearance] = [clean_params[:entry], clean_params[:exit]].compact.min
               end
               if rbl
                 rbl.update!(clean_params)
