@@ -169,28 +169,30 @@
   .row
     %span.col-xs-12.text-header
       Structural Type & Material
-  .row
-    %span.col-xs-6.text-limiter-counter
-      FC Inspection Frequency
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.inspection_type_setting.frequency_months
-      &nbsp;
+  -unless @inspection.inspection_type_setting.nil?
+    .row
+      %span.col-xs-6.text-limiter-counter
+        FC Inspection Frequency
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@inspection.inspection_type_setting.frequency_months
+        &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       FC Details (critical feature)
     %span.col-xs-6.text-limiter-counter-yellow
       __NA__
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Special Inspection Required
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.inspection_type_setting.is_required
-      &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Special Inspection Frequency
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.inspection_type_setting.frequency_months
+  -unless @inspection.inspection_type_setting.nil?
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Special Inspection Required
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@inspection.inspection_type_setting.is_required
+        &nbsp;
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Special Inspection Frequency
+      %span.col-xs-6.text-limiter-counter-yellow
+        =@inspection.inspection_type_setting.frequency_months
   .row
     %span.col-xs-6.text-limiter-counter
       Special Details (critical feature)

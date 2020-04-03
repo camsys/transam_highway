@@ -130,24 +130,25 @@
     %span.col-xs-6.text-limiter-counter
       =@inspection.inspection_trip_key
       &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Frac Crit Insp Req'd (92AA)
-    %span.col-xs-6.text-limiter-counter
-      =@inspection.inspection_type_setting.is_required
-      &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Underwater Insp Req'd (92BA)
-    %span.col-xs-6.text-limiter-counter
-      =@inspection.inspection_type_setting.is_required
-      &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Special Insp Req'd (92CA)
-    %span.col-xs-6.text-limiter-counter
-      =@inspection.inspection_type_setting.is_required
-      &nbsp;
+  -unless @inspection.inspection_type_setting.nil?
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Frac Crit Insp Req'd (92AA)
+      %span.col-xs-6.text-limiter-counter
+        =@inspection.inspection_type_setting.is_required
+        &nbsp;
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Underwater Insp Req'd (92BA)
+      %span.col-xs-6.text-limiter-counter
+        =@inspection.inspection_type_setting.is_required
+        &nbsp;
+    .row
+      %span.col-xs-6.text-limiter-counter
+        Special Insp Req'd (92CA)
+      %span.col-xs-6.text-limiter-counter
+        =@inspection.inspection_type_setting.is_required
+        &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Border Bridge Struc Number (99)
