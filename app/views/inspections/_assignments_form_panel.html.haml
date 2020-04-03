@@ -1,6 +1,6 @@
 :ruby
   from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
-  from_ready_switch_team_boolean = assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id))
+  from_ready_switch_team_boolean = (assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id)))
   from_ready_boolean = (state == 'ready' && (can?(:reopen, Inspection.new) || from_ready_switch_team_boolean))
   from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
   to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))

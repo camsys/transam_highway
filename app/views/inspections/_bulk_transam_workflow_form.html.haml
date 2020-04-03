@@ -2,7 +2,7 @@
   orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
 
   from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
-  from_ready_switch_team_boolean = state == 'ready' && assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id))
+  from_ready_switch_team_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id)))
   from_ready_to_open_boolean = state == 'ready' && can?(:reopen, Inspection.new)
   from_ready_boolean = ( from_ready_to_open_boolean || from_ready_switch_team_boolean)
   from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
@@ -36,7 +36,7 @@
   .row{style: 'margin-top: 5px;'}
     .col-sm-6
 
-      - unless from_assigned_boolean
+      - if from_open_boolean || from_ready_switch_team_boolean
         = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil
         - if from_ready_switch_team_boolean
           = f.input :to_state, as: :hidden, input_html: {value: 'ready'}
