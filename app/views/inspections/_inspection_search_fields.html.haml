@@ -3,17 +3,17 @@
     margin-top: -10px;
     margin-bottom: 0;
   }
-
 :ruby
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
-
-  inspectors = User.with_role(:user).distinct.map{|u| [u.name, u.id, x.id]}
+  inspectors = User.with_role(:user).distinct
   inspector_ids_by_team = {}
+
   inspectors.each do |i|
-    inspector_ids_by_team[i[2]] = [] unless inspector_ids_by_team[i[2]]
-    inspector_ids_by_team[i[2]] << i[1]
+    i.organizations.each do |o|
+      inspector_ids_by_team[o.id] = [] unless inspector_ids_by_team[o.id]
+      inspector_ids_by_team[o.id] << i.id
+    end
   end
-  inspectors = inspectors.map{|x| x[0..1]} + [['None', -1]]
+  inspectors = inspectors.map{|x| [x.name, x.id]} + [['None', -1]]
 
 .col-sm-3
   = f.input :asset_tag, label: reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key'), :input_html => { :data => {:convert => 'uppercase'} }
