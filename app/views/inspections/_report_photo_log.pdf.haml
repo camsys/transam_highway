@@ -12,7 +12,7 @@
         -i += 1
         =i
       %span.col-xs-11
-        %img{ src:"#{image.image.url(:thumb)}", alt:"#{image.description}" }
+        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"300", width:"300" }
       .row
         %span.col-xs-12
           = "#{image.image_classification} looking #{image.compass_point}"
@@ -23,9 +23,9 @@
           -i += 1
           =i
         %span.col-xs-11
-          =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
+          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"300", width:"300" }
         .row
           %span.col-xs-12
-            = "#{image.image_classification} looking #{image.compass_point}"
+            = "#{image2.image_classification} looking #{image2.compass_point}"
 
 

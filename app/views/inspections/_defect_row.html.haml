@@ -15,8 +15,9 @@
   = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS4', is_for_pdf: is_for_pdf
 
   %td.center
-    - if can_update
-      = render 'inspections/defect_row_action_buttons.html.haml', defect: defect
+    -unless is_for_pdf
+      - if can_update
+        = render 'inspections/defect_row_action_buttons.html.haml', defect: defect
 - if defect.defect_locations.any? || defect.notes.present?
   - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
   - notes = defect.notes unless notes.present?

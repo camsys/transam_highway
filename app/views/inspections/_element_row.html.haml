@@ -2,6 +2,9 @@
   html_class = is_child ? 'bme' : 'element'
   indent_str = '&nbsp;'*indent*4
   parent = element.parent if is_child
+  unless defined?(is_for_pdf)
+    is_for_pdf = false
+  end
 
 %tr{class: "#{html_class}", data: {element_id: element.id, parent_element_id: parent&.id}}
   %td.left!= "#{indent_str}#{html_rjust(element.element_definition.number, 4)}"
@@ -16,11 +19,13 @@
   %td.right.cs3= format_as_integer(DefectLocation.where(defect_id: element.defects, condition_state: 'CS3').sum(:quantity))
   %td.right.cs4= format_as_integer(DefectLocation.where(defect_id: element.defects, condition_state: 'CS4').sum(:quantity))
   %td.center
-    - if can?(:update, @inspection.inspection) && @inspection.updatable?
-      - if is_child
-        = render 'inspections/child_element_row_action_buttons', element: element
-      - else
-        = render 'inspections/element_row_action_buttons', element: element
+    &nbsp;
+    -unless is_for_pdf
+      - if can?(:update, @inspection.inspection) && @inspection.updatable?
+        - if is_child
+          = render 'inspections/child_element_row_action_buttons', element: element
+        - else
+          = render 'inspections/element_row_action_buttons', element: element
 - if element.notes.present?
   %tr.notes
     %td
