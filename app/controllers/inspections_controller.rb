@@ -185,12 +185,7 @@ class InspectionsController < TransamController
   #  /inspections/1/print
   def print
 
-    @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
-    if @inspection.state == 'final'
-      @asset = TransamAsset.get_typed_version(@inspection.highway_structure_version)
-    else
-      @asset = TransamAsset.get_typed_asset(@inspection.highway_structure)
-    end
+    set_inspection
 
     respond_to do |format|
       format.html # show.html.erb
