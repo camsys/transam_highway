@@ -50,12 +50,11 @@ asset_subtypes = [
 ]
 
 roles = [
-    {name: 'sia_full_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Complete SIA Abilitiy', roles: 'basic_user,user'},
-    {name: 'sia_rating_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA Rating Abilitiy', roles: 'basic_user,user'},
-{name: 'sia_dtd_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA DTD Abilitiy', roles: 'basic_user,user'},
-    {name: 'scour_critical_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Scour Critical (113) Ability', roles: 'basic_user,user,manager'},
-    {name: 'maintenance_mgmt_privilege', show_in_user_mgmt: true, privilege: true, label: 'Maintenance Management Ability', roles: 'basic_user'},
-    {name: 'recurring_insp_sched_privilege', show_in_user_mgmt: true, privilege: true, label: 'Recurring Inspection Schedule Ability', roles: 'basic_user,user'},
+    {name: 'sia_full_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Complete SIA Abilitiy', roles: 'user'},
+    {name: 'sia_rating_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA Rating Abilitiy', roles: 'user'},
+{name: 'sia_dtd_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'SIA DTD Abilitiy', roles: 'user'},
+    {name: 'scour_critical_edit_privilege', show_in_user_mgmt: true, privilege: true, label: 'Scour Critical (113) Ability', roles: 'manager'},
+    {name: 'recurring_insp_sched_privilege', show_in_user_mgmt: true, privilege: true, label: 'Recurring Inspection Schedule Ability', roles: 'user'},
 ]
 
 maintenance_priority_types = [
@@ -881,21 +880,15 @@ end
 
 table_name = 'roles'
 puts "  Loading #{table_name}"
-if is_mysql
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
-elsif is_sqlite
-    ActiveRecord::Base.connection.execute("DELETE FROM #{table_name};")
-else
-    ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
-end
 data = eval(table_name)
 klass = table_name.classify.constantize
+
 data.each do |row|
     x = klass.new(row.except(:roles))
     x.save!
     if x.privilege
         row[:roles].split(',').each do |role|
-            RolePrivilegeMapping.create!(privilege_id: x.id, role_id: Role.find_by(name: role).id)
+          RolePrivilegeMapping.create!(privilege_id: x.id, role_id: Role.find_by(name: role).id)
         end
     end
 
@@ -911,7 +904,7 @@ replace_tables.each do |table_name|
     elsif is_sqlite
         ActiveRecord::Base.connection.execute("DELETE FROM #{table_name};")
     else
-        ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
+        ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY CASCADE;")
     end
     data = eval(table_name)
     klass = table_name.classify.constantize
