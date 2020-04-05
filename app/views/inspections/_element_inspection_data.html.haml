@@ -1,0 +1,73 @@
+:css
+  tbody > tr.element {
+    background-color: gray;
+  }
+  tbody > tr.bme {
+    background-color: darkgray;
+  }
+  tbody > tr.defect {
+    background-color: lightgray;
+  }
+  tbody > tr.notes {
+    font-size: 0.9em;
+    font-style: italic;
+    color: gray;
+  }
+
+  #elements_table_container, #elements_table_container .fixed-table-body {
+    overflow: visible !important;
+  }
+
+  .number-input {
+    width: 120px;
+    text-align: right;
+    float: right;
+  }
+
+  .number-input[type=number]::-webkit-inner-spin-button,
+  .number-input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .cs_1_quantity {
+    background-color: #D6F5D6;
+  }
+
+  .cs_2_quantity {
+    background-color: #F5EC9E;
+  }
+
+  .cs_3_quantity {
+    background-color: #F4CB91;
+  }
+
+  .cs_4_quantity {
+    background-color: #F99C9B;
+  }
+
+.row
+  .col-md-12
+
+    #table_actions.btn-toolbar
+      - if can?(:update, @inspection.inspection) && @inspection.updatable?
+        .btn-group
+          = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-primary', title: 'New Element' do
+            %i.fa.fa-plus
+            = " New Element"
+    .table-responsive#elements_table_container
+      -# Remove .table-hover with data-classes
+      %table
+        %thead
+          %tr
+            %th.center Elem
+            %th.center Description
+            %th.center Quantity
+            %th.center Unit
+            %th.center.cs_1_quantity CS 1
+            %th.center.cs_2_quantity CS 2
+            %th.center.cs_3_quantity CS 3
+            %th.center.cs_4_quantity CS 4
+            %th.center
+          %tbody
+            = render partial: "inspections/elements_table_body.html.haml", locals: {is_for_pdf: is_for_pdf }

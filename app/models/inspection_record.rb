@@ -17,19 +17,4 @@ class InspectionRecord < ActiveRecord::Base
     return arr.flatten
   end
 
-  def unallowable_inspector_params
-    arr = self.class::UNALLOWABLE_INSPECTOR_PARAMS.dup
-
-    if self.class.superclass.name != "InspectionRecord"
-      arr << self.class.superclass::UNALLOWABLE_INSPECTOR_PARAMS
-    end
-
-    a = self.class.try(:acting_as_model)
-    while a.present?
-      arr << a::UNALLOWABLE_INSPECTOR_PARAMS.dup
-      a = a.try(:acting_as_model)
-    end
-
-    return arr.flatten
-  end
 end

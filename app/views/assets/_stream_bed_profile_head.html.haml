@@ -1,0 +1,12 @@
+%tr
+  %th.center Inspection Year
+  - @cols = @asset.streambed_profiles.first.try(:all_possible_distances) || []
+  - @cols.each do |distance|
+    %th.center
+      = distance
+      - if can?(:update,@asset) && can?(:manage,StreambedProfile) && !@asset.assigned_version && StreambedProfilePoint.where(streambed_profile: @asset.streambed_profiles, distance: distance).pluck(:value).all?{|value| value.nil?}
+        = link_to edit_streambed_profile_streambed_profile_point_path(streambed_profile_id: @asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last.object_key, id: StreambedProfilePoint.find_by(streambed_profile: @asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last, distance: distance).object_key), :remote => true, :class => "button btn-xs", :title => "Edit distance" do
+          %i.fa.fa-edit.fa-fw.text-success
+        = link_to streambed_profile_streambed_profile_point_path(streambed_profile_id: @asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last.object_key, id: StreambedProfilePoint.find_by(streambed_profile: @asset.streambed_profiles.map{|p| p.inspection&.state == "final" ? p : nil}.select{|p| !p.nil?}.last, distance: distance).object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
+          %i.fa.fa-trash-o.fa-fw.text-danger
+  %th.center Water Level

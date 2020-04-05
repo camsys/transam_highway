@@ -1,5 +1,5 @@
 module Abilities
-  class SuperManagerHighwayAbility
+  class ScourCriticalEditPrivilege
     include CanCan::Ability
 
     def initialize(user, organization_ids=[])
@@ -8,9 +8,7 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :update, [Inspection, BridgeCondition, CulvertCondition]
-
-      can :update_from_structure, TransamAssetRecord
+      can :update_scour_critical_bridge_type_id, InspectionRecord
 
     end
   end

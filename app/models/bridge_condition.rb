@@ -15,8 +15,6 @@ class BridgeCondition < BridgeLikeCondition
     :underclearance_appraisal_rating_type_id
   ]
 
-  UNALLOWABLE_INSPECTOR_PARAMS = []
-
   def calculated_condition
     case [deck_condition_rating_type&.value, superstructure_condition_rating_type&.value,
           substructure_condition_rating_type&.value].compact.min

@@ -5,3 +5,4 @@ associations.each do |asso|
 end
 
 json.(inspection_type_setting, :object_key, :is_required, :frequency_months, :description)
+json.routine_inspection_date inspection_type_setting.highway_structure.inspection_date

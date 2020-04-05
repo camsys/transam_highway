@@ -6,9 +6,9 @@ class RoadbedsController < TransamController
     @highway_structure = @inspection.highway_structure
     @roadway = Roadway.find_by_object_key(params[:roadway_id])
     if @roadway
-      @roadbeds = Roadbed.where(roadway: @roadway).order(:name, :direction)
+      @roadbeds = Roadbed.where(roadway: @roadway, inspection: @inspection).order(:name, :direction)
     else
-      @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways).order(:name, :direction)
+      @roadbeds = Roadbed.where(roadway: @highway_structure&.roadways, inspection: @inspection).order(:name, :direction)
     end
   end
 
@@ -22,6 +22,7 @@ class RoadbedsController < TransamController
     @inspection = Inspection.find_by(object_key: params[:inspection_id])
     @highway_structure = @inspection&.highway_structure
     @roadbed = Roadbed.new(roadbed_params)
+    @roadbed.inspection = @inspection
 
     if @roadbed.save
       # instantize lines

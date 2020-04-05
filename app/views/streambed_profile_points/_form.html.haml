@@ -19,15 +19,15 @@
 :javascript
 
     // jquery validations
-    $('.streambed_profile_point_form').validate({
-      submitHandler: function(form) {
-        form.submit();
-      }
-    });
+  $('.streambed_profile_point_form').validate({
+    submitHandler: function(form) {
+      $(form).ajaxSubmit();
+    }
+  });
 
-    $('#cancel_streambed_profile_point_form').click(function() {
-      $('#form-modal').modal('hide');
-    });
+  $('#cancel_streambed_profile_point_form').click(function() {
+    $('#form-modal').modal('hide');
+  });
 
 
 

@@ -1,0 +1,28 @@
+-# this is essentially the same script in shared/xeditable_scripts
+-# only thing different is the JS to update subheader if fields subheader calls are updated
+
+-# if you can't update SI&A, your disabled fields should be everything. otherwise, set to nil as shared script will figure it out from @asset object
+:ruby
+  disabled_fields = nil
+  if @inspection.present?
+    if @inspection.inspection_type.name == 'Initial'
+      disabled_fields =  []
+    else
+      disabled_fields = @asset.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @asset)}
+      if @inspection.scour_critical_bridge_type_updatable?
+        disabled_fields += @inspection.allowable_params.reject{|x| x == :scour_critical_bridge_type_id} # can is checked at save/edit button so can assume here its enabled
+      end
+    end
+  end
+
+
+:javascript
+  function profile_save_callback() {
+    // update subheader
+    $.ajax({
+      url: "#{asset_path(@asset)}/get_subheader"
+    });
+  }
+
+
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}

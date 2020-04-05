@@ -3,7 +3,7 @@ class InspectionsController < TransamController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
 
-  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize]
+  before_action :set_inspection, only: [:show, :edit, :update, :destroy, :allowed_to_finalize, :edit_inspectors]
   before_action :reformat_date_fields, only: [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "inspection_key_list_cache_var"
@@ -29,6 +29,40 @@ class InspectionsController < TransamController
         }
       }
     end
+  end
+
+  def edit_inspectors
+
+  end
+
+  def change_inspectors
+    params[:inspector_assignment_proxy][:global_ids] = params[:inspector_assignment_proxy][:global_ids].split(',')
+
+    inspector_assignment_proxy = InspectorAssignmentProxy.new(inspector_assignment_proxy_form_params)
+
+    # make sure there's only one assigned organization
+    assigned_org_id = inspector_assignment_proxy.inspections.map{|x| x.assigned_organization_id}.uniq
+    if assigned_org_id.length == 1
+      assigned_org_id = assigned_org_id.first
+    else
+      notify_user(:alert, "More than one team selected.")
+      return
+    end
+
+    inspector_assignment_proxy.inspections.each do |insp|
+      User.joins(:organizations).where(id:inspector_assignment_proxy.inspector_ids, organizations: {id: assigned_org_id}).distinct.each do |inspector|
+        if inspector_assignment_proxy.is_removal.to_i > 0
+          insp.inspectors.delete(inspector)
+        elsif !(insp.inspectors.include?(inspector))
+          insp.inspectors << inspector
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path) }
+    end
+
   end
 
   def audit_export
@@ -151,8 +185,7 @@ class InspectionsController < TransamController
   #  /inspections/1/print
   def print
 
-    # @asset = TransamAsset.get_typed_asset(HighwayStructure.find_by(id: params[:inspection][:transam_asset_id]))
-    @inspection = Inspection.get_typed_inspection(Inspection.find_by(object_key: params[:id]))
+    set_inspection
 
     respond_to do |format|
       format.html # show.html.erb
@@ -213,6 +246,10 @@ class InspectionsController < TransamController
 
     def inspection_proxy_form_params
       params.require(:inspection_proxy).permit(InspectionProxy.allowable_params)
+    end
+
+    def inspector_assignment_proxy_form_params
+      params.require(:inspector_assignment_proxy).permit(InspectorAssignmentProxy.allowable_params)
     end
 
     def reformat_date_fields

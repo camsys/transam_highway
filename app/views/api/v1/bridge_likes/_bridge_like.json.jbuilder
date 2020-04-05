@@ -29,4 +29,4 @@ associations.each do |asso|
   json.(bridge_like, "#{asso}_id")
 end
 
-json.(bridge_like, :bridge_toll_type_id, :vertical_reference_feature_below_id, :lateral_reference_feature_below_id, :min_lateral_clearance_below_right, :service_on_type_id, :service_under_type_id)
+json.(bridge_like, :bridge_toll_type_id, :vertical_reference_feature_below_id, :lateral_reference_feature_below_id, :min_lateral_clearance_below_left, :min_lateral_clearance_below_right, :service_on_type_id, :service_under_type_id)

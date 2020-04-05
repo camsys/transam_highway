@@ -1,0 +1,63 @@
+:javascript
+
+  // jquery validations
+  $('.org_form').validate({
+    rules: {
+      'organization[zip]': {
+        zipcodeUS: true
+      },
+      'organization[phone]' : {
+        phoneUS: true
+      },
+      'organization[fax]' : {
+        phoneUS: true
+      }
+    }
+  });
+
+  // Document Ready
+  $(document).ready(function(){
+
+    // Add an submit event handler for the form
+    $(".org_form").submit(function(){
+      if ($(this).valid()) {
+        if ($('#highway_consultant_select').length) {
+          var highway_consultant_list = new Array();
+          $('#highway_consultant_shuttle_target').children().map(function () {
+            highway_consultant_list.push($(this).val());
+          });
+          $('#organization_highway_consultant_ids').val(highway_consultant_list);
+        }
+        return true;
+      }
+    });
+
+    $.when(setup_bootstrap_transfers()).then(transam.make_same_height('.header-part'));
+  });
+
+  function setup_bootstrap_transfers() {
+    if ($('#highway_consultant_select').length) {
+      var highway_consultant = $('#highway_consultant_select').bootstrapTransfer({
+        target_id: 'highway_consultant_shuttle_target',
+        hilite_selection: false
+      });
+      if (highway_consultant.length) {
+        var options = [];
+        var selected = [];
+        var highway_consultants = JSON.parse('#{escape_javascript(HighwayConsultant.where.not(id: @org.id).map{|o| [o.coded_name, o.id]}.to_json.html_safe)}');
+        var selected_highway_consultants = JSON.parse('#{(@org.try(:highway_consultants) ? @org.highway_consultants.pluck(:id) : []).to_json.html_safe}');
+
+
+        $.each(highway_consultants, function( index, value ) {
+          options.push({value: value[1], content: value[0]});
+        });
+
+        $.each(selected_highway_consultants, function( index, value ) {
+          selected.push(value);
+        });
+
+        highway_consultant.populate(options);
+        highway_consultant.set_values(selected);
+      }
+    }
+  }

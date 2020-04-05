@@ -1,5 +1,6 @@
 .col-xs-12
-  .row
-    %font{:size => 3}
-      %b
-        INSPECTORS
+  .row.pdf-page-header
+    %b
+      Inspectors
+  .row.text-center
+    ="#{@inspection.inspection_type.name} #{@asset.asset_tag} #{@inspection.state}"

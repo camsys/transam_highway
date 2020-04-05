@@ -45,6 +45,9 @@
       = editable_asset_field_tag(asset, :border_bridge_pcnt_responsibility, reference_label('bridges', 'border_bridge_pcnt_responsibility', '% Resp. (border)'), required: false)
     .col-sm-3
       = editable_asset_field_tag(asset, :border_bridge_structure_number, reference_label('bridges', 'border_bridge_structure_number', 'Structure Number (border)'), required: false)
+
+= editable_asset_association_tag(asset, :federal_submission_type, reference_label('highway_structures', 'federal_submission_type_id', 'Federal Submission'))
+
 .profile-location-remarks
   = editable_asset_field_tag(asset, :remarks, 'Structure Notes', type: 'textarea', required: false)
 

@@ -1,3 +1,6 @@
+-unless defined?(is_for_pdf)
+  -is_for_pdf = false
+
 - indent_str = '&nbsp;'*indent*4
 - can_update = can?(:update, @inspection.inspection) && @inspection.updatable?
 %tr.defect{data: {defect_id: defect.id, element_id: defect.element.id}}
@@ -5,25 +8,16 @@
   %td.left!= "#{indent_str}#{defect.defect_definition.short_name}#{' (' + defect.guid + ')' if @show_debug}"
   %td.right.total_quantity= format_as_integer(defect.defect_locations.sum(&:quantity))
   %td.left= defect.element.element_definition.quantity_unit
-  %td.right.cs1
-    = link_to defect_location_new_or_edit_path(defect, 'CS1'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS1')&.quantity || 0)
-  %td.right.cs2
-    = link_to defect_location_new_or_edit_path(defect, 'CS2'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS2')&.quantity || 0)
-  %td.right.cs3
-    = link_to defect_location_new_or_edit_path(defect, 'CS3'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS3')&.quantity || 0)
-  %td.right.cs4
-    = link_to defect_location_new_or_edit_path(defect, 'CS4'), remote: true do
-      %button.number-display.btn{class: can_update ? '' : 'disabled'}
-        = format_as_integer(defect.defect_locations.find_by(condition_state: 'CS4')&.quantity || 0)
+
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS1', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS2', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS3', is_for_pdf: is_for_pdf
+  = render 'inspections/defect_location.html.haml', defect: defect, can_update: can_update, cs: 'CS4', is_for_pdf: is_for_pdf
+
   %td.center
-    - if can_update
-      = render 'inspections/defect_row_action_buttons', defect: defect
+    -unless is_for_pdf
+      - if can_update
+        = render 'inspections/defect_row_action_buttons.html.haml', defect: defect
 - if defect.defect_locations.any? || defect.notes.present?
   - notes = defect.defect_locations.order(:condition_state).collect {|s| "#{indent_str}#{s}"}.join("<br/>")
   - notes = defect.notes unless notes.present?

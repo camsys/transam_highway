@@ -10,6 +10,12 @@ class HighwayConsultant < Organization
   # Associations
   #------------------------------------------------------------------------------
 
+  has_and_belongs_to_many :highway_consultants,
+                          :join_table => :highway_consultants_organizations,
+                          :foreign_key => :organization_id,
+                          :association_foreign_key => :highway_consultant_id,
+                          :after_add => :after_add_highway_consultant_callback, :after_remove => :after_remove_highway_consultant_callback
+
   #------------------------------------------------------------------------------
   # Scopes
   #------------------------------------------------------------------------------
@@ -18,6 +24,7 @@ class HighwayConsultant < Organization
 
   # List of allowable form param hash keys
   FORM_PARAMS = [
+      :highway_consultant_ids
   ]
 
   #------------------------------------------------------------------------------
@@ -69,6 +76,18 @@ class HighwayConsultant < Organization
     super
     self.organization_type ||= OrganizationType.find_by_class_name(self.name).first
     self.license_holder = self.license_holder.nil? ? false : self.license_holder
+  end
+
+  def after_add_highway_consultant_callback(highway_consultant)
+    User.active.joins(:organizations).where(organizations: {id: self.id}).each do |u|
+      u.viewable_organizations << highway_consultant unless u.viewable_organization_ids.include? highway_consultant.id
+    end
+  end
+
+  def after_remove_highway_consultant_callback(highway_consultant)
+    User.active.joins(:organizations).where(organizations: {id: self.id}).each do |u|
+      u.viewable_organizations.destroy(highway_consultant) if u.viewable_organization_ids.include? highway_consultant.id
+    end
   end
 
 end

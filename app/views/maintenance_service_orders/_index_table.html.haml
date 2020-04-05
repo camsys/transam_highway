@@ -1,5 +1,11 @@
+:css
+  .clear {
+    position: initial;
+  }
+
 :ruby
   table_dom_id = SecureRandom.hex
+
 - unless @asset || @inspection
   .col-md-9
     #maintenance_service_orders_table_actions.row
@@ -11,19 +17,17 @@
 
           %label Status
           .form-group
-            = select_tag(:state, options_for_select(MaintenanceServiceOrder.state_names.map{|s| [MaintenanceServiceOrder.human_state_name(s) == MaintenanceServiceOrder.human_state_name(s).downcase ? MaintenanceServiceOrder.human_state_name(s).titleize : MaintenanceServiceOrder.human_state_name(s), s]}, :selected => @states), :class => "form-control", :multiple => true)
+            = select_tag(:state, options_for_select([['Pending', 'pending'], ['Overdue', 'overdue'], ['Completed', 'completed']], :selected => @states), :class => "form-control", :multiple => true, :id => :maintenance_service_order_state)
 
           %label Date First Recommended
-          .form-group
-            = date_field_tag(:date_recommended, @date_recommended)
+          = text_field_tag(:date_recommended, @date_recommended, class: 'form-control datepicker', :style => 'display: inline-block; margin-left: 5px; width:auto;')
 
           %label Timeline
-          .form-group
-            = date_field_tag(:due_month, @due_month)
+          = text_field_tag(:due_month, @due_month, class: 'form-control datepicker', :style => 'display: inline-block; margin-left: 5px; width:auto;')
 
           %label= reference_label('highway_structures', 'transam_assets.asset_tag', 'Structure Key')
           .form-group
-            = text_field_tag(:asset_search_text, @asset_search_text)
+            = text_field_tag(:asset_search_text, @asset_search_text, data: {convert: "uppercase"})
 
           .form-group
             = button_tag :class => 'btn btn-default pull-right filter', :type => 'submit' do
@@ -70,7 +74,8 @@
       - if @asset || @inspection
         %th.center.nowrap{:data => {:field => "dummy1", :align => 'left', :formatter => 'link_formatter'}} Actions
 
-= render 'shared/table_formatters'
+-#This needs to be fully qualified for pdf production.
+= render 'shared/table_formatters.html.haml'
 
 :javascript
 
@@ -90,7 +95,7 @@
       }
     });
 
-    $('#state').multiselect({
+    $('#maintenance_service_order_state').multiselect({
       inheritClass: true,
       maxHeight: 250,
       buttonText: function(options, select) {
@@ -101,6 +106,33 @@
         }
       }
     });
+
+    // Force uppercase text for structure key input
+    $('[data-convert="uppercase"]').keyup(function(evt) {
+      this.value = this.value.toUpperCase();
+    });
+  });
+
+  $('#date_recommended').bootstrapDP({
+    autoclose: true,
+    clearBtn: true
+  });
+
+  $('#due_month').bootstrapDP({
+    minViewMode: "months",
+    autoclose: true,
+    clearBtn: true
+  });
+
+  $('#due_month').datepicker().on("changeMonth", function(e) {
+    // change to end of month date
+    var currentDate = e.date;
+    console.log(currentDate);
+    var endMonthDate = moment(currentDate).endOf("month").toDate();
+    var _self = this;
+    setTimeout(function() {
+      $(_self).datepicker('update', endMonthDate);
+    }, 50);
   });
 
   $(window).resize(function() {
@@ -114,8 +146,8 @@
 
   function status_formatter(value, row) {
     d = new Date()
-    d.setMonth(d.getMonth()-1)
-    if ((moment(d) > moment(row['due_date'])) && (row['state'] != 'completed')) {
+    first_of_month = new Date(d.getFullYear(), d.getMonth(), 1)
+    if ((moment(first_of_month) > moment(row['due_date'])) && (row['state'] != 'completed')) {
       return 'Overdue'
     } else {
       return value.charAt(0).toUpperCase() + value.slice(1)
@@ -160,7 +192,7 @@
 
     function link_formatter(value, row) {
       action_html = ''
-      if ((row['state'] != 'completed') && ('#{(can? :update, @inspection.inspection) && @inspection.updatable?}' == 'true')) {
+      if ((row['state'] != 'completed') && ('#{(can? :update, @inspection.inspection) && can?(:manage, MaintenanceServiceOrder) && @inspection.updatable?}' == 'true')) {
         action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
       }
       return action_html;
@@ -170,7 +202,7 @@
 
     function link_formatter(value, row) {
       action_html = ''
-      if ((row['state'] != 'completed') && ('#{(can? :update, @asset) && !@asset.assigned_version}' == 'true')) {
+      if ((row['state'] != 'completed') && ('#{(can? :update, @asset) && can?(:manage, MaintenanceServiceOrder) && !@asset.assigned_version}' == 'true')) {
         action_html = '<a class="button btn-xs" data-remote="true" href="/maintenance_service_orders/' + row['object_key'] + '/edit"><i class="fa fa-edit fa-1-5x text-success"></i></a><a data-confirm="Are you sure? The action cannot be undone." rel="nofollow" data-method="delete" href="/maintenance_service_orders/' + row['object_key'] + '"><i class="fa fa-trash-o fa-fw text-danger"></i></a><a href="/maintenance_service_orders/' + row['object_key'] + '/fire_workflow_event?event=mark_complete">Complete</a>';
       }
       return action_html;

@@ -1,0 +1,77 @@
+:ruby
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
+
+  from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
+  from_ready_switch_team_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id)))
+  from_ready_to_open_boolean = state == 'ready' && can?(:reopen, Inspection.new)
+  from_ready_boolean = ( from_ready_to_open_boolean || from_ready_switch_team_boolean)
+  from_assigned_boolean = (state == 'assigned' && assigned_organization_id.to_i > 0 && can?(:unassign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+  to_assigned_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && (can? :assign, Inspection.new(assigned_organization_id: assigned_organization_id)))
+
+= simple_form_for(:transam_workflow_model_proxy,
+  :html => {:class => 'form-vertical', :id => 'open_assignments_form'},
+  :url => fire_workflow_events_transam_workflow_index_path,
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+  :radio_buttons => :vertical_radio_and_checkboxes,
+  :file => :vertical_file_input,
+  :boolean => :vertical_boolean}) do |f|
+
+  .row
+    .col-sm-12
+      - if from_ready_to_open_boolean || from_ready_switch_team_boolean
+        - if from_ready_to_open_boolean
+          = f.button :submit, 'To Open', :class => "btn btn-primary assignment_form_submit", :id => 'reopen_workflow', disabled: true
+        - if from_ready_switch_team_boolean
+          = f.button :submit, 'Switch Team', :class => "btn btn-primary assignment_form_submit", :id => 'switch_team_workflow', disabled: true
+      - elsif from_open_boolean
+        = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'make_ready_workflow', disabled: true
+      - elsif from_assigned_boolean
+        = f.button :submit, 'To Ready', :class => "btn btn-primary assignment_form_submit", :id => 'unassign_workflow', disabled: true
+
+  = f.input :global_ids, as: :hidden
+  = f.input :event_name, as: :hidden, input_html: {value: 'make_ready'}
+  = f.input :include_updates, as: :hidden, input_html: {value: '1'} # field updates
+
+  .row{style: 'margin-top: 5px;'}
+    .col-sm-6
+
+      - if from_open_boolean || from_ready_switch_team_boolean
+        = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil
+        - if from_ready_switch_team_boolean
+          = f.input :to_state, as: :hidden, input_html: {value: 'ready'}
+
+:javascript
+
+  $(document).ready(function() {
+
+    $("#open_assignments_form input[type=submit]").click(function() {
+        $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
+        $(this).attr("clicked", "true");
+    });
+  });
+
+
+  $('#open_assignments_form').validate({
+    submitHandler: function(form){
+
+      $('#open_assignments_form #transam_workflow_model_proxy_global_ids').val(Array.from(selected_rows));
+
+      var val = $("input[type=submit][clicked=true]").attr('id');
+      if (val == 'reopen_workflow') {
+        $('#transam_workflow_model_proxy_assigned_organization_id').val('');
+        $('#transam_workflow_model_proxy_event_name').val('reopen');
+      } else if (val == 'unassign_workflow') {
+        $('#transam_workflow_model_proxy_include_updates').val(0);
+        $('#transam_workflow_model_proxy_event_name').val('unassign');
+      } else if (val == 'switch_team_workflow') {
+        $('#transam_workflow_model_proxy_event_name').val('');
+      }
+
+      form.submit();
+    }
+  });
+
+  $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
+    enable_disable_change_workflow();
+  });

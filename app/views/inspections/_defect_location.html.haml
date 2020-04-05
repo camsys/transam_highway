@@ -1,0 +1,12 @@
+- quantity = format_as_integer(defect.defect_locations.find_by(condition_state: cs)&.quantity || 0)
+%td.right{class: cs.downcase}
+  -if is_for_pdf
+    =quantity
+  -else
+    - if can_update
+      = link_to defect_location_new_or_edit_path(defect, cs), remote: true do
+        %button.number-display.btn
+          = quantity
+    - else
+      %button.number-display.btn.disabled
+        = quantity

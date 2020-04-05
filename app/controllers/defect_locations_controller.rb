@@ -16,6 +16,10 @@ class DefectLocationsController < ApplicationController
     @defect_location = DefectLocation.new(defect_location_params)
     @defect_location.defect = @defect
 
+    image_file = params[:defect_location][:image]
+
+    image = create_image(image_file) if image_file
+
     if @defect_location.save
       @inspection = Inspection.get_typed_inspection(@inspection)
       # redirect_to @defect_location, notice: 'Defect location was successfully created.'
@@ -32,13 +36,7 @@ class DefectLocationsController < ApplicationController
       # Replace any existing images
       @defect_location.images.destroy_all
 
-      image = Image.create(image: image_file,
-                           global_base_imagable: params[:defect_location][:global_base_imagable],
-                           imagable: @defect_location,
-                           image_classification: ImageClassification.find_by(name: 'DefectLocation'),
-                           description: @defect_location.to_s.truncate(100, separator: ' '),
-                           exportable: params[:defect_location][:exportable],
-                           creator: current_user)
+      image = create_image(image_file)
     end
 
     if @defect_location.update(defect_location_params)
@@ -72,4 +70,14 @@ class DefectLocationsController < ApplicationController
     def defect_location_params
       params.require(:defect_location).permit(DefectLocation.allowable_params)
     end
+
+  def create_image(image_file)
+    Image.create(image: image_file,
+                 global_base_imagable: params[:defect_location][:global_base_imagable],
+                 imagable: @defect_location,
+                 image_classification: ImageClassification.find_by(name: 'DefectLocation'),
+                 description: @defect_location.to_s.truncate(100, separator: ' '),
+                 exportable: params[:defect_location][:exportable],
+                 creator: current_user)
+  end
 end

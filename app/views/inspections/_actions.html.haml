@@ -1,20 +1,20 @@
 - allowable_events = @inspection.allowable_event_objects
 
-.btn-group.pull-right.panel-action
+.btn-group.pull-right.panel-action.inspection-action-button
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
     %i.fa.fa-cog
     = " Actions"
     %span.caret
-  %ul.dropdown-menu{:role => 'menu'}
+  %ul.dropdown-menu.inspection-action-menu{:role => 'menu'}
     - allowable_events.each do |evt|
-      - if (can? evt.name.to_sym, @inspection.inspection) && evt.name.to_sym != :schedule
+      - if (can? evt.name.to_sym, @inspection.inspection)
         %li
           = link_to fire_workflow_event_transam_workflow_index_path(:class_name => 'Inspection', :object_key => @inspection.object_key, :event_name => evt.name) do
             %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon(evt.name)}
             = evt.human_name
     - if @inspection.state == 'ready' && (can? :reopen, @inspection.inspection) && !(allowable_events.map{|x| x.name}.include? 'reopen')
       %li
-        = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: 'reopen', global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil, organization_type_id: nil}) do
+        = link_to fire_workflow_event_transam_workflow_index_path(transam_workflow_model_proxy: {include_updates: 1, event_name: 'reopen', global_ids: [@inspection.inspection.to_global_id], assigned_organization_id: nil}) do
           %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('reopen')}
           To Open
     - elsif @inspection.state == 'signature_ready' && !(allowable_events.map{|x| x.name}.include? 'finalize')
@@ -22,3 +22,12 @@
         = link_to allowed_to_finalize_inspection_path(@inspection.object_key), remote: true do
           %i.fa.fa-fw{:class => @inspection.get_workflow_event_icon('finalize')}
           To Final
+
+:javascript
+  $(document).ready(function() {
+    if ($('ul.inspection-action-menu li').length > 0) {
+      $('.inspection-action-button').show();
+    } else {
+      $('.inspection-action-button').hide();
+    }
+  });

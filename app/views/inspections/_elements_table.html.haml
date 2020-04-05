@@ -51,6 +51,8 @@
 
 .row
   .col-md-12
+    -unless defined?(is_for_pdf)
+      -is_for_pdf = false
 
     #table_actions.btn-toolbar
       - if can?(:update, @inspection.inspection) && @inspection.updatable?
@@ -82,7 +84,7 @@
               :single_select => 'false'}}
         %thead
           %tr
-            %th.centern Elem
+            %th.center Elem
             %th.center Description
             %th.center Quantity
             %th.center Unit
@@ -90,10 +92,11 @@
             %th.center.cs_2_quantity CS 2
             %th.center.cs_3_quantity CS 3
             %th.center.cs_4_quantity CS 4
-            %th.center
+            -unless is_for_pdf
+              %th.center
 
         %tbody
-          = render partial: "inspections/elements_table_body"
+          = render partial: "inspections/elements_table_body.html.haml", locals: {is_for_pdf: is_for_pdf}
 
 :javascript
   var quantity_changes = {

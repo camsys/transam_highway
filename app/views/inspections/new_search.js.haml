@@ -2,9 +2,19 @@
   $('#errors').html("#{escape_javascript(render 'inspections/errors')}").show();
 - else
   $('#errors').hide();
+
+- if (['open', 'ready'].include?(@search_proxy.single_state_selected) || (@search_proxy.single_state_selected == 'assigned' && @search_proxy.assigned_organization_id.to_i > 0))
+  $('#inspection-assignments-form').show();
+  $('#inspection-assignments-form').html("#{escape_javascript(render partial: 'inspections/assignments_form_panel', :locals => {state: @search_proxy.single_state_selected, assigned_organization_id: @search_proxy.assigned_organization_id})}")
+- else
+  $('#inspection-assignments-form').hide();
+
+
 $('#inspection-table').bootstrapTable('refresh', {url: "#{inspections_path(:format => :json)}", pageNumber: 1});
 selected_rows = new Set();
 $('#inspection-table').bootstrapTable('uncheckAll');
+
+
 
 
 - if @message.present?

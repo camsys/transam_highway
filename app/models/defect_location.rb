@@ -21,7 +21,7 @@ class DefectLocation < ApplicationRecord
   end
 
   def to_s(include_note=true)
-    "#{quantity} #{defect.element.element_definition.quantity_unit} of #{condition_state} #{defect.defect_definition.short_name}: #{location_description} #{include_note ? '; ' + note : ''}"
+    "#{quantity} #{defect.element.element_definition.quantity_unit} of #{condition_state} #{defect.defect_definition.short_name}: #{location_description} #{(note && include_note) ? '; ' + note : ''}"
   end
 
     def as_json

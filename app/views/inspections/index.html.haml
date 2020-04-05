@@ -5,8 +5,8 @@
   .col-sm-12
     = render 'inspections/search_form'
 
-  .col-sm-12
-    = render partial: 'inspections/assignments_form_panel', :locals => {filter_scripts_loaded: 1}
+  #inspection-assignments-form
+    = render partial: 'inspections/assignments_form_panel', :locals => {state: @search_proxy.single_state_selected, assigned_organization_id: @search_proxy.assigned_organization_id}
   
   .col-sm-12
     #spinner{:style => 'padding: 20px;'}
@@ -17,11 +17,32 @@
     #inspection-table-container
       = render 'inspections/inspections_table'
 
-
-= render 'inspection_filter_scripts'
-
 :javascript
 
   $(window).resize(function() {
     $('#inspections-table').bootstrapTable('resetView');
   });
+
+  // functions for enabling/disabling assignment actions
+  function enable_disable_change_workflow() {
+    $('.assignment_form_submit').attr('disabled', 'disabled');
+    if ($('#inspection-table').bootstrapTable('getSelections').length > 0) {
+      if($('#transam_workflow_model_proxy_assigned_organization_id').val()) {
+        $('#make_ready_workflow').removeAttr('disabled');
+        $('#switch_team_workflow').removeAttr('disabled');
+      } else {
+        $('#reopen_workflow').removeAttr('disabled');
+      }
+      $('#unassign_workflow').removeAttr('disabled');
+    }
+  }
+
+  function enable_disable_change_inspectors() {
+    $('#add_inspectors_workflow,#remove_inspectors_workflow').attr('disabled', 'disabled');
+    if ($('#inspection-table').bootstrapTable('getSelections').length > 0) {
+      if($('input[name="inspector_assignment_proxy[inspector_ids][]"]:checked').length > 0) {
+        $('#add_inspectors_workflow').removeAttr('disabled');
+        $('#remove_inspectors_workflow').removeAttr('disabled');
+      }
+    }
+  }

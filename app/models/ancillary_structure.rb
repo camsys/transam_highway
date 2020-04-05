@@ -16,7 +16,7 @@ class AncillaryStructure < BridgeLike
   def inspection_class
     AncillaryCondition
   end
-  
+
   #-----------------------------------------------------------------------------
   # Class Methods
   #-----------------------------------------------------------------------------
@@ -24,17 +24,20 @@ class AncillaryStructure < BridgeLike
   def self.inspection_types
     InspectionType.where(name: ['Routine', 'Special', 'Initial', 'Damage'])
   end
-  
+
   def self.process_roadway(hash, bridgelike)
     roadway = super
     roadway.update_attributes(features_intersected: bridgelike.features_intersected)
     roadway
   end
 
-  def self.process_inspection(hash, struct_class_code, date)
+  def self.process_inspection(hash, struct_class_code, date, error_stats)
     type, desc, inspection_frequency = get_inspection_type(hash['INSPTYPE'], hash)
 
-    raise StandardError.new "No inspection type found." unless type
+    unless type
+      error_stats[:no_inspection_type] += 1
+      raise EncodingError.new "No inspection type found for INSPTYPE: #{hash['INSPTYPE']}."
+    end
 
     inspection = AncillaryCondition.new(event_datetime: date, calculated_inspection_due_date: date,
                                         inspection_frequency: inspection_frequency,
@@ -54,10 +57,11 @@ class AncillaryStructure < BridgeLike
   end
 
   def self.process_bridge_record(hash, struct_class_code, struct_type_code,
-                                 highway_authority, inspection_program, ignore1, ignore2)
+                                 highway_authority, inspection_program, error_stats, logger,
+                                 ignore1, ignore2)
     asset_tag = hash['BRKEY']
 
-    # Structure Class, NBI 24 is 
+    # Structure Class, NBI 24 is
     case struct_class_code
     when 'HIGHMAST LIGHT'
       structure_klass = HighMastLight
@@ -80,13 +84,16 @@ class AncillaryStructure < BridgeLike
       end
     end
     structure = structure_klass.find_or_initialize_by(asset_tag: asset_tag)
-    
+
     if structure.new_record?
       # Check for a previously loaded structure that has changed type
       # Destroy the existing structure so that the new structure saves cleanly
       highway_structure = HighwayStructure.find_by(asset_tag: asset_tag)
       if highway_structure
-        puts "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}"
+        msg =  "Destroying existing #{highway_structure.asset_type.name}: #{asset_tag}; replacing with #{struct_class_code}"
+        puts
+        puts msg
+        logger.warn msg
         highway_structure.destroy
       end
 
@@ -138,14 +145,14 @@ class AncillaryStructure < BridgeLike
       inspection_program: inspection_program
     }
 
-    # Validate Owner and maintenance responsibility. 
+    # Validate Owner and maintenance responsibility.
     unknown = StructureAgentType.find_by(name: 'Unknown')
 
     optional[:maintenance_responsibility] = determine_agent(unknown, hash['CUSTODIAN'])
     optional[:owner] = determine_agent(unknown, hash['OWNER'])
-    
+
     # Ancillary specific fields, probably will be separate method eventually
-    
+
     # process district, NBI 2E, 2M
     # split into region and maintenance section
     district = hash['DISTRICT']
@@ -172,7 +179,7 @@ class AncillaryStructure < BridgeLike
 
     # See if guid needs to be initialized
     structure.guid = SecureRandom.uuid unless structure.guid
-    
+
     structure.attributes = optional
 
     return structure, msg
@@ -184,13 +191,13 @@ class AncillaryStructure < BridgeLike
     upper_conn_code = upper_conn_mapping[upper_conn_code] || upper_conn_code
     upper_connection_type = UpperConnectionType.find_by(code: upper_conn_code)
     structure.upper_connection_type = upper_connection_type || upper_conn_default
-    
+
     foundation_type = FoundationType.find_by(code: record['SIGNFOUNDATIONTYPE'])
     structure.foundation_type = foundation_type || foundation_default
-    
+
     mast_arm_frame_type = MastArmFrameType.find_by(code: record['SIGNFRAMETYPE'])
     structure.mast_arm_frame_type = mast_arm_frame_type || mast_arm_frame_default
-    
+
     structure.column_type = ColumnType.find_by(code: record['SIGNPOLETYPE'])
   end
 end

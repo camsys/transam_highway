@@ -16,6 +16,7 @@ Rails.application.config.rails_admin_highway_lookup_tables = [
   'DesignConstructionType',
   'DesignLoadType',
   'FeatureSafetyType',
+  'FederalSubmissionType',
   'FoundationType',
   'FunctionalClass',
   'HighwayStructureType',

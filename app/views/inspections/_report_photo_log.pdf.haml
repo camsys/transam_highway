@@ -1,0 +1,37 @@
+-inspections_images = @inspection.images
+
+
+-i = 0
+
+-image_count = inspections_images.count-1
+-while(image_count >= 0) do
+  -image = inspections_images[image_count]
+  .row
+    %span.col-xs-6
+      %span.col-xs-1
+        -image_count -= 1
+        -i += 1
+        =i
+      %span.col-xs-11
+        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"375", width:"375" }
+      .row
+        %span.col-xs-12.center
+          = "#{image.image_classification} looking #{image.compass_point}"
+    -if image_count >= 0
+      -image2 = inspections_images[image_count]
+      %span.col-xs-6
+        %span.col-xs-1
+          -image_count -= 1
+          -i += 1
+          =i
+        %span.col-xs-11
+          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"375", width:"375" }
+        .row
+          %span.col-xs-12.center
+            = "#{image2.image_classification} looking #{image2.compass_point}"
+    .row
+      &nbsp;
+    -if i % 6 == 0
+      .row
+        .div.alwaysbreak
+          = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}

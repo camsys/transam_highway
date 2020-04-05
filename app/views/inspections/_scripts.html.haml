@@ -1,18 +1,33 @@
 :ruby
-  disabled_fields = (current_user.has_role?(:inspector) && @inspection.inspection_type.name != 'Initial') ? @inspection.unallowable_inspector_params.map{|x| "##{x}"}.join(',') : ''
-
-= render partial: 'shared/xeditable_scripts'
+  if @inspection.inspection_type.name == 'Initial'
+    disabled_fields =  []
+  else
+    disabled_fields = @asset.allowable_params.select{|x| cannot?("update_#{x}".to_sym, @asset)}
+    if @inspection.scour_critical_bridge_type_updatable?
+      disabled_fields += @inspection.allowable_params.reject{|x| x == :scour_critical_bridge_type_id} # can is checked at save/edit button so can assume here its enabled
+    end
+  end
+= render partial: 'shared/xeditable_scripts', locals: {obj: @asset, disabled_fields: disabled_fields}
 
 :javascript
+
 
   // ------ override methods in shared xeditable scripts to handle edit/save buttons in different panels -----------
 
   $(function() {
+    var disabled_fields = JSON.parse('#{disabled_fields.to_json.html_safe}');
+
     function enable_tab_editing(tab_id) {
-      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').editable('enable');
-      $('#'+tab_id+' .editable-field').not('#{disabled_fields}').filter(':visible').editable('show', false);
+      $('#'+tab_id+' .editable-field').editable('enable');
+      $('#'+tab_id+' .editable-field').filter(':visible').editable('show', false);
       $('#'+tab_id+' input[type=radio]').removeAttr('disabled');
       //$('#'+tab_id+' .editable-input').find('input, select').first().focus();
+
+      $('#'+tab_id+' .editable-field').each(function(idx, field) {
+        if ($.inArray( $(field).attr('id'), disabled_fields ) >= 0) {
+          $(field).editable('disable');
+        }
+      });
 
       $('.other-type-container select').each(function() {
         $(this).closest('.other-type-container').attr('data-original-value', $(this).val());

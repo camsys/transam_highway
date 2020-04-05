@@ -5,8 +5,6 @@
     = editable_field_tag(@inspection, :notes, 'Inspection Notes', model_name: 'Inspection', type: 'textarea', required: false)
   .col-sm-6
     .row
-      .col-sm-2
-        = editable_field_tag(@inspection, :temperature, 'Temperature', model_name: 'Inspection', type: 'number', required: false)
+      = editable_field_tag(@inspection, :temperature, 'Temperature', model_name: 'Inspection', type: 'number', required: false)
     .row
-      .col-sm-6
-        = editable_field_tag(@inspection, :weather, 'Weather', model_name: 'Inspection', required: false)
+      = editable_field_tag(@inspection, :weather, 'Weather', model_name: 'Inspection', required: false)

@@ -8,12 +8,14 @@
 
 #table_actions.btn-toolbar
   .btn-group
-    - if can?(:update_from_structure,@asset)
+    - if can?(:update, @asset) && can?(:schedule, Inspection)
       = link_to inspection_type_settings_inspections_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
         = "Manage Schedule";
-    = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
-      %i.fa.fa-plus
-      = "Plan Unscheduled";
+
+    - if can? :create, Inspection
+      = link_to new_inspection_path(asset_object_key: @asset.object_key), :remote => true, :class => 'btn btn-primary' do
+        %i.fa.fa-plus
+        = "Plan Unscheduled";
 
 .table-responsive
   %table.table.table-hover{:id => table_dom_id,
@@ -80,8 +82,12 @@
           %td.left= inspection.state&.titleize
           %td.left
             - if can?(:update, inspection)
-              = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
-                %i.fa.fa-edit.fa-1-5x.text-success
+              - if can?(:make_schedule, inspection)
+                = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
+                  %i.fa.fa-edit.fa-1-5x.text-success
+              - if can?(:make_ready, inspection) || can?(:switch_team, inspection) || can?(:assign, inspection)
+                = link_to edit_inspectors_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspections" do
+                  %i.fa.fa-users.fa-fw.text-info
               - unless inspection.inspection_type_setting.present?
                 = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
                   %i.fa.fa-trash-o.fa-fw.text-danger

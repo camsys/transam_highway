@@ -2,7 +2,7 @@ class InspectionAuditService
 
   def table_of_changes(typed_asset, start_date, end_date)
     # initialize empty array to store changes that matter to use
-    changes_arr = [["Structure Key", "Label", "Item Number", "Old Value", "New Value", "User", "Date"]]
+    changes_arr = [["Structure Key", "Label", "Item Number", "Old Code", "Old Value", "New Code", "New Value", "User", "Date"]]
 
     assocs = Hash.new
     Rails.application.config.inspection_audit_changes.map{|x| x.split('.')[1]}.select{|x| x.end_with? '_id'}.each do |assoc|
@@ -16,7 +16,12 @@ class InspectionAuditService
       else
         klass = assoc[0..-4].classify.constantize
       end
-      assocs[assoc] = klass.pluck(:id, :name).each_with_object({}) { |(f,l),h|  h.update(f=>l) {|_,ov,nv| ov+nv }}
+
+      if klass.has_attribute? :code
+        assocs[assoc] = klass.pluck(:id, :code, :name).each_with_object({}) { |(f,c,l),h|  h.update(f=>[c,l]) {|_,ov,nv| ov+nv }}
+      else
+        assocs[assoc] = klass.pluck(:id, :name).each_with_object({}) { |(f,l),h|  h.update(f=>[nil, l]) {|_,ov,nv| ov+nv }}
+      end
     end
 
     # get changes that are applicable
@@ -46,7 +51,13 @@ class InspectionAuditService
 
       versions.each do |version|
         (version.changeset.keys & Rails.application.config.inspection_audit_changes.map{|x| x.split('.')[1]}).each do |col_change|
-          changes_arr << [typed_asset.asset_tag, labels[col_change][0], labels[col_change][1]] + version.changeset[col_change].map{|x| assocs.key?(col_change) ? assocs[col_change][x] : x} + [users[version.whodunnit], version.created_at]
+          changes_arr << [typed_asset.asset_tag, labels[col_change][0], labels[col_change][1]] + version.changeset[col_change].map{|x|
+            if assocs.key?(col_change)
+              assocs[col_change][x] ? [assocs[col_change][x][0], assocs[col_change][x][1]] : [nil, nil]
+            else
+              [nil, x]
+            end
+          }.flatten + [users[version.whodunnit], version.created_at]
         end
       end
     else
@@ -67,7 +78,13 @@ class InspectionAuditService
           changeset = YAML.load(version.object_changes)
 
           (changeset.keys & Rails.application.config.inspection_audit_changes.map{|x| x.split('.')[1]}).each do |col_change|
-            changes_arr << [asset_tags[version.item_id], labels[col_change][0], labels[col_change][1]] + changeset[col_change].map{|x| assocs.key?(col_change) ? assocs[col_change][x] : x} +[users[version.whodunnit], version.created_at]
+            changes_arr << [asset_tags[version.item_id], labels[col_change][0], labels[col_change][1]] + changeset[col_change].map{|x|
+              if assocs.key?(col_change)
+                assocs[col_change][x] ? [assocs[col_change][x][0], assocs[col_change][x][1]] : [nil, nil]
+              else
+                [nil, x]
+              end
+            }.flatten + [users[version.whodunnit], version.created_at]
           end
         end
       end

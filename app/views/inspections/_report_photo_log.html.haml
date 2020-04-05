@@ -1,7 +1,61 @@
-.col-xs-12
-  -#iterate over the photos one at a time. For every two create a row and add the caption
+-#iterate over the photos one at a time. For every two create a row and add the caption
+
+-inspections_images = @inspection.images
+-asset_images = TransamAsset.get_typed_asset(@inspection.highway_structure).images
+
+-#working with asset images first because I have them. Inspection images will follow the same model.
+
+-i = 0
+
+-image_count = inspections_images.count
+-while(i < image_count) do
+  -image = inspections_images[i]
   .row
-    %span.col-xs-6-photo-detail
-      %span
-    %span.col-xs-6-photo-detail
+    %span.col-xs-6
+      %span.col-xs-1
+        =i
+      %span.col-xs-11
+        -#=image_tag @asset.images.first.image.url(:thumb), alt: @asset.images.first.description, class: "img-circle img-responsive"
+        -#=image_tag image.image alt: image.description, class: "img-circle img-responsive"
+        -#=wicked_pdf_image_tag "#{image.image}", :alt => image.description, :style => 'float:center'
+        =wicked_pdf_image_tag image.image.url(:thumb), :alt => image.description
+      .row
+        %span.col-xs-12
+          = "#{image.image_classification} looking #{image.compass_point}"
+    -if i+1 < inspections_images.count
+      -image2 = asset_images[i+1]
+      %span.col-xs-6
+        %span.col-xs-1
+          =i+1
+        %span.col-xs-11
+          =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
+        .row
+          %span.col-xs-12
+            = "#{image.image_classification} looking #{image.compass_point}"
+    -i += 2
+
+-image_count = asset_images.count
+-while(i < image_count) do
+  -image = asset_images[i]
+  .row
+    %span.col-xs-6
+      %span.col-xs-1
+        =i
+      %span.col-xs-11
+        =wicked_pdf_image_tag "#{image.image}", :alt => image.description, :style => 'float:center'
+      .row
+        %span.col-xs-12
+          = "#{image.image_classification} looking #{image.compass_point}"
+    -if i+1 < asset_images.count
+      -image2 = asset_images[i+1]
+      %span.col-xs-6
+        %span.col-xs-1
+          =i+1
+        %span.col-xs-11
+          =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
+        .row
+          %span.col-xs-12
+            = "#{image.image_classification} looking #{image.compass_point}"
+    -i += 2
+
 

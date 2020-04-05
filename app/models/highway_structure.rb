@@ -27,6 +27,8 @@ class HighwayStructure < TransamAssetRecord
 
   belongs_to :inspection_program
 
+  belongs_to :federal_submission_type
+
   has_many :inspections, foreign_key: :transam_asset_id, dependent: :destroy
   has_many :inspection_type_settings, foreign_key: :transam_asset_id, dependent: :destroy
 
@@ -73,6 +75,7 @@ class HighwayStructure < TransamAssetRecord
       :lanes_under,
       :historical_significance_type_id,
       :highway_structure_type_id,
+      :federal_submission_type_id,
       :inspection_type_settings_attributes => [InspectionTypeSetting.allowable_params]
   ]
 
@@ -83,6 +86,10 @@ class HighwayStructure < TransamAssetRecord
   SEARCHABLE_FIELDS = [
 
   ]
+
+  DTD_PARAMS = [:historical_significance_type_id, :region_id, :maintenance_section_id, :county, :city]
+  RATING_PARAMS = []
+  INSPECTOR_PARAMS = [:location_description, :remarks, :lanes_on, :lanes_under, :approach_roadway_width, :length, :asset_subtype_id, ]
 
   #-----------------------------------------------------------------------------
   #
@@ -121,6 +128,48 @@ class HighwayStructure < TransamAssetRecord
   # Instance Methods
   #
   #-----------------------------------------------------------------------------
+
+  def dtd_params
+    arr = DTD_PARAMS.dup
+    a = self.specific
+
+    while a.try(:specific).present? && a.specific != a
+      arr << a.class::DTD_PARAMS.dup if defined? a.class::DTD_PARAMS
+      a = a.specific
+    end
+
+    arr << a.class::DTD_PARAMS.dup if defined? a.class::DTD_PARAMS
+
+    return arr.flatten
+  end
+
+  def rating_params
+    arr = RATING_PARAMS.dup
+    a = self.specific
+
+    while a.try(:specific).present? && a.specific != a
+      arr << a.class::RATING_PARAMS.dup if defined? a.class::RATING_PARAMS
+      a = a.specific
+    end
+
+    arr << a.class::RATING_PARAMS.dup if defined? a.class::RATING_PARAMS
+
+    return arr.flatten
+  end
+
+  def inspector_params
+    arr = INSPECTOR_PARAMS.dup
+    a = self.specific
+
+    while a.try(:specific).present? && a.specific != a
+      arr << a.class::INSPECTOR_PARAMS.dup if defined? a.class::INSPECTOR_PARAMS
+      a = a.specific
+    end
+
+    arr << a.class::INSPECTOR_PARAMS.dup if defined? a.class::INSPECTOR_PARAMS
+
+    return arr.flatten
+  end
 
   def inspection_class
     Inspection

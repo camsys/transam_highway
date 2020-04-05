@@ -1,8 +1,11 @@
+-unless defined?(is_for_pdf)
+  -is_for_pdf = false
+
 - @inspection.parent_elements.ordered.each do |element|
-  = render partial: "inspections/element_row", locals: {element: element, indent: 0, is_child: false}
+  = render partial: "inspections/element_row.html.haml", locals: {element: element, indent: 0, is_child: false, is_for_pdf: is_for_pdf}
   - element.defects.ordered.each do |defect|
-    = render partial: "inspections/defect_row", locals: {defect: defect, indent: 1}
+    = render partial: "inspections/defect_row.html.haml", locals: {defect: defect, indent: 1, is_for_pdf: is_for_pdf}
   - element.children.ordered.each do |bme|
-    = render partial: "inspections/element_row", locals: {element: bme, indent: 1, is_child: true}
+    = render partial: "inspections/element_row.html.haml", locals: {element: bme, indent: 1, is_child: true, is_for_pdf: is_for_pdf}
     - bme.defects.ordered.each do |defect|
-      = render partial: "inspections/defect_row", locals: {defect: defect, indent: 2}
+      = render partial: "inspections/defect_row.html.haml", locals: {defect: defect, indent: 2, is_for_pdf: is_for_pdf}

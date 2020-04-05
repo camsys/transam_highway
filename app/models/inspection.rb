@@ -5,6 +5,7 @@ class Inspection < InspectionRecord
   actable as: :inspectionible
 
   after_initialize :set_defaults
+  after_save       :remove_inspectors_after_reopen
 
   include TransamObjectKey
 
@@ -71,8 +72,6 @@ class Inspection < InspectionRecord
       :inspector_ids => []
   ]
 
-  UNALLOWABLE_INSPECTOR_PARAMS = []
-
   def self.get_typed_inspection(inspection)
     if inspection
       if inspection.specific
@@ -106,14 +105,9 @@ class Inspection < InspectionRecord
 
         {event_name: 'reopen', from_state: 'ready', to_state: 'open', guard: :allowed_to_reopen, can: :can_make_ready, human_name: 'To Open'},
 
-        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', guard: :allowed_to_unassign, can: :can_assign, human_name: 'To Ready'},
+        {event_name: 'unassign', from_state: 'assigned', to_state: 'ready', can: :can_assign, human_name: 'To Ready'},
 
         {event_name: 'assign', from_state: ['ready', 'in_field'], to_state: 'assigned', guard: :allowed_to_assign, can: :can_assign, human_name: 'To Assigned'},
-
-        {event_name: 'schedule', from_state: 'open', to_state: 'assigned', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Assigned'},
-
-        {event_name: 'unschedule', from_state: 'assigned', to_state: 'open', guard: :allowed_to_schedule, can: :can_schedule, human_name: 'To Open'},
-
 
         {event_name: 'send_to_field', from_state: ['assigned', 'in_progress'], to_state: 'in_field', can: :can_sync, human_name: 'To In Field'},
 
@@ -137,7 +131,7 @@ class Inspection < InspectionRecord
 
   # transitions that should happen automatically when you update an inspection (through the detail page) as long as all the conditions are meh
   def self.automatic_transam_workflow_transitions
-    ['reopen', 'unassign']
+    ['reopen']
   end
 
   def as_json(options={})
@@ -190,10 +184,6 @@ class Inspection < InspectionRecord
   #
   # -------------------------------------------------------------------
 
-  def allowed_to_schedule
-    allowed_to_make_ready && allowed_to_assign && calculated_inspection_due_date.present?
-  end
-
   def allowed_to_reopen
     assigned_organization.nil?
   end
@@ -202,43 +192,34 @@ class Inspection < InspectionRecord
     assigned_organization.present?
   end
 
-  def allowed_to_unassign
-    inspectors.count == 0
-  end
-
   def allowed_to_assign
     inspectors.count > 0
   end
 
   def allowed_to_finalize
-    typed_inspection = Inspection.get_typed_inspection(self)
     if inspection_type_setting
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type_setting: inspection_type_setting).maximum(:event_datetime)
     else
       last_inspection_date = highway_structure.inspections.where(state: 'final', inspection_type: inspection_type).maximum(:event_datetime)
     end
 
-      inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
-  end
-
-  def can_schedule(user)
-    true
+    inspection_team_leader.present? && event_datetime.present? && (last_inspection_date.nil? || event_datetime > last_inspection_date)
   end
 
   def can_make_ready(user)
-    can_all(user) || user.has_role?(:manager)
+    can_all(user) || (user.has_role?(:manager) && user.organization.organization_type.class_name == 'HighwayAuthority')
   end
 
   def can_all(user)
-    user.has_role?(:super_manager) || user.has_role?(:admin)
+    user.has_role?(:admin)
   end
 
   def can_assign(user)
-    can_all(user) || (user.has_role?(:inspector) && (assigned_organization.try(:users) || []).include?(user))
+    can_all(user) || (user.has_role?(:user) && (assigned_organization.try(:users) || []).include?(user))
   end
 
   def can_sync(user)
-    can_all(user) || user.has_role?(:inspector)
+    can_all(user) || user.has_role?(:user)
   end
 
   def can_start(user)
@@ -246,7 +227,7 @@ class Inspection < InspectionRecord
   end
 
   def can_submit(user)
-    can_all(user) || user.has_role?(:manager)
+    can_all(user) || (user.has_role?(:manager) && user.organization.organization_type.class_name == 'HighwayAuthority')
   end
 
   def can_finalize(user)
@@ -333,7 +314,11 @@ class Inspection < InspectionRecord
   end
 
   def updatable?
-    (['draft_report', 'qc_review'].include? state)
+    (['assigned','draft_report', 'qc_review'].include? state)
+  end
+
+  def scour_critical_bridge_type_updatable?
+    ['submitted', 'qa_review'].include? state
   end
 
   protected
@@ -351,6 +336,12 @@ class Inspection < InspectionRecord
       end
     end
 
+  end
+
+  def remove_inspectors_after_reopen
+    if self.assigned_organization.nil? || self.saved_change_to_attribute?(:assigned_organization_id)
+      self.inspectors.clear
+    end
   end
 
 end
