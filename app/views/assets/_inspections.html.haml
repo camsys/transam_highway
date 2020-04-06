@@ -81,14 +81,14 @@
                 %i.fa.fa-info-circle.fa-1-25x
           %td.left= inspection.state&.titleize
           %td.left
-            - if can?(:update, inspection)
+            - if can?(:update, inspection) && inspection.state != 'final'
               - if can?(:make_schedule, inspection)
                 = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
                   %i.fa.fa-edit.fa-1-5x.text-success
-              - if can?(:make_ready, inspection) || can?(:switch_team, inspection) || can?(:assign, inspection)
+              - if (inspection.state == 'open' && can?(:make_ready, inspection)) || (inspection.state == 'ready' && (can?(:switch_team, inspection) || can?(:assign, inspection)))
                 = link_to edit_inspectors_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspections" do
                   %i.fa.fa-users.fa-fw.text-info
-              - unless inspection.inspection_type_setting.present?
+              - if inspection.destroyable? && can?(:destroy, inspection)
                 = link_to inspection_path(inspection.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
                   %i.fa.fa-trash-o.fa-fw.text-danger
             = link_to print_inspection_path(inspection, format: :pdf), :class => "button btn-xs", :title => "Export Inspection PDF", :id => "export_inspection_to_pdf" do

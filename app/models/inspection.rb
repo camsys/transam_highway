@@ -317,6 +317,10 @@ class Inspection < InspectionRecord
     (['assigned','draft_report', 'qc_review'].include? state)
   end
 
+  def destroyable?
+    ['open', 'ready'].include?(state) && inspection_type_setting.nil?
+  end
+
   def scour_critical_bridge_type_updatable?
     ['submitted', 'qa_review'].include? state
   end
@@ -339,8 +343,12 @@ class Inspection < InspectionRecord
   end
 
   def remove_inspectors_after_reopen
-    if self.assigned_organization.nil? || self.saved_change_to_attribute?(:assigned_organization_id)
+    if self.assigned_organization.nil?
       self.inspectors.clear
+    elsif self.saved_change_to_attribute?(:assigned_organization_id)
+      self.inspectors.each do |insp|
+        self.inspectors.delete(insp) unless insp.organization_ids.include? self.assigned_organization_id
+      end
     end
   end
 

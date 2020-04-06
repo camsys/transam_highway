@@ -11,7 +11,7 @@ module Abilities
       ability = Abilities::MaintenanceMgmtPrivilege.new(user, user.viewable_organization_ids) rescue nil
       self.merge ability if ability.present?
 
-      can [:create, :audit], InspectionRecord
+      can [:create, :audit, :destroy], InspectionRecord
       can :update, InspectionRecord do |inspection|
         (inspection.inspector_ids.include? user.id)
       end
