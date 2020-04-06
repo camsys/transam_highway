@@ -24,7 +24,7 @@ class HighwayConsultant < Organization
 
   # List of allowable form param hash keys
   FORM_PARAMS = [
-      :highway_consultant_ids
+      :highway_consultant_ids => []
   ]
 
   #------------------------------------------------------------------------------

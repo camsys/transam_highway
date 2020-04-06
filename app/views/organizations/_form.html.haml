@@ -25,7 +25,7 @@
             = f.input :external_id, :label => "External ID"
           - if @org.type_of? HighwayConsultant
             = dialog_tag('Associated Consultants', {:icon => 'fa fa-book'}) do
-              = f.input :highway_consultant_ids, :as => :hidden
+              = f.hidden_field :highway_consultant_ids, :multiple => true
               .form-group
                 %label.control-label= " Highway Consultants"
                 #highway_consultant_select.input-md
