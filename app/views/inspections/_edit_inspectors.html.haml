@@ -14,7 +14,7 @@
 
   inspectors = []
   User.active.with_role(:user).distinct.each do |user|
-    user.organizations.each do |l|
+    user.organizations.distinct.each do |l|
       inspectors << {
         name: user.to_s,
         id: user.id,
@@ -48,7 +48,7 @@
             = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id, disabled: !enabled
           .col-sm-6
             - if can? :assign, @inspection
-              = f.input :inspector_ids, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, as: :check_boxes, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
+              = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
         .row
           .col-xs-12
