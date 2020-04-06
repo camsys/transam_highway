@@ -26,6 +26,8 @@
           - if @org.type_of? HighwayConsultant
             = dialog_tag('Associated Consultants', {:icon => 'fa fa-book'}) do
               = f.hidden_field :highway_consultant_ids, :multiple => true
+              - HighwayConsultant.where.not(id: f.object.id).each do |consultant|
+                = f.hidden_field :highway_consultant_ids, :multiple => true, :value => consultant.id
               .form-group
                 %label.control-label= " Highway Consultants"
                 #highway_consultant_select.input-md
