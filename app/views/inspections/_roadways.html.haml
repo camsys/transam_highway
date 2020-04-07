@@ -1,5 +1,4 @@
 :ruby
-    highway_structure = highway_structure || @inspection.highway_structure
     skip_legend = skip_legend || false
 
 :css
@@ -73,8 +72,8 @@
                 %th.center= reference_label('roadways', 'on_truck_network', 'Designated National Network')
                 %th.center= reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
                 %th.center= reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
-            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.on}
-            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.under}
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.select{|r| r.on_under_indicator == '1'}}
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.select{|r| r.on_under_indicator != '1'}.sort_by(&:on_under_indicator)}
 
 :javascript
     $(function() {

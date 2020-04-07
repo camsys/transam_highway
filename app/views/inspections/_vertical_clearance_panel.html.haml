@@ -26,7 +26,7 @@
                 Roadbed
           .tab-content{style: 'min-height: 100px;'}
             .tab-pane.fade.in.active#roadways
-              = render 'roadways'
+              = render partial: 'roadways', locals: {highway_structure: @asset}
 
             .tab-pane.fade.in#roadbed
               = render 'roadbed'
