@@ -212,6 +212,22 @@ class HighwayStructure < TransamAssetRecord
     inspections.where(state: 'final').ordered.first
   end
 
+  def assigned_version_roadways
+    typed_version = TransamAsset.get_typed_version(assigned_version)
+    if assigned_version.respond_to? :reify
+      return typed_version.roadways
+    elsif assigned_inspection_version.present?
+      time_of_assignment = assigned_inspection_version.created_at
+      results = typed_version.roadways.where('updated_at <= ?', time_of_assignment).to_a
+
+      typed_version.roadways.where('updated_at > ?', time_of_assignment).each do |roadway|
+        ver = roadway.versions.where('created_at > ?', time_of_assignment).where.not(event: 'create').order(:created_at).first
+        results << ver.reify if ver
+      end
+      return results
+    end
+  end
+
   def assigned_version
     return assigned_inspection_version&.reify(belongs_to: true)&.highway_structure&.version || assigned_inspection_version&.reify(belongs_to: true)&.highway_structure
   end
@@ -219,7 +235,13 @@ class HighwayStructure < TransamAssetRecord
   def assigned_inspection_version
     if inspections.where.not(state: ['open', 'ready', 'final']).count > 0
       # we know inspections only have versions for assigned and final so we take the first one which will be an assigned
-      return PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first
+      # in case from data load the first one might be a state after assigned
+      ver = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").where('object_changes LIKE ?', "%assigned%").order(:created_at).last
+      if ver.nil?
+        ver = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first
+      end
+
+      return ver
     end
   end
 

@@ -177,6 +177,26 @@ class Inspection < InspectionRecord
     end
   end
 
+  def highway_structure_version_roadways
+    typed_version = TransamAsset.get_typed_version(highway_structure_version)
+    if state == 'final'
+      if highway_structure_version.respond_to? :reify
+        typed_version.roadways
+      else
+        time_of_finalization = versions.last.created_at
+        results = typed_version.roadways.where('updated_at <= ?', time_of_finalization).to_a
+
+        typed_version.roadways.where('updated_at > ?', time_of_finalization).each do |roadway|
+          ver = roadway.versions.where('created_at > ?', time_of_finalization).where.not(event: 'create').order(:created_at).first
+          results << ver.reify if ver
+        end
+        return results
+      end
+    else
+      return highway_structure.roadways
+    end
+  end
+
   # ---------------------------------------------------------------------
   #
   # Methods to check logic before workflow transitions
