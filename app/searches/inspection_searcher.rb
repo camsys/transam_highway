@@ -129,8 +129,8 @@ class InspectionSearcher < BaseSearcher
   def assigned_organization_id_conditions
     if search_proxy&.assigned_organization_id.present?
       inspection_klass.where("inspections.assigned_organization_id": parse_nil_search_value(search_proxy&.assigned_organization_id))
-    elsif !(user.organization_ids.include?(HighwayAuthority.first.id))
-      organization_ids = user&.viewable_organization_ids.reject{|x| x == HighwayAuthority.first.id}
+    else
+      organization_ids = user&.viewable_organization_ids.reject{|x| x == HighwayAuthority.first.id && !(user.organization_ids.include?(HighwayAuthority.first.id))}
       inspection_klass.where("inspections.assigned_organization_id": organization_ids)
     end
   end
