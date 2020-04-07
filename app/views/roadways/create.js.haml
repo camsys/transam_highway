@@ -3,4 +3,4 @@
 - else
   $('#form-modal').modal('hide');
 
-  $('#roadways > div.tab-content').html("#{escape_javascript(render 'inspections/roadways', highway_structure: @asset)}");
+  $('div.tab-content #roadways.tab-pane').html("#{escape_javascript(render 'inspections/roadways', highway_structure: @asset)}");
