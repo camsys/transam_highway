@@ -1,7 +1,9 @@
--inspections_images = @inspection.images
-
+-#Eportable true means only photos that have use photo yes will be used.
+-inspections_images = @inspection.images.where(exportable: true)
 
 -i = 0
+
+-#TODO ALEX you will need add the element photos.  This may necessitate the need to change the order of photos and how the count works.  But element photos should be added to the inspection_images list.
 
 -image_count = inspections_images.count-1
 -while(image_count >= 0) do
@@ -13,7 +15,7 @@
         -i += 1
         =i
       %span.col-xs-11
-        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"375", width:"375" }
+        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"300", width:"300" }
       .row
         %span.col-xs-12.center
           = "#{image.image_classification} looking #{image.compass_point}"
@@ -25,7 +27,7 @@
           -i += 1
           =i
         %span.col-xs-11
-          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"375", width:"375" }
+          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"300", width:"300" }
         .row
           %span.col-xs-12.center
             = "#{image2.image_classification} looking #{image2.compass_point}"
