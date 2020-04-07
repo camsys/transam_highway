@@ -331,7 +331,7 @@ class InspectionsController < TransamController
     end
 
     def run_searcher
-      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy, can_view_all: can?(:view_all, Inspection)})
+      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy})
       @inspections = @searcher.data
       @total_count = @inspections.count
     end
