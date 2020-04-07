@@ -109,9 +109,9 @@
       &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
-      Routine Inspection Date (90)
+      Inspection Date (90)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@asset.inspection_date.try(:strftime,'%B %Y')
+      =@asset.inspection_date.try(:strftime,'%m/%d/%Y')
       &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
@@ -135,19 +135,19 @@
       %span.col-xs-6.text-limiter-counter
         Frac Crit Insp Req'd (92AA)
       %span.col-xs-6.text-limiter-counter
-        =@inspection.inspection_type_setting.is_required
+        =format_as_yes_no(@inspection.inspection_type_setting.is_required)
         &nbsp;
     .row
       %span.col-xs-6.text-limiter-counter
         Underwater Insp Req'd (92BA)
       %span.col-xs-6.text-limiter-counter
-        =@inspection.inspection_type_setting.is_required
+        =format_as_yes_no(@inspection.inspection_type_setting.is_required)
         &nbsp;
     .row
       %span.col-xs-6.text-limiter-counter
         Special Insp Req'd (92CA)
       %span.col-xs-6.text-limiter-counter
-        =@inspection.inspection_type_setting.is_required
+        =format_as_yes_no(@inspection.inspection_type_setting.is_required)
         &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
@@ -302,18 +302,6 @@
       __NA__
   .row
     %span.col-xs-6.text-limiter-counter
-      Waterway Adequacy (71)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.waterway_appraisal_rating_type
-      &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Approach Roadway Alignment (72)
-    %span.col-xs-6.text-limiter-counter-yellow
-      =@typed_inspection.approach_alignment_appraisal_rating_type
-      &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
       Structural Evaluation (67)
     %span.col-xs-6.text-limiter-counter-yellow
       =@typed_inspection.structural_appraisal_rating_type
@@ -325,13 +313,25 @@
       =@typed_inspection.deck_geometry_appraisal_rating_type
       &nbsp;
 
-  -if typed_inspection_methods.include?(:underclearance_appraisal_rating_type)
+  -if @typed_inspection.respond_to?(:underclearance_appraisal_rating_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Underclearances Appraisal (69)
       %span.col-xs-6.text-limiter-counter-yellow
         =@typed_inspection.underclearance_appraisal_rating_type
         &nbsp;
+  .row
+    %span.col-xs-6.text-limiter-counter
+      Waterway Adequacy (71)
+    %span.col-xs-6.text-limiter-counter-yellow
+      =@typed_inspection.waterway_appraisal_rating_type
+      &nbsp;
+  .row
+    %span.col-xs-6.text-limiter-counter
+      Approach Roadway Alignment (72)
+    %span.col-xs-6.text-limiter-counter-yellow
+      =@typed_inspection.approach_alignment_appraisal_rating_type
+      &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Structure Rail Type (125A)
@@ -361,7 +361,7 @@
     %span.col-xs-6.text-limiter-counter
       Temporary Structure (103)
     %span.col-xs-6.text-limiter-counter
-      =@inspection.highway_structure.is_temporary
+      =format_as_yes_no(@inspection.highway_structure.is_temporary)
       &nbsp;
   .row
     %span.col-xs-12.text-header
@@ -422,7 +422,7 @@
       __NA__
   .row
     %span.col-xs-6.text-limiter-counter
-      Skew (34))
+      Skew (34)
     %span.col-xs-6.text-limiter-counter-yellow
       __NA__
 
@@ -477,16 +477,16 @@
 
   .row
     %span.col-xs-6.text-limiter-counter
-      Min Vertical Clr Below Bridge (54B)
+      Ref Vert Feature Below Bridge (54A)
     %span.col-xs-6.text-limiter-counter-yellow
-      =typed_structure.min_vertical_clearance_below
+      =@asset.vertical_reference_feature_below
       &nbsp;
 
   .row
     %span.col-xs-6.text-limiter-counter
-      Ref Vert Feature Below Bridge (54A)
+      Min Vertical Clr Below Bridge (54B)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@asset.vertical_reference_feature_below
+      =typed_structure.min_vertical_clearance_below
       &nbsp;
 
   .row

@@ -47,7 +47,7 @@
       &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
-      Inventory Rating Factor (66F))
+      Inventory Rating Factor (66F)
     %span.col-xs-6.text-limiter-counter
       __NA__
   .row
@@ -167,48 +167,16 @@
     %span.col-xs-6.text-limiter-counter
       __NA__
   .row
-    %span.col-xs-12.text-header
-      Structural Type & Material
-  -unless @inspection.inspection_type_setting.nil?
-    .row
-      %span.col-xs-6.text-limiter-counter
-        FC Inspection Frequency
-      %span.col-xs-6.text-limiter-counter-yellow
-        =@inspection.inspection_type_setting.frequency_months
-        &nbsp;
-  .row
-    %span.col-xs-6.text-limiter-counter
-      FC Details (critical feature)
-    %span.col-xs-6.text-limiter-counter-yellow
-      __NA__
-  -unless @inspection.inspection_type_setting.nil?
-    .row
-      %span.col-xs-6.text-limiter-counter
-        Special Inspection Required
-      %span.col-xs-6.text-limiter-counter-yellow
-        =@inspection.inspection_type_setting.is_required
-        &nbsp;
-    .row
-      %span.col-xs-6.text-limiter-counter
-        Special Inspection Frequency
-      %span.col-xs-6.text-limiter-counter-yellow
-        =@inspection.inspection_type_setting.frequency_months
-  .row
-    %span.col-xs-6.text-limiter-counter
-      Special Details (critical feature)
-    %span.col-xs-6.text-limiter-counter-yellow
-      __NA__
-  .row
     %span.col-xs-6.text-limiter-counter
       Mat. and/or design (43A)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.main_span_material_type
+      =@inspection.highway_structure.highway_structurible.main_span_material_type
       &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
       Design and/or const (43B)
     %span.col-xs-6.text-limiter-counter-yellow
-      =@inspection.highway_structure.main_span_design_construction_type
+      =@inspection.highway_structure.highway_structurible.main_span_design_construction_type
       &nbsp;
   .row
     %span.col-xs-6.text-limiter-counter
@@ -236,7 +204,7 @@
       &nbsp;
 
   -typed_structure_methods = typed_structure.class.instance_methods(false)
-  -if typed_structure_methods.include?(:deck_structure_type)
+  -if typed_structure.respond_to?(:deck_structure_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Deck Structure Type (107)
@@ -244,7 +212,7 @@
         =typed_structure.deck_structure_type
         &nbsp;
 
-  -if typed_structure_methods.include?(:wearing_surface_type)
+  -if typed_structure.respond_to?(:wearing_surface_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Wearing Surface Type (108A)
@@ -252,7 +220,7 @@
         =typed_structure.wearing_surface_type
         &nbsp;
 
-  -if typed_structure_methods.include?(:membrane_type)
+  -if typed_structure.respond_to?(:membrane_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Membrane Type (108B)
@@ -260,7 +228,7 @@
         =typed_structure.membrane_type
         &nbsp;
 
-  -if typed_structure_methods.include?(:deck_protection_type)
+  -if typed_structure.respond_to?(:deck_protection_type)
     .row
       %span.col-xs-6.text-limiter-counter
         Deck Protection Type (108C)
@@ -272,3 +240,8 @@
       Expansion Deck Type (124)
     %span.col-xs-6.text-limiter-counter
       __NA__
+
+.col-xs-6
+  .row
+    %span.col-xs-12.text-header
+      Structural Type & Material
