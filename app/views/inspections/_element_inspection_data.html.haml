@@ -48,6 +48,8 @@
 
 .row
   .col-md-12
+    -unless defined?(is_for_pdf)
+      -is_for_pdf = false
 
     #table_actions.btn-toolbar
       - if can?(:update, @inspection.inspection) && @inspection.updatable? && !is_for_pdf
