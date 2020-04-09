@@ -169,6 +169,8 @@ class Inspection < InspectionRecord
     read_attribute(:description).present? ? read_attribute(:description) : inspection_type_setting&.description
   end
 
+  # returns the version of the highway structure when the inspection was finalized
+  # if inspection is not yet finalized, just return the highway structure
   def highway_structure_version
     if state == 'final'
       return versions.last.reify(belongs_to: true).highway_structure&.version || versions.last.reify(belongs_to: true).highway_structure
@@ -177,6 +179,10 @@ class Inspection < InspectionRecord
     end
   end
 
+  # returns the roadways associated with the highway_structure_version
+  # if inspection is not yet finalized, just return the highway structure
+  # the method to determine the versions of the associated roadways follows highway_structure.assigned_version_roadways
+  # see that method for detailed comments
   def highway_structure_version_roadways
     typed_version = TransamAsset.get_typed_version(highway_structure_version)
     if state == 'final'
