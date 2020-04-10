@@ -132,7 +132,10 @@
           &nbsp;
 
     .col-xs-6
-      -roadbeds = roadway.roadbeds.where(inspection_id: @inspection.id)
+      -@inspection.id
+      -roadway.roadbeds.first.inspection_id
+      -#-roadbeds = Roadbed.where(roadway_id: roadway.id, inspection: @inspection).order(:name, :direction)
+      -roadbeds = Roadbed.where(roadway_id: roadway.id)
       -roadbed_counter = 0
       -roadbed_max = 4
       -roadbeds.each do |roadbed|
@@ -199,7 +202,7 @@
         .col-xs-12
           .row
             %span.col-xs-12.text-header
-              Road surface name? what are these called?
+              =roadbed.name
           .row
             %table.roadway-appraisal-table
               %thead
@@ -221,11 +224,13 @@
                 %tr
                   %td
                     Entry
-                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection)
                   -roadbeds_lines.each do |line|
                     %td
                       -if line.entry.nil?
-                        N/A
+                        N/R
+                      -if line.entry == 0
+                        NA
                       -else
                         =line.entry
                 %tr
@@ -234,9 +239,11 @@
                   -roadbeds_lines = roadbed.roadbed_lines
                   -roadbeds_lines.each do |line|
                     %td
-                      -if line.exit.nil?
-                        N/A
+                      -if line.entry.nil?
+                        N/R
+                      -if line.entry == 0
+                        NA
                       -else
-                        =line.exit
+                        =line.entry
           .row
             &nbsp;
