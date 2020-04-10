@@ -314,6 +314,7 @@ class InspectionsController < TransamController
         @search_proxy.new_search = '1'
         # Set default state filters
         @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
+        @search_proxy.assigned_organization_id = current_user.organization_id
         @search_proxy.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @search_proxy.structure_status_type_code
 
         cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
