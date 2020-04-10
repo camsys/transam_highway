@@ -132,9 +132,6 @@
           &nbsp;
 
     .col-xs-6
-      -@inspection.id
-      -roadway.roadbeds.first.inspection_id
-      -#-roadbeds = Roadbed.where(roadway_id: roadway.id, inspection: @inspection).order(:name, :direction)
       -roadbeds = Roadbed.where(roadway_id: roadway.id)
       -roadbed_counter = 0
       -roadbed_max = 4
