@@ -21,7 +21,7 @@
         =wicked_pdf_image_tag image.image.url(:thumb), :alt => image.description
       .row
         %span.col-xs-12
-          = "#{image.image_classification} looking #{image.compass_point}"
+          = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
     -if i+1 < inspections_images.count
       -image2 = asset_images[i+1]
       %span.col-xs-6
@@ -31,7 +31,7 @@
           =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
         .row
           %span.col-xs-12
-            = "#{image.image_classification} looking #{image.compass_point}"
+            = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
     -i += 2
 
 -image_count = asset_images.count
@@ -45,7 +45,7 @@
         =wicked_pdf_image_tag "#{image.image}", :alt => image.description, :style => 'float:center'
       .row
         %span.col-xs-12
-          = "#{image.image_classification} looking #{image.compass_point}"
+          = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
     -if i+1 < asset_images.count
       -image2 = asset_images[i+1]
       %span.col-xs-6
@@ -55,7 +55,7 @@
           =wicked_pdf_image_tag "#{image2.image}", :alt => image2.description, :style => 'float:center'
         .row
           %span.col-xs-12
-            = "#{image.image_classification} looking #{image.compass_point}"
+            = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
     -i += 2
 
 

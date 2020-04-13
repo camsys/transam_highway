@@ -18,7 +18,7 @@
         %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"300", width:"300" }
       .row
         %span.col-xs-12.center
-          = "#{image.image_classification} looking #{image.compass_point}"
+          = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
     -if image_count >= 0
       -image2 = inspections_images[image_count]
       %span.col-xs-6
@@ -30,7 +30,7 @@
           %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"300", width:"300" }
         .row
           %span.col-xs-12.center
-            = "#{image2.image_classification} looking #{image2.compass_point}"
+            = "#{image2.image_classification}" + "#{(image2.compass_point.blank? ? "" : " looking #{image2.compass_point}")}"
     .row
       &nbsp;
     -if i % 6 == 0
