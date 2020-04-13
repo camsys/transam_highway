@@ -179,10 +179,13 @@ class BridgeLike < TransamAssetRecord
       CulvertCondition
     end
 
+    PaperTrail.request.enable_model(Inspection)
     inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
                                       inspection_frequency: inspection_frequency,
                                       inspection_type: type, description: desc,
                                       notes: hash['NOTES'], state: 'final')
+    PaperTrail.request.disable_model(Inspection)
+
     # safety ratings
     {railings_safety_type_id: 'RAILRATING',
      transitions_safety_type_id: 'TRANSRATIN',

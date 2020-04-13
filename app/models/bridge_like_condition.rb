@@ -1,6 +1,6 @@
 class BridgeLikeCondition < InspectionRecord
 
-  has_paper_trail only: Rails.application.config.inspection_audit_changes.map {|x| x.split('.')[0] == self.table_name ? x.split('.')[1] : nil}.compact
+  has_paper_trail only: Rails.application.config.inspection_audit_changes.map {|x| x.split('.')[0] == self.table_name ? x.split('.')[1] : nil}.compact, on: :update
 
   acts_as :inspection, as: :inspectionible, dependent: :destroy
 
