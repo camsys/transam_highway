@@ -36,7 +36,7 @@
         %td.center.pdf_maint_rec_cell
           =mso.notes
         %td.center.pdf_maint_rec_cell
-          =mso.date_recommended
+          =format_as_date(mso.date_recommended)
         %td.center.pdf_maint_rec_cell
           =first_maintenance_service_events.try(:due_date).try(:strftime,'%B %Y')
         %td.center.pdf_maint_rec_cell
