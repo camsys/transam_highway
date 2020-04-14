@@ -1,5 +1,5 @@
 -#Eportable true means only photos that have use photo yes will be used.
--inspections_images = @inspection.images
+-inspections_images = Image.where(imagable: @inspection.inspection)
 -elements_images = Image.where(imagable: @inspection.elements)
 -defect_locations_images = Image.where(imagable: DefectLocation.where(defect: Defect.where(inspection: @inspection)))
 -inspections_images = inspections_images.or(elements_images).or(defect_locations_images).where(exportable: true).reorder("CASE WHEN imagable_type = 'Inspection' THEN 0 ELSE 1 END DESC, created_at DESC")
@@ -23,9 +23,9 @@
           - when "Inspection"
             = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
           - when "Element"
-            = "Element #{image.imagable_type.constantize.find(image.imagable_id).element_definition.number}: #{image.description}"
+            = "Element #{image.imagable.element_definition.number}: #{image.description}"
           - when "DefectLocation"
-            = "Defect #{image.imagable_type.constantize.find(image.imagable_id).defect.defect_definition.number}: #{image.imagable_type.constantize.find(image.imagable_id).location_description}"
+            = "Defect #{image.imagable.defect.defect_definition.number}: #{image.imagable.location_description}"
     -if image_count >= 0
       -image2 = inspections_images[image_count]
       %span.col-xs-6
@@ -41,9 +41,9 @@
             - when "Inspection"
               = "#{image2.image_classification}" + "#{(image2.compass_point.blank? ? "" : " looking #{image2.compass_point}")}"
             - when "Element"
-              = "Element #{image2.imagable_type.constantize.find(image2.imagable_id).element_definition.number}: #{image2.description}"
+              = "Element #{image2.imagable.element_definition.number}: #{image2.description}"
             - when "DefectLocation"
-              = "Defect #{image2.imagable_type.constantize.find(image2.imagable_id).defect.defect_definition.number}: #{image2.imagable_type.constantize.find(image2.imagable_id).location_description}"
+              = "Defect #{image2.imagable.defect.defect_definition.number}: #{image2.imagable.location_description}"
 
     .row
       &nbsp;
