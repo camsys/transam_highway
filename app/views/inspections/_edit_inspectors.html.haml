@@ -46,9 +46,8 @@
           .col-sm-6
             - enabled = (can?(:make_ready, @inspection.inspection) || can?(:switch_team, @inspection.inspection))
             = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id, disabled: !enabled
-          .col-sm-6
-            - if can? :assign, @inspection.inspection
-              = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
+          #inspectors-col-div.col-sm-6{can?(:assign, @inspection.inspection) ? {} : {style: 'display:none;'}}
+            = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
         .row
           .col-xs-12
@@ -94,7 +93,14 @@
   }
 
   $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
-    var team_id = $(this).val();
-    update_inspection_inspectors_by_team(team_id);
+    var can_assign = JSON.parse('#{Organization.joins(:users).where(users:{id: current_user.id}).pluck(:id).to_json}');
+
+    var team_id = parseInt($(this).val());
+    if ($.inArray( team_id, can_assign ) >= 0) {
+      $('#inspectors-col-div').show();
+      update_inspection_inspectors_by_team(team_id);
+    } else {
+      $('#inspectors-col-div').hide();
+    }
   });
 

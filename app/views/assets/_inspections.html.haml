@@ -81,7 +81,7 @@
                 %i.fa.fa-info-circle.fa-1-25x
           %td.left= inspection.state&.titleize
           %td.left
-            - if can?(:make_schedule, inspection) && inspection.state != 'final'
+            - if can?(:schedule, inspection) && inspection.state != 'final'
               = link_to edit_inspection_path(inspection.object_key), :remote => true, :class => "button btn-xs", :title => "Edit inspection schedule" do
                 %i.fa.fa-edit.fa-1-5x.text-success
             - if (inspection.state == 'open' && can?(:make_ready, inspection)) || (inspection.state == 'ready' && (can?(:switch_team, inspection) || can?(:assign, inspection)))
