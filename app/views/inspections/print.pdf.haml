@@ -13,7 +13,7 @@
   = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :methods => methods}
 
 
-  -@inspection.highway_structure.roadways.each do |roadway|
+  -@inspection.highway_structure.roadways.order(:on_under_indicator).each do |roadway|
     &nbsp;
     .div.alwaysbreak
     = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway }
