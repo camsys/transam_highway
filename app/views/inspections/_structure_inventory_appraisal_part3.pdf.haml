@@ -172,7 +172,7 @@
             %span.col-xs-6.text-limiter-counter
               -min = roadbed.minimum(@inspection)
               -if min.nil?
-                No Restrictions
+                N/R
               -else
                 =min
                 &nbsp;
@@ -182,7 +182,7 @@
             %span.col-xs-6.text-limiter-counter
               -max = roadbed.maximum(@inspection)
               -if max.nil?
-                No Restrictions
+                N/R
               -else
                 =max
                 &nbsp;
