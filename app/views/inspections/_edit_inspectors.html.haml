@@ -10,7 +10,7 @@
 
 :ruby
 
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id && !current_user.organization_ids.include?(HighwayAuthority.first.id)})
 
   inspectors = []
   User.active.with_role(:user).distinct.each do |user|
@@ -44,10 +44,10 @@
 
         .row
           .col-sm-6
-            - enabled = (can?(:make_ready, @inspection) || can?(:switch_team, @inspection))
+            - enabled = (can?(:make_ready, @inspection.inspection) || can?(:switch_team, @inspection.inspection))
             = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id, disabled: !enabled
           .col-sm-6
-            - if can? :assign, @inspection
+            - if can? :assign, @inspection.inspection
               = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
         .row
