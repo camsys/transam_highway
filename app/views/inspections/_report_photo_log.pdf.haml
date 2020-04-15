@@ -1,9 +1,3 @@
--#Eportable true means only photos that have use photo yes will be used.
--inspections_images = Image.where(imagable: @inspection.inspection)
--elements_images = Image.where(imagable: @inspection.elements)
--defect_locations_images = Image.where(imagable: DefectLocation.where(defect: Defect.where(inspection: @inspection)))
--inspections_images = inspections_images.or(elements_images).or(defect_locations_images).where(exportable: true).reorder("CASE WHEN imagable_type = 'Inspection' THEN 0 ELSE 1 END DESC, created_at DESC")
-
 -i = 0
 
 -image_count = inspections_images.count-1
