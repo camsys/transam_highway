@@ -34,6 +34,7 @@
 .col-sm-3
   = f.input :calculated_condition, as: :check_boxes,  collection: conditions, label: reference_label('highway_structures', 'calculated_condition', 'Overall Condition')
   = f.input :structure_status_type_code, as: :check_boxes, collection: StructureStatusType.active.order(:name).pluck(:name, :code), label: reference_label('highway_structures', 'structure_status_type_id', 'Status')
+  = f.input :federal_submission_type_id, as: :check_boxes, collection: FederalSubmissionType.active.order(:name), label: reference_label('highway_structures', 'federal_submission_type_id', 'Federal Submission')
 
 :javascript
   $('.structure_county_input').typeahead({

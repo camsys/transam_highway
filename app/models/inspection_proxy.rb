@@ -11,7 +11,7 @@ class InspectionProxy < Proxy
   #-----------------------------------------------------------------------------
   # new_search: Flag to indicate if the search has been reset or is new. Values are '1' (new search) or '0'
   attr_accessor   :new_search, :asset_type, :asset_subtype,
-                  :asset_tag, :region_code, :structure_status_type_code, :owner_id, 
+                  :asset_tag, :region_code, :structure_status_type_code, :federal_submission_type_id, :owner_id,
                   :calculated_condition,
                   :on_under_indicator, :service_on_type_id, :service_under_type_id,
                   :on_national_highway_system, :structure_county, :structure_city,
@@ -52,7 +52,8 @@ class InspectionProxy < Proxy
     { :structure_status_type_code => [] }, 
     { :calculated_condition => [] },
     { :state => [] },
-    { :inspection_type_id => [] }
+    { :inspection_type_id => [] },
+    { :federal_submission_type_id => [] }
   ]
 
   #-----------------------------------------------------------------------------

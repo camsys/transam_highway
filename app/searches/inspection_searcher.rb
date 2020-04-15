@@ -87,6 +87,11 @@ class InspectionSearcher < BaseSearcher
     inspection_klass.where("structure_status_types.code": clean_structure_status_type_codes) unless clean_structure_status_type_codes.empty?
   end
 
+  def federal_submission_type_id_conditions
+    clean_federal_submission_type_ids = remove_blanks(search_proxy&.federal_submission_type_id)
+    inspection_klass.where("highway_structures.federal_submission_type_id": clean_federal_submission_type_ids) unless clean_federal_submission_type_ids.empty?
+  end
+
   def owner_id_conditions
     clean_owner_ids = remove_blanks(search_proxy&.owner_id)
     inspection_klass.where("highway_structures.owner_id": clean_owner_ids) unless clean_owner_ids.empty?
