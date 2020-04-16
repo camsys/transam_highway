@@ -45,7 +45,7 @@
         .row
           .col-sm-6
             - enabled = (can?(:make_ready, @inspection.inspection) || can?(:switch_team, @inspection.inspection))
-            = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id, disabled: !enabled
+            = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: can?(:make_ready, @inspection.inspection), selected: @inspection.assigned_organization_id, disabled: !enabled
           #inspectors-col-div.col-sm-6{can?(:assign, @inspection.inspection) ? {} : {style: 'display:none;'}}
             = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
