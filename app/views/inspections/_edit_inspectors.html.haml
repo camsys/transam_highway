@@ -76,7 +76,12 @@
   });
 
   function new_inspector_checkbox(inspector) {
-    return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    var selected_inspectors = JSON.parse('#{@inspection.inspector_ids.to_json}');
+    if ($.inArray( parseInt(inspector.id), selected_inspectors ) >= 0) {
+      return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" checked = "checked" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    } else {
+      return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    }
   }
 
   function update_inspection_inspectors_by_team(team_id) {
@@ -93,14 +98,14 @@
   }
 
   $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
-    var can_assign = JSON.parse('#{Organization.joins(:users).where(users:{id: current_user.id}).pluck(:id).to_json}');
+    var can_assign = JSON.parse('#{Organization.all.select{|o| can?(:assign, Inspection.new(assigned_organization_id: o.id))}.map(&:id).to_json}');
 
     var team_id = parseInt($(this).val());
     if ($.inArray( team_id, can_assign ) >= 0) {
       $('#inspectors-col-div').show();
-      update_inspection_inspectors_by_team(team_id);
     } else {
       $('#inspectors-col-div').hide();
     }
+    update_inspection_inspectors_by_team(team_id);
   });
 
