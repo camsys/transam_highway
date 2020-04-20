@@ -76,8 +76,24 @@ class InspectionsController < TransamController
         @export_results = InspectionAuditService.new.table_of_changes(nil,@start_date, @end_date)
       }
     end
+  end
 
 
+  def nbe_export
+    @search_proxy = get_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
+    respond_to do |format|
+      format.xml {
+        if @search_proxy.blank?
+          notify_user(:alert, "Please perform a search first.")
+          redirect_back(fallback_location: root_path)
+        else
+          inspections = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy}).data
+          xml = NbeSubmissionGenerator.xml_for_elements(inspections)
+          send_data(xml.to_xml, type: :xml)
+          cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
+        end
+      }
+    end
   end
 
   def inspection_type_settings
