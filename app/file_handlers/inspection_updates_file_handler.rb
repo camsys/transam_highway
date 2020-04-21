@@ -95,37 +95,47 @@ class InspectionUpdatesFileHandler < AbstractFileHandler
               next
             end
 
-            value_updated = false
             col_vals.each do |f, v|
-              if inspection.respond_to? f
-                add_processing_message(2, 'success', "Processing #{f.to_s.titleize}")
+              # Check that the field is valid and contains data
+              if (inspection.respond_to? f) && !v.blank?
+                add_processing_message(3, 'success', "Processing #{f.to_s.titleize}")
 
                 #---------------------------------------------------------------------
                 # Associations
                 #---------------------------------------------------------------------
+                # Default to assigning associations by code. If no existing type corresponds to the code provided, skip it.
                 if inspection.class.reflect_on_association(f)
                   klass = inspection.class.reflect_on_association(f).class_name.constantize
-                  inspection.send("#{f.to_s}=", klass.find_by(code: v))
+                  association_val = klass.find_by(code: v)
+                  if association_val
+                    inspection.send("#{f.to_s}=", association_val)
+                  else
+                    add_processing_message(3, 'warning', "'#{v}' is not a valid code for #{f.to_s.titleize}. Skipping #{f.to_s.titleize} assignment.")
+                  end
+
                 #---------------------------------------------------------------------
                 # Raw values
                 #---------------------------------------------------------------------
                 else
                   inspection.send("#{f.to_s}=", v)
                 end
-
-                # Check for any validation errors
-                if inspection.save
-                  add_processing_message(3, 'success', "#{f.to_s.titleize} updated.")
-                  value_updated = true
-                else
-                  Rails.logger.info "#{f.to_s.titleize} did not pass validation."
-                  add_processing_message(3, 'warning', "'#{v}' is not a valid value for #{f.to_s.titleize}.")
-                end
               end
             end
 
-            if value_updated
+            if inspection.save
+
+              # do any automatic workflow transitions that are allowed
+              (Inspection.automatic_transam_workflow_transitions & inspection.allowable_events).each do |transition|
+                if inspection.machine.fire_state_event(transition)
+                  WorkflowEvent.create(creator: current_user, accountable: inspection, event_type: transition)
+                end
+              end
+              add_processing_message(2, 'success', "Inspection updated.")
               @num_rows_added += 1
+            else
+              @num_rows_failed += 1
+              Rails.logger.info "Inspection did not pass validation."
+              add_processing_message(2, 'warning', "Inspection update failed: #{inspection.errors}")
             end
           end
         end
