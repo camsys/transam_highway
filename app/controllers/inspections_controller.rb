@@ -96,6 +96,20 @@ class InspectionsController < TransamController
     end
   end
 
+  def qa_qc_export
+    respond_to do |format|
+      format.xml {
+        if params[:global_ids].blank?
+          notify_user(:alert, "Please select some rows first.")
+          redirect_back(fallback_location: root_path)
+        else
+          xml = QaQcSubmissionGenerator.xml_for_structures(params[:global_ids].split(','))
+          send_data(xml.to_xml, type: :xml)
+        end
+      }
+    end
+  end
+
   def inspection_type_settings
     @asset = TransamAsset.get_typed_asset(TransamAsset.find_by(object_key: params[:asset_object_key]))
 

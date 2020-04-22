@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       get 'inspection_type_settings'
       get 'audit_export'
       get 'nbe_export'
+      get 'qa_qc_export'
 
       post 'change_inspectors'
     end
