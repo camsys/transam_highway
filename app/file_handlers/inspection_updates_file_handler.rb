@@ -21,8 +21,8 @@ class InspectionUpdatesFileHandler < AbstractFileHandler
 
     # Get the pertinent info from the upload record
     file_url = upload.file.url                # Usually stored on S3
-    organization = upload.organization        # Organization who owns the assets
-    system_user = User.find_by(first_name: 'system')                # System user is always the first user
+    organization = upload.organization        # Organization who owns the inspections
+    system_user = User.find_by(first_name: 'system')
 
     add_processing_message(1, 'success', "Updating inspection status from '#{upload.original_filename}'")
     add_processing_message(1, 'success', "Start time = '#{Time.now}'")
@@ -94,6 +94,8 @@ class InspectionUpdatesFileHandler < AbstractFileHandler
               add_processing_message(2, 'info', "No data for row. Skipping.")
               next
             end
+
+            inspection.upload = upload
 
             col_vals.each do |f, v|
               # Check that the field is valid and contains data
