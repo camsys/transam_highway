@@ -862,8 +862,13 @@ federal_submission_types = [
     {name: "NBI/NBE (Others Submit)", description: "NBI/NBE (Others Submit)", active: true}
 ]
 
+file_content_types = [
+    {:active => 1, :name => 'Inspection Updates',    :class_name => 'InspectionUpdatesFileHandler', :description => 'Worksheet records updates for existing inspections.'},
+    {:active => 1, :name => 'Highway Structure Updates',  :class_name => 'HighwayStructureUpdatesFileHandler', :description => 'Worksheet records updates for existing highway structures'},
+    {:active => 1, :name => 'Roadway Updates',    :class_name => 'RoadwayUpdatesFileHandler', :description => 'Worksheet records updates for existing roadways.'}
+]
 
-merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions }
+merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions file_content_types }
 
 merge_tables.each do |table_name|
     puts "  Merging #{table_name}"
@@ -977,3 +982,4 @@ data.each do |asset_type, assembly_types|
         AssemblyType.where(name: assembly_types).pluck(:id)
 end
 
+FileContentType.where(class_name: ['InventoryUpdatesFileHandler', 'MaintenanceUpdatesFileHandler', 'DispositionUpdatesFileHandler', 'NewInventoryFileHandler']).update_all(active: false)

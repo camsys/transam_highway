@@ -28,6 +28,8 @@ class Inspection < InspectionRecord
   belongs_to :inspection_team_leader, class_name: 'User'
   belongs_to :inspection_team_member, class_name: 'User'
   belongs_to :inspection_team_member_alt, class_name: 'User'
+  # Inspection may have been updated from an upload
+  belongs_to :upload
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
   has_many :elements, dependent: :destroy

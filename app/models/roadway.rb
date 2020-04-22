@@ -12,6 +12,8 @@ class Roadway < ApplicationRecord
   belongs_to :functional_class
   belongs_to :strahnet_designation_type
   belongs_to :traffic_direction_type
+  # Roadway may have been updated from an upload.
+  belongs_to :upload
 
   has_many :roadbeds, dependent: :destroy
 
