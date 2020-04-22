@@ -43,7 +43,7 @@
       %li{:style => "background-color: #f5f5f5; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid black; border-top: 1px solid black"}
         Export for QA/QC
       %li
-        = link_to 'XML', {controller: 'assets', action: 'index', format: :xml}, target: '_blank', title: 'Export selected structures to QA/QC XML'
+        = link_to 'XML', qa_qc_export_inspections_path(format: :xml), id: 'qa_qc_export_link', title: 'Export selected structures to QA/QC XML'
 .table-responsive
   %table.table.table-condensed.table-hover{:id => "inspection-table",
     :data => {:toggle => 'table',
@@ -177,6 +177,7 @@
       }
 
       update_selection_count_text();
+      update_qa_qc_params();
       enable_disable_table_actions();
     }
 
@@ -189,6 +190,7 @@
       }
 
       update_selection_count_text();
+      update_qa_qc_params();
       enable_disable_table_actions();
     }
 
@@ -199,6 +201,15 @@
       } else {
         $('#selected_inspection_count').text("");
         $('.clear-inspection-selections').hide();
+      }
+    }
+
+    function update_qa_qc_params() {
+      base_url = $('#qa_qc_export_link').attr('href').split('?')[0]
+      if(selected_rows.size > 0) {
+        $('#qa_qc_export_link').attr('href', base_url + '?global_ids=' + Array.from(selected_rows))
+      } else {
+        $('#qa_qc_export_link').attr('href', base_url)
       }
     }
 
