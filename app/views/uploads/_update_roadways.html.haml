@@ -9,7 +9,7 @@
     - Roadway.where(upload: @upload).each do |update|
       %tr
         %td
-          = link_to update.to_s, inspection_path(update.roadbeds.first.inspection)
+          = link_to update.to_s, inventory_path(update.highway_structure)
         %td
         %td
         %td
