@@ -31,7 +31,7 @@ class QaQcSubmissionGenerator
           if roadway
             xml.roadway do
               xml.BRKEY brkey
-              xml.ADDTTOTAL roadway.average_daily_traffic
+              xml.ADTTOTAL roadway.average_daily_traffic
             end
           end
           xml_for_inspection(xml, selected_inspection, brkey, structure_class, fc_required, fc_last_date)
