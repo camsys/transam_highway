@@ -132,7 +132,7 @@
           &nbsp;
 
     .col-xs-6
-      -roadbeds = Roadbed.where(roadway_id: roadway.id)
+      -roadbeds = Roadbed.where(inspection: @inspection)
       -roadbed_counter = 0
       -roadbed_max = 4
       -roadbeds.each do |roadbed|
@@ -221,7 +221,7 @@
                 %tr
                   %td
                     Entry
-                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection)
+                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection).order("CASE WHEN (number = 'L') THEN 0 WHEN (number = 'R') THEN 2 ELSE 1 END ASC, number")
                   -roadbeds_lines.each do |line|
                     %td
                       -if line.entry.nil?
@@ -233,14 +233,14 @@
                 %tr
                   %td
                     Exit
-                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection).order("CASE WHEN (number = 'L') THEN 0 WHEN (number = 'R') THEN 2 ELSE 1 END ASC, number")
                   -roadbeds_lines.each do |line|
                     %td
-                      -if line.entry.nil?
+                      -if line.exit.nil?
                         N/R
-                      -if line.entry == 0
+                      -if line.exit == 0
                         NA
                       -else
-                        =line.entry
+                        =line.exit
           .row
             &nbsp;
