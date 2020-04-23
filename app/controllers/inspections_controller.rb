@@ -79,6 +79,23 @@ class InspectionsController < TransamController
   end
 
 
+  def nbi_export
+    @search_proxy = get_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
+    respond_to do |format|
+      format.html {
+        if @search_proxy.blank?
+          notify_user(:alert, "Please perform a search first.")
+          redirect_back(fallback_location: root_path)
+        else
+          inspections = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy}).data
+          txt = NbiSubmissionGenerator.nbi_for_list(inspections)
+          send_data(txt, type: :txt)
+          cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
+        end
+      }
+    end
+  end
+
   def nbe_export
     @search_proxy = get_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
     respond_to do |format|

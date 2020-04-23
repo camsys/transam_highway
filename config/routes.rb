@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       post 'new_search'
       get 'inspection_type_settings'
       get 'audit_export'
+      get 'nbi_export'
       get 'nbe_export'
       get 'qa_qc_export'
 
