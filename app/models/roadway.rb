@@ -14,6 +14,7 @@ class Roadway < ApplicationRecord
   belongs_to :traffic_direction_type
   # Roadway may have been updated from an upload.
   belongs_to :upload
+  belongs_to :federal_lands_highway_type
 
   has_many :roadbeds, dependent: :destroy
 
