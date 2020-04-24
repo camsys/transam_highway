@@ -130,7 +130,7 @@ class RoadwayUpdatesFileHandler < AbstractFileHandler
                     add_processing_message(3, 'warning', "Future Average Daily Traffic Year must be between #{future_adt_min_year} and #{future_adt_max_year}. Skipping Future Average Daily Traffic Year assignment.")
                   end
                 elsif f.to_s == 'route_number'
-                  if v.length <= 5
+                  if v.to_s.length <= 5
                     roadway.route_number = v
                   else
                     add_processing_message(3, 'warning', "Route Number must be 5 characters or less. Skipping Route Number assignment.")
