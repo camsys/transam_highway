@@ -879,6 +879,13 @@ federal_lands_highway_types = [
     {active: true, code: '9', name: 'IRR FH LMHS', description: 'Combined IRR, FH and LMHS'}
 ]
 
+median_types = [
+    {active: true, code: '0', name: 'None', description: 'No median'},
+    {active: true, code: '1', name: 'Open', description: 'Open median'},
+    {active: true, code: '2', name: 'Closed no barrier', description: 'Closed median (no barrier)'},
+    {active: true, code: '3', name: 'Closed barrier', description: 'Closed median with non-mountable barriers'}
+]
+
 merge_tables = %w{ organization_types asset_types asset_subtypes system_config_extensions file_content_types }
 
 merge_tables.each do |table_name|
@@ -910,7 +917,7 @@ data.each do |row|
 
 end
 
-replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types ancillary_condition_types inspection_programs maintenance_priority_types mast_arm_frame_types column_types foundation_types upper_connection_types federal_submission_types federal_lands_highway_types }
+replace_tables = %w{ operational_status_types route_signing_prefixes structure_material_types design_construction_types bridge_condition_rating_types channel_condition_types bridge_appraisal_rating_types strahnet_designation_types deck_structure_types  wearing_surface_types membrane_types deck_protection_types scour_critical_bridge_types structure_status_types structure_agent_types element_materials element_classifications defect_definitions inspection_types feature_safety_types assembly_types reference_feature_types bridge_posting_types load_rating_method_types design_load_types bridge_toll_types historical_significance_types service_under_types service_on_types service_level_types functional_classes traffic_direction_types culvert_condition_types ancillary_condition_types inspection_programs maintenance_priority_types mast_arm_frame_types column_types foundation_types upper_connection_types federal_submission_types federal_lands_highway_types median_types}
 
 replace_tables.each do |table_name|
     puts "  Loading #{table_name}"
