@@ -19,6 +19,7 @@ class BridgeLike < TransamAssetRecord
   belongs_to :bridge_posting_type
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
+  belongs_to :median_type
 
   has_many :streambed_profiles, foreign_key: :transam_asset_id
 
@@ -159,7 +160,10 @@ class BridgeLike < TransamAssetRecord
       on_truck_network: hash['TRUCKNET'] == '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
       future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
-      strahnet_designation_type: StrahnetDesignationType.find_by(code: hash['DEFHWY'])
+      strahnet_designation_type: StrahnetDesignationType.find_by(code: hash['DEFHWY']),
+      federal_lands_highway_type: FederalLandsHighwayType.find_by(code: hash['FEDLANDHWY']) ||
+                FederalLandsHighwayType.find_by(code: '0'),
+      detour_length: Uom.convert([hash['BYPASSLEN'].to_f, 0.0].max, Uom::KILOMETER, Uom::MILE).round(NDIGITS)
     )
   end
 
@@ -376,9 +380,23 @@ class BridgeLike < TransamAssetRecord
       inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE'].to_s),
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
+      skew: [bridge_hash['SKEW'].to_i, 0].max,
+      is_flared: bridge_hash['STRFLARED'] == '1',
+      median_type: MedianType.find_by(code: bridge_hash['BRIDGEMED']) || MedianType.find_by(code: '0'),
       remarks: bridge_hash['NOTES'],
       inspection_program: inspection_program
     }
+
+    # Validate reconstructed_year
+    year = bridge_hash['YEARRECON'].to_i
+    optional[:reconstructed_year] = year > 0 ? year : nil
+
+    # Validate parallel_structure and is_nbis_length
+    value = bridge_hash['PARALSTRUC']
+    optional[:parallel_structure] = ['R', 'L', 'N'].include?(value) ? value : 'N'
+
+    value = bridge_hash['NBISLEN']
+    optional[:is_nbis_length] = ['Y', 'N'].include?(value) ? value : 'N'
 
     # Validate Owner and maintenance responsibility.
     unknown = StructureAgentType.find_by(name: 'Unknown')
