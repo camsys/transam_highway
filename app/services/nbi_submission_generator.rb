@@ -1,19 +1,6 @@
 # -----------------------------------------------
 #
 # Service to handle NBI export format
-# ITEM ITEM ITEM
-# NO ITEM NAME POSITION LENGTH/TYPE
-# 109 AVERAGE DAILY TRUCK TRAFFIC 370 - 371 2/N
-# 110 DESIGNATED NATIONAL NETWORK 372 1/N
-# *111 PIER/ABUTMENT PROTECTION 373 1/N
-# 112 NBIS BRIDGE LENGTH 374 1/AN
-# 113 SCOUR CRITICAL BRIDGES 375 1/AN
-# 114 FUTURE AVERAGE DAILY TRAFFIC 376 - 381 6/N
-# 115 YEAR OF FUTURE AVG DAILY TRAFFIC 382 - 385 4/N
-# * 116 MINIMUM NAVIGATION VERTICAL 386 - 389 4/N
-# CLEARANCE VERTICAL LIFT BRIDGE
-# --- Washington Headquarters Use 392 - 433
-
 #
 # -----------------------------------------------
 
@@ -47,7 +34,7 @@ class NbiSubmissionGenerator
     # 5C     Des. Level Service   21        1/N
       result << roadway.service_level_type.code
     # 5D     Route Number      22 - 26      5/AN
-      result << roadway.route_number
+      result << roadway.route_number.rjust(5, '0')
     # 5E     Directional Suffix   27        1/N
       result << '0'
     else
@@ -96,13 +83,14 @@ class NbiSubmissionGenerator
 
     # XX degrees XX minutes XX[.]XX seconds
     # 16   Latitude               130 - 137  8/N
-    result << encode_decimal_to_dms(structure.geometry.x)
+    result << encode_decimal_to_dms(structure.geometry.y).rjust(8, '0')
     # XXX degrees XX minutes XX[.]XX seconds
     # 17   Longitude              138 - 146  9/N
     result << encode_decimal_to_dms(structure.geometry.x).rjust(9, '0')
 
-    # *19  Bypass/Detour Length   147 - 149  3/N
-    result << '190' # placeholder
+    # 19  Bypass/Detour Length   147 - 149  3/N
+    result << [199, Uom.convert(roadway.detour_length, Uom::MILE, Uom::KILOMETER)].min.round.to_s.rjust(3, '0')
+
     # 20   Toll                      150     1/N
     result << structure.bridge_toll_type.code
 
@@ -128,12 +116,12 @@ class NbiSubmissionGenerator
     # 32   Approach Roadway Width 176 - 179  4/N
     result << convert_to_field(structure.approach_roadway_width, 4, 1)
 
-    # *33  Bridge Median             180     1/N
-    result << 'X'
-    # *34  Skew                   181 - 182  2/N
-    result << '99'
-    # *35  Structure Flared          183     1/N
-    result << '0'
+    # 33  Bridge Median             180     1/N
+    result << structure.median_type.code
+    # 34  Skew                   181 - 182  2/N
+    result << structure.skew.to_s.rjust(2, '0')
+    # 35  Structure Flared          183     1/N
+    result << (structure.is_flared ? '1' : '0')
 
     # Any conditions should use the most recent finalized inspection
     inspection = structure.inspections.ordered.final.first.specific.becomes(structure.inspection_class)
@@ -319,7 +307,7 @@ class NbiSubmissionGenerator
     # 100  STRAHNET Highway Designation  356      1/N
     result << roadway.strahnet_designation_type.code
 
-    # *101 Parallel Designation          357      1/AN
+    # 101 Parallel Designation          357      1/AN
     result << (structure.parallel_structure || 'N')
 
     # 102 Direction Of Traffic           358      1/N
@@ -330,11 +318,11 @@ class NbiSubmissionGenerator
 
     # 104 Highway System Inventory Route 360      1/N
     result << (roadway.on_national_highway_system ? '1' : '0')
-    # *105 Federal Lands Highways         361      1/N
+    # 105 Federal Lands Highways         361      1/N
     result << (roadway.federal_lands_highway_type&.code || '0')
 
     # 106 Year Reconstructed          362 - 365   4/N
-    result << (structure.reconstructed_year&.to_s || '    ')
+    result << (structure.reconstructed_year&.to_s || '0000')
 
     # Only applies to Bridges not Culverts
     if structure.is_a? Bridge
@@ -358,10 +346,10 @@ class NbiSubmissionGenerator
     # 110  DESIGNATED NATIONAL NETWORK    372      1/N
     result << (roadway.on_truck_network ? '1' : '0')
 
-    # 111  PIER/ABUTMENT PROTECTION       373      1/N
+    # *111  PIER/ABUTMENT PROTECTION       373      1/N
     # Not use by CDOT
     result << '1'
-    # *112  NBIS BRIDGE LENGTH             374      1/AN
+    # 112  NBIS BRIDGE LENGTH             374      1/AN
     result << (structure.is_nbis_length ? 'Y' : 'N')
 
     # 113  SCOUR CRITICAL BRIDGES         375      1/AN
@@ -371,7 +359,7 @@ class NbiSubmissionGenerator
     result << roadway.future_average_daily_traffic.to_s.rjust(6, '0')
     # 115  YEAR FUTURE AVG DAILY TRAF  382 - 385   4/N
     result << roadway.future_average_daily_traffic_year.to_s
-    # 116  MINIMUM NAV VERTICAL        386 - 389   4/N
+    # *116  MINIMUM NAV VERTICAL        386 - 389   4/N
     #       CLEARANCE VERTICAL LIFT BRIDGE
     # Not used by CDOT
     result << ' '*4
