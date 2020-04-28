@@ -27,6 +27,8 @@ class RoadwayUpdatesFileHandler < AbstractFileHandler
     add_processing_message(1, 'success', "Updating roadway status from '#{upload.original_filename}'")
     add_processing_message(1, 'success', "Start time = '#{Time.now}'")
 
+    upload.force_update = true
+
     # Open the spreadsheet and start to process the updates
     begin
 
