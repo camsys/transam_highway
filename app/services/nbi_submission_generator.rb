@@ -14,7 +14,16 @@ class NbiSubmissionGenerator
   @@other_special_type = InspectionType.find_by(name: 'Special')
 
   def self.nbi_for_structure(structure)
+    Rails.logger.debug "Generating NBI for #{structure.asset_tag}"
+
     structure = structure.very_specific
+    # Any conditions should use the most recent finalized inspection
+    inspection = structure.inspections.ordered.final.first
+    unless inspection
+      Rails.logger.warn "No finalized inspection for #{structure.asset_tag}"
+      return
+    end
+    inspection = inspection.specific.becomes(structure.inspection_class)
     result = ""
 
     # ITEM   ITEM               ITEM
@@ -77,9 +86,9 @@ class NbiSubmissionGenerator
     result << (roadway.on_base_network ? '1' : '0')
     # 13   Subroute Number        118 - 129 12/AN
     # 13A  LRS Inventory Route    118 - 127 10/AN
-    result << (roadway.on_base_network ? roadway.lrs_route : ''.rjust(10, '0'))
+    result << (roadway.on_base_network ? roadway.lrs_route.to_s : '').rjust(10, '0')
     # 13B  Subroute Number        128 - 129  2/N
-    result << (roadway.on_base_network ? roadway.lrs_subroute : ''.rjust(2, '0'))
+    result << (roadway.on_base_network ? roadway.lrs_subroute.to_s : '').rjust(2, '0')
 
     # XX degrees XX minutes XX[.]XX seconds
     # 16   Latitude               130 - 137  8/N
@@ -92,16 +101,16 @@ class NbiSubmissionGenerator
     result << [199, Uom.convert(roadway.detour_length, Uom::MILE, Uom::KILOMETER)].min.round.to_s.rjust(3, '0')
 
     # 20   Toll                      150     1/N
-    result << structure.bridge_toll_type.code
+    result << (structure.bridge_toll_type&.code || '3')
 
     # 21   Maint. Responsibility  151 - 152  2/N
     result << structure.maintenance_responsibility.code
     # 22   Owner                  153 - 154  2/N
     result << structure.owner.code
     # 26   Functional Class       155 - 156  2/N
-    result << roadway.functional_class.code
+    result << (roadway.functional_class&.code || 'XX')
     # 27   Year Built             157 - 160  4/N
-    result << structure.manufacture_year.to_s
+    result << (structure.manufacture_year || '1900').to_s
     # 28   Lanes On/Under         161 - 164  4/N
     # 28A  Lanes On Structure     161 - 162  2/N
     result << structure.lanes_on.to_s.rjust(2, '0')
@@ -112,7 +121,7 @@ class NbiSubmissionGenerator
     # 30   Year ADT               171 - 174  4/N
     result << roadway.average_daily_traffic_year.to_s
     # 31   Design Load               175     1/N
-    result << structure.design_load_type.code
+    result << (structure.design_load_type&.code || '0')
     # 32   Approach Roadway Width 176 - 179  4/N
     result << convert_to_field(structure.approach_roadway_width, 4, 1)
 
@@ -123,20 +132,17 @@ class NbiSubmissionGenerator
     # 35  Structure Flared          183     1/N
     result << (structure.is_flared ? '1' : '0')
 
-    # Any conditions should use the most recent finalized inspection
-    inspection = structure.inspections.ordered.final.first.specific.becomes(structure.inspection_class)
-
     # ITEM                        ITEM      ITEM
     # NO   ITEM NAME              POSITION  LENGTH/TYPE
     # 36   Safety Features        184 - 187  4/AN
     # 36A  Bridge Railings           184     1/AN
-    result << inspection.railings_safety_type.code
+    result << (inspection.railings_safety_type&.code || 'N')
     # 36B  Transitions               185     1/AN
-    result << inspection.transitions_safety_type.code
+    result << (inspection.transitions_safety_type&.code || 'N')
     # 36C  Approach Guardrail        186     1/AN
-    result << inspection.approach_rail_safety_type.code
+    result << (inspection.approach_rail_safety_type&.code || 'N')
     # 36D  Approach Guardrail Ends   187     1/AN
-    result << inspection.approach_rail_end_safety_type.code
+    result << (inspection.approach_rail_end_safety_type&.code || 'N')
 
     # 37   Historical significance   188     1/N
     result << structure.historical_significance_type.code
@@ -161,10 +167,14 @@ class NbiSubmissionGenerator
     # 43B  Design/Construction   203 - 204   2/N
     result << structure.main_span_design_construction_type.code
     # 44   Type, Approach Spans  205 - 207   3/N
-    # 44A  Kind of Material/Design  205      1/N
-    result << structure.approach_spans_material_type.code
-    # 44B  Type of Design/Const. 206 - 207   2/N
-    result << structure.approach_spans_design_construction_type.code
+    if structure.num_spans_approach > 0
+      # 44A  Kind of Material/Design  205      1/N
+      result << structure.approach_spans_material_type.code
+      # 44B  Type of Design/Const. 206 - 207   2/N
+      result << structure.approach_spans_design_construction_type.code
+    else
+      result << '000'
+    end
     # 45   Num Spans Main Unit   208 - 210   3/N
     result << structure.num_spans_main.to_s.rjust(3, '0')
     # 46   Num Approach Spans    211 - 214   4/N
@@ -211,15 +221,15 @@ class NbiSubmissionGenerator
     # 60   Substructure                   261    1/AN
     # 61   Channel/Channel Protection     262    1/AN
     # 62   Culverts                       263    1/AN
-    channel_code = inspection.channel_condition_type.code
+    channel_code = (inspection.channel_condition_type&.code || 'N')
     if inspection.respond_to? :culvert_condition_type
       result << 'N' << 'N' << 'N'
       result << channel_code
       result << inspection.culvert_condition_type.code
     else
-      result << inspection.deck_condition_rating_type.code
-      result << inspection.superstructure_condition_rating_type.code
-      result << inspection.substructure_condition_rating_type.code
+      result << (inspection.deck_condition_rating_type&.code || 'N')
+      result << (inspection.superstructure_condition_rating_type&.code || 'N')
+      result << (inspection.substructure_condition_rating_type&.code || 'N')
       result << channel_code
       result << 'N'
     end
@@ -244,12 +254,12 @@ class NbiSubmissionGenerator
     result << (rating ? rating.code : 'N')
 
     # 70   Bridge Posting                275      1/N
-    result << structure.bridge_posting_type.code
+    result << (structure.bridge_posting_type&.code || '5')
 
     # 71   Waterway Adequacy             276      1/AN
-    result << inspection.waterway_appraisal_rating_type.code
+    result << (inspection.waterway_appraisal_rating_type&.code || 'N')
     # 72   Approach Roadway Alignment    277      1/AN
-    result << inspection.approach_alignment_appraisal_rating_type.code
+    result << (inspection.approach_alignment_appraisal_rating_type&.code || 'N')
 
     # *75  Type of Work               278 - 280   3/N
     # *75A Type of Work Proposed      278 - 279   2/N
@@ -279,11 +289,11 @@ class NbiSubmissionGenerator
 
     # 93    Crit Feature Insp Dates   302 - 313  12/AN
     # 93A   Frac Crit Details Date    302 - 305   4/AN
-    result << inspection_details(fc_settings)
+    result << inspection_details(fc_settings, structure)
     # 93B   Underwater Insp. Date     306 - 309   4/AN
-    result << inspection_details(uw_settings)
+    result << inspection_details(uw_settings, structure)
     # 93C   Other Special Insp Date   310 - 313   4/AN
-    result << inspection_details(os_settings)
+    result << inspection_details(os_settings, structure)
 
     # *94   Bridge Improvement Cost   314 - 319   6/N
     # *95   Roadway Improvement Cost  320 - 325   6/N
@@ -294,7 +304,7 @@ class NbiSubmissionGenerator
     # 98    Border Bridge             336 - 340   5/AN
     if structure.border_bridge_state.present?
       # 98A Neighboring State Code    336 - 338   3/AN
-      result << @@border_bridge_state[structure.border_bridge_state]
+      result << @@border_state_codes[structure.border_bridge_state]
       # 98B Percent Responsibility    339 - 340   2/N
       percent = structure.border_bridge_pcnt_responsibility
       result << (percent == 100 ? '99' : percent.to_s.rjust(2, '0'))
@@ -305,13 +315,13 @@ class NbiSubmissionGenerator
     end
 
     # 100  STRAHNET Highway Designation  356      1/N
-    result << roadway.strahnet_designation_type.code
+    result << (roadway.strahnet_designation_type&.code || '0')
 
     # 101 Parallel Designation          357      1/AN
     result << (structure.parallel_structure || 'N')
 
     # 102 Direction Of Traffic           358      1/N
-    result << roadway.traffic_direction_type.code
+    result << (roadway.traffic_direction_type&.code || '0')
 
     # 103 Temporary Designation          359      1/AN
     result << (structure.is_temporary ? 'T' : ' ')
@@ -353,7 +363,7 @@ class NbiSubmissionGenerator
     result << (structure.is_nbis_length ? 'Y' : 'N')
 
     # 113  SCOUR CRITICAL BRIDGES         375      1/AN
-    result << inspection.scour_critical_bridge_type.code
+    result << (inspection.scour_critical_bridge_type&.code || 'N')
 
     # 114  FUTURE AVERAGE DAILY TRAF   376 - 381   6/N
     result << roadway.future_average_daily_traffic.to_s.rjust(6, '0')
@@ -379,7 +389,8 @@ class NbiSubmissionGenerator
                 :main_span_material_type, :main_span_design_construction_type, :approach_spans_material_type,
                 :approach_spans_design_construction_type, :vertical_reference_feature_below, :lateral_reference_feature_below,
                 :operating_rating_method_type, :inventory_rating_method_type, :bridge_posting_type)
-      .where(highway_structures: {id: inspections.pluck(:transam_asset_id).uniq}).collect{ |hs| nbi_for_structure(hs) }.join("\n")
+      .where(highway_structures: {id: inspections.pluck(:transam_asset_id).uniq})
+      .collect{ |hs| nbi_for_structure(hs) }.compact.join("\n")
   end
 
   def self.encode_decimal_to_dms(degrees)
@@ -399,11 +410,11 @@ class NbiSubmissionGenerator
     settings ? "Y#{settings.frequency_months.to_s.rjust(2, '0')}" : 'N  '
   end
 
-  def self.inspection_details(settings)
+  def self.inspection_details(settings, structure)
     output = '    '
     if settings
       last_inspection = structure.inspections.ordered.final.find_by(inspection_type: settings.inspection_type)
-      output = last_inspection.event_datetime.strftime('%m%y')
+      output = last_inspection.event_datetime.strftime('%m%y') if last_inspection&.event_datetime
     end
     output
   end
