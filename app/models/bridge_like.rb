@@ -271,6 +271,9 @@ class BridgeLike < TransamAssetRecord
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
                                  highway_authority, inspection_program, error_stats, logger,
                                  flexible=[], rigid=[])
+    @@county_type_id ||= DistrictType.where(name: 'County').pluck(:id).first
+    @@place_type_id ||= DistrictType.where(name: 'Place').pluck(:id).first
+
     asset_tag = bridge_hash['BRKEY']
 
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -421,11 +424,13 @@ class BridgeLike < TransamAssetRecord
     optional[:maintenance_section] = MaintenanceSection.find_by(code: district[1])
 
     # process county & city/placecode, NBI 3, 4
-    optional[:county] = District.find_by(code: bridge_hash['COUNTY'],
-                                         district_type: DistrictType.find_by(name: 'County'))&.name || 'Unknown'
-    optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
-                                       district_type: DistrictType.find_by(name: 'Place'))&.name ||
-                      District.find_by(code: '-1')
+    optional[:county] = District.find_by(code: bridge_hash['COUNTY'], district_type_id: @@county_type_id)&.name || 'Unknown'
+    # Check for [-1, 0, 0000] then if placecode not found, create a new placecode placeholder
+    placecode = bridge_hash['PLACECODE']
+    placecode = '00000' if ['-1', '0', '0000'].include?(placecode)
+    optional[:city] = District.find_by(code: placecode, district_type_id: @@place_type_id)&.name ||
+                      District.create!(code: placecode, name: placecode, description: placecode,
+                                       district_type_id: @@place_type_id, active: true).name
 
     # Process lat/lon, NBI 16, 17
     lat = bridge_hash['PRECISE_LAT'].to_f
