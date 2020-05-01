@@ -76,8 +76,55 @@ class InspectionsController < TransamController
         @export_results = InspectionAuditService.new.table_of_changes(nil,@start_date, @end_date)
       }
     end
+  end
 
 
+  def nbi_export
+    @search_proxy = get_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
+    respond_to do |format|
+      format.html {
+        if @search_proxy.blank?
+          notify_user(:alert, "Please perform a search first.")
+          redirect_back(fallback_location: root_path)
+        else
+          inspections = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy}).data
+          txt = NbiSubmissionGenerator.nbi_for_list(inspections)
+          send_data(txt, type: :txt)
+          cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
+        end
+      }
+    end
+  end
+
+  def nbe_export
+    @search_proxy = get_cached_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR)
+    respond_to do |format|
+      format.xml {
+        if @search_proxy.blank?
+          notify_user(:alert, "Please perform a search first.")
+          redirect_back(fallback_location: root_path)
+        else
+          inspections = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy}).data
+          xml = NbeSubmissionGenerator.xml_for_elements(inspections)
+          send_data(xml.to_xml, type: :xml)
+          cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
+        end
+      }
+    end
+  end
+
+  def qa_qc_export
+    respond_to do |format|
+      format.xml {
+        if params[:global_ids].blank?
+          notify_user(:alert, "Please select some rows first.")
+          redirect_back(fallback_location: root_path)
+        else
+          xml = QaQcSubmissionGenerator.xml_for_structures(params[:global_ids].split(','))
+          send_data(xml.to_xml, type: :xml)
+        end
+      }
+    end
   end
 
   def inspection_type_settings
@@ -314,6 +361,7 @@ class InspectionsController < TransamController
         @search_proxy.new_search = '1'
         # Set default state filters
         @search_proxy.state = Inspection.state_names - ['final'] unless @search_proxy.state
+        @search_proxy.assigned_organization_id = current_user.organization_id
         @search_proxy.structure_status_type_code = [StructureStatusType.find_by_name('Active').try(:code)] unless @search_proxy.structure_status_type_code
 
         cache_objects(INSPECTION_SEARCH_PROXY_CACHE_VAR, @search_proxy)
@@ -331,7 +379,7 @@ class InspectionsController < TransamController
     end
 
     def run_searcher
-      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy, can_view_all: can?(:view_all, Inspection)})
+      @searcher = InspectionSearcher.new({user: current_user, search_proxy: @search_proxy})
       @inspections = @searcher.data
       @total_count = @inspections.count
     end

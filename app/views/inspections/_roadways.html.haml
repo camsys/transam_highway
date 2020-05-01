@@ -1,6 +1,9 @@
 :ruby
-    highway_structure = highway_structure || @inspection.highway_structure
     skip_legend = skip_legend || false
+    roadways ||= highway_structure.roadways
+
+    roadways_on = roadways.select{|r| r.on_under_indicator == '1'}
+    roadways_under = roadways.select{|r| r.on_under_indicator != '1'}.sort_by(&:on_under_indicator)
 
 :css
     #roadways-table td, #roadways-table th {
@@ -25,7 +28,7 @@
         %thead
             %tr
                 %th.center Roadway Fields
-                - highway_structure.roadways.on.each do |r|
+                - roadways_on.each do |r|
                     %th.center
                         = "On Structure - #{r.on_under_indicator}"
                         - if can?(:manage, Roadway) && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
@@ -33,7 +36,7 @@
                                 %i.fa.fa-edit.fa-fw.text-success
                             = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
                                 %i.fa.fa-trash-o.fa-fw.text-danger
-                - highway_structure.roadways.under.each do |r|
+                - roadways_under.each do |r|
                     %th.center
                         = "Under Structure - #{r.on_under_indicator}"
                         - if can?(:manage, Roadway) && r.roadbeds.count == 0 && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
@@ -73,8 +76,8 @@
                 %th.center= reference_label('roadways', 'on_truck_network', 'Designated National Network')
                 %th.center= reference_label('roadways', 'future_average_daily_traffic', 'Future Average Daily Traffic')
                 %th.center= reference_label('roadways', 'future_average_daily_traffic_year', 'Year of Future Average Daily Traffic')
-            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.on}
-            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: highway_structure.roadways.under}
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: roadways_on}
+            = render partial: 'highway_structures/bridge_like/roadways_table', locals: {roadways: roadways_under}
 
 :javascript
     $(function() {

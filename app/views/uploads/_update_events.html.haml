@@ -1,0 +1,9 @@
+.row
+  .col-md-12{:style => 'overflow-y:auto'}
+    %table.table.table-hover{:id => 'datatable'}
+      - if Inspection.where(upload: @upload).count > 0
+        = render partial: 'update_inspections', :locals => {upload: @upload}
+      - elsif Roadway.where(upload: @upload).count > 0
+        = render partial: 'update_roadways', :locals => {upload: @upload}
+      - else
+        = render partial: 'update_structures', :locals => {upload: @upload}

@@ -174,6 +174,7 @@ class AncillaryStructure < BridgeLike
       optional[:latitude] = lat
       optional[:longitude] = lon
     else
+      error_stats[:bad_lat_lon] += 1
       return false, "Location data not valid for #{asset_tag}. lat: #{lat}, lon: #{lon}"
     end
 

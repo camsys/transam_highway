@@ -8,7 +8,6 @@
 class InspectionSearcher < BaseSearcher
   # search proxy
   attr_accessor :search_proxy
-  attr_accessor :can_view_all
   attr_accessor :organization_ids
 
   # Return the name of the form to display
@@ -47,7 +46,6 @@ class InspectionSearcher < BaseSearcher
     SQL
 
     @inspection_klass ||= Inspection.joins(highway_structure: {transam_asset: {asset_subtype: :asset_type}})
-                                    .left_outer_joins(:organization_type)
                                     .joins(join_sql)
   end
 
@@ -87,6 +85,11 @@ class InspectionSearcher < BaseSearcher
   def structure_status_type_code_conditions
     clean_structure_status_type_codes = remove_blanks(search_proxy&.structure_status_type_code)
     inspection_klass.where("structure_status_types.code": clean_structure_status_type_codes) unless clean_structure_status_type_codes.empty?
+  end
+
+  def federal_submission_type_id_conditions
+    clean_federal_submission_type_ids = remove_blanks(search_proxy&.federal_submission_type_id)
+    inspection_klass.where("highway_structures.federal_submission_type_id": clean_federal_submission_type_ids) unless clean_federal_submission_type_ids.empty?
   end
 
   def owner_id_conditions
@@ -129,13 +132,8 @@ class InspectionSearcher < BaseSearcher
   end
 
   def assigned_organization_id_conditions
-
-    assigned_org = parse_nil_search_value(search_proxy&.assigned_organization_id)
-    if assigned_org.present?
+    if search_proxy&.assigned_organization_id.present?
       inspection_klass.where("inspections.assigned_organization_id": parse_nil_search_value(search_proxy&.assigned_organization_id))
-    elsif !can_view_all
-      organization_ids = user&.viewable_organization_ids.reject{|x| x == HighwayAuthority.first.id}
-      inspection_klass.where("inspections.assigned_organization_id": organization_ids)
     end
   end
 

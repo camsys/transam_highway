@@ -19,6 +19,7 @@ class BridgeLike < TransamAssetRecord
   belongs_to :bridge_posting_type
   belongs_to :vertical_reference_feature_below, class_name: 'ReferenceFeatureType'
   belongs_to :lateral_reference_feature_below, class_name: 'ReferenceFeatureType'
+  belongs_to :median_type
 
   has_many :streambed_profiles, foreign_key: :transam_asset_id
 
@@ -159,7 +160,10 @@ class BridgeLike < TransamAssetRecord
       on_truck_network: hash['TRUCKNET'] == '1',
       future_average_daily_traffic: hash['ADTFUTURE'].to_i,
       future_average_daily_traffic_year: hash['ADTFUTYEAR'].to_i,
-      strahnet_designation_type: StrahnetDesignationType.find_by(code: hash['DEFHWY'])
+      strahnet_designation_type: StrahnetDesignationType.find_by(code: hash['DEFHWY']),
+      federal_lands_highway_type: FederalLandsHighwayType.find_by(code: hash['FEDLANDHWY']) ||
+                FederalLandsHighwayType.find_by(code: '0'),
+      detour_length: Uom.convert([hash['BYPASSLEN'].to_f, 0.0].max, Uom::KILOMETER, Uom::MILE).round(NDIGITS)
     )
   end
 
@@ -179,10 +183,13 @@ class BridgeLike < TransamAssetRecord
       CulvertCondition
     end
 
+    PaperTrail.request.enable_model(Inspection)
     inspection = inspection_klass.new(event_datetime: date, calculated_inspection_due_date: date,
                                       inspection_frequency: inspection_frequency,
                                       inspection_type: type, description: desc,
                                       notes: hash['NOTES'], state: 'final')
+    PaperTrail.request.disable_model(Inspection)
+
     # safety ratings
     {railings_safety_type_id: 'RAILRATING',
      transitions_safety_type_id: 'TRANSRATIN',
@@ -264,6 +271,9 @@ class BridgeLike < TransamAssetRecord
   def self.process_bridge_record(bridge_hash, struct_class_code, struct_type_code,
                                  highway_authority, inspection_program, error_stats, logger,
                                  flexible=[], rigid=[])
+    @@county_type_id ||= DistrictType.where(name: 'County').pluck(:id).first
+    @@place_type_id ||= DistrictType.where(name: 'Place').pluck(:id).first
+
     asset_tag = bridge_hash['BRKEY']
 
     # Structure Class, NBI 24 is 'Bridge' or 'Culvert'
@@ -373,9 +383,23 @@ class BridgeLike < TransamAssetRecord
       inventory_rating_method_type: LoadRatingMethodType.find_by(code: bridge_hash['IRTYPE'].to_s),
       inventory_rating: Uom.convert(bridge_hash['IRLOAD'].to_f, Uom::TONNE, Uom::SHORT_TON).round(NDIGITS),
       bridge_posting_type: BridgePostingType.find_by(code: bridge_hash['POSTING'].to_s),
+      skew: [bridge_hash['SKEW'].to_i, 0].max,
+      is_flared: bridge_hash['STRFLARED'] == '1',
+      median_type: MedianType.find_by(code: bridge_hash['BRIDGEMED']) || MedianType.find_by(code: '0'),
       remarks: bridge_hash['NOTES'],
       inspection_program: inspection_program
     }
+
+    # Validate reconstructed_year
+    year = bridge_hash['YEARRECON'].to_i
+    optional[:reconstructed_year] = year > 0 ? year : nil
+
+    # Validate parallel_structure and is_nbis_length
+    value = bridge_hash['PARALSTRUC']
+    optional[:parallel_structure] = ['R', 'L', 'N'].include?(value) ? value : 'N'
+
+    value = bridge_hash['NBISLEN']
+    optional[:is_nbis_length] = ['Y', 'N'].include?(value) ? value : 'N'
 
     # Validate Owner and maintenance responsibility.
     unknown = StructureAgentType.find_by(name: 'Unknown')
@@ -400,11 +424,13 @@ class BridgeLike < TransamAssetRecord
     optional[:maintenance_section] = MaintenanceSection.find_by(code: district[1])
 
     # process county & city/placecode, NBI 3, 4
-    optional[:county] = District.find_by(code: bridge_hash['COUNTY'],
-                                         district_type: DistrictType.find_by(name: 'County'))&.name || 'Unknown'
-    optional[:city] = District.find_by(code: bridge_hash['PLACECODE'],
-                                       district_type: DistrictType.find_by(name: 'Place'))&.name ||
-                      District.find_by(code: '-1')
+    optional[:county] = District.find_by(code: bridge_hash['COUNTY'], district_type_id: @@county_type_id)&.name || 'Unknown'
+    # Check for [-1, 0, 0000] then if placecode not found, create a new placecode placeholder
+    placecode = bridge_hash['PLACECODE']
+    placecode = '00000' if ['-1', '0', '0000'].include?(placecode)
+    optional[:city] = District.find_by(code: placecode, district_type_id: @@place_type_id)&.name ||
+                      District.create!(code: placecode, name: placecode, description: placecode,
+                                       district_type_id: @@place_type_id, active: true).name
 
     # Process lat/lon, NBI 16, 17
     lat = bridge_hash['PRECISE_LAT'].to_f
@@ -497,7 +523,7 @@ class BridgeLike < TransamAssetRecord
 
           # set quantities and create defect locations
           defect =
-            parent_elem.defects.build(inspection: inspection,
+            parent_elem.defects.build(inspection: inspection.inspection,
                                       defect_definition: defect_def,
                                       total_quantity:
                                         process_quantities(hash['ELEM_QUANTITY'], units),
@@ -527,11 +553,12 @@ class BridgeLike < TransamAssetRecord
           bme_def = ElementDefinition.find_by(number: key,
                                               element_classification: bme_class)
           if bme_def
-            bme = parent_elem.children.build(inspection: inspection,
+            bme = parent_elem.children.build(inspection: inspection.inspection,
                                              element_definition: bme_def,
                                              quantity: process_quantities(hash['ELEM_QUANTITY'], bme_def.quantity_unit),
                                              notes: hash['ELEM_NOTES'])
             bme.save!
+
             parent_elements[key] = bme
           end
         end

@@ -5,16 +5,15 @@
   -#  .div.alwaysbreak { page-break-before: always; }
 
   -@typed_inspection = @inspection
-  -typed_inspection_methods = @typed_inspection.class.instance_methods(false)
-  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect}
-  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspect, :typed_inspection_methods => typed_inspection_methods}
+  = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+  = render partial: 'inspections/structure_inventory_appraisal_part1.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
   &nbsp;
   .div.alwaysbreak
   = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
   = render partial: 'inspections/structure_inventory_appraisal_part2.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :methods => methods}
 
 
-  -@inspection.highway_structure.roadways.each do |roadway|
+  -@inspection.highway_structure.roadways.order(:on_under_indicator).each do |roadway|
     &nbsp;
     .div.alwaysbreak
     = render partial: 'inspections/structure_inventory_appraisal_header.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :roadway => roadway }
@@ -28,9 +27,15 @@
   &nbsp;
   .div.alwaysbreak
 
-  - if @inspection.images.any?
+  -inspections_images = Image.where(imagable: @inspection.inspection)
+  -elements_images = Image.where(imagable: @inspection.elements)
+  -defect_locations_images = Image.where(imagable: DefectLocation.where(defect: Defect.where(inspection: @inspection)))
+  -#Exportable true means only photos that have use photo yes will be used.
+  -inspections_images = inspections_images.or(elements_images).or(defect_locations_images).where(exportable: true).reorder("CASE WHEN imagable_type = 'Inspection' THEN 0 ELSE 1 END DESC, created_at DESC")
+
+  - if inspections_images.any?
     = render :partial => 'inspections/report_photo_log_header.html.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
-    = render :partial => 'inspections/report_photo_log.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection}
+    = render :partial => 'inspections/report_photo_log.pdf.haml', :locals => {:inspection => @inspection, :typed_inspection => @typed_inspection, :inspections_images => inspections_images}
     &nbsp;
     .div.alwaysbreak
 

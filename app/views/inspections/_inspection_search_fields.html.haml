@@ -40,7 +40,7 @@
   = f.input :inspection_zone_id, collection: InspectionZone.active, label: reference_label('inspections', 'inspection_zone_id', 'Inspection Zone'), include_blank: 'Select All'
   
 .col-sm-3
-  = f.input :assigned_organization_id, collection: Organization.all.map{|x| [x.name, x.id]} + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), selected: current_user.organization_id, include_blank: 'Select All'
+  = f.input :assigned_organization_id, collection: Organization.all.map{|x| [x.name, x.id]} + [['None', -1]], label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: 'Select All'
   = f.input :inspector_id, collection: inspectors, label: reference_label('inspections', 'inspector_id', 'Inspector'), include_blank: 'Select All'
 
 .col-sm-3

@@ -10,7 +10,7 @@
 
 :ruby
 
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id && !current_user.organization_ids.include?(HighwayAuthority.first.id)})
 
   inspectors = []
   User.active.with_role(:user).distinct.each do |user|
@@ -44,11 +44,10 @@
 
         .row
           .col-sm-6
-            - enabled = (can?(:make_ready, @inspection) || can?(:switch_team, @inspection))
-            = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: true, selected: @inspection.assigned_organization_id, disabled: !enabled
-          .col-sm-6
-            - if can? :assign, @inspection
-              = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
+            - enabled = (can?(:make_ready, @inspection.inspection) || can?(:switch_team, @inspection.inspection))
+            = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), required: false, include_blank: can?(:make_ready, @inspection.inspection), selected: @inspection.assigned_organization_id, disabled: !enabled
+          #inspectors-col-div.col-sm-6{can?(:assign, @inspection.inspection) ? {} : {style: 'display:none;'}}
+            = f.input :inspector_ids, as: :check_boxes, collection: @inspection.assigned_organization_id ? User.active.with_role(:user).distinct.joins(:organizations).where(organizations: {id: @inspection.assigned_organization_id}) : User.none, label: 'Inspectors', item_wrapper_class: 'checkbox-inline inspector-checkboxes', label_html: { class: 'inspector-assignment-label'}, required: false, checked: @inspection.inspector_ids
 
         .row
           .col-xs-12
@@ -77,7 +76,12 @@
   });
 
   function new_inspector_checkbox(inspector) {
-    return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    var selected_inspectors = JSON.parse('#{@inspection.inspector_ids.to_json}');
+    if ($.inArray( parseInt(inspector.id), selected_inspectors ) >= 0) {
+      return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" checked = "checked" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    } else {
+      return '<span class="checkbox checkbox-inline inspector-checkboxes"><label for="transam_workflow_model_proxy_inspector_ids_' + inspector.id +  '"><input class="check_boxes" type="checkbox" value="' + inspector.id + '" name="transam_workflow_model_proxy[inspector_ids][]" id="transam_workflow_model_proxy_inspector_ids_' + inspector.id + '">' + inspector.name + '</label></span>';
+    }
   }
 
   function update_inspection_inspectors_by_team(team_id) {
@@ -94,7 +98,14 @@
   }
 
   $('#transam_workflow_model_proxy_assigned_organization_id').change(function() {
-    var team_id = $(this).val();
+    var can_assign = JSON.parse('#{Organization.all.select{|o| can?(:assign, Inspection.new(assigned_organization_id: o.id))}.map(&:id).to_json}');
+
+    var team_id = parseInt($(this).val());
+    if ($.inArray( team_id, can_assign ) >= 0) {
+      $('#inspectors-col-div').show();
+    } else {
+      $('#inspectors-col-div').hide();
+    }
     update_inspection_inspectors_by_team(team_id);
   });
 

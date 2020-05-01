@@ -28,6 +28,8 @@ class Inspection < InspectionRecord
   belongs_to :inspection_team_leader, class_name: 'User'
   belongs_to :inspection_team_member, class_name: 'User'
   belongs_to :inspection_team_member_alt, class_name: 'User'
+  # Inspection may have been updated from an upload
+  belongs_to :upload
   has_and_belongs_to_many :inspectors, class_name: 'User', join_table: 'inspections_users'
 
   has_many :elements, dependent: :destroy
@@ -169,11 +171,37 @@ class Inspection < InspectionRecord
     read_attribute(:description).present? ? read_attribute(:description) : inspection_type_setting&.description
   end
 
+  # returns the version of the highway structure when the inspection was finalized
+  # if inspection is not yet finalized, just return the highway structure
   def highway_structure_version
     if state == 'final'
       return versions.last.reify(belongs_to: true).highway_structure&.version || versions.last.reify(belongs_to: true).highway_structure
     else
       return highway_structure
+    end
+  end
+
+  # returns the roadways associated with the highway_structure_version
+  # if inspection is not yet finalized, just return the highway structure
+  # the method to determine the versions of the associated roadways follows highway_structure.assigned_version_roadways
+  # see that method for detailed comments
+  def highway_structure_version_roadways
+    typed_version = TransamAsset.get_typed_version(highway_structure_version)
+    if state == 'final'
+      if highway_structure_version.respond_to? :reify
+        typed_version.roadways
+      else
+        time_of_finalization = versions.last.created_at
+        results = typed_version.roadways.where('updated_at <= ?', time_of_finalization).to_a
+
+        typed_version.roadways.where('updated_at > ?', time_of_finalization).each do |roadway|
+          ver = roadway.versions.where('created_at > ?', time_of_finalization).where.not(event: 'create').order(:created_at).first
+          results << ver.reify if ver
+        end
+        return results
+      end
+    else
+      return highway_structure.roadways
     end
   end
 

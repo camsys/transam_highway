@@ -12,6 +12,9 @@ class Roadway < ApplicationRecord
   belongs_to :functional_class
   belongs_to :strahnet_designation_type
   belongs_to :traffic_direction_type
+  # Roadway may have been updated from an upload.
+  belongs_to :upload
+  belongs_to :federal_lands_highway_type
 
   has_many :roadbeds, dependent: :destroy
 
@@ -83,19 +86,21 @@ class Roadway < ApplicationRecord
   protected
 
   def set_defaults
-    if highway_structure
-      last_indicator = highway_structure.roadways.pluck(:on_under_indicator).sort.last
-      self.on_under_indicator ||=
-        case last_indicator
-        when nil, ''
-          '1'
-        when '1'
-          '2'
-        when '2'
-          'B'
-        else
-          (last_indicator.ord + 1).chr
-        end
+    unless self.on_under_indicator
+      if highway_structure
+        last_indicator = highway_structure.roadways.pluck(:on_under_indicator).sort.last
+        self.on_under_indicator ||=
+          case last_indicator
+          when nil, ''
+            '1'
+          when '1'
+            '2'
+          when '2'
+            'B'
+          else
+            (last_indicator.ord + 1).chr
+          end
+      end
     end
   end
 end

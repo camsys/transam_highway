@@ -1,0 +1,16 @@
+%thead
+  %tr
+    %th Inspection
+    %th Event
+    %th Date
+    %th Update
+    %th Notes
+  %tbody
+    - Inspection.where(upload: @upload).each do |update|
+      %tr
+        %td
+          = link_to "#{update.highway_structure.asset_tag} : #{update.inspection_type.name} : #{update.calculated_inspection_due_date}", inspection_path(update)
+        %td
+        %td
+        %td
+        %td

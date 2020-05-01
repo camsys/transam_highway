@@ -25,7 +25,7 @@
           &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
-          Level of Service (5C
+          Level of Service (5C)
         %span.col-xs-6.text-limiter-counter
           =roadway.service_level_type
           &nbsp;
@@ -67,13 +67,13 @@
           &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
-          KRS Inventory Route (13A))
+          KRS Inventory Route (13A)
         %span.col-xs-6.text-limiter-counter
           =roadway.lrs_route
           &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
-          Detour(19))
+          Detour(19)
         %span.col-xs-6.text-limiter-counter
           __NA__
       .row
@@ -114,9 +114,9 @@
           &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
-          NHS
+          NHS (104)
         %span.col-xs-6.text-limiter-counter
-          =roadway.on_national_highway_system
+          =format_as_yes_no(roadway.on_national_highway_system)
           &nbsp;
       .row
         %span.col-xs-6.text-limiter-counter
@@ -128,11 +128,11 @@
         %span.col-xs-6.text-limiter-counter
           Designated Nat Net (110)
         %span.col-xs-6.text-limiter-counter
-          =roadway.on_truck_network
+          =format_as_yes_no(roadway.on_truck_network)
           &nbsp;
 
     .col-xs-6
-      -roadbeds = roadway.roadbeds.where(inspection_id: @inspection.id)
+      -roadbeds = Roadbed.where(inspection: @inspection)
       -roadbed_counter = 0
       -roadbed_max = 4
       -roadbeds.each do |roadbed|
@@ -172,7 +172,7 @@
             %span.col-xs-6.text-limiter-counter
               -min = roadbed.minimum(@inspection)
               -if min.nil?
-                No Restrictions
+                N/R
               -else
                 =min
                 &nbsp;
@@ -182,7 +182,7 @@
             %span.col-xs-6.text-limiter-counter
               -max = roadbed.maximum(@inspection)
               -if max.nil?
-                No Restrictions
+                N/R
               -else
                 =max
                 &nbsp;
@@ -199,7 +199,7 @@
         .col-xs-12
           .row
             %span.col-xs-12.text-header
-              Road surface name? what are these called?
+              =roadbed.name
           .row
             %table.roadway-appraisal-table
               %thead
@@ -221,21 +221,25 @@
                 %tr
                   %td
                     Entry
-                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection).order("CASE WHEN (number = 'L') THEN 0 WHEN (number = 'R') THEN 2 ELSE 1 END ASC, number")
                   -roadbeds_lines.each do |line|
                     %td
                       -if line.entry.nil?
-                        N/A
+                        N/R
+                      -if line.entry == 0
+                        NA
                       -else
                         =line.entry
                 %tr
                   %td
                     Exit
-                  -roadbeds_lines = roadbed.roadbed_lines
+                  -roadbeds_lines = roadbed.roadbed_lines.by_inspection(@inspection.try(:inspection) || @inspection).order("CASE WHEN (number = 'L') THEN 0 WHEN (number = 'R') THEN 2 ELSE 1 END ASC, number")
                   -roadbeds_lines.each do |line|
                     %td
                       -if line.exit.nil?
-                        N/A
+                        N/R
+                      -if line.exit == 0
+                        NA
                       -else
                         =line.exit
           .row

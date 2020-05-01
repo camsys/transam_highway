@@ -1,0 +1,16 @@
+%thead
+  %tr
+    %th Roadway
+    %th Event
+    %th Date
+    %th Update
+    %th Notes
+  %tbody
+    - Roadway.where(upload: @upload).each do |update|
+      %tr
+        %td
+          = link_to update.to_s, inventory_path(update.highway_structure)
+        %td
+        %td
+        %td
+        %td

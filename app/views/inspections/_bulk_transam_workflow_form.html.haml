@@ -1,5 +1,5 @@
 :ruby
-  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id})
+  orgs = (can?(:view_all, Inspection) ? current_user.viewable_organizations : current_user.viewable_organizations.reject{|x| x.id == HighwayAuthority.first.id && !current_user.organization_ids.include?(HighwayAuthority.first.id)})
 
   from_open_boolean = (state == 'open' && can?(:make_ready, Inspection.new))
   from_ready_switch_team_boolean = (state == 'ready' && assigned_organization_id.to_i > 0 && can?(:switch_team, Inspection.new(assigned_organization_id: assigned_organization_id)))

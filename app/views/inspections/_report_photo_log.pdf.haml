@@ -1,6 +1,3 @@
--inspections_images = @inspection.images
-
-
 -i = 0
 
 -image_count = inspections_images.count-1
@@ -13,10 +10,16 @@
         -i += 1
         =i
       %span.col-xs-11
-        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"375", width:"375" }
+        %img{ src:"#{image.image.url()}", alt:"#{image.description}", height:"300", width:"300" }
       .row
         %span.col-xs-12.center
-          = "#{image.image_classification} looking #{image.compass_point}"
+          - case image.imagable_type
+          - when "Inspection"
+            = "#{image.image_classification}" + "#{(image.compass_point.blank? ? "" : " looking #{image.compass_point}")}"
+          - when "Element"
+            = "Element #{image.imagable.element_definition.number}: #{image.description}"
+          - when "DefectLocation"
+            = "Defect #{image.imagable.defect.defect_definition.number}: #{image.imagable.location_description}"
     -if image_count >= 0
       -image2 = inspections_images[image_count]
       %span.col-xs-6
@@ -25,10 +28,17 @@
           -i += 1
           =i
         %span.col-xs-11
-          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"375", width:"375" }
+          %img{ src:"#{image2.image.url()}", alt:"#{image2.description}", height:"300", width:"300" }
         .row
           %span.col-xs-12.center
-            = "#{image2.image_classification} looking #{image2.compass_point}"
+            - case image2.imagable_type
+            - when "Inspection"
+              = "#{image2.image_classification}" + "#{(image2.compass_point.blank? ? "" : " looking #{image2.compass_point}")}"
+            - when "Element"
+              = "Element #{image2.imagable.element_definition.number}: #{image2.description}"
+            - when "DefectLocation"
+              = "Defect #{image2.imagable.defect.defect_definition.number}: #{image2.imagable.location_description}"
+
     .row
       &nbsp;
     -if i % 6 == 0

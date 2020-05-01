@@ -212,14 +212,53 @@ class HighwayStructure < TransamAssetRecord
     inspections.where(state: 'final').ordered.first
   end
 
+  # returns roadways associated with assigned_version
+  def assigned_version_roadways
+    version = assigned_version
+
+    if version # you need to ensure that there is even an inspection that was moved through assigned
+      typed_version = TransamAsset.get_typed_version(version)
+
+      if version.respond_to? :reify # if the highway structure returns a version you can use its version to find the versions associated with roadways
+        return typed_version.roadways
+      else # otherwise you have a highway structure that is "live" ie what is the DB right now and you have to figure out what versions of roadways are associated
+        # given the time of assignment
+        # you know that if a roadway wasnt updated since the time of assignment that those roadways were like that at assignment. they can be included in roadways of the assigned version
+        time_of_assignment = assigned_inspection_version.created_at
+        results = typed_version.roadways.where('updated_at <= ?', time_of_assignment).to_a
+
+        # therefore you only need to check roadways updated after time of assignment
+        # for those roadways, you find the version that is closest and before the time of assignment
+        # versions save the object BEFORE the change
+        # therefore to get the version at time of assignment you need the first version that happened after the time of assignment
+        typed_version.roadways.where('updated_at > ?', time_of_assignment).each do |roadway|
+          ver = roadway.versions.where('created_at > ?', time_of_assignment).where.not(event: 'create').order(:created_at).first
+          results << ver.reify if ver
+        end
+        return results
+      end
+    end
+  end
+
+  # this is version snapshoted of the structure when the inspection went to the assigned state
+  # if there are no inspections "in progress" (which is defined as any inspection in the assigned state or later, but not final)
+  # this will return nil
   def assigned_version
     return assigned_inspection_version&.reify(belongs_to: true)&.highway_structure&.version || assigned_inspection_version&.reify(belongs_to: true)&.highway_structure
   end
 
+  # this is the version that tracks the state change of an inspection to assigned
+  # this method is used to get other versions such as assigned_version
   def assigned_inspection_version
     if inspections.where.not(state: ['open', 'ready', 'final']).count > 0
-      # we know inspections only have versions for assigned and final so we take the first one which will be an assigned
-      return PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first
+      # we know inspections only have versions for assigned and final so we take the last assigned version
+      # we accommodate for the case that there is already data in a database before versioning was turned on so the first version saved might be a state after assigned
+      ver = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").where('object_changes LIKE ?', "%assigned%").order(:created_at).last
+      if ver.nil?
+        ver = PaperTrail::Version.where(item: inspections.where.not(state: ['open', 'ready', 'final'])).where('object_changes LIKE ?', "%state%").order(:created_at).first
+      end
+
+      return ver
     end
   end
 

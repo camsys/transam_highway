@@ -48,9 +48,11 @@
 
 .row
   .col-md-12
+    -unless defined?(is_for_pdf)
+      -is_for_pdf = false
 
     #table_actions.btn-toolbar
-      - if can?(:update, @inspection.inspection) && @inspection.updatable?
+      - if can?(:update, @inspection.inspection) && @inspection.updatable? && !is_for_pdf
         .btn-group
           = link_to new_inspection_element_path(@inspection.object_key), remote: true, id: "new_element_link", class: 'btn btn-primary', title: 'New Element' do
             %i.fa.fa-plus
