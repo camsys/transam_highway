@@ -17,8 +17,18 @@ module Abilities
       end
       can :schedule, Inspection
 
+
+      # user management
       cannot :authorize, Organization do |org|
         org.organization_type.class_name == 'HighwayAuthority' && user.organization.organization_type.class_name != 'HighwayAuthority'
+      end
+      if org.organization_type.class_name != 'HighwayAuthority'
+        cannot [:update, :authorizations], User do |usr|
+          !user.organizations.include?(usr.organization)
+        end
+      end
+      can :assign, Role do |r|
+        r.name != 'super_manager' && r.name != 'admin'
       end
 
     end
