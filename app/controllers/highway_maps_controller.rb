@@ -82,6 +82,9 @@ class HighwayMapsController < MapsController
     # fix sorting on organizations to be alphabetical not by index
     params[:sort] = 'organizations.short_name' if params[:sort] == 'organization_id'
 
+    # add table to columns that are ambiguous
+    params[:sort] = 'highway_structures.' + params[:sort] if ['facility_carried', 'features_intersected', 'length'].include? params[:sort]
+
     if @asset_class_name == 'TransamAsset'
       @assets = @assets.includes({asset_subtype: :asset_type},:organization, :manufacturer)
     else
