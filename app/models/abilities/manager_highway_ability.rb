@@ -22,7 +22,7 @@ module Abilities
       cannot :authorize, Organization do |org|
         org.organization_type.class_name == 'HighwayAuthority' && user.organization.organization_type.class_name != 'HighwayAuthority'
       end
-      if org.organization_type.class_name != 'HighwayAuthority'
+      if user.organization.organization_type.class_name != 'HighwayAuthority'
         cannot [:update, :authorizations], User do |usr|
           !user.organizations.include?(usr.organization)
         end
