@@ -236,6 +236,7 @@ class Api::V1::InspectionsController < Api::ApiController
             when 'ADD', 'UPDATE'
               rb = Roadbed.find_by_guid(rb_guid)
               clean_params[:roadway] = rb_parent if rb_parent
+              clean_params[:inspection] = @inspection
               if rb
                 rb.update!(clean_params)
               else
