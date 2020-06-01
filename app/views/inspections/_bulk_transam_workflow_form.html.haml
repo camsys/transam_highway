@@ -42,6 +42,8 @@
         = f.input :assigned_organization_id, collection: orgs, label: reference_label('inspections', 'assigned_organization_id', 'Inspection Team'), include_blank: orgs .count > 1 ? 'Select One' : false, selected: orgs.count == 1 ? orgs.first.id : nil, required: from_open_boolean
         - if from_ready_switch_team_boolean
           = f.input :to_state, as: :hidden, input_html: {value: 'ready'}
+      - elsif from_ready_to_open_boolean
+        = f.input :assigned_organization_id, as: :hidden, input_html: {value: ''}
 
 :javascript
 
