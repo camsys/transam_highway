@@ -34,16 +34,18 @@
                         - if can?(:manage, Roadway) && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
                             = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
                                 %i.fa.fa-edit.fa-fw.text-success
-                            = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
-                                %i.fa.fa-trash-o.fa-fw.text-danger
+                            - if r.roadbeds.count == 0
+                                = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
+                                    %i.fa.fa-trash-o.fa-fw.text-danger
                 - roadways_under.each do |r|
                     %th.center
                         = "Under Structure - #{r.on_under_indicator}"
-                        - if can?(:manage, Roadway) && r.roadbeds.count == 0 && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
+                        - if can?(:manage, Roadway) && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
                             = link_to edit_roadway_path(r.object_key), :remote => true, :class => "button btn-xs", :title => "Edit roadway" do
                                 %i.fa.fa-edit.text-success
-                            = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
-                                %i.fa.fa-trash-o.fa-fw.text-danger
+                            - if r.roadbeds.count == 0
+                                = link_to roadway_path(r.object_key), :remote => true, :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone.", :dismiss => "modal"}  do
+                                    %i.fa.fa-trash-o.fa-fw.text-danger
                 %th.center
                     - if can?(:manage, Roadway) && ((@inspection.present? && can?(:update, @inspection.inspection) && @inspection.updatable?) || (@inspection.nil? && can?(:update, @asset) && !@asset.assigned_version))
                         = link_to new_roadway_path(asset: @asset.object_key), :remote => true, :class => "button btn-xs", :title => "Add roadway"    do

@@ -59,7 +59,6 @@
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'region'}}= reference_label('highway_structures', 'region_id', 'Region')
           %th.left{:data => {:searchable => 'true', :sortable => 'false', :field => 'maintenance_section'}}= reference_label('highway_structures', 'maintenance_section_id', 'Maintenance Section')
           %th.right{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'length_formatter', :field => 'length'}}= reference_label(table_title.underscore, 'length', 'Length')
-          %th.left{:data => {:searchable => 'true', :sortable => 'true', :formatter => 'date_formatter', :field => 'inspection_date'}}= reference_label('highway_structures', 'inspection_date', 'Last Inspection Date')
 
 = render 'shared/table_formatters'
 
