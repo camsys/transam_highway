@@ -326,7 +326,7 @@ class Api::V1::InspectionsController < Api::ApiController
             event_params = {}
             mi_guid = mi_params[:id]
             if mi_params[:highway_structure_id]
-              mi_parent = HighwayStructure.find_by(guid: mi_params[:highway_structure_id])
+              mi_parent = HighwayStructure.find_by(guid: mi_params[:highway_structure_id]).transam_asset
             end
             if mi_params[:priority]
               mi_priority = MaintenancePriorityType.find_by(name: mi_params[:priority])
