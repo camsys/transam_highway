@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_07_172433) do
+ActiveRecord::Schema.define(version: 2020_09_24_184215) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -393,6 +393,9 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.bigint "upper_connection_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "parallel_structure"
+    t.boolean "is_nbis_length"
+    t.bigint "median_type_id"
     t.index ["approach_spans_design_construction_type_id"], name: "idx_bridge_likes_on_approach_spans_design_construction_type_id"
     t.index ["approach_spans_material_type_id"], name: "index_bridge_likes_on_approach_spans_material_type_id"
     t.index ["bridge_posting_type_id"], name: "index_bridge_likes_on_bridge_posting_type_id"
@@ -407,6 +410,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["main_span_design_construction_type_id"], name: "index_bridge_likes_on_main_span_design_construction_type_id"
     t.index ["main_span_material_type_id"], name: "index_bridge_likes_on_main_span_material_type_id"
     t.index ["mast_arm_frame_type_id"], name: "index_bridge_likes_on_mast_arm_frame_type_id"
+    t.index ["median_type_id"], name: "index_bridge_likes_on_median_type_id"
     t.index ["membrane_type_id"], name: "index_bridge_likes_on_membrane_type_id"
     t.index ["operating_rating_method_type_id"], name: "index_bridge_likes_on_operating_rating_method_type_id"
     t.index ["service_on_type_id"], name: "index_bridge_likes_on_service_on_type_id"
@@ -639,6 +643,26 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["name"], name: "index_districts_on_name"
   end
 
+  create_table "document_folders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "document_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "pattern"
+    t.string "allowed_extensions"
+    t.bigint "document_folder_id"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_folder_id"], name: "index_document_tags_on_document_folder_id"
+  end
+
   create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "guid", limit: 36
@@ -652,6 +676,9 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.integer "created_by_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.date "file_date"
+    t.bigint "document_tag_id"
+    t.index ["document_tag_id"], name: "index_documents_on_document_tag_id"
     t.index ["documentable_id", "documentable_type"], name: "documents_idx2"
     t.index ["guid"], name: "index_documents_on_guid"
     t.index ["object_key"], name: "documents_idx1"
@@ -716,6 +743,21 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
   create_table "feature_safety_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "code"
+    t.string "description"
+    t.boolean "active"
+  end
+
+  create_table "federal_lands_highway_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.string "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "federal_submission_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
     t.string "description"
     t.boolean "active"
   end
@@ -796,6 +838,13 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "highway_consultants_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "highway_consultant_id"
+    t.integer "organization_id"
+    t.index ["highway_consultant_id"], name: "highway_consultants_organizations_highway_consultant_idx"
+    t.index ["organization_id"], name: "highway_consultants_organizations_organization_idx"
+  end
+
   create_table "highway_structure_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.boolean "active"
     t.string "code"
@@ -840,6 +889,11 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.bigint "inspection_program_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "federal_submission_type_id"
+    t.integer "reconstructed_year"
+    t.boolean "is_flared"
+    t.integer "skew"
+    t.index ["federal_submission_type_id"], name: "index_highway_structures_on_federal_submission_type_id"
     t.index ["highway_structure_type_id"], name: "index_highway_structures_on_highway_structure_type_id"
     t.index ["highway_structurible_type", "highway_structurible_id"], name: "highway_structurible_idx"
     t.index ["historical_significance_type_id"], name: "index_highway_structures_on_historical_significance_type_id"
@@ -865,6 +919,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
   create_table "image_classifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "category"
+    t.integer "sort_order"
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -972,6 +1027,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.bigint "inspection_team_leader_id"
     t.bigint "inspection_team_member_id"
     t.bigint "inspection_team_member_alt_id"
+    t.bigint "upload_id"
     t.index ["assigned_organization_id"], name: "index_inspections_on_assigned_organization_id"
     t.index ["guid"], name: "index_inspections_on_guid"
     t.index ["inspection_team_leader_id"], name: "index_inspections_on_inspection_team_leader_id"
@@ -986,6 +1042,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["qa_inspector_id"], name: "index_inspections_on_qa_inspector_id"
     t.index ["qc_inspector_id"], name: "index_inspections_on_qc_inspector_id"
     t.index ["transam_asset_id"], name: "index_inspections_on_transam_asset_id"
+    t.index ["upload_id"], name: "index_inspections_on_upload_id"
   end
 
   create_table "inspections_users", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1115,6 +1172,15 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "median_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.string "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "membrane_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "code"
@@ -1230,7 +1296,6 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
   create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "organization_type_id", null: false
     t.integer "customer_id", null: false
-    t.bigint "parent_id"
     t.string "external_id", limit: 32
     t.string "name", limit: 128, null: false
     t.string "short_name", limit: 16, null: false
@@ -1257,7 +1322,6 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.string "legal_name"
     t.index ["customer_id"], name: "organizations_idx2"
     t.index ["organization_type_id"], name: "organizations_idx1"
-    t.index ["parent_id"], name: "index_organizations_on_parent_id"
     t.index ["short_name"], name: "organizations_idx4"
     t.index ["short_name"], name: "short_name"
   end
@@ -1503,6 +1567,8 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.integer "number_of_lines"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "inspection_id"
+    t.index ["inspection_id"], name: "index_roadbeds_on_inspection_id"
     t.index ["roadway_id"], name: "index_roadbeds_on_roadway_id"
   end
 
@@ -1537,6 +1603,10 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.string "facility_carried"
     t.string "features_intersected"
     t.float "lrs_reference_point"
+    t.bigint "upload_id"
+    t.bigint "federal_lands_highway_type_id"
+    t.float "detour_length"
+    t.index ["federal_lands_highway_type_id"], name: "index_roadways_on_federal_lands_highway_type_id"
     t.index ["functional_class_id"], name: "index_roadways_on_functional_class_id"
     t.index ["guid"], name: "index_roadways_on_guid"
     t.index ["object_key"], name: "index_roadways_on_object_key"
@@ -1545,6 +1615,14 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["strahnet_designation_type_id"], name: "index_roadways_on_strahnet_designation_type_id"
     t.index ["traffic_direction_type_id"], name: "index_roadways_on_traffic_direction_type_id"
     t.index ["transam_asset_id"], name: "index_roadways_on_transam_asset_id"
+    t.index ["upload_id"], name: "index_roadways_on_upload_id"
+  end
+
+  create_table "role_privilege_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "privilege_id"
+    t.index ["privilege_id"], name: "index_role_privilege_mappings_on_privilege_id"
+    t.index ["role_id"], name: "index_role_privilege_mappings_on_role_id"
   end
 
   create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1731,6 +1809,20 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "system_config_field_customizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "table_name"
+    t.string "field_name"
+    t.string "description"
+    t.string "code_frag"
+    t.boolean "is_locked"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_visible"
+    t.string "label"
+    t.string "action_name"
+  end
+
   create_table "system_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "customer_id"
     t.string "start_of_fiscal_year", limit: 5
@@ -1750,7 +1842,6 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.integer "num_forecasting_years"
     t.integer "num_reporting_years"
     t.integer "max_rows_returned"
-    t.string "special_locked_fields"
     t.string "measurement_system"
     t.string "data_file_path", limit: 64
     t.datetime "created_at"
@@ -1940,6 +2031,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "authentication_token", limit: 30
+    t.text "table_prefs"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "users_idx3"
     t.index ["object_key"], name: "users_idx1"
@@ -2001,6 +2093,15 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["organization_id"], name: "vendors_idx3"
   end
 
+  create_table "version_associations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "version_id"
+    t.string "foreign_key_name", null: false
+    t.integer "foreign_key_id"
+    t.string "foreign_type"
+    t.index ["foreign_key_name", "foreign_key_id", "foreign_type"], name: "index_version_associations_on_foreign_key"
+    t.index ["version_id"], name: "index_version_associations_on_version_id"
+  end
+
   create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "item_type", null: false
     t.integer "item_id", null: false
@@ -2009,6 +2110,8 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.text "object"
     t.datetime "created_at"
     t.text "object_changes"
+    t.integer "transaction_id"
+    t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
   create_table "wearing_surface_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -2044,12 +2147,17 @@ ActiveRecord::Schema.define(version: 2020_01_07_172433) do
     t.index ["object_key"], name: "workflow_events_idx1"
   end
 
+  add_foreign_key "bridge_likes", "median_types"
+  add_foreign_key "documents", "document_tags"
+  add_foreign_key "highway_structures", "federal_submission_types"
   add_foreign_key "query_field_asset_classes", "query_asset_classes"
   add_foreign_key "query_field_asset_classes", "query_fields"
   add_foreign_key "query_filters", "query_fields"
   add_foreign_key "roadbed_lines", "inspections"
   add_foreign_key "roadbed_lines", "roadbeds"
+  add_foreign_key "roadbeds", "inspections"
   add_foreign_key "roadbeds", "roadways"
+  add_foreign_key "roadways", "federal_lands_highway_types"
   add_foreign_key "saved_query_fields", "query_fields"
   add_foreign_key "saved_query_fields", "saved_queries"
   add_foreign_key "streambed_profile_points", "streambed_profiles"
