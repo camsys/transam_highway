@@ -54,13 +54,14 @@
       .panel-heading
         %h3.panel-title
           %a{data: {toggle: 'collapse'}, href: '#collapse-structure-documents'}Structure Documents
-          .btn-group.pull-right.panel-action
-            %div
-              %button.btn.btn-primary.new-structure-documents-button
-                Add File
+          - if can? :create, @asset.documents.build
+            .btn-group.pull-right.panel-action
+              = link_to inventory_documents_path(@asset), remote: true, class: 'btn btn-primary', title: 'Add File' do
+                %i.fa.fa-plus
+                = "Add File"
       #collapse-structure-documents.panel-collapse.collapse.in
         .panel-body
-          = render 'structure_documents'
+          = render 'documents'
 
 - if ["Bridge", "Culvert"].include? @asset.class.name
   = render 'stream_bed_profile'

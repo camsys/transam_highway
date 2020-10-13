@@ -1,0 +1,15 @@
+:ruby
+  tabs = DocumentFolder.all.map{|f| [f.name.parameterize, f.name]}
+
+%ul.nav.nav-tabs#structure-documents
+  - tabs.each do |t|
+    - count = @asset.documents.joins(:document_tag).where(document_tags: {document_folder: DocumentFolder.find_by(name: t[1])}).count
+    - if (count > 0)
+      = nav_tab_count_tag("##{t[0]}-docs", t[1], count)
+
+
+.tab-content
+  - tabs.each_with_index do |t, i|
+    .tab-pane.fade{id: "#{t[0]}-docs"}
+      .tab-content
+        = render :partial => 'documents/index_table', :locals => {folder: t[1]}

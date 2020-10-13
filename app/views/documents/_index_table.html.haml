@@ -1,0 +1,67 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+
+.table-responsive
+  %table.table.table-hover{:id => table_dom_id,
+          :data => {:toggle => 'table',
+          :card_view => "false",
+          :pagination => 'true',
+          :sort_order => 'asc',
+          :sortable => 'true',
+          :show_pagination_switch => 'true',
+          :page_number => '1',
+          :page_list => "[5, 10, 20, 50, 100, 200]",
+          :page_size => current_user.num_table_rows,
+          :search => 'false',
+          :show_columns => 'true',
+          :row_style => 'row_style',
+          :click_to_select => 'true',
+          :show_export => 'true',
+          :id_field => 'object_key',
+          :export_types => "['csv', 'txt', 'excel']",
+          :cookie => 'true',
+          :cookie_id_table => "documents_id",
+          :cookie_expire => "1y",
+          :maintain_selected => 'true',
+          :single_select => 'false'}}
+    %thead
+      %tr
+        %th.center Name
+        %th.center Tag
+        %th.center Description
+        %th.center File Date
+        %th.center File Size
+        %th.center Entry Date & Time
+        %th.center Entry By
+        %th.center Action
+
+    %tbody
+      - (@asset.documents.joins(:document_tag).where(document_tags: {document_folder: DocumentFolder.find_by(name: folder)}).order(file_date: :desc)).each do |document|
+        %tr
+          %td.center= document.name
+          %td.center= document.document_tag&.pattern
+          %td.center= document.description
+          %td.center= document.file_date
+          %td.center= document.file_size
+          %td.center= document.created_at
+          %td.center= document.creator
+          %td.left
+            - if can? :read, document
+              = link_to download_document_path(document), :class => "btn btn-primary btn-xs pull-right btn-action" do
+                %i.fa.fa-download
+            - if can? :destroy, document
+              = link_to document, :method => :delete, :class => "btn btn-warning btn-xs pull-right btn-action", :data => { :confirm => 'Are you sure you want to remove this document?' } do
+                %i.fa.fa-trash
+
+
+
+
+:javascript
+
+  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+    $('.transam-popover').popover({
+      trigger: 'hover'
+    });
+
+    $('.transam-tooltip').tooltip();
+  });
