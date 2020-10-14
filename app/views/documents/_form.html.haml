@@ -8,9 +8,9 @@
 
 .row
   .col-sm-12
-    = simple_form_for([@asset, Document.new],
+    = simple_form_for(Document.new,
         :html => {:multipart => true, :class => 'form-vertical document_form' },
-        :url => inventory_documents_path(@asset, Document.new),
+        :url => inventory_documents_path(@documentable, Document.new),
         :wrapper => :vertical_form,
         :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
       = f.input :document, label: "File"

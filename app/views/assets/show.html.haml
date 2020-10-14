@@ -56,7 +56,7 @@
           %a{data: {toggle: 'collapse'}, href: '#collapse-structure-documents'}Structure Documents
           - if can? :create, @asset.documents.build
             .btn-group.pull-right.panel-action
-              = link_to inventory_documents_path(@asset), remote: true, class: 'btn btn-primary', title: 'Add File' do
+              = link_to new_inventory_document_path(@asset), remote: true, class: 'btn btn-primary', title: 'Add File' do
                 %i.fa.fa-plus
                 = "Add File"
       #collapse-structure-documents.panel-collapse.collapse.in
