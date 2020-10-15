@@ -22,7 +22,7 @@
         = f.input_field :file_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.document_form'}, :value => format_as_date(f.object.file_date), required: true
         %span.input-group-addon
           %i.fa.fa-calendar
-      = f.input :description, :as => :text
+      = f.input :description, :as => :text, :input_html => { :maxlength => 100 }, :placeholder => "(100 characters max)"
       = f.submit "Save", :class => 'btn btn-primary'
       %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
 
