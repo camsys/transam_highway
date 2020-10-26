@@ -1,19 +1,14 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-.table-responsive
+.table-responsive{id: "#{folder.parameterize.underscore}_table"}
   %table.table.table-hover{:id => table_dom_id,
           :data => {:toggle => 'table',
           :card_view => "false",
-          :pagination => 'true',
+          :pagination => 'false',
           :sort_order => 'asc',
-          :sortable => 'true',
-          :show_pagination_switch => 'true',
-          :page_number => '1',
-          :page_list => "[5, 10, 20, 50, 100, 200]",
-          :page_size => current_user.num_table_rows,
+          :sortable => 'false',
           :search => 'false',
-          :show_columns => 'true',
           :row_style => 'row_style',
           :click_to_select => 'true',
           :show_export => 'true',
@@ -25,35 +20,10 @@
           :maintain_selected => 'true',
           :single_select => 'false'}}
     %thead
-      %tr
-        %th.center Name
-        %th.center Tag
-        %th.center Description
-        %th.center{:data => {:formatter => 'date_formatter'}} File Date
-        %th.center File Size
-        %th.center{:data => {:formatter => 'date_time_formatter'}} Entry Date & Time
-        %th.center Entry By
-        %th.center Action
+      = render 'documents/index_table_head'
 
     %tbody
-      - (@asset.documents.joins(:document_tag).where(document_tags: {document_folder: DocumentFolder.find_by(name: folder)}).order(document_tag_id: :asc, file_date: :desc, description: :asc)).each do |document|
-        %tr
-          %td.center
-            = link_to document.name.truncate(32, omission: "...#{document.name.last(14)}"), download_document_path(document), title: document.name
-          %td.center= document.document_tag&.name
-          %td.center= document.description
-          %td.center= document.file_date
-          %td.center= number_to_human_size(document.file_size)
-          %td.center= document.created_at
-          %td.center= document.creator
-          %td.center
-            - if can? :read, document
-              = link_to download_document_path(document), :class => "btn btn-primary btn-xs btn-action" do
-                %i.fa.fa-download
-            - if can? :destroy, document
-              = link_to document, :method => :delete, :class => "btn btn-warning btn-xs btn-action", :data => { :confirm => 'Are you sure you want to remove this document?' } do
-                %i.fa.fa-trash
-
+      = render :partial => 'documents/index_table_body', :locals => {folder: folder}
 
 
 
