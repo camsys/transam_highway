@@ -15,7 +15,6 @@
         :wrapper => :vertical_form,
         :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
       = f.input :document, label: "File", input_html: {extension: Document.new.document.extension_white_list.join(',')}
-      = f.check_box :attributes_from_file_name, style: "margin-right: 5px; margin-bottom: 5px;"
       = f.label "Assign Attributes From File Name"
       = f.input :folder, as: :select, collection: DocumentFolder.active.pluck(:name), required: true
       = f.input :document_tag_id, as: :select, disabled: true, required: true
