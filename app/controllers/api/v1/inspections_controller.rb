@@ -335,7 +335,7 @@ class Api::V1::InspectionsController < Api::ApiController
               mi_state = mi_params[:status].downcase if MaintenanceServiceOrder.state_machine.states[mi_params[:status].downcase]
             end
             if mi_params[:recommendation]
-              mi_recommendation = MaintenanceActivityType.find_by(name: mi_params[:recommendation])
+              mi_recommendation = MaintenanceActivityType.find_by(name: mi_params[:recommendation], maintenance_activity_category_subtype: MaintenanceActivityCategorySubtype.find_by(name: mi_params[:location]))
             end
             if mi_params[:timeline]
               mi_due_date = mi_params[:timeline]
