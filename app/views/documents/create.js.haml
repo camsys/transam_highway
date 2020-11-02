@@ -5,7 +5,7 @@
   $('#spinner').hide();
   $('#form-modal').modal('hide');
 
-  - folder_name = @document.document_tag.document_folder.name
+  - folder_name = @document.document_tag&.document_folder.name
   - folder_param = folder_name.parameterize
   $('#structure-documents').html("#{escape_javascript(render :partial => 'documents/index_tabs', :locals => {tabs: DocumentFolder.all.map{|f| [f.name.parameterize, f.name]}})}");
   $('.nav-tabs a[href="##{folder_param}-docs"]').tab('show');
