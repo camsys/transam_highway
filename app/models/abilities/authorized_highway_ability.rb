@@ -20,6 +20,8 @@ module Abilities
       can :manage, StreambedProfile
       can :manage, Roadway
 
+      cannot [:update, :destroy], Document
+
       AssetType.pluck(:class_name).each do |class_name|
         class_name.constantize.new.inspector_params.each do |field|
           can "update_#{field}".to_sym, class_name.constantize
