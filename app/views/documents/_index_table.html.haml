@@ -1,0 +1,38 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+
+.table-responsive{id: "#{folder.parameterize.underscore}_table"}
+  %table.table.table-hover{:id => table_dom_id,
+          :data => {:toggle => 'table',
+          :card_view => "false",
+          :pagination => 'false',
+          :sort_order => 'asc',
+          :sortable => 'false',
+          :search => 'false',
+          :row_style => 'row_style',
+          :click_to_select => 'true',
+          :show_export => 'true',
+          :id_field => 'object_key',
+          :export_types => "['csv', 'txt', 'excel']",
+          :cookie => 'true',
+          :cookie_id_table => "documents_id",
+          :cookie_expire => "1y",
+          :maintain_selected => 'true',
+          :single_select => 'false'}}
+    %thead
+      = render 'documents/index_table_head'
+
+    %tbody
+      = render :partial => 'documents/index_table_body', :locals => {folder: folder}
+
+
+
+:javascript
+
+  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+    $('.transam-popover').popover({
+      trigger: 'hover'
+    });
+
+    $('.transam-tooltip').tooltip();
+  });

@@ -1,0 +1,37 @@
+:ruby
+  tabs = DocumentFolder.all.map{|f| [f.name.parameterize, f.name]}
+
+%ul.nav.nav-tabs#structure-documents
+  = render :partial => 'documents/index_tabs', :locals => {tabs: tabs}
+
+
+.tab-content
+  - tabs.each_with_index do |t, i|
+    .tab-pane.fade{id: "#{t[0]}-docs"}
+      .tab-content
+        = render :partial => 'documents/index_table', :locals => {folder: t[1]}
+
+:javascript
+
+  var documents_tab_key = 'documents_tab_key';
+
+  $(document).ready(function() {
+
+    // transam.make_same_height('.header-part');
+
+    // Manage the tabs
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+      // save the latest tab
+      var this_tab = $(this).attr('href');
+      transam.set_ui_key_value(documents_tab_key, this_tab);
+    });
+  });
+  $(function() {
+    var last_tab = transam.get_ui_key_value(documents_tab_key);
+    if (last_tab) {
+      $('a[href="'+last_tab+'"]').tab('show');
+    } else {
+      // Default to the first tab if no tab is stored
+      $('a[data-toggle="tab"]:first').tab('show');
+    }
+  });

@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'transam_core', git: "https://github.com/camsys/transam_core", branch: :quarter4
-gem 'transam_spatial', git: "https://github.com/camsys/transam_spatial"
+gem 'transam_core', git: "https://github.com/camsys/transam_core", branch: :develop
+gem 'transam_spatial', git: "https://github.com/camsys/transam_spatial", branch: :develop
 gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
 gem 'mysql2', "~> 0.5.1" # lock gem for dummy app
 gem 'activerecord-mysql2rgeo-adapter', git: 'https://github.com/camsys/activerecord-mysql2rgeo-adapter', branch: 'master'

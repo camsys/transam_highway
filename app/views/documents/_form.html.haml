@@ -1,0 +1,51 @@
+:ruby
+  @document_tags = {}
+
+  DocumentFolder.all.each do |f|
+    @document_tags[f.name] = DocumentTag.where(document_folder: f).map{|t| [t.name, t.id]}
+  end
+
+
+.row
+  .col-sm-12
+    = simple_form_for(Document.new,
+        :html => {:multipart => true, :class => 'form-vertical document_form' },
+        :url => inventory_documents_path(@documentable, Document.new, :format => :js),
+        :remote => true,
+        :wrapper => :vertical_form,
+        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+      = f.input :document, label: "File", input_html: {extension: Document.new.document.extension_white_list.join(',')}
+      = f.label "Assign Attributes From File Name"
+      = f.input :folder, as: :select, collection: DocumentFolder.active.pluck(:name), required: true
+      = f.input :document_tag_id, as: :select, disabled: true, required: true
+      = f.input :file_date, :wrapper => :vertical_append, :label => "File Date", required: true do
+        = f.input_field :file_date, :as => :string, :class => 'form-control datepicker', :data => {'date-container' => '.document_form'}, :value => format_as_date(f.object.file_date), required: true
+        %span.input-group-addon
+          %i.fa.fa-calendar
+      = f.input :description, :as => :text, :input_html => { :maxlength => 100 }, :placeholder => "(100 characters max)"
+      = f.submit "Save", :class => 'btn btn-primary'
+      %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
+
+:javascript
+  var tags = JSON.parse('#{@document_tags.to_json.html_safe}');
+
+  $("#document_folder").on('change', function() {
+    $("#document_document_tag_id").attr("disabled", false);
+    $("#document_document_tag_id").empty();
+    tags[$("#document_folder").val()].forEach(function (tag) {
+      $("#document_document_tag_id").append("<option value='" + tag[1] + "'>" + tag[0] + "</option>");
+    })
+  });
+
+  $(".document_form").on("submit", function() {
+    $("#spinner").show();
+  });
+
+  $('.document_form').validate({
+    submitHandler: function(form) {
+      $(form).ajaxSubmit();
+    },
+    invalidHandler: function() {
+      $("#spinner").hide();
+    }
+  });

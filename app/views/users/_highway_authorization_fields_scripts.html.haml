@@ -1,11 +1,11 @@
 :javascript
   function update_disabled_orgs() {
-    var highway_authority = parseInt('#{HighwayAuthority.first.id}');
+    var highway_authority = JSON.parse('#{HighwayAuthority.all.map{|x| [x.id, x.coded_name]}.first.to_json.html_safe}');
+    var selectize = $org_select[0].selectize;
 
-    $('select.remaining option').attr('disabled', false);
-    $('select.remaining option[value="' + highway_authority + '"]').attr('disabled', true);
+    selectize.updateOption(highway_authority[0], {value: highway_authority[0], text: highway_authority[1], disabled: true});
+
 
     var org_id = $('#user_organization_id').val();
-    $('#selected_grantees option').attr('disabled', false);
-    $('#selected_grantees option[value="' + org_id + '"]').attr('disabled', true);
+    selectize.addItem(org_id);
   }
