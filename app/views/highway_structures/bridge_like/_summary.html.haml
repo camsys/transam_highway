@@ -65,7 +65,7 @@
 
 .col-sm-4
   - asset_images = Image.joins(:image_classification).where(base_imagable: @asset.transam_asset)
-  - if asset_images.where(image_classifications: { category: 'Inventory', name: ['Roadway', 'Elevation', 'Superstructure']}).count > 0
+  - if asset_images.where(image_classifications: { name: ['*Roadway Looking Ahead on Inventory', '*Elevation From Upstream (Looking X)', '*Underbridge/Superstructure']}).count > 0
     .row.form-group#recentImagesCarousel.carousel.slide
       %ol.carousel-indicators
         %li.active{data: {target: "#recentImagesCarousel", slide_to: "0"}}
@@ -75,7 +75,7 @@
         - count = 0
         - active_set = false
 
-        - roadway_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Roadway' })
+        - roadway_img = asset_images.find_by(image_classifications: { name: '*Roadway Looking Ahead on Inventory' })
         - if roadway_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(roadway_img.image.url)
@@ -83,7 +83,7 @@
               .h5 Roadway
           - active_set = true
 
-        - elevation_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Elevation' })
+        - elevation_img = asset_images.find_by(image_classifications: { name: '*Elevation From Upstream (Looking X)' })
         - if elevation_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(elevation_img.image.url)
@@ -91,7 +91,7 @@
               .h5 Elevation
           - active_set = true
 
-        - superstructure_img = asset_images.find_by(image_classifications: { category: 'Inventory', name: 'Superstructure' })
+        - superstructure_img = asset_images.find_by(image_classifications: { name: '*Underbridge/Superstructure' })
         - if superstructure_img.present?
           .item{class: active_set ? '' : 'active'}
             = image_tag(superstructure_img.image.url)
