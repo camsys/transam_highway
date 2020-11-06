@@ -20,7 +20,6 @@ module Abilities
       can :manage, StreambedProfile
       can :manage, Roadway
 
-      can :create, Document
       cannot [:update, :destroy], Document
 
       AssetType.pluck(:class_name).each do |class_name|
